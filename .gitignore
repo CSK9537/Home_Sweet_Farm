@@ -1,0 +1,31 @@
+# --- Java & Build Artifacts ---
+*.class
+*.war
+*.ear
+*.jar
+/target/
+/bin/
+
+# --- Eclipse / STS Settings ---
+.settings/
+.project
+.classpath
+.factorypath
+.springBeans
+.recommenders/
+
+# --- Metadata (Eclipse Workspace specific) ---
+.metadata/
+RemoteSystemsTempFiles/
+
+# --- Logs ---
+*.log
+/logs/
+
+# --- OS specific files ---
+.DS_Store
+Thumbs.db
+
+# --- Optional: Properties with sensitive info ---
+# DB 계정 정보 등이 담긴 파일은 공유하지 않는 것이 원칙입니다.
+# src/main/resources/config/db.properties
