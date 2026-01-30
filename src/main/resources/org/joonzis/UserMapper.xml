@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.joonzis.user.mapper.UserMapper">
+	<insert id="insert" parameterType="org.joonzis.user.vo.UserVO">
+		INSERT INTO TBL_USER(USER_ID, NAME)
+		 VALUES
+		 (USER_ID_SEQ.NEXTVAL, #{NAME})
+	</insert>
+	
+	<select id="selectLogin" parameterType="org.joonzis.user.vo.UserVO"
+	resultType="org.joonzis.user.vo.UserVO">
+		SELECT USER_ID, USERNAME, NAME
+		FROM TBL_USER
+		WHERE USERNAME = #{USERNAME}
+		AND PASSWORD = #{PASSWORD}
+	</select>
+	
+	<delete id="delete" parameterType="org.joonzis.user.vo.UserVO">
+		DELETE 
+		FROM TBL_USER
+		WHERE USER_ID = #{USER_ID}
+	</delete>
+	
+</mapper>
