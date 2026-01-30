@@ -37,10 +37,14 @@
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		   <property name="dataSource" ref="dataSource"/>
 	</bean>
-		<tx:annotation-driven/>
-		<context:component-scan base-package="org.joonzis.aop"></context:component-scan>
-		<context:annotation-config></context:annotation-config>
-		<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	<tx:annotation-driven/>
+	<context:component-scan base-package="org.joonzis.aop"></context:component-scan>
+	<context:annotation-config></context:annotation-config>
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	
+	<!-- store -->
+	<mybatis-spring:scan base-package="org.joonzis.store.mapper"/>
+	<context:component-scan base-package="org.joonzis.store.service"></context:component-scan>
 </beans>
 
 <!-- <mybatis-spring:scan base-package="org.joonzis.mapper"/> -->
