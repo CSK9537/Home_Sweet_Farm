@@ -3,6 +3,7 @@ package org.joonzis.store.mapper;
 import java.util.List;
 
 import org.joonzis.store.dto.ProductDetailDTO;
+import org.joonzis.store.dto.ProductForAdminListDTO;
 import org.joonzis.store.dto.ProductForListDTO;
 import org.joonzis.store.vo.ProductVO;
 
@@ -21,4 +22,14 @@ public interface ProductMapper {
 	public List<ProductForListDTO> getProductListOnHot();
 	// 세일 Now
 	public List<ProductForListDTO> getProductListOnSale();
+	
+	// admin용
+	// 전체 List용
+	public List<ProductForAdminListDTO> getProductAdminList();
+	// 카테고리별
+	public List<ProductForAdminListDTO> getProductAdminListByCategoryId(int category_id);
+	// 가격별
+	public List<ProductForAdminListDTO> getProductAdminListByPrice();
+	// 검색
+//	public List<ProductForAdminListDTO> searchProductAdminList(String q);
 }

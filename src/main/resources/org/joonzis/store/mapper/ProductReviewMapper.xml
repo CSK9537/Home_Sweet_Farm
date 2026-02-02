@@ -36,4 +36,65 @@
 		DELETE FROM tbl_product_review
 		WHERE product_review_id = #{product_review_id}
 	</delete>
+
+	<delete id="deleteProductReviewByProductId">
+		DELETE FROM tbl_product_review
+		WHERE product_id = #{product_id}
+	</delete>
+	
+	<select id="getReviewListByProductId" resultType="org.joonzis.store.dto.ProductReviewDTO">
+		SELECT
+		    r.product_review_id,
+		    r.review_content,
+		    r.review_date,
+		    r.review_rate,
+		    r.writer_id,
+		    u.nickname
+		FROM tbl_product_review r
+		    LEFT OUTER JOIN tbl_user u ON u.user_id = r.writer_id
+		WHERE product_id=#{product_id}
+	</select>
+	
+	<select id="getFirstTopReview" resultType="org.joonzis.store.dto.ProductReviewDTO">
+	SELECT *
+		FROM (
+		    SELECT 
+		            r.product_review_id,
+		            r.review_content,
+		            r.review_date,
+		            r.review_rate,
+		            r.writer_id,
+		            u.nickname
+		    FROM tbl_product_review r
+		    LEFT OUTER JOIN tbl_user u ON r.writer_id = u.user_id
+		    WHERE product_id = #{product_id}
+		    ORDER BY review_rate DESC, review_date DESC
+		)
+		WHERE rownum = 1
+	</select>
+	<select id="getReviewByReviewId" resultType="org.joonzis.store.dto.ProductReviewDTO">
+		SELECT
+	            r.product_review_id,
+	            r.review_content,
+	            r.review_date,
+	            r.review_rate,
+	            r.writer_id,
+	            u.nickname
+	    FROM tbl_product_review r
+	    LEFT OUTER JOIN tbl_user u ON r.writer_id = u.user_id
+	    WHERE r.product_review_id = #{product_review_id}
+	</select>
+	
+	<select id="getReviewListByWriterId" resultType="org.joonzis.store.dto.ProductReviewDTO">
+		SELECT
+			r.product_review_id,
+			r.review_content,
+			r.review_date,
+			r.review_rate,
+			r.writer_id,
+			u.nickname
+		FROM tbl_product_review r
+		LEFT OUTER JOIN tbl_user u ON r.writer_id = u.user_id
+		WHERE r.writer_id = #{user_id}
+	</select>
 </mapper>

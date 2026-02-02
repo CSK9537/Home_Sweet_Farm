@@ -3,6 +3,7 @@ package org.joonzis.store.mapper;
 import java.util.List;
 
 import org.joonzis.store.dto.ProductDetailDTO;
+import org.joonzis.store.dto.ProductForAdminListDTO;
 import org.joonzis.store.dto.ProductForListDTO;
 import org.joonzis.store.vo.ProductVO;
 import org.junit.Test;
@@ -165,4 +166,47 @@ public class ProductMapperTests {
 //			log.info("list가 비어있음.");
 //		}
 //	}
+	
+<<<<<<< HEAD
+	@Test
+	public void getAdminListTest() {
+		log.info("getProductAdminList");
+		List<ProductForAdminListDTO> testList1 = mapper.getProductAdminList();
+		if(testList1.size() > 0) {
+			for (ProductForAdminListDTO dto : testList1) {
+				log.info(dto);
+			}
+		} else {
+			log.info("가져온 리스트의 길이가 0임.");
+		}
+	}
+
+//	@Test
+//	public void getAdminListByCategoryId() {
+//		log.info("getAdminListByCategoryId");
+//		int category_id = 1;
+//		List<ProductForAdminListDTO> testList1 = mapper.getProductAdminListByCategoryId(category_id);
+//		if(testList1.size() > 0) {
+//			for (ProductForAdminListDTO dto : testList1) {
+//				log.info(dto);
+//			}
+//		} else {
+//			log.info("가져온 리스트의 길이가 0임.");
+//		}
+//	}
+	
+//	@Test
+//	public void getAdminListByPrice() {
+//		log.info("getAdminListByPrice");
+//		List<ProductForAdminListDTO> testList1 = mapper.getProductAdminListByPrice();
+//		if(testList1.size() > 0) {
+//			for (ProductForAdminListDTO dto : testList1) {
+//				log.info(dto);
+//			}
+//		} else {
+//			log.info("가져온 리스트의 길이가 0임.");
+//		}
+//	}
+=======
+>>>>>>> d5aa40b (ProductReviewDTO 추가 및 Mapper 테스트)
 }

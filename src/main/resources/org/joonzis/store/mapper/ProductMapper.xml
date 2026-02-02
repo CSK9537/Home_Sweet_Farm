@@ -156,4 +156,66 @@
 		FROM tbl_product p
 		ORDER BY review_count DESC
 	</select>
+	
+	<select id="getProductAdminList" resultType="org.joonzis.store.dto.ProductForAdminListDTO">
+		SELECT 
+		    p.product_id, p.product_name, p.product_price, 
+		    p.product_delivery_price, p.product_sale, p.product_remain, c.category_name,
+		    COUNT(DISTINCT r.product_review_id) AS review_count,
+		    NVL(AVG(r.review_rate), 0) AS product_rate,
+		    MAX(i.saved_name) AS saved_name,
+		    COUNT(DISTINCT CASE WHEN o.status = 'DONE' AND o.order_status IN ('CONFIRMED', 'HOLD') THEN opl.order_id END) AS order_count
+		FROM tbl_product p
+		LEFT JOIN tbl_product_review r ON p.product_id = r.product_id
+		LEFT JOIN tbl_product_image i ON p.product_id = i.product_id AND i.is_thumbnail = 'Y'
+		LEFT JOIN tbl_order_product_list opl ON p.product_id = opl.product_id
+		LEFT JOIN tbl_order o ON opl.order_id = o.order_id
+		LEFT JOIN tbl_product_category c ON p.category_id = c.category_id
+		GROUP BY 
+		    p.product_id, p.product_name, p.product_price, c.category_name,
+		    p.product_delivery_price, p.product_sale, p.product_remain
+	</select>
+	
+	<select id="getProductAdminListByCategoryId" resultType="org.joonzis.store.dto.ProductForAdminListDTO">
+		SELECT 
+		    p.product_id, p.product_name, p.product_price, 
+		    p.product_delivery_price, p.product_sale, p.product_remain, c.category_name,
+		    COUNT(DISTINCT r.product_review_id) AS review_count,
+		    NVL(AVG(r.review_rate), 0) AS product_rate,
+		    MAX(i.saved_name) AS saved_name,
+		    COUNT(DISTINCT CASE WHEN o.status = 'DONE' AND o.order_status IN ('CONFIRMED', 'HOLD') THEN opl.order_id END) AS order_count
+		FROM tbl_product p
+		LEFT JOIN tbl_product_review r ON p.product_id = r.product_id
+		LEFT JOIN tbl_product_image i ON p.product_id = i.product_id AND i.is_thumbnail = 'Y'
+		LEFT JOIN tbl_order_product_list opl ON p.product_id = opl.product_id
+		LEFT JOIN tbl_order o ON opl.order_id = o.order_id
+		LEFT JOIN tbl_product_category c ON p.category_id=c.category_id
+		WHERE p.category_id = #{category_id}
+		GROUP BY 
+		    p.product_id, p.product_name, p.product_price,c.category_name,
+		    p.product_delivery_price, p.product_sale, p.product_remain
+		ORDER BY p.product_id DESC
+	</select>
+	
+	<select id="getProductAdminListByPrice" resultType="org.joonzis.store.dto.ProductForAdminListDTO">
+		SELECT 
+		    p.product_id, p.product_name, p.product_price, 
+		    p.product_delivery_price, p.product_sale, p.product_remain, c.category_name,
+		    COUNT(DISTINCT r.product_review_id) AS review_count,
+		    NVL(AVG(r.review_rate), 0) AS product_rate,
+		    MAX(i.saved_name) AS saved_name,
+		    COUNT(DISTINCT CASE WHEN o.status = 'DONE' AND o.order_status IN ('CONFIRMED', 'HOLD') THEN opl.order_id END) AS order_count
+		FROM tbl_product p
+		LEFT JOIN tbl_product_review r ON p.product_id = r.product_id
+		LEFT JOIN tbl_product_image i ON p.product_id = i.product_id AND i.is_thumbnail = 'Y'
+		LEFT JOIN tbl_order_product_list opl ON p.product_id = opl.product_id
+		LEFT JOIN tbl_order o ON opl.order_id = o.order_id
+		LEFT JOIN tbl_product_category c ON p.category_id=c.category_id
+		GROUP BY 
+		    p.product_id, p.product_name, p.product_price,c.category_name,
+		    p.product_delivery_price, p.product_sale, p.product_remain
+		ORDER BY p.product_price DESC
+	</select>
+	
+	
 </mapper>
