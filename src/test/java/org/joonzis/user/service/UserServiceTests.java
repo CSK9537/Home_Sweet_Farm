@@ -28,7 +28,35 @@ public class UserServiceTests {
 //		int USER_ID = 3;
 //		UserVO vo = uservice.selectLogin(USER_ID);
 //	}
-	
+//	@Test
+//	public void testFindIdByEmail() {
+//		String EMAIL = "test@test.com";
+//		uservice.findIdByEmail(EMAIL);
+//	}
+//	@Test
+//	public void testFindIdByPhone() {
+//		String PHONE = "12345678";
+//		uservice.findIdByPhone(PHONE);
+//	}
+//	@Test
+//	public void testExistUserByEmail() {
+//		String USERNAME = "linwee";
+//		String EMAIL = "test@test.com";
+//		uservice.existUserByEmail(USERNAME, EMAIL);
+//	}
+//	@Test
+//	public void testExistUserByPhone() {
+//		String USERNAME = "linwee";
+//		String PHONE = "12345678";
+//		uservice.existUserByPhone(USERNAME, PHONE);
+//	}
+	@Test
+	public void testUpdatePw() {
+		UserVO vo = new UserVO();
+		vo.setUSERNAME("LILI1357");
+		vo.setPASSWORD("LIN3333");
+		uservice.updatePw(vo);
+	}
 	
 	
 
