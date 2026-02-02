@@ -5,7 +5,8 @@ import org.joonzis.user.vo.UserVO;
 
 public interface UserService {
 	
-	
+	//데이터 넣기
+	public void insert(UserVO vo);
 	//데이터 조회
 	public  UserVO selectLogin(int USER_ID);
 	//데이터 삭제
@@ -23,16 +24,4 @@ public interface UserService {
 	//비밀번호 재설정
 	public void updatePw(UserVO vo);
 		
-	//아이디 중복 체크
-	public boolean isIdDuplicate(String USERNAME);
-	
-	public int countByUsername(String USERNAME);
-	
-	//회원가입
-	public void insert(UserVO vo);
-	
-	
-	
-	
-	
 }
