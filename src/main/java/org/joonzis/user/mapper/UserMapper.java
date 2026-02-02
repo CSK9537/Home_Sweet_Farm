@@ -5,7 +5,8 @@ import org.joonzis.user.vo.UserVO;
 
 public interface UserMapper {
 	
-	
+	//데이터 넣기
+	public void insert(UserVO vo);
 	//데이터 조회
 	public  UserVO selectLogin(int USER_ID);
 	//데이터 삭제
@@ -27,11 +28,4 @@ public interface UserMapper {
 	
 	//비밀번호 재설정
 	public void updatePw(UserVO vo);
-	
-	//아이디 중복 체크
-	public int countByUsername(@Param("USERNAME")String USERNAME);
-	
-	//회원가입
-	public int insert(UserVO vo);
-	
 }
