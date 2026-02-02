@@ -17,13 +17,6 @@ public class UserMapperTests {
 	private UserMapper usermapper;
 	
 //	@Test
-//	public void testInsert() {
-//		UserVO vo = new UserVO();
-//		vo.setUSER_ID(1357);
-//		vo.setNAME("hye");
-//		usermapper.insert(vo);
-//	}
-//	@Test
 //	public void testSelectLogin() {
 //		int USER_ID = 25;
 //		UserVO vo = usermapper.selectLogin(USER_ID);
@@ -56,5 +49,21 @@ public class UserMapperTests {
 //		vo.setUSERNAME("LILI1357");
 //		vo.setPASSWORD("LIN3333");
 //		usermapper.updatePw(vo);
+//	}
+//	@Test
+//	public void testCountByUsername() {
+//		String USERNAME = "linwee";
+//		usermapper.countByUsername(USERNAME);
+//	}
+//	@Test
+//	public void testInsert() {
+//		UserVO vo = new UserVO();
+//		vo.setUSER_ID(9);
+//		vo.setUSERNAME("hariri");
+//		vo.setPASSWORD("nari3333");
+//		vo.setNAME("하리");
+//		vo.setEMAIL("hari@email.com");
+//		vo.setPHONE(24682468);
+//		usermapper.insert(vo);
 //	}
 }
