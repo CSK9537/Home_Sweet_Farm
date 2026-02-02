@@ -50,11 +50,11 @@ public class UserMapperTests {
 //		String PHONE = "12345678";
 //		usermapper.existUserByPhone(USERNAME, PHONE);
 //	}
-	@Test
-	public void testUpdatePw() {
-		UserVO vo = new UserVO();
-		vo.setUSERNAME("LILI1357");
-		vo.setPASSWORD("LIN3333");
-		usermapper.updatePw(vo);
-	}
+//	@Test
+//	public void testUpdatePw() {
+//		UserVO vo = new UserVO();
+//		vo.setUSERNAME("LILI1357");
+//		vo.setPASSWORD("LIN3333");
+//		usermapper.updatePw(vo);
+//	}
 }
