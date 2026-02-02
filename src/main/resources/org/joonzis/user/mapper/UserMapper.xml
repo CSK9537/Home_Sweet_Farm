@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.joonzis.user.mapper.UserMapper">
+	
+	<!-- 데이터 넣기  -->
+	<insert id="insert" parameterType="org.joonzis.user.vo.UserVO">
+		INSERT INTO TBL_USER(USER_ID, NAME)
+		 VALUES
+		 (USER_ID_SEQ.NEXTVAL, #{NAME})
+	</insert>
+	
+	<!-- 데이터 조회  -->
+	<select id="selectLogin" parameterType="org.joonzis.user.vo.UserVO"
+	resultType="org.joonzis.user.vo.UserVO">
+		SELECT USER_ID, NAME
+		FROM TBL_USER
+		WHERE USER_ID = #{USER_ID}
+	</select>
+	
+	<!-- 데이터 삭제  -->
+	<delete id="delete" parameterType="org.joonzis.user.vo.UserVO">
+		DELETE 
+		FROM TBL_USER
+		WHERE USER_ID = #{USER_ID}
+	</delete>
+	
+	<!-- 아이디 찾기(이메일) -->
+	<select id="findIdByEmail" parameterType="String" resultType="String">
+		SELECT USERNAME 
+		FROM TBL_USER 
+		WHERE EMAIL = #{EMAIL}
+	</select>
+	
+	<!-- 아이디 찾기(전화번호) -->
+	<select id="findIdByPhone" parameterType="String" resultType="String">
+		SELECT USERNAME 
+		FROM TBL_USER 
+		WHERE PHONE = #{PHONE}
+	</select>
+	<!-- 비밀번호 찾기 대상 확인(이메일) -->
+	<select id="existUserByEmail" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_USER
+		WHERE USERNAME = #{USERNAME}
+		AND
+		EMAIL = #{EMAIL}
+	</select>
+	
+	<!-- 비밀번호 찾기 대상 확인(전화번호) -->
+	<select id="existUserByPhone" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_USER
+		WHERE USERNAME = #{USERNAME}
+		AND
+		PHONE = #{PHONE}
+	</select>
+	
+	<!-- 비밀번호 재설정  -->
+	<update id="updatePw" parameterType="org.joonzis.user.vo.UserVO">
+		UPDATE TBL_USER
+    	SET PASSWORD = #{PASSWORD}
+    	WHERE USERNAME = #{USERNAME}
+	</update>
+	
+</mapper>
