@@ -25,5 +25,26 @@ public class UserServiceImpl implements UserService{
 	public int delete(UserVO vo) {
 		return usermapper.delete(vo);
 	}
+	@Override
+	public String findIdByEmail(String EMAIL) {
+		return usermapper.findIdByEmail(EMAIL);
+	}
+	@Override
+	public String findIdByPhone(String PHONE) {
+		return usermapper.findIdByPhone(PHONE);
+	}
+	@Override
+	public int existUserByEmail(String USERNAME, String EMAIL) {
+		return usermapper.existUserByEmail(USERNAME, EMAIL);
+	}
+	@Override
+	public int existUserByPhone(String USERNAME, String PHONE) {
+		return usermapper.existUserByPhone(USERNAME, PHONE);
+	}
+	@Override
+	public void updatePw(UserVO vo) {
+		usermapper.updatePw(vo);
+		
+	}
 
 }
