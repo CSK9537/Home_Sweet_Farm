@@ -4,13 +4,6 @@
 
 <mapper namespace="org.joonzis.user.mapper.UserMapper">
 	
-	<!-- 데이터 넣기  -->
-	<insert id="insert" parameterType="org.joonzis.user.vo.UserVO">
-		INSERT INTO TBL_USER(USER_ID, NAME)
-		 VALUES
-		 (USER_ID_SEQ.NEXTVAL, #{NAME})
-	</insert>
-	
 	<!-- 데이터 조회  -->
 	<select id="selectLogin" parameterType="org.joonzis.user.vo.UserVO"
 	resultType="org.joonzis.user.vo.UserVO">
@@ -63,5 +56,19 @@
     	SET PASSWORD = #{PASSWORD}
     	WHERE USERNAME = #{USERNAME}
 	</update>
+	
+	<!-- 아이디 중복 체크  -->
+	<select id="countByUsername" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_USER
+		WHERE USERNAME = #{USERNAME}
+	</select>
+	
+	<!-- 회원가입  -->
+	<insert id="insert" >
+		INSERT INTO TBL_USER(USER_ID, USERNAME, PASSWORD, NAME, EMAIL, PHONE)
+		 VALUES
+		 (USER_ID_SEQ.NEXTVAL, #{USERNAME}, #{PASSWORD}, #{NAME}, #{EMAIL}, #{PHONE})
+	</insert>
 	
 </mapper>

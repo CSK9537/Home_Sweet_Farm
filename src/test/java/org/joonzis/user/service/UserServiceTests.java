@@ -1,5 +1,7 @@
 package org.joonzis.user.service;
 
+import static org.junit.Assert.assertTrue;
+
 import org.joonzis.user.vo.UserVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,13 +18,6 @@ public class UserServiceTests {
 	@Autowired
 	private UserService uservice;
 	
-//	@Test
-//	public void testInsert() {
-//		UserVO vo = new UserVO();
-//		vo.setUSER_ID(1111);
-//		vo.setNAME("lins");
-//		uservice.insert(vo);
-//	}
 //	@Test
 //	public void testSelectLogin() {
 //		int USER_ID = 3;
@@ -57,7 +52,23 @@ public class UserServiceTests {
 //		vo.setPASSWORD("LIN3333");
 //		uservice.updatePw(vo);
 //	}
-	
-	
+//	@Test
+//	public void testIsIdDuplicate() {
+//		String USERNAME = "helen11";
+//		boolean dup = 
+//		uservice.isIdDuplicate(USERNAME);
+//		assertTrue(dup);	
+//	}
+//	@Test
+//	public void testInsert() {
+//		UserVO vo = new UserVO();
+//		vo.setUSER_ID(10);
+//		vo.setUSERNAME("helen11");
+//		vo.setPASSWORD("len3333");
+//		vo.setNAME("helen");
+//		vo.setEMAIL("len@email.com");
+//		vo.setPHONE(13571357);
+//		uservice.insert(vo);
+//	}
 
 }
