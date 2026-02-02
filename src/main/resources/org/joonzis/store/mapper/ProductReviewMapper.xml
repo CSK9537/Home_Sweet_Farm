@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.joonzis.store.mapper.ProductReviewMapper">
+
+	<insert id="insertProductReview">
+		INSERT INTO tbl_product_review
+		VALUES (
+			product_review_seq.nextval,
+			#{product_id},
+			#{writer_id},
+			#{review_content},
+			sysdate,
+			#{review_rate}
+		)
+	</insert>
+
+	<select id="getProductReview" resultType="org.joonzis.store.vo.ProductReviewVO">
+		SELECT * FROM tbl_product_review WHERE product_review_id = #{product_review_id}
+	</select>
+	
+	<select id="getListProductReviews" resultType="org.joonzis.store.vo.ProductReviewVO">
+		SELECT * FROM tbl_product_review
+	</select>
+	
+	<update id="updateProductReview">
+		UPDATE tbl_product_review
+		SET
+			review_content = #{review_content},
+			review_rate = #{review_rate}
+		WHERE product_review_id = #{product_review_id}
+	</update>
+	
+	<delete id="deletePrdouctReview">
+		DELETE FROM tbl_product_review
+		WHERE product_review_id = #{product_review_id}
+	</delete>
+</mapper>
