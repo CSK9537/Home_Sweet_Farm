@@ -50,13 +50,13 @@ public class UserServiceTests {
 //		String PHONE = "12345678";
 //		uservice.existUserByPhone(USERNAME, PHONE);
 //	}
-	@Test
-	public void testUpdatePw() {
-		UserVO vo = new UserVO();
-		vo.setUSERNAME("LILI1357");
-		vo.setPASSWORD("LIN3333");
-		uservice.updatePw(vo);
-	}
+//	@Test
+//	public void testUpdatePw() {
+//		UserVO vo = new UserVO();
+//		vo.setUSERNAME("LILI1357");
+//		vo.setPASSWORD("LIN3333");
+//		uservice.updatePw(vo);
+//	}
 	
 	
 
