@@ -18,8 +18,8 @@ public class UserServiceImpl implements UserService{
 		usermapper.insert(vo);
 	}
 	@Override
-	public UserVO selectLogin(UserVO vo) {
-		return usermapper.selectLogin(vo);
+	public UserVO selectLogin(int USER_ID) {
+		return usermapper.selectLogin(USER_ID);
 	}
 	@Override
 	public int delete(UserVO vo) {

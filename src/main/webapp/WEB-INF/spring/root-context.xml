@@ -45,7 +45,12 @@
 	<!-- store -->
 	<mybatis-spring:scan base-package="org.joonzis.store.mapper"/>
 	<context:component-scan base-package="org.joonzis.store.service"></context:component-scan>
+	
+	
+	<!-- user -->
+	<mybatis-spring:scan base-package="org.joonzis.user.mapper"/>
+	<context:component-scan base-package="org.joonzis.user.service"/>
+	
 </beans>
 
-<!-- <mybatis-spring:scan base-package="org.joonzis.mapper"/> -->
-<!-- <context:component-scan base-package="org.joonzis.Service" /> -->
+	
