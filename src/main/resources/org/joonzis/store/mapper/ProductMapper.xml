@@ -4,18 +4,18 @@
 
 <mapper namespace="org.joonzis.store.mapper.ProductMapper">
 
-	<insert id="insertTest">
-		INSERT INTO tbl_product(
-			product_id,
-			category_id,
-			product_name,
-			product_price
-		)
+		<insert id="insertTest">
+		INSERT INTO tbl_product
 		VALUES(
 			product_seq.nextval,
 			#{category_id},
 			#{product_name},
-			#{product_price}
+			#{product_price},
+			#{product_delivery_price},
+			#{product_remain},
+			#{product_description_brief},
+			#{product_description_detail},
+			#{product_caution}
 		)
 	</insert>
 
@@ -31,7 +31,14 @@
 	<update id="updateTest">
 		UPDATE tbl_product
 		SET 
-			product_name = #{product_name}
+			product_name = #{product_name},
+			category_id = #{category_id},
+			product_price = #{product_price},
+			product_delivery_price = #{product_delivery_price},
+			product_remain = #{product_remain},
+			product_description_brief = #{product_description_brief},
+			product_description_detail = #{product_description_detail},
+			product_caution = #{product_caution}
 		WHERE product_id = #{product_id}
 	</update>
 
@@ -39,5 +46,114 @@
 		DELETE FROM tbl_product
 		WHERE product_id = #{product_id}
 	</delete>
-
+	
+	<!-- 중복되는 부분은 나중에 정리 -->
+	
+	<!-- 카테고리를 기준으로 제품들의 정보 가져오기(댓글 평점, 댓글 수, 썸네일 포함) -->
+	<select id="getProductListByCategoryId" resultType="org.joonzis.store.dto.ProductForListDTO">
+		SELECT 
+		    p.product_id, 
+		    p.product_name, 
+		    p.product_price, 
+		    p.product_delivery_price,
+		    p.product_sale,
+		    (SELECT COUNT(*) 
+		     FROM tbl_product_review r 
+		     WHERE r.product_id = p.product_id) AS review_count,
+		    (SELECT NVL(AVG(review_rate), 0) 
+		     FROM tbl_product_review r 
+		     WHERE r.product_id = p.product_id) AS product_rate,
+		    (SELECT saved_name 
+		     FROM tbl_product_image i 
+		     WHERE i.product_id = p.product_id AND i.is_thumbnail = 'Y') AS saved_name
+		FROM tbl_product p
+		WHERE p.category_id = #{category_id}
+	</select>
+	
+	
+	<resultMap type="org.joonzis.store.dto.ProductDetailDTO" id="productDetailMap">
+		<id property="product_id" column="product_id"/>
+		<result property="product_name" column="product_name"/>
+		<result property="product_price" column="product_price"/>
+		<result property="product_delivery_price" column="product_delivery_price"/>
+		<result property="product_remain" column="product_remain"/>
+		<result property="product_description_brief" column="product_description_brief"/>
+		<result property="product_description_detail" column="product_description_detail"/>
+		<result property="product_caution" column="product_caution"/>
+		<result property="product_rate" column="product_rate"/>
+		<result property="review_count" column="review_count"/>
+		<result property="product_sale" column="product_sale"/>
+		<collection property="image_list" ofType="string">
+			<result column="saved_name"/>
+		</collection>
+	</resultMap>
+	<select id="getProductDetail" resultMap="productDetailMap">
+		SELECT 
+		    p.product_id, 
+		    p.product_name, 
+		    p.product_price, 
+		    p.product_delivery_price,
+		    p.product_remain,
+		    p.product_sale,
+		    p.product_description_brief,
+		    p.product_description_detail, 
+		    p.product_caution,            
+		    stats.review_count,
+		    stats.product_rate,
+		    i.saved_name
+		FROM tbl_product p
+		LEFT OUTER JOIN (
+		    SELECT 
+		        product_id, 
+		        COUNT(product_review_id) as review_count,
+		        NVL(AVG(review_rate), 0) as product_rate
+		    FROM tbl_product_review
+		    GROUP BY product_id
+		) stats ON p.product_id = stats.product_id
+		LEFT OUTER JOIN tbl_product_image i
+		    ON p.product_id = i.product_id
+		    AND i.is_thumbnail = 'N'
+		WHERE 
+		    p.product_id = #{product_id}
+	</select>
+	
+	<select id="getProductListOnSale" resultType="org.joonzis.store.dto.ProductForListDTO">
+		SELECT 
+		    p.product_id, 
+		    p.product_name, 
+		    p.product_price, 
+		    p.product_delivery_price,
+		    p.product_sale,
+		    (SELECT COUNT(*) 
+		     FROM tbl_product_review r 
+		     WHERE r.product_id = p.product_id) as review_count,
+		    (SELECT NVL(AVG(review_rate), 0) 
+		     FROM tbl_product_review r 
+		     WHERE r.product_id = p.product_id) as product_rate,
+		    (SELECT saved_name 
+		     FROM tbl_product_image i 
+		     WHERE i.product_id = p.product_id AND i.is_thumbnail = 'Y') as saved_name
+		FROM tbl_product p
+		WHERE p.product_sale > 0		
+	</select>
+	
+	<select id="getProductListOnHot" resultType="org.joonzis.store.dto.ProductForListDTO">
+		SELECT 
+		    p.product_id, 
+		    p.product_name, 
+		    p.product_price, 
+		    p.product_delivery_price,
+		    p.product_sale,
+		    (SELECT COUNT(*) 
+		     FROM tbl_product_review r 
+		     WHERE r.product_id = p.product_id) AS review_count,
+		    (SELECT NVL(AVG(review_rate), 0) 
+		     FROM tbl_product_review r 
+		     WHERE r.product_id = p.product_id) AS product_rate,
+		    (SELECT saved_name 
+		     FROM tbl_product_image i 
+		     WHERE i.product_id = p.product_id AND i.is_thumbnail = 'Y') AS saved_name
+		FROM tbl_product p
+		ORDER BY review_count DESC
+	</select>
 </mapper>

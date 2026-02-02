@@ -2,6 +2,8 @@ package org.joonzis.store.mapper;
 
 import java.util.List;
 
+import org.joonzis.store.dto.ProductDetailDTO;
+import org.joonzis.store.dto.ProductForListDTO;
 import org.joonzis.store.vo.ProductVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -108,6 +110,59 @@ public class ProductMapperTests {
 //		
 //		if(mapper.deleteTest(deleteId) > 0) {
 //			log.info("테스트 성공!");
+//		}
+//	}
+	
+//	@Test
+//	public void getProductForListDTOTest() {
+//		log.info("ProductMapper::getProductForListDTOTest()");
+//		List<ProductForListDTO> list = mapper.getProductListByCategoryId(1);
+//		if(list.size() > 0) {
+//			for (ProductForListDTO dto : list) {
+//				log.info("가져온 데이터 : " + dto);
+//			}
+//		}
+//		else log.info("데이터 리스트의 길이가 0 이하!");
+//	}
+	
+//	@Test
+//	public void getProductDetailTest() {
+//		log.info("ProductMapperTests::getProductDetail()");
+//		ProductDetailDTO dto = mapper.getProductDetail(2);
+//		if(dto != null) {
+//			log.info("이미지 이름들");
+//			for (String image_name : dto.getImage_list()) {
+//				log.info(image_name);
+//			}
+//			log.info("가져온 데이터 : " + dto);
+//		} else {
+//			log.info("가져온 데이터가 없음");
+//		}
+//	}
+	
+//	@Test
+//	public void getProductListOnSaleTest() {
+//		List<ProductForListDTO> list = mapper.getProductListOnSale();
+//		if(list.size()>0) {
+//			for (ProductForListDTO product : list) {
+//				log.info(product);
+//				log.info("상품 원래 가격 : " + product.getProduct_price());
+//				log.info("세일 후 가격 : " + (product.getProduct_price() - product.getProduct_price() * (product.getProduct_sale()*0.01)));
+//			}
+//		} else {
+//			log.info("list가 비어있음.");
+//		}
+//	}
+	
+//	@Test
+//	public void getProductListOnHotTest() {
+//		List<ProductForListDTO> list = mapper.getProductListOnHot();
+//		if(list.size()>0) {
+//			for (ProductForListDTO product : list) {
+//				log.info(product);
+//			}
+//		} else {
+//			log.info("list가 비어있음.");
 //		}
 //	}
 }
