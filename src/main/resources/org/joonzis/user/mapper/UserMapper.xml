@@ -3,20 +3,22 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.joonzis.user.mapper.UserMapper">
+	<!-- 데이터 넣기  -->
 	<insert id="insert" parameterType="org.joonzis.user.vo.UserVO">
 		INSERT INTO TBL_USER(USER_ID, NAME)
 		 VALUES
 		 (USER_ID_SEQ.NEXTVAL, #{NAME})
 	</insert>
 	
+	<!-- 데이터 조회  -->
 	<select id="selectLogin" parameterType="org.joonzis.user.vo.UserVO"
 	resultType="org.joonzis.user.vo.UserVO">
-		SELECT USER_ID, USERNAME, NAME
+		SELECT USER_ID, NAME
 		FROM TBL_USER
-		WHERE USERNAME = #{USERNAME}
-		AND PASSWORD = #{PASSWORD}
+		WHERE USER_ID = #{USER_ID}
 	</select>
 	
+	<!-- 데이터 삭제  -->
 	<delete id="delete" parameterType="org.joonzis.user.vo.UserVO">
 		DELETE 
 		FROM TBL_USER
