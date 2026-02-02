@@ -13,7 +13,10 @@ public class UserServiceImpl implements UserService{
 	@Autowired
 	private UserMapper usermapper;
 	
-	
+	@Override
+	public void insert(UserVO vo) {
+		usermapper.insert(vo);
+	}
 	@Override
 	public UserVO selectLogin(int USER_ID) {
 		return usermapper.selectLogin(USER_ID);
@@ -41,21 +44,7 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void updatePw(UserVO vo) {
 		usermapper.updatePw(vo);
-	}
-	@Override
-	public boolean isIdDuplicate(String USERNAME) {
-		return usermapper.countByUsername(USERNAME)>0;
-	}
-	@Override
-	public int countByUsername(String USERNAME) {
-		return usermapper.countByUsername(USERNAME);
-	}
-	@Override
-	public void insert(UserVO vo) {
 		
-		if(isIdDuplicate(vo.getUSERNAME())) {
-			throw new IllegalStateException("이미 존재하는 아이디입니다");
-		}
-		usermapper.insert(vo);
 	}
+
 }
