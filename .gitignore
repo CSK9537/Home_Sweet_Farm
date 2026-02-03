@@ -26,6 +26,9 @@ RemoteSystemsTempFiles/
 .DS_Store
 Thumbs.db
 
+# --- Servers ---
+/Servers/
+
 # --- Optional: Properties with sensitive info ---
 # DB 계정 정보 등이 담긴 파일은 공유하지 않는 것이 원칙입니다.
 # src/main/resources/config/db.properties
