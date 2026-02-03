@@ -15,36 +15,50 @@ public class UserServiceImpl implements UserService{
 	
 	@Override
 	public void insert(UserVO vo) {
+		
+		if(isIdDuplicate(vo.getUsername())) {
+			throw new IllegalStateException("이미 존재하는 아이디입니다");
+		}
 		usermapper.insert(vo);
 	}
+
 	@Override
-	public UserVO selectLogin(int USER_ID) {
-		return usermapper.selectLogin(USER_ID);
+	public UserVO selectLogin(int user_id) {
+		return usermapper.selectLogin(user_id);
 	}
 	@Override
 	public int delete(UserVO vo) {
 		return usermapper.delete(vo);
 	}
 	@Override
-	public String findIdByEmail(String EMAIL) {
-		return usermapper.findIdByEmail(EMAIL);
+	public String findIdByEmail(String email) {
+		return usermapper.findIdByEmail(email);
 	}
 	@Override
-	public String findIdByPhone(String PHONE) {
-		return usermapper.findIdByPhone(PHONE);
+	public String findIdByPhone(String phone) {
+		return usermapper.findIdByPhone(phone);
 	}
 	@Override
-	public int existUserByEmail(String USERNAME, String EMAIL) {
-		return usermapper.existUserByEmail(USERNAME, EMAIL);
+	public int existUserByEmail(String username, String email) {
+		return usermapper.existUserByEmail(username, email);
 	}
 	@Override
-	public int existUserByPhone(String USERNAME, String PHONE) {
-		return usermapper.existUserByPhone(USERNAME, PHONE);
+	public int existUserByPhone(String username, String phone) {
+		return usermapper.existUserByPhone(username, phone);
 	}
 	@Override
 	public void updatePw(UserVO vo) {
 		usermapper.updatePw(vo);
-		
+
 	}
+	@Override
+	public boolean isIdDuplicate(String username) {
+		return usermapper.countByUsername(username)>0;
+	}
+	@Override
+	public int countByUsername(String username) {
+		return usermapper.countByUsername(username);
+	}
+	
 
 }

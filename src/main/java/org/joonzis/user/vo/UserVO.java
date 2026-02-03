@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class UserVO {
-  private int USER_ID, PHONE, ENABLE, CONFIRM_EVENT, POINT, AUTH_ID, GRADE_ID, ASPECT;
-  private String USERNAME,PASSWORD, NICKNAME, NAME, EMAIL, PROFILE_FILENAME;
-  private Date BRITH_DATE, REG_DATE;
+  private int user_id, phone, enable, confirm_event, point, auth_id, grade_id, aspect;
+  private String username,password, nickname, name, email, profile_filename;
+  private Date brith_date, reg_date;
 }

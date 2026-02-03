@@ -19,45 +19,58 @@ public class UserServiceTests {
 //	@Test
 //	public void testInsert() {
 //		UserVO vo = new UserVO();
-//		vo.setUSER_ID(1111);
-//		vo.setNAME("lins");
+//		vo.setUsername("nariri12");
+//		vo.setPassword("riri3333");
+//		vo.setNickname("riri");
+//		vo.setName("nariri");
+//		vo.setEmail("riri@email.com");
+//		vo.setPhone(13572468);
+//		vo.setProfile_filename("riri file");
+//		vo.setBrith_date(java.sql.Date.valueOf("2000-01-29"));
 //		uservice.insert(vo);
 //	}
 //	@Test
 //	public void testSelectLogin() {
-//		int USER_ID = 3;
-//		UserVO vo = uservice.selectLogin(USER_ID);
+//		int user_id = 3;
+//		UserVO vo = uservice.selectLogin(user_id);
 //	}
 //	@Test
 //	public void testFindIdByEmail() {
-//		String EMAIL = "test@test.com";
-//		uservice.findIdByEmail(EMAIL);
+//		String email = "test@test.com";
+//		uservice.findIdByEmail(email);
 //	}
 //	@Test
 //	public void testFindIdByPhone() {
-//		String PHONE = "12345678";
-//		uservice.findIdByPhone(PHONE);
+//		String phone = "12345678";
+//		uservice.findIdByPhone(phone);
 //	}
 //	@Test
 //	public void testExistUserByEmail() {
-//		String USERNAME = "linwee";
-//		String EMAIL = "test@test.com";
-//		uservice.existUserByEmail(USERNAME, EMAIL);
+//		String username = "linwee";
+//		String email = "test@test.com";
+//		uservice.existUserByEmail(username, email);
 //	}
 //	@Test
 //	public void testExistUserByPhone() {
-//		String USERNAME = "linwee";
-//		String PHONE = "12345678";
-//		uservice.existUserByPhone(USERNAME, PHONE);
+//		String username = "linwee";
+//		String phone = "12345678";
+//		uservice.existUserByPhone(username, phone);
 //	}
 //	@Test
 //	public void testUpdatePw() {
 //		UserVO vo = new UserVO();
-//		vo.setUSERNAME("LILI1357");
-//		vo.setPASSWORD("LIN3333");
+//		vo.setUsername("LILI1357");
+//		vo.setPassword("LIN3333");
 //		uservice.updatePw(vo);
 //	}
-	
-	
+
+//	@Test
+//	public void testIsIdDuplicate() {
+//		String username = "helen11";
+//		boolean dup = 
+//		uservice.isIdDuplicate(username);
+//		assertTrue(dup);	
+//	}
+
 
 }
