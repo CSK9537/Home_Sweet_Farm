@@ -19,8 +19,14 @@ public class UserMapperTests {
 //	@Test
 //	public void testInsert() {
 //		UserVO vo = new UserVO();
-//		vo.setUSER_ID(1357);
-//		vo.setNAME("hye");
+//		vo.setUsername("jinny12");
+//		vo.setPassword("ni3333");
+//		vo.setNickname("nini");
+//		vo.setName("jinny");
+//		vo.setEmail("nini@email.com");
+//		vo.setPhone(24681618);
+//		vo.setProfile_filename("nini file");
+//		vo.setBrith_date(java.sql.Date.valueOf("1997-11-23"));
 //		usermapper.insert(vo);
 //	}
 //	@Test
@@ -57,4 +63,12 @@ public class UserMapperTests {
 //		vo.setPASSWORD("LIN3333");
 //		usermapper.updatePw(vo);
 //	}
+
+//	@Test
+//	public void testCountByUsername() {
+//		String USERNAME = "linwee";
+//		usermapper.countByUsername(USERNAME);
+//	}
+
+
 }
