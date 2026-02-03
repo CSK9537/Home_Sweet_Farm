@@ -41,6 +41,7 @@
 		LEFT OUTER JOIN tbl_product_image i ON i.product_id = w.product_id AND i.is_thumbnail = 'Y'
 		WHERE w.product_id = #{product_id]
 	</select>
+	
 	<delete id="deleteWishList">
 		DELETE FROM tbl_wish_list
 		WHERE user_id=#{user_id} AND product_id=#{product_id}
@@ -85,7 +86,7 @@
 		LEFT OUTER JOIN tbl_product_image i ON i.product_id = s.product_id AND i.is_thumbnail = 'Y'
 		WHERE s.product_id = #{product_id}
 	</select>
-	<delete id="deleteWishList">
+	<delete id="deleteShopingCart">
 		DELETE FROM tbl_shopping_cart
 		WHERE user_id=#{user_id} AND product_id=#{product_id}
 	</delete>
