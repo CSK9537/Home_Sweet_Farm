@@ -55,9 +55,9 @@ public class PlantVO {
 	// 수확 시기
 	private String plant_harvesttime;
 	// 이상적 최저 온도
-	private double plant_temperature_imin;
+	private int plant_temperature_imin;
 	// 이상적 최고 온도
-	private double plant_temperature_imax;
+	private int plant_temperature_imax;
 	// 휴면
 	private String plant_dormancy;
 	// 성장기
