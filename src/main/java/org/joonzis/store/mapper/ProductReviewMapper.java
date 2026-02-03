@@ -18,6 +18,4 @@ public interface ProductReviewMapper {
 	public ProductReviewDTO getReviewByReviewId(int product_review_id);
 	public List<ProductReviewDTO> getReviewListByUserId(int user_id);
 	
-	public List<ProductReviewDTO> getReviewListByProductId(int product_id);
-	public ProductReviewDTO getFirstTopReview(int product_id);
 }

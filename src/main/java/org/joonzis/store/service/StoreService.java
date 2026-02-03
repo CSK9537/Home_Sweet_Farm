@@ -3,6 +3,7 @@ package org.joonzis.store.service;
 import java.util.List;
 
 import org.joonzis.store.dto.ProductDetailDTO;
+import org.joonzis.store.dto.ProductForAdminListDTO;
 import org.joonzis.store.dto.ProductForListDTO;
 import org.joonzis.store.dto.ProductReviewDTO;
 import org.joonzis.store.vo.ProductReviewVO;
@@ -25,4 +26,9 @@ public interface StoreService {
 	public int insertProductReview(ProductReviewVO vo);
 	public List<ProductReviewDTO> getReviewListByProductId(int product_id);
 	public ProductReviewDTO getTopReviewByProductId(int product_id);
+	
+	// 관리자 전용 비즈니스 로직
+	public List<ProductForAdminListDTO> getAdminList();
+	public List<ProductForAdminListDTO> getAdminListByCategoryId(int category_id);
+	public List<ProductForAdminListDTO> getAdminListByPrice();
 }
