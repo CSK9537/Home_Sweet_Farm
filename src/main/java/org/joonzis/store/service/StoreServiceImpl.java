@@ -3,6 +3,7 @@ package org.joonzis.store.service;
 import java.util.List;
 
 import org.joonzis.store.dto.ProductDetailDTO;
+import org.joonzis.store.dto.ProductForAdminListDTO;
 import org.joonzis.store.dto.ProductForListDTO;
 import org.joonzis.store.dto.ProductReviewDTO;
 import org.joonzis.store.mapper.ProductMapper;
@@ -25,28 +26,28 @@ public class StoreServiceImpl implements StoreService{
 	
 	@Override
 	public int addNewProduct(ProductVO vo) {
-		int result = pMapper.insertTest(vo);
+		int result = pMapper.insertProduct(vo);
 		return result;
 	}
 	@Override
 	public ProductVO getProductInfo(int product_id) {
-		ProductVO vo = pMapper.selectOne(product_id);
+		ProductVO vo = pMapper.getProduct(product_id);
 		return vo;
 	}
 	@Override
 	public List<ProductVO> getProductList() {
-		return pMapper.selectList();
+		return pMapper.getProductList();
 	}
 	// 상품 삭제시 연관되어 있는 리뷰들도 모두 삭제
 	@Transactional
 	@Override
 	public int removeProduct(int product_id) {
 		rMapper.deleteProductReviewByProductId(product_id);
-		return pMapper.deleteTest(product_id);
+		return pMapper.deleteProduct(product_id);
 	}
 	@Override
 	public int updateProductInfo(ProductVO vo) {
-		return pMapper.updateTest(vo);
+		return pMapper.updateProduct(vo);
 	}
 	
 	@Override
@@ -76,5 +77,17 @@ public class StoreServiceImpl implements StoreService{
 	@Override
 	public ProductReviewDTO getTopReviewByProductId(int product_id) {
 		return rMapper.getFirstTopReview(product_id);
+	}
+	@Override
+	public List<ProductForAdminListDTO> getAdminList() {
+		return pMapper.getProductAdminList();
+	}
+	@Override
+	public List<ProductForAdminListDTO> getAdminListByCategoryId(int category_id) {
+		return pMapper.getProductAdminListByCategoryId(category_id);
+	}
+	@Override
+	public List<ProductForAdminListDTO> getAdminListByPrice() {
+		return pMapper.getProductAdminListByPrice();
 	}
 }

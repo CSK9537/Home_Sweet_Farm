@@ -4,7 +4,7 @@
 
 <mapper namespace="org.joonzis.store.mapper.ProductMapper">
 
-		<insert id="insertTest">
+		<insert id="insertProduct">
 		INSERT INTO tbl_product
 		VALUES(
 			product_seq.nextval,
@@ -19,16 +19,16 @@
 		)
 	</insert>
 
-	<select id="selectOne" resultType="org.joonzis.store.vo.ProductVO">
+	<select id="getProduct" resultType="org.joonzis.store.vo.ProductVO">
 		SELECT * FROM tbl_product
 		WHERE product_id = #{product_id}
 	</select>
 
-	<select id="selectList" resultType="org.joonzis.store.vo.ProductVO">
+	<select id="getProductList" resultType="org.joonzis.store.vo.ProductVO">
 		SELECT * FROM tbl_product
 	</select>
 
-	<update id="updateTest">
+	<update id="updateProduct">
 		UPDATE tbl_product
 		SET 
 			product_name = #{product_name},
@@ -42,32 +42,60 @@
 		WHERE product_id = #{product_id}
 	</update>
 
-	<delete id="deleteTest">
+	<delete id="deleteProduct">
 		DELETE FROM tbl_product
 		WHERE product_id = #{product_id}
 	</delete>
 	
+	<insert id="insertCategory">
+		INSERT INTO tbl_product_category VALUES(
+			product_category_seq.nextval,
+			#{category_name}
+		)
+	</insert>
+	<select id="selectOneCategory" resultType="org.joonzis.store.vo.ProductCategoryVO">
+		SELECT * FROM tbl_product_category WHERE category_id=#{category_id}
+	</select>
+	<select id="selectListCategory" resultType="org.joonzis.store.vo.ProductCategoryVO">
+		SELECT * FROM tbl_product_category
+	</select>
+	<update id="updateCategory">
+		UPDATE tbl_product_category
+		SET
+			category_name = #{category_name}
+		WHERE
+			category_id = #{category_id}
+	</update>
+	<delete id="deleteCategory">
+		DELETE FROM tbl_product_category
+		WHERE category_id = #{category_id}
+	</delete>
 	<!-- 중복되는 부분은 나중에 정리 -->
+	
+	<sql id="ProductListCommonSelect">
+		SELECT 
+		    p.product_id, p.product_name, p.product_price, 
+		    p.product_delivery_price, p.product_sale,
+		    COUNT(DISTINCT r.product_review_id) AS review_count,
+		    NVL(AVG(r.review_rate), 0) AS product_rate,
+		    MAX(i.saved_name) AS saved_name
+		
+		FROM tbl_product p
+		LEFT JOIN tbl_product_review r ON p.product_id = r.product_id
+		LEFT JOIN tbl_product_image i ON p.product_id = i.product_id AND i.is_thumbnail = 'Y'
+	</sql>
 	
 	<!-- 카테고리를 기준으로 제품들의 정보 가져오기(댓글 평점, 댓글 수, 썸네일 포함) -->
 	<select id="getProductListByCategoryId" resultType="org.joonzis.store.dto.ProductForListDTO">
-		SELECT 
-		    p.product_id, 
-		    p.product_name, 
-		    p.product_price, 
-		    p.product_delivery_price,
-		    p.product_sale,
-		    (SELECT COUNT(*) 
-		     FROM tbl_product_review r 
-		     WHERE r.product_id = p.product_id) AS review_count,
-		    (SELECT NVL(AVG(review_rate), 0) 
-		     FROM tbl_product_review r 
-		     WHERE r.product_id = p.product_id) AS product_rate,
-		    (SELECT saved_name 
-		     FROM tbl_product_image i 
-		     WHERE i.product_id = p.product_id AND i.is_thumbnail = 'Y') AS saved_name
-		FROM tbl_product p
-		WHERE p.category_id = #{category_id}
+		<include refid="ProductListCommonSelect" />
+		<where>
+			<if test="category_id != null">
+				AND p.category_id = #{category_id}
+			</if>
+		</where>
+		GROUP BY 
+		    p.product_id, p.product_name, p.product_price,
+		    p.product_delivery_price, p.product_sale
 	</select>
 	
 	
@@ -118,46 +146,56 @@
 	</select>
 	
 	<select id="getProductListOnSale" resultType="org.joonzis.store.dto.ProductForListDTO">
-		SELECT 
-		    p.product_id, 
-		    p.product_name, 
-		    p.product_price, 
-		    p.product_delivery_price,
-		    p.product_sale,
-		    (SELECT COUNT(*) 
-		     FROM tbl_product_review r 
-		     WHERE r.product_id = p.product_id) as review_count,
-		    (SELECT NVL(AVG(review_rate), 0) 
-		     FROM tbl_product_review r 
-		     WHERE r.product_id = p.product_id) as product_rate,
-		    (SELECT saved_name 
-		     FROM tbl_product_image i 
-		     WHERE i.product_id = p.product_id AND i.is_thumbnail = 'Y') as saved_name
-		FROM tbl_product p
-		WHERE p.product_sale > 0		
+		
+		<include refid="ProductListCommonSelect"/>
+		WHERE p.product_sale > 0
+		
+		GROUP BY 
+		    p.product_id, p.product_name, p.product_price,
+		    p.product_delivery_price, p.product_sale		
 	</select>
 	
 	<select id="getProductListOnHot" resultType="org.joonzis.store.dto.ProductForListDTO">
-		SELECT 
-		    p.product_id, 
-		    p.product_name, 
-		    p.product_price, 
-		    p.product_delivery_price,
-		    p.product_sale,
-		    (SELECT COUNT(*) 
-		     FROM tbl_product_review r 
-		     WHERE r.product_id = p.product_id) AS review_count,
-		    (SELECT NVL(AVG(review_rate), 0) 
-		     FROM tbl_product_review r 
-		     WHERE r.product_id = p.product_id) AS product_rate,
-		    (SELECT saved_name 
-		     FROM tbl_product_image i 
-		     WHERE i.product_id = p.product_id AND i.is_thumbnail = 'Y') AS saved_name
-		FROM tbl_product p
-		ORDER BY review_count DESC
+		<include refid="ProductListCommonSelect"/>		
+		GROUP BY 
+		    p.product_id, p.product_name, p.product_price,
+		    p.product_delivery_price, p.product_sale
+		ORDER BY
+			review_count DESC
 	</select>
 	
-	<select id="getProductAdminList" resultType="org.joonzis.store.dto.ProductForAdminListDTO">
+	
+	<!-- 상품 검색 -->
+	<select id="searchProductList" resultType="org.joonzis.store.dto.ProductForListDTO">
+		<include refid="ProductListCommonSelect"/>
+		<where>
+			<if test="minPrice != null">
+				AND p.product_price &gt;=#{minPrice}
+			</if>
+			<if test="maxPrice != null">
+				AND p.product_price &lt;=#{maxPrice}
+			</if>
+			<if test="minSale != null">
+				AND p.product_sale &gt;=#{minSale}
+			</if>
+			<if test="maxSale != null">
+				AND p.product_sale &lt;=#{maxSale}
+			</if>
+			<if test="categoryId != null and categoryId != 0">
+				AND p.category_id = #{categoryId}
+			</if>
+			<if test="keyword != null and keyword != ''">
+				AND p.product_name LIKE '%'||#{keyword}||'%'
+			</if>
+		</where>
+		GROUP BY 
+		    p.product_id, p.product_name, p.product_price,
+		    p.product_delivery_price, p.product_sale
+	</select>
+	
+	<!-- 관리자의 상품 조회 -->
+	
+	<sql id="AdminListCommonSelect">
 		SELECT 
 		    p.product_id, p.product_name, p.product_price, 
 		    p.product_delivery_price, p.product_sale, p.product_remain, c.category_name,
@@ -171,25 +209,17 @@
 		LEFT JOIN tbl_order_product_list opl ON p.product_id = opl.product_id
 		LEFT JOIN tbl_order o ON opl.order_id = o.order_id
 		LEFT JOIN tbl_product_category c ON p.category_id = c.category_id
+	</sql>
+	
+	<select id="getProductAdminList" resultType="org.joonzis.store.dto.ProductForAdminListDTO">
+		<include refid="AdminListCommonSelect"/>
 		GROUP BY 
 		    p.product_id, p.product_name, p.product_price, c.category_name,
 		    p.product_delivery_price, p.product_sale, p.product_remain
 	</select>
 	
 	<select id="getProductAdminListByCategoryId" resultType="org.joonzis.store.dto.ProductForAdminListDTO">
-		SELECT 
-		    p.product_id, p.product_name, p.product_price, 
-		    p.product_delivery_price, p.product_sale, p.product_remain, c.category_name,
-		    COUNT(DISTINCT r.product_review_id) AS review_count,
-		    NVL(AVG(r.review_rate), 0) AS product_rate,
-		    MAX(i.saved_name) AS saved_name,
-		    COUNT(DISTINCT CASE WHEN o.status = 'DONE' AND o.order_status IN ('CONFIRMED', 'HOLD') THEN opl.order_id END) AS order_count
-		FROM tbl_product p
-		LEFT JOIN tbl_product_review r ON p.product_id = r.product_id
-		LEFT JOIN tbl_product_image i ON p.product_id = i.product_id AND i.is_thumbnail = 'Y'
-		LEFT JOIN tbl_order_product_list opl ON p.product_id = opl.product_id
-		LEFT JOIN tbl_order o ON opl.order_id = o.order_id
-		LEFT JOIN tbl_product_category c ON p.category_id=c.category_id
+		<include refid="AdminListCommonSelect"></include>
 		WHERE p.category_id = #{category_id}
 		GROUP BY 
 		    p.product_id, p.product_name, p.product_price,c.category_name,
@@ -198,24 +228,13 @@
 	</select>
 	
 	<select id="getProductAdminListByPrice" resultType="org.joonzis.store.dto.ProductForAdminListDTO">
-		SELECT 
-		    p.product_id, p.product_name, p.product_price, 
-		    p.product_delivery_price, p.product_sale, p.product_remain, c.category_name,
-		    COUNT(DISTINCT r.product_review_id) AS review_count,
-		    NVL(AVG(r.review_rate), 0) AS product_rate,
-		    MAX(i.saved_name) AS saved_name,
-		    COUNT(DISTINCT CASE WHEN o.status = 'DONE' AND o.order_status IN ('CONFIRMED', 'HOLD') THEN opl.order_id END) AS order_count
-		FROM tbl_product p
-		LEFT JOIN tbl_product_review r ON p.product_id = r.product_id
-		LEFT JOIN tbl_product_image i ON p.product_id = i.product_id AND i.is_thumbnail = 'Y'
-		LEFT JOIN tbl_order_product_list opl ON p.product_id = opl.product_id
-		LEFT JOIN tbl_order o ON opl.order_id = o.order_id
-		LEFT JOIN tbl_product_category c ON p.category_id=c.category_id
+		<include refid="AdminListCommonSelect"/>
 		GROUP BY 
 		    p.product_id, p.product_name, p.product_price,c.category_name,
 		    p.product_delivery_price, p.product_sale, p.product_remain
 		ORDER BY p.product_price DESC
 	</select>
+	
 	
 	
 </mapper>
