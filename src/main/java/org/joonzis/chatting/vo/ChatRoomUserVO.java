@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatRoomUserVO {
-	private int user_id, room_id;
-	private Long last_read_msg;
-	private LocalDateTime joined_at;
-	private char is_active;
+	private int user_id;				// 사용자 식별 번호
+	private int room_id;				// 채팅방 식별 번호
+	private Long last_read_msg_id;			// 마지막을 읽은 메세지 번호
+	private LocalDateTime joined_at;	// 채팅방 참여 시점
+	private char is_active;				// 채팅방 활성화/비활성화
 }
