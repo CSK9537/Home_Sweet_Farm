@@ -2,6 +2,7 @@ package org.joonzis.store.mapper;
 
 import java.util.List;
 
+import org.joonzis.store.dto.ProductReviewDTO;
 import org.joonzis.store.vo.ProductReviewVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,4 +67,24 @@ public class ProductReviewMapperTests {
 //		}
 //	}
 	
+//	@Test
+//	public void getReviewListByProductIdTest() {
+//		int product_id = 2;
+//		List<ProductReviewDTO> list = mapper.getReviewListByProductId(product_id);
+//		if(list.size() > 0) {
+//			log.info("list의 길이가 0보다 긺.");
+//			for (ProductReviewDTO review : list) {
+//				log.info(review);
+//			}
+//		} else {
+//			log.info("list의 길이가 0임");
+//		}
+//	}
+	
+//	@Test
+//	public void getTopReviewTest() {
+//		int product_id = 2;
+//		ProductReviewDTO review = mapper.getFirstTopReview(product_id);
+//		log.info("가져온 데이터 : " + review);
+//	}
 }
