@@ -7,4 +7,9 @@ COMMIT;
 
 SELECT USER_ID, NAME FROM TBL_USER;
 
+INSERT INTO TBL_USER (USER_ID, USERNAME, NAME, EMAIL, PHONE, PASSWORD)
+VALUES (8, 'linwee', 'Çý¸°Å×½ºÆ®', 'test@test.com', '12345678', 'dummyPw');
+COMMIT;
+
+
 
