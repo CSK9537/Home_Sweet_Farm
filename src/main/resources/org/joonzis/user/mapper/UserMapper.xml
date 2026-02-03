@@ -4,11 +4,16 @@
 
 <mapper namespace="org.joonzis.user.mapper.UserMapper">
 	
-	<!-- 데이터 넣기  -->
-	<insert id="insert" parameterType="org.joonzis.user.vo.UserVO">
-		INSERT INTO TBL_USER(USER_ID, NAME)
-		 VALUES
-		 (USER_ID_SEQ.NEXTVAL, #{NAME})
+	<!-- 회원가입  -->
+	<insert id="insert" >
+		INSERT INTO TBL_USER
+			(user_id, username, password, 
+			nickname, name, email, phone,
+			profile_filename, brith_date)
+		VALUES
+			 (USER_ID_SEQ.NEXTVAL, #{username}, #{password},
+			  #{nickname}, #{name}, #{email}, #{phone}, 
+			  #{profile_filename}, #{brith_date} )
 	</insert>
 	
 	<!-- 데이터 조회  -->
@@ -71,17 +76,5 @@
 		FROM TBL_USER
 		WHERE username = #{username}
 	</select>
-	
-	<!-- 회원가입  -->
-	<insert id="insert" >
-		INSERT INTO TBL_USER
-			(user_id, username, password, 
-			nickname, name, email, phone,
-			profile_filename, brith_date)
-		VALUES
-			 (USER_ID_SEQ.NEXTVAL, #{username}, #{password},
-			  #{nickname}, #{name}, #{email}, #{phone}, 
-			  #{profile_filename}, #{brith_date} )
-	</insert>
 
 </mapper>
