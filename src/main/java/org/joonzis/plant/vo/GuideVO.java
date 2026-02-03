@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 public class GuideVO {
 	// 식물 식별번호
 	private int plant_id;
+	// 관리 팁
+	private String guide_caretip;
 	// 강도(인성)
 	private String guide_toughness;
 	// 관리 수준
@@ -41,13 +43,13 @@ public class GuideVO {
 	// 일조량 내용
 	private String guide_sunlight_content;
 	// 이상적 최저 온도
-	private double guide_temperature_imin;
+	private int guide_temperature_imin;
 	// 이상적 최고 온도
-	private double guide_temperature_imax;
+	private int guide_temperature_imax;
 	// 허용 오차 최저 온도
-	private double guide_temperature_tmin;
+	private int guide_temperature_tmin;
 	// 허용 오차 최고 온도
-	private double guide_temperature_tmax;
+	private int guide_temperature_tmax;
 	// 온도 내용
 	private String guide_temperature_content;
 	// 토양 구성

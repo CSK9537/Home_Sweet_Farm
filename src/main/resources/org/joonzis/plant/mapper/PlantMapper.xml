@@ -37,7 +37,8 @@
 			plant_culture_biv,
 			plant_culture_gu,
 			plant_culture_symbolism,
-			plant_culture_if)
+			plant_culture_if
+			)
 		VALUES(
 			PLANT_SEQ.nextval,
 			#{plant_name},
@@ -65,11 +66,12 @@
 			#{plant_dormancy, jdbcType=VARCHAR},
 			#{plant_growthseason, jdbcType=VARCHAR},
 			#{plant_growthrate, jdbcType=VARCHAR},
-			#{plant_culture_epv, jdbcType=VARCHAR},
-			#{plant_culture_ev, jdbcType=VARCHAR},
-			#{plant_culture_biv, jdbcType=VARCHAR},
-			#{plant_culture_gu, jdbcType=VARCHAR},
-			#{plant_culture_symbolism, jdbcType=VARCHAR},
-			#{plant_culture_if, jdbcType=VARCHAR})
+			#{plant_culture_epv, jdbcType=CLOB},
+			#{plant_culture_ev, jdbcType=CLOB},
+			#{plant_culture_biv, jdbcType=CLOB},
+			#{plant_culture_gu, jdbcType=CLOB},
+			#{plant_culture_symbolism, jdbcType=CLOB},
+			#{plant_culture_if, jdbcType=CLOB}
+			)
 	</insert>
 </mapper>
