@@ -7,18 +7,17 @@ import javax.servlet.http.HttpSession;
 
 import org.joonzis.chatting.service.ChatService;
 import org.joonzis.chatting.vo.MsgVO;
+import org.joonzis.chatting.vo.RoomVO;
+import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.sun.security.auth.UserPrincipal;
 
 @RestController
 @RequestMapping("/chat")
@@ -28,44 +27,41 @@ public class ChatController {
     private ChatService chatService;
 
     /**
-     * 메세지 전송 (텍스트 / 파일)
+     * 메세지 전송 (텍스트만)
      */
-    @PostMapping("/rooms/{roomId}/messages")
-    public ResponseEntity<Void> sendMessage(
-            @PathVariable int roomId,
-            @RequestParam(required = false) String content,
-            @RequestParam(required = false) MultipartFile file,
+    @PostMapping("/messages")
+    public ResponseEntity<Void> send_message(
+            @RequestParam int receiver_id,
+            @RequestParam String content,
             HttpSession session
     ) {
-        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-        int userId = loginUser.getUser_id();
+        UserVO login_user = (UserVO) session.getAttribute("loginUser");
+        int sender_id = login_user.getUser_id();
 
-        chatService.sendMessage(roomId, userId, content, file);
+        MsgVO msgVO = new MsgVO();
+        msgVO.setSender_id(sender_id);
+        msgVO.setContent(content);
+        msgVO.setMsg_type("TEXT");
+
+        chatService.sendMessage(sender_id, receiver_id, msgVO);
         return ResponseEntity.ok().build();
     }
 
     /**
      * 채팅방 메세지 조회
-     * - afterMsgId 없으면: 최초 입장
-     * - afterMsgId 있으면: 이후 메세지 조회
+     * - 최초 입장: 전체 조회
+     * - after_msg_id 기준 조회
      */
-    @GetMapping("/rooms/{roomId}/messages")
+    @GetMapping("/rooms/{room_id}/messages")
     public ResponseEntity<List<MsgVO>> getMessages(
-            @PathVariable int roomId,
-            @RequestParam(required = false) Long afterMsgId,
+            @PathVariable int room_id,
             HttpSession session
     ) {
-        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-        int userId = loginUser.getUser_id();
-
-        if (afterMsgId == null) {
-            return ResponseEntity.ok(
-                chatService.getMessages(roomId, userId)
-            );
-        }
+        UserVO login_user = (UserVO) session.getAttribute("loginUser");
+        int user_id = login_user.getUser_id();
 
         return ResponseEntity.ok(
-            chatService.getMessages(roomId, userId, afterMsgId)
+            chatService.getMessages(user_id, room_id)
         );
     }
 
@@ -73,45 +69,46 @@ public class ChatController {
      * 채팅방 목록 조회
      */
     @GetMapping("/rooms")
-    public ResponseEntity<List<Map<String, Object>>> getUserRooms(
-            HttpSession session
-    ) {
+    public ResponseEntity<List<RoomVO>> getUserRooms(HttpSession session) {
         UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-        int userId = loginUser.getUser_id();
+        int user_id = loginUser.getUser_id();
 
         return ResponseEntity.ok(
-            chatService.getUserRooms(userId)
+            chatService.getUserRooms(user_id)
         );
     }
 
+
     /**
      * 메세지 읽음 처리
+     * (해당 채팅방의 마지막 메세지까지 읽음)
      */
-    @PostMapping("/rooms/{roomId}/read")
+    @PostMapping("/rooms/{room_id}/read")
     public ResponseEntity<Void> readMessage(
-            @PathVariable int roomId,
+            @PathVariable int room_id,
             HttpSession session
     ) {
-        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-        int userId = loginUser.getUser_id();
+        UserVO login_user = (UserVO) session.getAttribute("loginUser");
+        int user_id = login_user.getUser_id();
 
-        chatService.readMessage(userId, roomId);
+        chatService.readMessage(user_id, room_id);
         return ResponseEntity.ok().build();
     }
 
     /**
-     * 채팅방 생성 (없으면 생성, 있으면 반환)
+     * 채팅방 생성 (없으면 생성)
      */
     @PostMapping("/rooms")
     public ResponseEntity<Integer> createRoom(
-            @RequestParam int targetUserId,
+            @RequestParam int target_user_id,
             HttpSession session
     ) {
-        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-        int userId = loginUser.getUser_id();
+        UserVO login_user = (UserVO) session.getAttribute("loginUser");
+        int user_id = login_user.getUser_id();
 
-        int roomId = chatService.createRoom(userId, targetUserId);
-        return ResponseEntity.ok(roomId);
+        int room_id = chatService.createRoom(user_id, target_user_id);
+        return ResponseEntity.ok(room_id);
     }
 }
+
 
