@@ -42,6 +42,10 @@
 	<context:annotation-config></context:annotation-config>
 	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
 	
+	<!-- chatting -->
+	<mybatis-spring:scan base-package="org.joonzis.chatting.mapper"/>
+	<context:component-scan base-package="org.joonzis.chatting.service" />
+	
 	<!-- store -->
 	<mybatis-spring:scan base-package="org.joonzis.store.mapper"/>
 	<context:component-scan base-package="org.joonzis.store.service"></context:component-scan>
