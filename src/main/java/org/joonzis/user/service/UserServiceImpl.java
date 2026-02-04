@@ -16,11 +16,31 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void insert(UserVO vo) {
 		
+		//1)비밀번호 확인
+		if(vo.getPassword() == null || 
+				!vo.getPassword().equals(vo.getConfirmPassword())) {
+			throw new IllegalArgumentException("비밀번호 확인이 일치하지 않습니다.");
+		}
+		
+		
+		//2)아이디 중복 체크(예시)
 		if(isIdDuplicate(vo.getUsername())) {
 			throw new IllegalStateException("이미 존재하는 아이디입니다");
 		}
-		usermapper.insert(vo);
-	}
+		
+		//3)마케팅 정보 수신 동의 처리
+		//confirm_event: 0(미동의), 1(동의)
+		vo.setConfirm_event(vo.getConfirm_event() == 1? 1 : 0);
+		
+		
+		//4)DB insert
+		int result = usermapper.insert(vo);
+		if(result != 1) {
+			throw new IllegalStateException("회원가입 실패");
+		}
+	}		
+		
+
 
 	@Override
 	public UserVO selectLogin(int user_id) {
