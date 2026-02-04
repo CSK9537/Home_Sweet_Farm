@@ -77,6 +77,20 @@
 		WHERE username = #{username}
 	</select>
 	
+	<!-- 이메일 중복 체크: 본인인증(이메일)을 위해 미리 만들어둠 -->
+	<select id="countByEmail" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_USER
+		WHERE email = #{email}
+	</select>
+	
+	<!-- 전화번호 중복 체크: 본인인증(전화번호)을 위해 미리 만들어둠  -->
+	<select id="countByPhone" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_USER
+		WHERE phone = #{phone}
+	</select>
+	
 	<!-- 마케팅수신동의 테스트용 조회 -->
 	<select id="selectByUsername" parameterType="String" resultType="org.joonzis.user.vo.UserVO">
 		SELECT username, confirm_event 
