@@ -1,6 +1,7 @@
 package org.joonzis.user.mapper;
 
 import org.apache.ibatis.annotations.Param;
+import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
 
 public interface UserMapper {
@@ -40,5 +41,16 @@ public interface UserMapper {
 	
 	//마케팅수신동의 테스트용 조회
 	public UserVO selectByUsername(String username);
+	
+	
+	//공개형 프로필
+	//1) 닉네임, 프로필, intro, gradeId
+	public UserDTO selectPublicProfile(int userId);
+	
+	//2) 전체 답변수
+	public int getReplyCnt(int user_id);
+	
+	//3)조회수
+	public int getViewCnt(int user_id);
 	
 }

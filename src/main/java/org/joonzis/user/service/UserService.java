@@ -1,6 +1,7 @@
 package org.joonzis.user.service;
 
 import org.apache.ibatis.annotations.Param;
+import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
 
 public interface UserService {
@@ -29,5 +30,8 @@ public interface UserService {
 	
 	public int countByUsername(String username);
 	
+	//공개형 프로필
+	//1) 닉네임, 프로필, intro, gradeId
+	public UserDTO selectPublicProfile(int userId);
 	
 }
