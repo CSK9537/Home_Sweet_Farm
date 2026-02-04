@@ -173,4 +173,69 @@ public class WishListAndShoppingCartMapperTests {
 //			log.info("리스트의 길이가 0임");
 //		}
 //	}
+
+//	@Test
+//	public void upsertCartTest() {
+//		ShoppingCartVO vo = new ShoppingCartVO();
+//		vo.setUser_id(2);
+//		vo.setProduct_id(2);
+//		log.info("upsert 결과 : " + mapper.upsertShoppingCart(vo));
+//		
+//	}
+	
+//	@Test
+//	public void getWishListTest() {
+//		int param = 2;
+//		String product = "product";
+//		String user = "user";
+//		
+//		List<WishListDTO> list = mapper.getWishList(param, product);
+//		log.info("파라미터 값 : " + param);
+//		log.info("조회 타입 : " + product);
+//		if(list.size() > 0) {
+//			for (WishListDTO wishListDTO : list) {
+//				log.info(wishListDTO);
+//			}
+//		} else {
+//			log.info("리스트의 길이가 0임");
+//		}
+//		
+//		list = mapper.getWishList(param, user);
+//		log.info("조회 타입 : " + user);
+//		if(list.size() > 0) {
+//			for (WishListDTO wishListDTO : list) {
+//				log.info(wishListDTO);
+//			}
+//		} else {
+//			log.info("리스트의 길이가 0임");
+//		}
+//	}
+	
+//	@Test
+//	public void getShoppingCartTest() {
+//		int param = 2;
+//		String product = "product";
+//		String user = "user";
+//		
+//		List<ShoppingCartDTO> list = mapper.getShoppingCart(param, product);
+//		log.info("파라미터 값 : " + param);
+//		log.info("조회 타입 : " + product);
+//		if(list.size() > 0) {
+//			for (ShoppingCartDTO dto : list) {
+//				log.info(dto);
+//			}
+//		} else {
+//			log.info("리스트의 길이가 0임");
+//		}
+//		
+//		list = mapper.getShoppingCart(param, user);
+//		log.info("조회 타입 : " + user);
+//		if(list.size() > 0) {
+//			for (ShoppingCartDTO dto : list) {
+//				log.info(dto);
+//			}
+//		} else {
+//			log.info("리스트의 길이가 0임");
+//		}
+//	}
 }
