@@ -6,7 +6,7 @@ import org.joonzis.user.vo.UserVO;
 public interface UserMapper {
 	
 	//데이터 넣기
-	public void insert(UserVO vo);
+	public int insert(UserVO vo);
 	//데이터 조회
 	public  UserVO selectLogin(int user_id);
 	//데이터 삭제

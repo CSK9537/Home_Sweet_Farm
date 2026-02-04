@@ -27,8 +27,9 @@ public class UserMapperTests {
 //		vo.setPhone(24681618);
 //		vo.setProfile_filename("nini file");
 //		vo.setBrith_date(java.sql.Date.valueOf("1997-11-23"));
-//		usermapper.insert(vo);
+//		int result = usermapper.insert(vo);
 //	}
+	
 //	@Test
 //	public void testSelectLogin() {
 //		int USER_ID = 25;
