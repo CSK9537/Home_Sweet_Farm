@@ -1,5 +1,6 @@
 package org.joonzis.user.service;
 
+import org.joonzis.user.mapper.UserMapper;
 import org.joonzis.user.vo.UserVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,9 @@ import lombok.extern.log4j.Log4j;
 public class UserServiceTests {
 	@Autowired
 	private UserService uservice;
+	
+	@Autowired
+	private UserMapper usermapper;
 	
 //	@Test
 //	public void testInsert() {
@@ -73,6 +77,34 @@ public class UserServiceTests {
 //		uservice.isIdDuplicate(username);
 //		assertTrue(dup);	
 //	}
-
+//	@Test
+//	public void testConfirmEvent() {
+//		UserVO vo = new UserVO();
+//		String uname = "jinny_"+
+//		System.currentTimeMillis();
+//		
+//		vo.setUsername(uname);
+//		vo.setPassword("ni3333");
+//		
+//		vo.setConfirmPassword("ni3333");//비밀번호 확인
+//		
+//		vo.setNickname("nini");
+//		vo.setName("jinny");
+//		vo.setEmail("nini@email.com");
+//		vo.setPhone(24681618);
+//		vo.setProfile_filename("nini file");
+//		vo.setBrith_date(java.sql.Date.valueOf("1997-11-23"));
+//		vo.setConfirm_event(1); //마케팅 수신 동의
+//		
+//		//1)서비스 insert
+//		uservice.insert(vo);
+//		
+//		//2)mapper로 다시 조회
+//		UserVO saved =
+//			usermapper.selectByUsername(uname);
+//		
+//		//3)출력해서 확인
+//		System.out.println("confirm_event="+saved.getConfirm_event());
+//	}
 
 }

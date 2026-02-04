@@ -32,5 +32,7 @@ public interface UserMapper {
 	//아이디 중복 체크
 	public int countByUsername(@Param("username")String username);
 	
+	//마케팅수신동의 테스트용 조회
+	public UserVO selectByUsername(String username);
 	
 }

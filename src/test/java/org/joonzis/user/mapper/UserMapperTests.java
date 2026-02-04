@@ -70,6 +70,25 @@ public class UserMapperTests {
 //		String USERNAME = "linwee";
 //		usermapper.countByUsername(USERNAME);
 //	}
-
+	
+//	@Test
+//	public void testConfirmEvent() {
+//		UserVO vo = new UserVO();
+//		vo.setUsername("jinny_"+
+//		System.currentTimeMillis());
+//		vo.setPassword("ni3333");
+//		vo.setNickname("nini");
+//		vo.setName("jinny");
+//		vo.setEmail("nini@email.com");
+//		vo.setPhone(24681618);
+//		vo.setProfile_filename("nini file");
+//		vo.setBrith_date(java.sql.Date.valueOf("1997-11-23"));
+//		vo.setConfirm_event(1);
+//		
+//		usermapper.insert(vo);
+//		UserVO saved =
+//		usermapper.selectByUsername(vo.getUsername());
+//			System.out.println(saved);
+//	}
 
 }

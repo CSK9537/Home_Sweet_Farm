@@ -9,11 +9,11 @@
 		INSERT INTO TBL_USER
 			(user_id, username, password, 
 			nickname, name, email, phone,
-			profile_filename, brith_date)
+			profile_filename, brith_date, confirm_event)
 		VALUES
 			 (USER_ID_SEQ.NEXTVAL, #{username}, #{password},
 			  #{nickname}, #{name}, #{email}, #{phone}, 
-			  #{profile_filename}, #{brith_date} )
+			  #{profile_filename}, #{brith_date}, #{confirm_event})
 	</insert>
 	
 	<!-- 데이터 조회  -->
@@ -76,5 +76,11 @@
 		FROM TBL_USER
 		WHERE username = #{username}
 	</select>
-
+	
+	<!-- 마케팅수신동의 테스트용 조회 -->
+	<select id="selectByUsername" parameterType="String" resultType="org.joonzis.user.vo.UserVO">
+		SELECT username, confirm_event 
+		FROM TBL_USER
+		WHERE username = #{username}
+	</select>
 </mapper>
