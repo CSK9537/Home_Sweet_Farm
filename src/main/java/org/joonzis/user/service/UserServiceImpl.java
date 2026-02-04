@@ -27,11 +27,20 @@ public class UserServiceImpl implements UserService{
 		if(isIdDuplicate(vo.getUsername())) {
 			throw new IllegalStateException("이미 존재하는 아이디입니다");
 		}
+		
+		//3)마케팅 정보 수신 동의 처리
+		//confirm_event: 0(미동의), 1(동의)
+		vo.setConfirm_event(vo.getConfirm_event() == 1? 1 : 0);
+		
+		
+		//4)DB insert
 		int result = usermapper.insert(vo);
-		if(result != 1) throw new IllegalStateException("회원가입 실패");
+		if(result != 1) {
+			throw new IllegalStateException("회원가입 실패");
+		}
+	}		
 		
-		
-	}
+
 
 	@Override
 	public UserVO selectLogin(int user_id) {
