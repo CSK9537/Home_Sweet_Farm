@@ -5,7 +5,7 @@
 <mapper namespace="org.joonzis.user.mapper.UserMapper">
 	
 	<!-- 회원가입  -->
-	<insert id="insert" >
+	<insert id="insert" parameterType="org.joonzis.user.vo.UserVO">
 		INSERT INTO TBL_USER
 			(user_id, username, password, 
 			nickname, name, email, phone,

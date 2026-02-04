@@ -18,15 +18,17 @@ public class UserServiceTests {
 	
 //	@Test
 //	public void testInsert() {
+//		//id가 중복 시 ('이미 존재하는 아이디입니다')
 //		UserVO vo = new UserVO();
-//		vo.setUsername("nariri12");
-//		vo.setPassword("riri3333");
-//		vo.setNickname("riri");
-//		vo.setName("nariri");
-//		vo.setEmail("riri@email.com");
+//		vo.setUsername("haribo12");
+//		vo.setPassword("ribo3333");
+//		vo.setConfirmPassword("ribo3333");//비밀번호 확인(없을 시 '비밀번호 확인이 일치하지 않습니다')
+//		vo.setNickname("ribo");
+//		vo.setName("haribo");
+//		vo.setEmail("ribo@email.com");
 //		vo.setPhone(13572468);
-//		vo.setProfile_filename("riri file");
-//		vo.setBrith_date(java.sql.Date.valueOf("2000-01-29"));
+//		vo.setProfile_filename("haribo file");
+//		vo.setBrith_date(java.sql.Date.valueOf("1998-08-20"));
 //		uservice.insert(vo);
 //	}
 //	@Test
