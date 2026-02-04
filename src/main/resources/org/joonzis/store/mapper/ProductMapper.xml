@@ -4,7 +4,7 @@
 
 <mapper namespace="org.joonzis.store.mapper.ProductMapper">
 
-		<insert id="insertProduct">
+	<insert id="insertProduct">
 		INSERT INTO tbl_product
 		VALUES(
 			product_seq.nextval,
