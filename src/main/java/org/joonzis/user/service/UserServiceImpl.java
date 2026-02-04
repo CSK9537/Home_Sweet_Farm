@@ -1,5 +1,6 @@
 package org.joonzis.user.service;
 
+import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.mapper.UserMapper;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,14 @@ public class UserServiceImpl implements UserService{
 	public int countByUsername(String username) {
 		return usermapper.countByUsername(username);
 	}
-	
+	@Override
+	public UserDTO selectPublicProfile(int userId) {
+		UserDTO dto =
+		usermapper.selectPublicProfile(userId);
+		
+		
+		
+		return null;
+	}
 
 }
