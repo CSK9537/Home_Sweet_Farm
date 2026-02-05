@@ -44,7 +44,7 @@ public interface UserMapper {
 	
 	
 	//공개형 프로필
-	//1) 닉네임, 프로필, intro, gradeId
+	//1) 닉네임, 프로필, 회원등급
 	public UserDTO selectPublicProfile(int user_id);
 	
 	//2) 전체 답변수
