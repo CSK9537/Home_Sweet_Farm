@@ -4,9 +4,10 @@ import lombok.Data;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.joonzis.store.vo.OrderCardVO;
-import org.joonzis.store.vo.OrderTransferVO;
+import org.joonzis.store.vo.OrderTransperVO;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -20,13 +21,10 @@ public class OrderDTO {
 	private String type;		// 결제 타입
 	private String method;		// 결제 방법
 	
-	private OrderCardVO card_info;
-	private OrderTransferVO transfer_info;
+	private OrderCardDTO card_info;
+	private OrderTransperDTO transper_info;
 	
-	private List<ProductForListDTO> product_list;
-	
-	private String issuercode;
-	private String issuer_name;
+	private List<OrderProductListDTO> product_list;
 	
 	private int user_id;
 	private String nickname;

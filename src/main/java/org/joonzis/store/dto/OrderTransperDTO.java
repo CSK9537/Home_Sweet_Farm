@@ -1,4 +1,4 @@
-package org.joonzis.store.vo;
+package org.joonzis.store.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OrderTransferVO {
-	private String order_id;
+public class OrderTransperDTO {
 	private String bankcode;
+	private String bank_name;
 	private String settlementstatus;
 }
