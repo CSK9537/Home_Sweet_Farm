@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OrderTransperVO {
+public class OrderTransperVO extends PaymentInfoVO{
 	private String order_id;
 	private String bankcode;
 	private String settlementstatus;
