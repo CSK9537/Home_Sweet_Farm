@@ -8,7 +8,9 @@
 		INSERT INTO tbl_plant(
 			plant_id,
 			plant_name,
-			plant_name_eng,
+			plant_name_kor,
+			plant_description,
+			plant_species,
 			plant_genus,
 			plant_family,
 			plant_order,
@@ -42,7 +44,9 @@
 		VALUES(
 			PLANT_SEQ.nextval,
 			#{plant_name},
-			#{plant_name_eng},
+			#{plant_name_kor},
+			#{plant_description, jdbcType=CLOB},
+			#{plant_species, jdbcType=VARCHAR},
 			#{plant_genus, jdbcType=VARCHAR},
 			#{plant_family, jdbcType=VARCHAR},
 			#{plant_order, jdbcType=VARCHAR},
