@@ -23,35 +23,27 @@ import lombok.extern.log4j.Log4j;
 @RequestMapping("store/*")
 public class StoreController {
 	@Autowired
-	StoreService Sservice;
+	StoreService sService;
 	
 	// 메인화면
 	@GetMapping("/main")
 	public String main(Model model) {
-		model.addAttribute("hotList",Sservice.getListOnHot());
-		model.addAttribute("saleList", Sservice.getListOnSale());
+		model.addAttribute("hotList",sService.getListOnHot());
+		model.addAttribute("saleList", sService.getListOnSale());
 		return "/store/main";
 	}
 	
 	@GetMapping("/list")
 	public String productListByCategory(@RequestParam("category_id") int category_id, Model model) {
-		model.addAttribute("list", Sservice.getListByCategoryId(category_id));
+		model.addAttribute("list", sService.getListByCategoryId(category_id));
 		return "/store/list";
 	}
 	
 	// 상세 보기
 	@GetMapping("/get")
 	public String productInfo(@RequestParam("product_id") int product_id ,Model model) {
-		model.addAttribute("product", Sservice.getProductDetail(product_id));
-		model.addAttribute("topReview", Sservice.getTopReviewByProductId(product_id));
+		model.addAttribute("product", sService.getProductDetail(product_id));
+		model.addAttribute("topReview", sService.getTopReviewByProductId(product_id));
 		return "/store/get";
-	}
-	// 댓글 전체 보기(REST)
-	@GetMapping(
-			value="/get/{product_id}/reviewList",
-			produces=MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ProductReviewDTO>> ReviewList(@PathVariable int product_id){
-		List<ProductReviewDTO> list = Sservice.getReviewListByProductId(product_id);
-		return new ResponseEntity<List<ProductReviewDTO>>(list, HttpStatus.OK);
 	}
 }
