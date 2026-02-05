@@ -23,7 +23,7 @@
         <c:when test="${empty myPlants}">
           <!-- Empty State -->
           <div class="myplants-empty">
-            <p class="myplants-empty__title">아직 반려식물이 없으신가요?</p>
+            <p class="myplants-empty__title">아직 반려식물이 없으신가요?a</p>
             <p class="myplants-empty__desc">추천 받으시고 키워보세요.</p>
 
             <a class="mp-btn mp-btn--ghost"
