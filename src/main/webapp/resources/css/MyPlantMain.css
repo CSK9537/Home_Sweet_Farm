@@ -1,281 +1,358 @@
 :root{
   --brand:#6b7b61;
   --paper:#f4f2ed;
-  --white:#ffffff;
+  --white:#fff;
   --text:#2a2a2a;
   --muted:rgba(42,42,42,.7);
   --radius:14px;
 }
 
-/* page 콘텐츠 영역(카드 내부) */
-.myplants{
-  width: 100%;
-  gap: 20px;
-}
+/* 공통 */
+.myplants{ width:100%; gap:20px; }
+.content-card.myplants{ align-items:stretch; }
 
-.content-card.myplants{
-  align-items: stretch;
-}
-
-/* 상단 바(타이틀 + 버튼) */
+/* Header */
 .myplants__header{
-  width:100%;
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  padding: 10px 0 18px;
-  border-bottom: 5px solid var(--brand);
+  align-items:center;
+  padding:10px 0 18px;
+  border-bottom:5px solid var(--brand);
 }
-
 .myplants__title{
   margin:0;
   font-size:20px;
   font-weight:700;
-  color: var(--brand);
+  color:var(--brand);
 }
 
-/* 버튼 */
+/* Button */
 .mp-btn{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  padding: 10px 14px;
-  border-radius: 10px;
-  text-decoration:none;
+  padding:10px 14px;
   font-size:14px;
   font-weight:700;
-  border: 2px solid transparent;
+  border-radius:10px;
+  border:2px solid transparent;
+  text-decoration:none;
   cursor:pointer;
   white-space:nowrap;
+  transition:all .2s ease;
 }
-
-.mp-btn--primary{
-  background: var(--brand);
-  color: var(--paper);
+.mp-btn--primary{ background:var(--brand); color:var(--paper); }
+.mp-btn--ghost{ background:transparent; color:var(--brand); border-color:var(--brand); }
+.mp-btn--ghost:hover{
+  background:var(--brand);
+  color:var(--paper);
+  transform:translateY(-2px);
+  box-shadow:0 6px 16px rgba(0,0,0,.12);
 }
-
-.mp-btn--ghost{
-  background: transparent;
-  color: var(--brand);
-  border-color: var(--brand);
-}
-
+/* 상세보기 버튼: 추가 버튼과 각도 통일(10px) */
 .mp-btn--block{
-  width:100%;
-  max-width: 240px;
+  padding:14px 28px;
+  border-radius:10px;
 }
 
-/* =========================
-   Empty State (식물 없음)
-========================= */
+/* Empty */
 .myplants-empty{
-  width:100%;
-  min-height: 360px;
+  min-height:360px;
   display:flex;
   flex-direction:column;
-  align-items:center;
   justify-content:center;
+  align-items:center;
+  gap:10px;
   text-align:center;
-  gap: 10px;
 }
-
-.myplants-empty__title{
-  margin:0;
-  color: var(--muted);
-  font-size:14px;
-}
-
+.myplants-empty__title,
 .myplants-empty__desc{
-  margin:0 0 8px;
-  color: var(--muted);
+  margin:0;
   font-size:14px;
+  color:var(--muted);
 }
 
-/* =========================
-   List State (식물 있음)
-========================= */
+/* List */
 .myplants-list{
-  width:100%;
-  list-style:none;
+  margin:18px 0 0;
   padding:0;
-  margin: 18px 0 0;
+  list-style:none;
   display:flex;
   flex-direction:column;
-  gap: 16px;
+  gap:16px;
 }
 
+/* Card */
 .plant-item{
-  width:100%;
-  background: var(--white);
-  border-radius: 18px;
-  padding: 18px;
-
   display:grid;
-  grid-template-columns: 220px 1fr 260px;
-  gap: 20px;
+  grid-template-columns:190px 220px 1fr minmax(0,300px);
+  column-gap:28px;
   align-items:center;
+  padding:20px 24px;
+  background:var(--white);
+  border-radius:18px;
+  overflow:hidden;
 }
 
-/* 썸네일 크게 */
+/* Thumb */
 .plant-item__thumb{
-  width:220px;
-  height:220px;
-  border-radius: 16px;
+  width:180px;
+  height:180px;
+  border-radius:18px;
   overflow:hidden;
-  background:#e9e9e9;
   display:flex;
   align-items:center;
   justify-content:center;
 }
+.plant-item__thumb img{ width:100%; height:100%; object-fit:cover; }
+.plant-item__thumb-placeholder{ font-weight:700; color:rgba(0,0,0,.35); }
 
-.plant-item__thumb img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.plant-item__thumb-placeholder{
-  color: rgba(0,0,0,.35);
-  font-weight:700;
-}
-
-/* 중앙 영역 */
+/* Info */
 .plant-item__info{
   display:flex;
   flex-direction:column;
-  gap: 14px;
-  color: var(--brand);
+  gap:18px;
+  color:var(--brand);
 }
+.plant-item__names{ display:flex; flex-direction:column; gap:6px; }
+.plant-item__korean{ font-size:16px; font-weight:600; }
+.plant-item__latin{ font-size:11px; font-style:italic; opacity:.75; }
+/* 닉네임: 식물 이름(16px)과 동일 */
+.plant-item__nickname{ font-size:16px; opacity:.9; }
 
-.plant-item__korean{
-  font-size:16px;
-}
-
-.plant-item__latin{
-  font-size:11px;
-  font-style:italic;
-  opacity:.8;
-  margin-top:4px;
-}
-
-.plant-item__nickname{
-  font-size:14px;
-  opacity:.9;
-}
-
+/* Status: 카드 높이를 따라 늘리고 중앙 정렬 */
 .plant-item__status{
-  color: var(--brand);
-  justify-self: start;
+  color:var(--brand);
+  align-self:stretch;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
 }
-
-.plant-item__status-title{
-  font-size:14px;
-  margin-bottom:10px;
-  opacity:.9;
-}
+.plant-item__status-title{ font-size:14px; margin-bottom:12px; }
 
 .status-grid{
   display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px 16px;
-  max-width: 320px;
+  grid-template-columns:1fr 1fr;
+  gap:14px 34px;
 }
-
-.status{
+.status{ display:flex; align-items:center; gap:10px; }
+.status__icon{
+  width:40px;
+  height:40px;
+  border-radius:999px;
+  background:rgba(107,123,97,.12);
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  gap: 10px;
-  font-size:13px;
+  justify-content:center;
 }
-
-.status__label{
-  opacity:.8;
-}
-
-.status__value{
-  font-weight:700;
-}
-
+.status__icon img{ width:26px; height:26px; object-fit:contain; }
+.status__value{ font-weight:700; font-size:14px; white-space:nowrap; }
 .status__value--good{ color:#00aa00; }
 .status__value--warn{ color:#ffae00; }
-.status__value--bad{  color:#ff0000; }
+.status__value--bad{ color:#ff0000; }
 
+/* Actions */
 .plant-item__actions{
   display:flex;
   flex-direction:column;
   align-items:flex-end;
-  justify-content:center;
-  gap: 12px;
+  gap:24px;
 }
-
+/* 등록일: 식물 이름(16px)과 동일 */
 .plant-item__since{
-  font-size:13px;
-  color: var(--brand);
+  font-size:16px;
+  color:var(--brand);
   opacity:.9;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-/* =========================
-   반응형
-========================= */
-
-/* Tablet */
-@media (max-width: 1024px){
+/* Responsive */
+@media (max-width:1024px){
   .plant-item{
-    grid-template-columns: 180px 1fr;
+    grid-template-columns:160px 1fr minmax(0,240px);
     grid-template-areas:
-      "thumb actions"
-      "info  info"
-      "status status";
-    gap: 16px;
-    align-items: start;
+      "thumb info actions"
+      "thumb status actions";
+    row-gap:18px;
+    align-items:start;
   }
-
-  .plant-item__thumb{
-    width:180px;
-    height:180px;
-    grid-area: thumb;
-  }
-
-  .plant-item__actions{
-    grid-area: actions;
-    align-items: stretch;
-  }
-
-  .plant-item__info{ grid-area: info; }
-  .plant-item__status{ grid-area: status; }
-
-  .mp-btn--block{
-    max-width: none;
-  }
+  .plant-item__thumb{ width:160px; height:160px; grid-area:thumb; }
+  .plant-item__info{ grid-area:info; }
+  .plant-item__status{ grid-area:status; }
+  .plant-item__actions{ grid-area:actions; align-items:stretch; }
+  .mp-btn--block{ width:100%; }
 }
 
-/* Mobile */
-@media (max-width: 767px){
-  .myplants__header{
-    padding-bottom: 14px;
-  }
-
+@media (max-width:767px){
   .plant-item{
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "thumb"
-      "info"
-      "status"
-      "actions";
-    padding: 16px;
+    grid-template-columns:1fr;
+    grid-template-areas:"thumb" "info" "status" "actions";
+    padding:16px;
+    row-gap:16px;
   }
+  .plant-item__thumb{ width:100%; height:220px; }
+  .plant-item__actions,
+  .mp-btn--block{ width:100%; align-items:stretch; }
+  .status-grid{ gap:12px 18px; }
+}
 
-  .plant-item__thumb{
-    width:100%;
-    height: 220px;
-  }
+/* 나의 식물 추가 모달 */
+.mpm-modal{
+  position:fixed;
+  inset:0;
+  display:none;
+  z-index:9999;
+}
 
-  .plant-item__actions{
-    align-items:stretch;
-  }
+.mpm-modal.is-open{ display:block; }
 
-  .mp-btn--block{
-    max-width:none;
-  }
+.mpm-modal__backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.35);
+}
+
+.mpm-modal__dialog{
+  position:relative;
+  width:min(720px, calc(100% - 40px));
+  margin:40px auto;
+  background:var(--paper);
+  border-radius:18px;
+  box-shadow:0 18px 50px rgba(0,0,0,.25);
+  padding:26px 28px 22px;
+}
+
+.mpm-modal__header{ margin-bottom:10px; }
+.mpm-modal__title{
+  margin:0;
+  font-size:28px;
+  font-weight:500;
+  color:var(--brand);
+}
+
+/* 검색창(헤더 느낌: pill + brand 라인, 크기만 줄임) */
+.mpm-modal__search{
+  position:relative;
+  margin-top:10px;
+}
+.mpm-modal__search-input{
+  width:100%;
+  height:34px;
+  border-radius:999px;
+  border:2px solid var(--brand);
+  background:#fff;
+  padding:0 14px 0 34px;
+  outline:none;
+  font-size:13px;
+  color:var(--text);
+}
+.mpm-modal__search-input::placeholder{ color:rgba(42,42,42,.55); }
+.mpm-modal__search-icon{
+  position:absolute;
+  left:12px;
+  top:50%;
+  transform:translateY(-50%);
+  color:rgba(42,42,42,.6);
+  font-size:14px;
+}
+
+.mpm-modal__divider{
+  margin:16px 0 10px;
+  height:1px;
+  background:rgba(107,123,97,.45);
+}
+
+/* 리스트 */
+.mpm-list{
+  list-style:none;
+  padding:0;
+  margin:0;
+  background:transparent;
+}
+
+.mpm-item{
+  border-top:1px solid rgba(107,123,97,.45);
+}
+.mpm-item:last-child{
+  border-bottom:1px solid rgba(107,123,97,.45);
+}
+
+.mpm-item__row{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  padding:14px 6px;
+  cursor:pointer;
+}
+
+.mpm-item__radio{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+
+.mpm-item__thumb{
+  width:62px;
+  height:62px;
+  border-radius:12px;
+  overflow:hidden;
+  background:#fff;
+  flex:0 0 auto;
+}
+.mpm-item__thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.mpm-item__text{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  color:var(--brand);
+}
+.mpm-item__korean{
+  font-size:18px;
+  font-weight:500;
+}
+.mpm-item__latin{
+  font-size:12px;
+  font-style:italic;
+  opacity:.75;
+}
+
+.mpm-item__row:hover{
+  background:rgba(107,123,97,.06);
+  border-radius:14px;
+}
+
+/* 선택 강조 */
+.mpm-item__row:has(.mpm-item__radio:checked){
+  background:rgba(107,123,97,.10);
+  border-radius:14px;
+}
+
+/* 하단 버튼 */
+.mpm-modal__footer{
+  display:flex;
+  justify-content:flex-end;
+  gap:14px;
+  margin-top:18px;
+}
+
+/* 취소 버튼도 동일 톤(초록 계열)로 */
+.mpm-btn--secondary{
+  background:rgba(107,123,97,.85);
+  color:var(--paper);
+}
+
+/* 추가 버튼 disabled 처리 */
+#confirmAddPlant:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
 }
