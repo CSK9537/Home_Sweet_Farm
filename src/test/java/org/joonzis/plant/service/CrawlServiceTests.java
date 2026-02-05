@@ -24,7 +24,7 @@ public class CrawlServiceTests {
 	@Autowired
 	private CrawlMapper cmapper;
 	
-//	// 소수 데이터로 테스트
+//	// 소수 데이터로 식물 이름 입력 테스트
 //	@Test
 //	public void insertPlantNamesTest() {
 //		log.info("insert plant name...");
@@ -42,18 +42,33 @@ public class CrawlServiceTests {
 //		}
 //	}
 	
-	// 실제 DB 입력
-	@Test
-	public void insertPlantNames() {
-		log.info("insert plant name...");
-		try {
-			log.info("service 작동 중...");
-			List<String> list = cmapper.searchPlants();
-			cservice.insertPlantNames(list);
-			log.info("service 성공!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		} catch (Exception e) {
-			log.error(e);
-		}
-	}
+//	// 식물 이름 DB 실제 입력
+//	@Test
+//	public void insertPlantNames() {
+//		log.info("insert plant name...");
+//		try {
+//			log.info("service 작동 중...");
+//			List<String> list = cmapper.searchPlants();
+//			cservice.insertPlantNames(list);
+//			log.info("service 성공!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
+	
+	// 소수 데이터로 백과사전 입력 테스트
+//	@Test
+//	public void insertTotalPlantDataTest() {
+//		log.info("insert plant data...");
+//		try {
+//			log.info("service 작동 중...");
+//			List<String> tmplist = new ArrayList<String>();
+//			tmplist.add("Epipremnum_aureum");
+//			cservice.insertTotalPlantData(tmplist);
+//			log.info("service 성공!!!");
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
 	
 }

@@ -23,8 +23,10 @@ public class PlantMapperTests {
 //		log.info("insert plant info...");
 //		try {
 //			PlantVO pvo = new PlantVO();
-//			pvo.setPlant_name("스킨답서스");
-//			pvo.setPlant_name_eng("Epipremnum aureum");
+//			pvo.setPlant_name("Epipremnum aureum");
+//			pvo.setPlant_name_kor("스킨답서스");
+//			pvo.setPlant_description("스킨답서스(Epipremnum aureum)은 세계에서 가장 인기 있는 화초로, 대한민국에서는 국민 화초라고 불릴 정도로 많이 키웁니다. 키우기가 쉬워 입문자에게 좋습니다. 스킨답서스는 공기 정화 효과도 있지만 생명력과 번식력이 강해 야생에서는 생태계를 파괴하는 주범으로 여겨지기도 해, 일부 지역에서는 '악마의 덩굴(Devil's ivy)'라고 이름까지 붙였다고 합니다. 또한 독성이 있으니 절대로 식용해서는 안 되는 식물입니다.");
+//			pvo.setPlant_species("스킨답서스 (Epipremnum aureum)");
 //			pvo.setPlant_genus("에피프렘넘속");
 //			pvo.setPlant_family("천남성과");
 //			pvo.setPlant_order("택사목");
