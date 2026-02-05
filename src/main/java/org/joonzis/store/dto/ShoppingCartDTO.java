@@ -15,7 +15,7 @@ public class ShoppingCartDTO {
 	private String product_name;
 	private int product_price;
 	private String product_description_brief;
-	private int product_reamin;
+	private int product_remain;
 	
 	private int product_count; // 장바구니에 해당 상품을 개수
 	

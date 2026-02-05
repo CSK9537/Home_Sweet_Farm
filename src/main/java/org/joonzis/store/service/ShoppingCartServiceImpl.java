@@ -36,7 +36,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
 	}
 	@Override
 	public int addShoppingCart(int user_id, int product_id) {
-		return mapper.upsertShoppingCart(user_id, product_id);
+		return mapper.upsertShoppingCart(user_id, product_id, "plus");
+	}
+	@Override
+	public int decreaseShopingCart(int user_id, int product_id) {
+		return mapper.upsertShoppingCart(user_id, product_id, "minus");
 	}
 	@Override
 	public int addShoppingCart(int user_id, int product_id, int product_count) {

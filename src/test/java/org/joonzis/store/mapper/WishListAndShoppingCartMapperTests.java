@@ -109,19 +109,13 @@ public class WishListAndShoppingCartMapperTests {
 	
 //	@Test
 //	public void deleteShoppingCart() {
-//		ShoppingCartVO vo = new ShoppingCartVO();
-//		vo.setUser_id(2);
-//		vo.setProduct_id(2);
-//		log.info("장바구니 삭제 테스트 실행 결과 : " + mapper.deleteShopingCart(vo) + "개의 행이 삭제 됨.");
+//		log.info("장바구니 삭제 테스트 실행 결과 : " + mapper.deleteShopingCart(2, 2) + "개의 행이 삭제 됨.");
 //	}
 
 //	@Test
 //	public void upsertCartTest() {
-//		ShoppingCartVO vo = new ShoppingCartVO();
-//		vo.setUser_id(2);
-//		vo.setProduct_id(2);
-//		log.info("upsert 결과 : " + mapper.upsertShoppingCart(vo));
-//		
+//		log.info("upsert 결과1 : " + mapper.upsertShoppingCart(2, 2));
+//		log.info("upsert 결과2 : " + mapper.upsertShoppingCart(2, 2));
 //	}
 	
 //	@Test
