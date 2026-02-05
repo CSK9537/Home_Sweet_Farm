@@ -1,5 +1,9 @@
 package org.joonzis.user.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.mapper.UserMapper;
 import org.joonzis.user.vo.UserVO;
 import org.junit.Test;
@@ -105,6 +109,16 @@ public class UserServiceTests {
 //		
 //		//3)출력해서 확인
 //		System.out.println("confirm_event="+saved.getConfirm_event());
+//	}
+	
+//	@Test
+//	public void testPublicProfile() {
+//		int user_id = 2;
+//		UserDTO dto = 
+//		uservice.selectPublicProfile(user_id);
+//		
+//		assertNotNull(dto);
+//		assertEquals(user_id, dto.getUser_id());
 //	}
 
 }
