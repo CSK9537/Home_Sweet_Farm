@@ -74,12 +74,13 @@ public class UserMapperTests {
 //		String username = "linwee";
 //		usermapper.countByUsername(username);
 //	}
-	
+//	
 //	@Test
 //	public void testConfirmEvent() {
 //		UserVO vo = new UserVO();
-//		vo.setUsername("jinny_"+
-//		System.currentTimeMillis());
+//		String uname = "jinny_"+
+//		System.currentTimeMillis();
+//		vo.setUsername(uname);
 //		vo.setPassword("ni3333");
 //		vo.setNickname("nini");
 //		vo.setName("jinny");
@@ -87,13 +88,17 @@ public class UserMapperTests {
 //		vo.setPhone(24681618);
 //		vo.setProfile_filename("nini file");
 //		vo.setBrith_date(java.sql.Date.valueOf("1997-11-23"));
-//		vo.setConfirm_event(1);
-//		
+//		vo.setConfirm_service(1);//서비스 이용약관 동의(필수)
+//		vo.setConfirm_userinfo(1);//개인정보 처리방침 동의(필수)
+//		vo.setConfirm_event(1);//마케팅정보 수신동의(선택)
 //		usermapper.insert(vo);
 //		UserVO saved =
-//		usermapper.selectByUsername(vo.getUsername());
-//			System.out.println(saved);
+//		usermapper.selectByUsername(uname);
+//			System.out.println("서비스약관 동의: " + saved.getConfirm_service());
+//			System.out.println("개인정보 동의: " + saved.getConfirm_userinfo());
+//			System.out.println("마케팅 동의: " + saved.getConfirm_event());
 //	}
+//	
 //	@Test
 //	public void testSelectPublicProfile() {
 //		int user_id = 65;
