@@ -94,13 +94,13 @@ public class UserMapperTests {
 //		usermapper.selectByUsername(vo.getUsername());
 //			System.out.println(saved);
 //	}
-//	@Test
-//	public void testSelectPublicProfile() {
-//		int user_id = 65;
-//		UserDTO dto = usermapper.selectPublicProfile(user_id);
-//		
-//		assertNotNull(dto);
-//	}
+	@Test
+	public void testSelectPublicProfile() {
+		int user_id = 65;
+		UserDTO dto = usermapper.selectPublicProfile(user_id);
+		
+		assertNotNull(dto);
+	}
 //	@Test
 //	public void testGetReplyCnt() {
 //		int user_id = 65;
