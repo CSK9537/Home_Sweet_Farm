@@ -10,14 +10,18 @@ import lombok.NoArgsConstructor;
 public class PlantVO {
 	// 식물 식별번호
 	private int plant_id;
-	// 식물 이름(종)(한글)
+	// 식물 영어 이름
 	private String plant_name;
-	// 식물 이름(종)(영어)
-	private String plant_name_eng;
+	// 식물 한글 이름
+	private String plant_name_kor;
 	// 식물 기본 이미지
 	private String plant_image;
 	// 검색수
 	private int plant_searchcount;
+	// 설명
+	private String plant_description;
+	// 종
+	private String plant_species;
 	// 속
 	private String plant_genus;
 	// 과
