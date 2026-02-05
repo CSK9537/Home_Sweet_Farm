@@ -56,14 +56,23 @@ public class CrawlServiceTests {
 //		}
 //	}
 	
-	// 소수 데이터로 백과사전 입력 테스트
+//	// 소수 데이터로 백과사전 입력 테스트
 //	@Test
 //	public void insertTotalPlantDataTest() {
 //		log.info("insert plant data...");
 //		try {
 //			log.info("service 작동 중...");
 //			List<String> tmplist = new ArrayList<String>();
-//			tmplist.add("Epipremnum_aureum");
+//			tmplist.add("Abelia chinensis");
+//			tmplist.add("Abelia uniflora");
+//			tmplist.add("Abelmoschus esculentus");
+//			tmplist.add("Abelmoschus sagittifolius");
+//			tmplist.add("Ceropegia linearis subsp. Woodii");
+//			tmplist.add("Abies alba");
+//			tmplist.add("Abies balsamea");
+//			tmplist.add("Abies concolor");
+//			tmplist.add("Abies nordmanniana");
+//			tmplist.add("Abies firma");
 //			cservice.insertTotalPlantData(tmplist);
 //			log.info("service 성공!!!");
 //		} catch (Exception e) {
