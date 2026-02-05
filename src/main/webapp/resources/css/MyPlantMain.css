@@ -1,0 +1,281 @@
+:root{
+  --brand:#6b7b61;
+  --paper:#f4f2ed;
+  --white:#ffffff;
+  --text:#2a2a2a;
+  --muted:rgba(42,42,42,.7);
+  --radius:14px;
+}
+
+/* page 콘텐츠 영역(카드 내부) */
+.myplants{
+  width: 100%;
+  gap: 20px;
+}
+
+.content-card.myplants{
+  align-items: stretch;
+}
+
+/* 상단 바(타이틀 + 버튼) */
+.myplants__header{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 10px 0 18px;
+  border-bottom: 5px solid var(--brand);
+}
+
+.myplants__title{
+  margin:0;
+  font-size:20px;
+  font-weight:700;
+  color: var(--brand);
+}
+
+/* 버튼 */
+.mp-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:700;
+  border: 2px solid transparent;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.mp-btn--primary{
+  background: var(--brand);
+  color: var(--paper);
+}
+
+.mp-btn--ghost{
+  background: transparent;
+  color: var(--brand);
+  border-color: var(--brand);
+}
+
+.mp-btn--block{
+  width:100%;
+  max-width: 240px;
+}
+
+/* =========================
+   Empty State (식물 없음)
+========================= */
+.myplants-empty{
+  width:100%;
+  min-height: 360px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap: 10px;
+}
+
+.myplants-empty__title{
+  margin:0;
+  color: var(--muted);
+  font-size:14px;
+}
+
+.myplants-empty__desc{
+  margin:0 0 8px;
+  color: var(--muted);
+  font-size:14px;
+}
+
+/* =========================
+   List State (식물 있음)
+========================= */
+.myplants-list{
+  width:100%;
+  list-style:none;
+  padding:0;
+  margin: 18px 0 0;
+  display:flex;
+  flex-direction:column;
+  gap: 16px;
+}
+
+.plant-item{
+  width:100%;
+  background: var(--white);
+  border-radius: 18px;
+  padding: 18px;
+
+  display:grid;
+  grid-template-columns: 220px 1fr 260px;
+  gap: 20px;
+  align-items:center;
+}
+
+/* 썸네일 크게 */
+.plant-item__thumb{
+  width:220px;
+  height:220px;
+  border-radius: 16px;
+  overflow:hidden;
+  background:#e9e9e9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.plant-item__thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.plant-item__thumb-placeholder{
+  color: rgba(0,0,0,.35);
+  font-weight:700;
+}
+
+/* 중앙 영역 */
+.plant-item__info{
+  display:flex;
+  flex-direction:column;
+  gap: 14px;
+  color: var(--brand);
+}
+
+.plant-item__korean{
+  font-size:16px;
+}
+
+.plant-item__latin{
+  font-size:11px;
+  font-style:italic;
+  opacity:.8;
+  margin-top:4px;
+}
+
+.plant-item__nickname{
+  font-size:14px;
+  opacity:.9;
+}
+
+.plant-item__status{
+  color: var(--brand);
+  justify-self: start;
+}
+
+.plant-item__status-title{
+  font-size:14px;
+  margin-bottom:10px;
+  opacity:.9;
+}
+
+.status-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
+  max-width: 320px;
+}
+
+.status{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  font-size:13px;
+}
+
+.status__label{
+  opacity:.8;
+}
+
+.status__value{
+  font-weight:700;
+}
+
+.status__value--good{ color:#00aa00; }
+.status__value--warn{ color:#ffae00; }
+.status__value--bad{  color:#ff0000; }
+
+.plant-item__actions{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  justify-content:center;
+  gap: 12px;
+}
+
+.plant-item__since{
+  font-size:13px;
+  color: var(--brand);
+  opacity:.9;
+}
+
+/* =========================
+   반응형
+========================= */
+
+/* Tablet */
+@media (max-width: 1024px){
+  .plant-item{
+    grid-template-columns: 180px 1fr;
+    grid-template-areas:
+      "thumb actions"
+      "info  info"
+      "status status";
+    gap: 16px;
+    align-items: start;
+  }
+
+  .plant-item__thumb{
+    width:180px;
+    height:180px;
+    grid-area: thumb;
+  }
+
+  .plant-item__actions{
+    grid-area: actions;
+    align-items: stretch;
+  }
+
+  .plant-item__info{ grid-area: info; }
+  .plant-item__status{ grid-area: status; }
+
+  .mp-btn--block{
+    max-width: none;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px){
+  .myplants__header{
+    padding-bottom: 14px;
+  }
+
+  .plant-item{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "thumb"
+      "info"
+      "status"
+      "actions";
+    padding: 16px;
+  }
+
+  .plant-item__thumb{
+    width:100%;
+    height: 220px;
+  }
+
+  .plant-item__actions{
+    align-items:stretch;
+  }
+
+  .mp-btn--block{
+    max-width:none;
+  }
+}

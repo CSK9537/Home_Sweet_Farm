@@ -1,0 +1,206 @@
+@import url("https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap");
+
+:root{
+  --bg:#F4F2ED;
+  --point:#6B7B61;
+  --h:170px;
+  --muted: rgba(107,123,97,.75);
+  --logoMuted: rgba(107,123,97,.28);
+}
+
+*{ box-sizing: border-box; }
+body{ margin:0; background: var(--bg); }
+.footer a{ color: inherit; text-decoration: none; transition: font-weight .15s ease; }
+.footer a:hover{ 
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* ===== Footer Shell ===== */
+.footer{
+  width: 100%;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+}
+
+.footer__inner{
+  width: 1920px;
+  min-height: 200px;
+  padding: 24px 360px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* ===== Desktop/Tablet Top ===== */
+.footer__top{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 12px;
+}
+
+/* Title */
+.footer__title{
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--point);
+  margin: 0 0 8px;
+}
+.footer__title_logo{
+    font-family: "Great Vibes", cursive;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--point);
+}
+/* Left */
+.footer__brand{
+  width: 520px;
+  padding-top: 4px;
+}
+
+.footer__desc{
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--point);
+  margin: 0 0 10px;
+}
+
+.footer__sns{
+  display: flex;
+  gap: 12px;
+}
+
+.footer__sns a{
+  font-size: 13px;
+  color: var(--point);
+}
+
+/* Right */
+.footer__policy{
+  width: 300px;
+  text-align: right;
+  padding-top: 4px;
+  margin-top: auto;
+}
+
+.footer__links{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer__links li{
+  margin-bottom: 6px;
+}
+
+.footer__links a{
+  font-size: 13px;
+  color: var(--point);
+}
+
+/* ===== Bottom (Desktop/Tablet) ===== */
+.footer__bottom{
+  width: 100%;
+  border-top: 2px solid var(--point);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.footer__bottom p{
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* ===== Mobile-only elements (기본 숨김) ===== */
+.footer__m-nav,
+.footer__m-logo{
+  display: none;
+}
+
+/* ===== Tablet ===== */
+@media (max-width: 1279px){
+  .footer__inner{
+    width: 100%;
+    padding: 24px 80px 20px;
+  }
+  .footer__brand{ width: auto; max-width: 520px; }
+  .footer__policy{ width: auto; }
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 767px){
+  .footer__inner{
+    width: 100%;
+    padding: 18px 20px 16px;
+    min-height: 0;
+  }
+
+  /* 데스크탑용 블록 숨김 */
+  .footer__brand,
+  .footer__policy{
+    display: none;
+  }
+
+  /* top을 링크 + 로고만 */
+  .footer__top{
+    display: block;
+    padding: 0;
+  }
+
+  .footer__m-nav{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 12px;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .footer__m-nav a{
+    font-weight: 400;
+    text-decoration: none;
+    transition: font-weight .15s ease, text-decoration .15s ease;
+  }
+
+  .footer__m-nav a:hover{
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 767px){
+  	a.footer__m-logo{
+    display: block;
+    margin-top: 10px;
+    text-align: center;
+    font-family: "Great Vibes", cursive;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    color: var(--point);
+  	}
+  }
+
+  /* 모바일에서는 하단 사업자 정보 숨김 */
+  .footer__bottom{
+    border-top: 0;
+    padding-top: 0;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer__bottom p{
+    display: none;
+  }
+}
