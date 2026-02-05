@@ -38,39 +38,6 @@
 		</where>
 	</select>
 	
-	<select id="getWishListByUserId" resultType="org.joonzis.store.dto.WishListDTO">
-		SELECT
-		    w.user_id,
-		    u.nickname,
-		    w.product_id,
-		    p.product_name,
-		    p.product_price,
-		    p.product_description_brief,
-		    p.product_remain,
-		    i.saved_name thumbnail
-		FROM tbl_wish_list w
-		LEFT OUTER JOIN tbl_user u ON w.user_id = u.user_id
-		LEFT OUTER JOIN tbl_product p ON p.product_id = w.product_id
-		LEFT OUTER JOIN tbl_product_image i ON i.product_id = w.product_id AND i.is_thumbnail = 'Y'
-		WHERE w.user_id = #{user_id}		
-	</select>
-	<select id="getWishListByProductId" resultType="org.joonzis.store.dto.WishListDTO">
-		SELECT
-		    w.user_id,
-		    u.nickname,
-		    w.product_id,
-		    p.product_name,
-		    p.product_price,
-		    p.product_description_brief,
-		    p.product_remain,
-		    i.saved_name thumbnail
-		FROM tbl_wish_list w
-		LEFT OUTER JOIN tbl_user u ON w.user_id = u.user_id
-		LEFT OUTER JOIN tbl_product p ON p.product_id = w.product_id
-		LEFT OUTER JOIN tbl_product_image i ON i.product_id = w.product_id AND i.is_thumbnail = 'Y'
-		WHERE w.product_id = #{product_id]
-	</select>
-	
 	<delete id="deleteWishList">
 		DELETE FROM tbl_wish_list
 		WHERE user_id=#{user_id} AND product_id=#{product_id}
@@ -106,44 +73,9 @@
 				AND s.user_id = #{data} 
 			</if>
 			<if test='type == "product"'>
-				AND w.product_id = #{data]
+				AND s.product_id = #{data}
 			</if>
 		</where>
-	</select>
-	
-	<select id="getShoppingCartByUserId" resultType="org.joonzis.store.dto.ShoppingCartDTO">
-		SELECT
-		    s.user_id,
-		    u.nickname,
-		    s.product_id,
-		    p.product_name,
-		    p.product_price,
-		    p.product_description_brief,
-		    p.product_remain,
-		    i.saved_name thumbnail,
-		    s.product_count
-		FROM tbl_shopping_cart s
-		LEFT OUTER JOIN tbl_user u ON s.user_id = u.user_id
-		LEFT OUTER JOIN tbl_product p ON p.product_id = s.product_id
-		LEFT OUTER JOIN tbl_product_image i ON i.product_id = s.product_id AND i.is_thumbnail = 'Y'
-		WHERE s.user_id = #{user_id}
-	</select>
-	<select id="getShoppingCartByProductId" resultType="org.joonzis.store.dto.WishListDTO">
-		SELECT
-		    s.user_id,
-		    u.nickname,
-		    s.product_id,
-		    p.product_name,
-		    p.product_price,
-		    p.product_description_brief,
-		    p.product_remain,
-		    i.saved_name thumbnail,
-		    s.product_count
-		FROM tbl_shopping_cart s
-		LEFT OUTER JOIN tbl_user u ON s.user_id = u.user_id
-		LEFT OUTER JOIN tbl_product p ON p.product_id = s.product_id
-		LEFT OUTER JOIN tbl_product_image i ON i.product_id = s.product_id AND i.is_thumbnail = 'Y'
-		WHERE s.product_id = #{product_id}
 	</select>
 	
 	<delete id="deleteShopingCart">
@@ -156,7 +88,12 @@
 		USING DUAL
 			ON(c.user_id =#{user_id} AND c.product_id=#{product_id})
 		WHEN MATCHED THEN
+		<if test='type == "plus" and type == null'>
 			UPDATE SET c.product_count = c.product_count + 1
+		</if>
+		<if test='type == "minus" '>
+			UPDATE SET c.product_count = GREATEST(c.product_count - 1, 1)
+		</if>
 		WHEN NOT MATCHED THEN
 			INSERT (user_id, product_id)
 			VALUES(#{user_id},#{product_id})
