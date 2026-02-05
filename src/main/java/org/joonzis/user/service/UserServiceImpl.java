@@ -1,5 +1,6 @@
 package org.joonzis.user.service;
 
+import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.mapper.UserMapper;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,18 @@ public class UserServiceImpl implements UserService{
 	public int countByUsername(String username) {
 		return usermapper.countByUsername(username);
 	}
-	
+	@Override
+	public UserDTO selectPublicProfile(int user_id) {
+		UserDTO dto =
+		usermapper.selectPublicProfile(user_id);
+		if(dto == null) {
+			throw new IllegalArgumentException("존재하지 않는 회원");
+		}
+		
+		dto.setReply_cnt(usermapper.getReplyCnt(user_id));
+		dto.setView_cnt(usermapper.getViewCnt(user_id));
+		
+		return dto;
+	}
 
 }
