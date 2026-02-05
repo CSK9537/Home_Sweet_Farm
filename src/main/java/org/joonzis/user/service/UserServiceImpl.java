@@ -76,13 +76,17 @@ public class UserServiceImpl implements UserService{
 		return usermapper.countByUsername(username);
 	}
 	@Override
-	public UserDTO selectPublicProfile(int userId) {
+	public UserDTO selectPublicProfile(int user_id) {
 		UserDTO dto =
-		usermapper.selectPublicProfile(userId);
+		usermapper.selectPublicProfile(user_id);
+		if(dto == null) {
+			throw new IllegalArgumentException("존재하지 않는 회원");
+		}
 		
+		dto.setReply_cnt(usermapper.getReplyCnt(user_id));
+		dto.setView_cnt(usermapper.getViewCnt(user_id));
 		
-		
-		return null;
+		return dto;
 	}
 
 }

@@ -99,7 +99,7 @@
 	</select>
 	
 	<!-- 공개 프로필 조회: 닉네임, 프로필, 회원등급   -->
-	<select id="selectPublicProfile" parameterType="int" resultType="org.joonzis.user.vo.UserVO">
+	<select id="selectPublicProfile" parameterType="int" resultType="org.joonzis.user.dto.UserDTO">
 		SELECT user_id, grade_id, nickname, profile_filename
 		FROM TBL_USER
 		WHERE user_id = #{user_id}
