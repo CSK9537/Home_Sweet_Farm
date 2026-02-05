@@ -16,6 +16,8 @@ public interface OrderMapper {
 	public int insertOrderCard(OrderCardVO vo);
 	public int insertOrderTransper(OrderTransperVO vo);
 	
+	public OrderVO selectOrder(String order_id);
+	
 	public int updateOrder(OrderVO vo);
 	public int updateOrderProductList(OrderProductListVO vo);
 	

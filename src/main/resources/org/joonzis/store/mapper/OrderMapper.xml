@@ -175,4 +175,8 @@
 			</if>
 		</where>
 	</select>
+	
+	<select id="selectOrder" resultType="org.joonzis.store.vo.OrderVO">
+		SELECT * FROM tbl_order WHERE order_id=#{order_id}
+	</select>
 </mapper>

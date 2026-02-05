@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OrderCardVO {
+public class OrderCardVO extends PaymentInfoVO {
 	private String order_id;
 	private String issuercode;
 	private String acquirercode;
