@@ -86,30 +86,29 @@ public class UserServiceTests {
 //		UserVO vo = new UserVO();
 //		String uname = "jinny_"+
 //		System.currentTimeMillis();
-//		
 //		vo.setUsername(uname);
 //		vo.setPassword("ni3333");
-//		
 //		vo.setConfirmPassword("ni3333");//비밀번호 확인
-//		
 //		vo.setNickname("nini");
 //		vo.setName("jinny");
 //		vo.setEmail("nini@email.com");
 //		vo.setPhone(24681618);
 //		vo.setProfile_filename("nini file");
 //		vo.setBrith_date(java.sql.Date.valueOf("1997-11-23"));
-//		vo.setConfirm_event(1); //마케팅 수신 동의
-//		
+//		vo.setConfirm_service(1);//서비스 이용약관 동의(필수)
+//		vo.setConfirm_userinfo(1);//개인정보 처리방침 동의(필수)
+//		vo.setConfirm_event(1); //마케팅 수신 동의(선택)
 //		//1)서비스 insert
 //		uservice.insert(vo);
-//		
 //		//2)mapper로 다시 조회
 //		UserVO saved =
 //			usermapper.selectByUsername(uname);
-//		
 //		//3)출력해서 확인
-//		System.out.println("confirm_event="+saved.getConfirm_event());
+//		System.out.println("서비스약관 동의: " + saved.getConfirm_service());
+//		System.out.println("개인정보 동의: " + saved.getConfirm_userinfo());
+//		System.out.println("마케팅 동의: " + saved.getConfirm_event());
 //	}
+//	
 //	@Test
 //	public void testPublicProfile() {
 //		int user_id = 2;

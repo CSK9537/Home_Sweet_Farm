@@ -9,11 +9,13 @@
 		INSERT INTO TBL_USER
 			(user_id, username, password, 
 			nickname, name, email, phone,
-			profile_filename, brith_date, confirm_event)
+			profile_filename, brith_date, 
+			confirm_service, confirm_userinfo, confirm_event)
 		VALUES
 			 (USER_ID_SEQ.NEXTVAL, #{username}, #{password},
 			  #{nickname}, #{name}, #{email}, #{phone}, 
-			  #{profile_filename}, #{brith_date}, #{confirm_event})
+			  #{profile_filename}, #{brith_date}, 
+			  #{confirm_service}, #{confirm_userinfo}, #{confirm_event})
 	</insert>
 	
 	<!-- 데이터 조회  -->
@@ -93,7 +95,7 @@
 	
 	<!-- 마케팅수신동의 테스트용 조회 -->
 	<select id="selectByUsername" parameterType="String" resultType="org.joonzis.user.vo.UserVO">
-		SELECT username, confirm_event 
+		SELECT username, confirm_service, confirm_userinfo, confirm_event 
 		FROM TBL_USER
 		WHERE username = #{username}
 	</select>
