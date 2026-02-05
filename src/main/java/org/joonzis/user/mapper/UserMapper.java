@@ -44,7 +44,7 @@ public interface UserMapper {
 	
 	
 	//공개형 프로필
-	//1) 닉네임, 프로필, 회원등급
+	//1) 닉네임, 프로필, 회원등급, 자기소개
 	public UserDTO selectPublicProfile(int user_id);
 	
 	//2) 전체 답변수
@@ -53,4 +53,6 @@ public interface UserMapper {
 	//3)조회수
 	public int getViewCnt(int user_id);
 	
+	//4)채택 답변(수)
+	public int getIsSelected(int user_id);
 }

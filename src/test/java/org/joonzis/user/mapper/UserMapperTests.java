@@ -116,5 +116,14 @@ public class UserMapperTests {
 //		assertTrue(cnt >= 0);
 //		System.out.println(cnt);
 //	}
+//	@Test
+//	public void testGetIsSelected() {
+//		int user_id = 65;
+//		int cnt =
+//		usermapper.getIsSelected(user_id);
+//		
+//		assertTrue(cnt >= 0);
+//		System.out.println(cnt);
+//	}
 
 }

@@ -110,7 +110,6 @@ public class UserServiceTests {
 //		//3)출력해서 확인
 //		System.out.println("confirm_event="+saved.getConfirm_event());
 //	}
-	
 //	@Test
 //	public void testPublicProfile() {
 //		int user_id = 2;

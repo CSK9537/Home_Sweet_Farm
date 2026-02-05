@@ -31,7 +31,7 @@ public interface UserService {
 	public int countByUsername(String username);
 	
 	//공개형 프로필
-	//1) 닉네임, 프로필, intro, gradeId
+	//1) 닉네임, 프로필, 회원등급, 자기소개
 	public UserDTO selectPublicProfile(int userId);
 	
 }
