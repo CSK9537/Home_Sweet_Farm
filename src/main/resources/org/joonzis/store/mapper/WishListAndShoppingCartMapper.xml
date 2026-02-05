@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.joonzis.store.mapper.WishListAndShoppingCartMapper">
+	
+	<!-- 찜목록 -->
+	<insert id="insertWishList">
+		INSERT INTO tbl_wish_list(user_id, product_id)
+		VALUES (#{user_id}, #{product_id})
+	</insert>
+	
+	<sql id="WishListCommonSelect">
+		SELECT
+		    w.user_id,
+		    u.nickname,
+		    w.product_id,
+		    p.product_name,
+		    p.product_price,
+		    p.product_description_brief,
+		    p.product_remain,
+		    i.saved_name thumbnail
+		FROM tbl_wish_list w
+		LEFT OUTER JOIN tbl_user u ON w.user_id = u.user_id
+		LEFT OUTER JOIN tbl_product p ON p.product_id = w.product_id
+		LEFT OUTER JOIN tbl_product_image i ON i.product_id = w.product_id AND i.is_thumbnail = 'Y'
+	</sql>
+	
+	<select id="getWishList" parameterType="map" resultType="org.joonzis.store.dto.WishListDTO">
+		<include refid="WishListCommonSelect"/>
+		<where>
+			<if test='type == "user"'>
+				AND w.user_id = #{data}
+			</if>
+			<if test='type == "product"'>
+				AND w.product_id = #{data}
+			</if>
+		</where>
+	</select>
+	
+	<delete id="deleteWishList">
+		DELETE FROM tbl_wish_list
+		WHERE user_id=#{user_id} AND product_id=#{product_id}
+	</delete>
+	
+	<!-- 장바구니 -->
+	<insert id="insertShoppingCart">
+		INSERT INTO tbl_shopping_cart(user_id, product_id)
+		VALUES (#{user_id}, #{product_id})
+	</insert>
+	
+	<sql id="ShoppingCartCommonSelect">
+		SELECT
+		    s.user_id,
+		    u.nickname,
+		    s.product_id,
+		    p.product_name,
+		    p.product_price,
+		    p.product_description_brief,
+		    p.product_remain,
+		    i.saved_name thumbnail,
+		    s.product_count
+		FROM tbl_shopping_cart s
+		LEFT OUTER JOIN tbl_user u ON s.user_id = u.user_id
+		LEFT OUTER JOIN tbl_product p ON p.product_id = s.product_id
+		LEFT OUTER JOIN tbl_product_image i ON i.product_id = s.product_id AND i.is_thumbnail = 'Y'
+	</sql>
+	
+	<select id="getShoppingCart" parameterType="map" resultType="org.joonzis.store.dto.ShoppingCartDTO">
+		<include refid="ShoppingCartCommonSelect" />
+		<where>
+			<if test="type == 'user'.toString()">
+				AND s.user_id = #{data} 
+			</if>
+			<if test='type == "product"'>
+				AND s.product_id = #{data}
+			</if>
+		</where>
+	</select>
+	
+	<delete id="deleteShopingCart">
+		DELETE FROM tbl_shopping_cart
+		WHERE user_id=#{user_id} AND product_id=#{product_id}
+	</delete>
+	
+	<insert id="upsertShoppingCart">
+		MERGE INTO tbl_shopping_cart c
+		USING DUAL
+			ON(c.user_id =#{user_id} AND c.product_id=#{product_id})
+		WHEN MATCHED THEN
+		<if test='type == "plus" and type == null'>
+			UPDATE SET c.product_count = c.product_count + 1
+		</if>
+		<if test='type == "minus" '>
+			UPDATE SET c.product_count = GREATEST(c.product_count - 1, 1)
+		</if>
+		WHEN NOT MATCHED THEN
+			INSERT (user_id, product_id)
+			VALUES(#{user_id},#{product_id})
+	</insert>
+</mapper>
