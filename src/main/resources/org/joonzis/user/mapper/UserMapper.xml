@@ -97,4 +97,27 @@
 		FROM TBL_USER
 		WHERE username = #{username}
 	</select>
+	
+	<!-- 공개 프로필 조회: 닉네임, 프로필, 회원등급   -->
+	<select id="selectPublicProfile" parameterType="int" resultType="org.joonzis.user.dto.UserDTO">
+		SELECT user_id, grade_id, nickname, profile_filename
+		FROM TBL_USER
+		WHERE user_id = #{user_id}
+	</select>
+	
+	<!-- 공개 프로필 조회: 전체 답변수 -->
+	<select id="getReplyCnt" parameterType="int" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_REPLY
+		WHERE user_id = #{user_id}
+	</select>
+	
+	<!-- 공개 프로필 조회: 조회수  -->
+	<select id="getViewCnt" parameterType="int" resultType="int">
+		SELECT NVL(SUM(view_count),0)
+		FROM TBL_BOARD
+		WHERE user_id = #{user_id}
+	</select>
+	
+	
 </mapper>

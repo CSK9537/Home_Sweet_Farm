@@ -1,5 +1,9 @@
 package org.joonzis.user.mapper;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,43 +36,43 @@ public class UserMapperTests {
 	
 //	@Test
 //	public void testSelectLogin() {
-//		int USER_ID = 25;
-//		UserVO vo = usermapper.selectLogin(USER_ID);
+//		int user_id = 25;
+//		UserVO vo = usermapper.selectLogin(user_id);
 //	}
 //	@Test
 //	public void testFindIdByEmail() {
-//		String EMAIL = "test@test.com";
-//		usermapper.findIdByEmail(EMAIL);
+//		String email = "test@test.com";
+//		usermapper.findIdByEmail(email);
 //	}
 //	@Test
 //	public void testFindIdByPhone() {
-//		String PHONE = "12345678";
-//		usermapper.findIdByPhone(PHONE);
+//		String phone = "12345678";
+//		usermapper.findIdByPhone(phone);
 //	}
 //	@Test
 //	public void testExistUserByEmail() {
-//		String USERNAME = "linwee";
-//		String EMAIL = "test@test.com";
-//		usermapper.existUserByEmail(USERNAME, EMAIL);
+//		String username = "linwee";
+//		String email = "test@test.com";
+//		usermapper.existUserByEmail(username, email);
 //	}
 //	@Test
 //	public void testExistUserByPhone() {
-//		String USERNAME = "linwee";
-//		String PHONE = "12345678";
-//		usermapper.existUserByPhone(USERNAME, PHONE);
+//		String username = "linwee";
+//		String phone = "12345678";
+//		usermapper.existUserByPhone(username, phone);
 //	}
 //	@Test
 //	public void testUpdatePw() {
 //		UserVO vo = new UserVO();
-//		vo.setUSERNAME("LILI1357");
-//		vo.setPASSWORD("LIN3333");
+//		vo.setUsername("LILI1357");
+//		vo.setPassword("LIN3333");
 //		usermapper.updatePw(vo);
 //	}
 
 //	@Test
 //	public void testCountByUsername() {
-//		String USERNAME = "linwee";
-//		usermapper.countByUsername(USERNAME);
+//		String username = "linwee";
+//		usermapper.countByUsername(username);
 //	}
 	
 //	@Test
@@ -89,6 +93,28 @@ public class UserMapperTests {
 //		UserVO saved =
 //		usermapper.selectByUsername(vo.getUsername());
 //			System.out.println(saved);
+//	}
+//	@Test
+//	public void testSelectPublicProfile() {
+//		int user_id = 65;
+//		UserDTO dto = usermapper.selectPublicProfile(user_id);
+//		
+//		assertNotNull(dto);
+//	}
+//	@Test
+//	public void testGetReplyCnt() {
+//		int user_id = 65;
+//		int cnt = 
+//		usermapper.getReplyCnt(user_id);
+//		System.out.println(cnt);
+//	}
+//	@Test
+//	public void testGetViewCnt() {
+//		int user_id = 65;
+//		int cnt =
+//		usermapper.getViewCnt(user_id);
+//		assertTrue(cnt >= 0);
+//		System.out.println(cnt);
 //	}
 
 }
