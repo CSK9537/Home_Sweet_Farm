@@ -67,7 +67,7 @@ public class StoreServiceImpl implements StoreService{
 		return pMapper.getProductListOnHot();
 	}
 	@Override
-	public int insertProductReview(ProductReviewVO vo) {
+	public int addProductReview(ProductReviewVO vo) {
 		return rMapper.insertProductReview(vo);
 	}
 	@Override
@@ -89,5 +89,9 @@ public class StoreServiceImpl implements StoreService{
 	@Override
 	public List<ProductForAdminListDTO> getAdminListByPrice() {
 		return pMapper.getProductAdminListByPrice();
+	}
+	@Override
+	public int modifyProductReview(ProductReviewVO vo) {
+		return rMapper.updateProductReview(vo);
 	}
 }
