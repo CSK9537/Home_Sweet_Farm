@@ -7,4 +7,6 @@ public interface CrawlMapper {
 	public List<String> searchPlants();
 	// PictureThis 기반 식물 이름 저장
 	public int insertSearchPlantNames(String plant_name);
+	// PictureThis 기반 식물 이름 목록 가져오기
+	public List<String> loadPlants();
 }

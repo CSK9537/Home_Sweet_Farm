@@ -80,4 +80,17 @@ public class CrawlServiceTests {
 //		}
 //	}
 	
+//	// 실제 백과사전 DB 저장
+//	@Test
+//	public void insertTotalPlantData() {
+//		log.info("insert plant data...");
+//		try {
+//			log.info("service 작동 중...");
+//			List<String> list = cmapper.loadPlants();
+//			cservice.insertTotalPlantData(list);
+//			log.info("service 성공!!!");
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
 }

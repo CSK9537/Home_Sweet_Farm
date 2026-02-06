@@ -9,4 +9,7 @@
 	<insert id="insertSearchPlantNames">
 		INSERT INTO tbl_plant_names VALUES(#{plant_name})
 	</insert>
+	<select id="loadPlants" resultType="String">
+		SELECT * FROM tbl_plant_names
+	</select>
 </mapper>
