@@ -4,13 +4,17 @@ import java.time.Duration;
 import java.util.List;
 
 import org.joonzis.plant.mapper.CrawlMapper;
+import org.joonzis.plant.mapper.GuideMapper;
 import org.joonzis.plant.mapper.PlantMapper;
+import org.joonzis.plant.vo.GuideVO;
 import org.joonzis.plant.vo.PlantVO;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +32,8 @@ public class CrawlServiceImpl implements CrawlService{
 	private CrawlMapper cmapper;
 	@Autowired
 	private PlantMapper pmapper;
+	@Autowired
+	private GuideMapper gmapper;
 	
 	// 드라이버 생성 및 설정
 	private WebDriver driver() {
@@ -281,9 +287,110 @@ public class CrawlServiceImpl implements CrawlService{
 		
 	}
 	
-	// 관리가이드 전체 정보 입력(식물 이름 목록 DB 기반으로 PictureThis 관리가이드 페이지 이동 후 DB 저장)
+	// 관리가이드 전체 정보 입력(백과사전 DB 기반으로 PictureThis 관리가이드 페이지 이동 후 DB 저장)
 	@Override
-	public void insertTotalGuideData(List<String> list) {
+	public void insertTotalGuideData(List<Integer> list) {
+		
+		WebDriver driver = driver();
+		// 명시적 대기를 위한 객체 생성(최대 대기 시간)
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+		
+		try {
+			
+			for(Integer plant_id : list) {
+				
+				try {
+					
+					String plant_name = pmapper.getPlantInfo(plant_id).getPlant_name();
+					String middleUrl = plant_name.replace(" ", "_").replace("'", "_");
+					driver.get("https://www.picturethisai.com/ko/care/" + middleUrl + ".html");
+					
+					Thread.sleep(500);
+					JavascriptExecutor js = (JavascriptExecutor) driver;
+					js.executeScript("window.scrollBy(0, 100);");
+					
+					GuideVO gvo = new GuideVO();
+					
+					// 관리 팁 set
+					WebElement guide_caretip = wait.until(ExpectedConditions.visibilityOfElementLocated(
+							By.cssSelector(".description")
+							));
+					gvo.setGuide_caretip(guide_caretip.getText());
+					
+					// 관리 표
+					WebElement guide_table = wait.until(ExpectedConditions.visibilityOfElementLocated(
+							By.cssSelector(".div-77")
+							));
+					// 관리 표 분류 및 각 항목 set
+					List<WebElement> guide_features = guide_table.findElements(By.cssSelector(".div-9"));
+					for(WebElement category : guide_features) {
+						String title = category.findElement(By.cssSelector(".text-wrapper-11")).getText();
+						String content = category.findElement(By.cssSelector(".text-wrapper-12")).getText();
+						if(title.equals("강도")) {
+							gvo.setGuide_toughness(content);
+						}
+						if(title.equals("관리 수준")) {
+							gvo.setGuide_carelevel(content);
+						}
+						if(title.equals("관리 난이도")) {
+							gvo.setGuide_caredifficulty(content);
+						}
+						if(title.equals("수명")) {
+							gvo.setGuide_lifespan(content);
+						}
+						if(title.equals("급수 일정")) {
+							gvo.setGuide_watering_schedule(content);
+						}
+						if(title.equals("햇빛 요건")) {
+							gvo.setGuide_sunlight_requirements(content);
+						}
+						if(title.equals("토양 종류")) {
+							gvo.setGuide_soil_type(content);
+						}
+						if(title.equals("토양 pH")) {
+							gvo.setGuide_soil_ph(content);
+						}
+						if(title.equals("심는 시기")) {
+							gvo.setGuide_planting_time(content);
+						}
+						if(title.equals("내한성 구역")) {
+							gvo.setGuide_hardinesszone(content);
+						}
+						if(title.equals("독성")) {
+							gvo.setGuide_toxicity(content);
+						}
+					}
+					
+					// 가이드 세부 항목들
+					List<WebElement> guide_elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+							By.cssSelector(".div-11")
+							));
+					// 항목별 태그 및 각 내용 set
+					for(WebElement guider_element : guide_elements) {
+						String title = guider_element.findElement(By.cssSelector(".pc-title-wrap-content")).getText();
+						List<WebElement> tags = guider_element.findElements(By.cssSelector(".tag-3"));
+						String content = guider_element.findElement(By.cssSelector(".care-content")).getText();
+						if(title.contains("급수")) {
+							System.out.println(title);
+							for(WebElement tag : tags) {
+								System.out.println(tag.getText());
+							}
+							System.out.println(content);
+						}
+					}
+
+					// try문 종료
+				} catch (org.openqa.selenium.TimeoutException e) {
+					continue;
+				}
+				
+			} // for문 종료
+			// try문 종료
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			driver.quit();
+		}
 		
 	}
 }
