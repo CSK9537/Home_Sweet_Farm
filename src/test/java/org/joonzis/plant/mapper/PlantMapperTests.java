@@ -1,5 +1,7 @@
 package org.joonzis.plant.mapper;
 
+import java.util.List;
+
 import org.joonzis.plant.vo.PlantVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,6 +62,36 @@ public class PlantMapperTests {
 //			if(result > 0) {
 //				log.info("success!!!");
 //			}
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
+	
+//	@Test
+//	public void plantIdListTest() {
+//		log.info("get plant id list...");
+//		try {
+//			List<Integer> list = pmapper.plantIdList();
+//			int lastindex = list.size() - 1;
+//			log.info(list.get(lastindex) + "...");
+//			log.info("success!!!");
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
+	
+//	@Test
+//	public void getPlantInfoTest() {
+//		log.info("get plant info...");
+//		
+//		int plant_id = 100;
+//		
+//		try {
+//			PlantVO pvo = pmapper.getPlantInfo(plant_id);
+//			log.info(pvo.getPlant_name());
+//			log.info(pvo.getPlant_name_kor());
+//			log.info(pvo.getPlant_description());
+//			log.info("success!!!");
 //		} catch (Exception e) {
 //			log.error(e);
 //		}
