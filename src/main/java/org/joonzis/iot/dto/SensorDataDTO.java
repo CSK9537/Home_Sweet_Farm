@@ -2,11 +2,13 @@ package org.joonzis.iot.dto;
 
 import java.util.Date;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class SensorDataDTO {
 	private Long myplantId;
     private Double temperature;
