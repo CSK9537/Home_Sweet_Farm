@@ -23,12 +23,18 @@
 	</insert>
 	
 	<insert id="insertOrderProductList">
-		INSERT INTO tbl_order_product_list
-		VALUES(
-			#{order_id},
-			#{product_id},
-			#{product_count}
+		INSERT INTO tbl_order_product_list(
+			order_id,
+			product_id,
+			product_count
 		)
+		<foreach collection="products" item="product" separator=" UNION ALL ">
+			SELECT
+				#{product.order_id},
+				#{product.product_id},
+				#{product.product_count}
+			FROM DUAL
+		</foreach>
 	</insert>
 	
 	<insert id="insertOrderCard">

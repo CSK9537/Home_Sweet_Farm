@@ -12,7 +12,7 @@ import org.joonzis.store.vo.OrderVO;
 public interface OrderMapper {
 	
 	public int insertOrder(OrderVO vo);
-	public int insertOrderProductList(OrderProductListVO vo);
+	public int insertOrderProductList(List<OrderProductListVO> products);
 	public int insertOrderCard(OrderCardVO vo);
 	public int insertOrderTransper(OrderTransperVO vo);
 	

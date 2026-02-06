@@ -17,4 +17,5 @@ public interface ShoppingCartService {
 	public List<ShoppingCartDTO> getShoppingCartByUserId(int user_id);			// 장바구니 가져오기(사용자별)
 	public List<ShoppingCartDTO> getShoppingCartByProductId(int product_id);	// 장바구니 가져오기(상품별)
 	public int deleteShopingCart(int user_id, int product_id);					// 장바구니에서 삭제
+	
 }

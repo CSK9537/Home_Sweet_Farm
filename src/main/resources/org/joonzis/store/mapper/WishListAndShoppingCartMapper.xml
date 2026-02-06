@@ -82,6 +82,10 @@
 		DELETE FROM tbl_shopping_cart
 		WHERE user_id=#{user_id} AND product_id=#{product_id}
 	</delete>
+	<delete id="deleteShoppingCartByUserId">
+		DELETE FROM tbl_shopping_cart
+		WHERE user_id=#{user_id}
+	</delete>
 	
 	<insert id="upsertShoppingCart">
 		MERGE INTO tbl_shopping_cart c
