@@ -80,4 +80,32 @@ public class CrawlServiceTests {
 //		}
 //	}
 	
+//	// 실제 백과사전 DB 저장
+//	@Test
+//	public void insertTotalPlantData() {
+//		log.info("insert plant data...");
+//		try {
+//			log.info("service 작동 중...");
+//			List<String> list = cmapper.loadPlants();
+//			cservice.insertTotalPlantData(list);
+//			log.info("service 성공!!!");
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
+	
+	// 소수 데이터로 가이드 입력 테스트
+	@Test
+	public void insertTotalGuideDataTest() {
+		log.info("insert guide data...");
+		try {
+			log.info("service 작동 중...");
+			List<Integer> tmplist = new ArrayList<Integer>();
+			tmplist.add(1220);
+			cservice.insertTotalGuideData(tmplist);
+			log.info("service 성공!!!");
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
 }
