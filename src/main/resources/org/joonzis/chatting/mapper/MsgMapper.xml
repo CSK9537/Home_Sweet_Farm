@@ -36,6 +36,13 @@
 	    FROM tbl_msg
 	    WHERE room_id = #{room_id}
 	</select>
+	
+	<!-- 5. 아이디로 메세지 조회 -->
+	<select id="findById" resultType="org.joonzis.chatting.vo.MsgVO">
+		SELECT *
+		FROM tbl_msg
+		WHERE msg_id = #{msg_id}
+	</select>
 
 
 	<!-- tbl_msg 데이터 전체 삭제 -->
