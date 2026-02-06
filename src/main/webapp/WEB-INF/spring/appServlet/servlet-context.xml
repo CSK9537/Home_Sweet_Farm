@@ -22,7 +22,11 @@
 	</beans:bean>
 	
 	<context:component-scan base-package="org.joonzis.controller" />
-	
-	
+	<context:component-scan base-package="org.joonzis.chatting.controller" />
+	<context:component-scan base-package="org.joonzis.iot.controller" />
+	<context:component-scan base-package="org.joonzis.store.controller" />
+	<context:component-scan base-package="org.joonzis.user.controller" />
+	<context:component-scan base-package="org.joonzis.plant.controller" />
+	<context:component-scan base-package="org.joonzis.myplant.controller" />
 	
 </beans:beans>
