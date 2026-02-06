@@ -1,8 +1,8 @@
 package org.joonzis.iot.controller;
 
-import org.joonzis.iot.domain.PlantStatistics;
 import org.joonzis.iot.dto.SensorDataDTO;
 import org.joonzis.iot.service.SensorDataService;
+import org.joonzis.iot.vo.PlantStatisticsVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +24,7 @@ public class ArduinoController {
 	    public ResponseEntity<String> receiveSensorData(@RequestBody SensorDataDTO dto) {
 		 	
 		 	// DTO → VO 변환
-	        PlantStatistics vo = new PlantStatistics();
+	        PlantStatisticsVO vo = new PlantStatisticsVO();
 	        vo.setMyplantId(dto.getMyplantId());
 	        vo.setTemperature(dto.getTemperature());
 	        vo.setHumidity(dto.getHumidity());
@@ -39,7 +39,7 @@ public class ArduinoController {
 	    }
 
 	 @PostMapping("/iot/sensor")
-	 public ResponseEntity<String> receive(@RequestBody PlantStatistics data){
+	 public ResponseEntity<String> receive(@RequestBody PlantStatisticsVO data){
 		 sensorDataService.svae(data);
 		 return ResponseEntity.ok("ok");
 	 }
