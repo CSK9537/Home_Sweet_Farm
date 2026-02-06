@@ -2,6 +2,7 @@ package org.joonzis.store.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.joonzis.store.dto.ProductDetailDTO;
 import org.joonzis.store.dto.ProductForAdminListDTO;
 import org.joonzis.store.dto.ProductForListDTO;
@@ -43,4 +44,7 @@ public interface ProductMapper {
 	
 	// 검색
 	public List<ProductForListDTO> searchProductList(SearchProductDTO search);
+	
+	// 재고 차감
+	public int decreaseProductRemain(@Param("product_id")int product_id, @Param("product_count")int product_count);
 }
