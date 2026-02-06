@@ -1,11 +1,9 @@
 package org.joonzis.iot.controller;
 
+import javax.servlet.http.HttpSession;
 
-import java.util.List;
-
-import org.joonzis.iot.dto.MyPlantMainDTO;
 import org.joonzis.iot.service.MyPlantService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.joonzis.user.vo.UserVO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,20 +15,20 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/MyPlant")
 @RequiredArgsConstructor
 public class MyPlantController {
-	@Autowired
-	private MyPlantService myPlantService;
+	
+	private final MyPlantService myPlantService;
 	
 
 	@GetMapping("/main")
-    public String myPlantMain(Model model) {
+	public String myPlantMain(HttpSession session, Model model) {
 
-        // ⚠ 임시 userId (로그인 연동 전)
-        int userId = 1;
+	    UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+	    int userId = loginUser.getUser_id();
 
-        List<MyPlantMainDTO> myPlantList =
-                myPlantService.getMyPlantMainList(userId);
-
-        model.addAttribute("myPlantList", myPlantList);
+	    model.addAttribute(
+	        "myPlants",
+	        myPlantService.getMyPlantMainList(userId)
+	    );
 
         return "MyPlant/MyPlantMain";
     }

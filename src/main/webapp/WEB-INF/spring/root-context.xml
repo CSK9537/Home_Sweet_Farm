@@ -59,7 +59,9 @@
 	<!-- plant -->
 	<mybatis-spring:scan base-package="org.joonzis.plant.mapper"/>
 	<context:component-scan base-package="org.joonzis.plant.service"/>
-
+	<!-- myplant -->
+	<mybatis-spring:scan base-package="org.joonzis.iot.repository"/>
+	<context:component-scan base-package="org.joonzis.iot.service"/>
 </beans>
 
 	
