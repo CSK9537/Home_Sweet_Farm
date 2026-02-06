@@ -1,22 +1,25 @@
-package org.joonzis.iot.vo;
+package org.joonzis.iot.dto;
 
-
-
-import java.util.Date;
+import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class PlantStatisticsVO {
-    private Long myplantId;
+public class MyPlantMainDTO {
+	private int myplantId;
+    private String myplantName;
+
+    private Long plantId;
+    private String plantName;
+
     private double temperature;
     private double humidity;
     private double illumination;
     private double soilMoisture;
+
     private Date sensingTime;
-	
 }

@@ -5,15 +5,15 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.joonzis.iot.domain.PlantStatistics;
+import org.joonzis.iot.vo.PlantStatisticsVO;
 
 @Mapper
 public interface PlantStatisticsMapper{
-	void insert(PlantStatistics statistics);
+	void insert(PlantStatisticsVO statistics);
 
-    PlantStatistics findLatestByMyplantId(Long myplantId);
+    PlantStatisticsVO findLatestByMyplantId(Long myplantId);
 
-    List<PlantStatistics> findByPeriod(
+    List<PlantStatisticsVO> findByPeriod(
             @Param("myplantId") Long myplantId,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
