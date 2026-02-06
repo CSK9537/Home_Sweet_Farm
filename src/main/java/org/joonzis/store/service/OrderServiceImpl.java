@@ -1,9 +1,12 @@
 package org.joonzis.store.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.joonzis.store.dto.OrderDTO;
 import org.joonzis.store.mapper.OrderMapper;
+import org.joonzis.store.mapper.ProductMapper;
+import org.joonzis.store.mapper.WishListAndShoppingCartMapper;
 import org.joonzis.store.vo.OrderCardVO;
 import org.joonzis.store.vo.OrderProductListVO;
 import org.joonzis.store.vo.OrderTransperVO;
@@ -20,7 +23,10 @@ import lombok.extern.log4j.Log4j;
 public class OrderServiceImpl implements OrderService{
 	@Autowired
 	OrderMapper oMapper;
-	
+	@Autowired
+	WishListAndShoppingCartMapper wMapper;
+	@Autowired
+	ProductMapper pMapper;
 	
 	@Transactional
 	@Override
@@ -28,8 +34,9 @@ public class OrderServiceImpl implements OrderService{
 			String approvedat, int user_id, int use_point, int order_amount, int totalamount, int accumulate_point,
 			PaymentInfoVO paymentInfo, List<OrderProductListVO> products) {
 		int result = 0;
+		List<Integer> soldOutList = new ArrayList<Integer>();
 		
-		// 주문 내역 저장
+		// 주문 기본 정보 저장
 		OrderVO order = new OrderVO();
 		order.setOrder_id(order_id);
 		order.setPaymentkey(paymentkey);
@@ -46,28 +53,39 @@ public class OrderServiceImpl implements OrderService{
 		
 		// 결제 정보 저장
 		if(method.equals("카드")) {
-			result = oMapper.insertOrderCard((OrderCardVO)paymentInfo);
+			oMapper.insertOrderCard((OrderCardVO)paymentInfo);
 		} else if(method.equals("계좌이체")) {
-			result = oMapper.insertOrderTransper((OrderTransperVO)paymentInfo);
+			oMapper.insertOrderTransper((OrderTransperVO)paymentInfo);
 		} else {
 			// 가상계좌, 휴대폰, 간편결제, 문화상품권, 도서문화상품권, 게임문화상품권
-			// 예외 발생을 시켜야 rollback 진행
+			// 예외 발생을 시켜야 rollback이 진행
 			throw new RuntimeException("지원하지 않는 결제 수단입니다." + method);
 		}
 		
 		//주문 내역의 상품 리스트 저장
-		// batch insert(?) 사용 고려
 		if(products.size() > 0) {
 			for (OrderProductListVO orderProductListVO : products) {
+				// 이미 order_id가 들어가 있으려나? 들어가 있으면 이거 안해도 되는데
 				orderProductListVO.setOrder_id(order_id);
-				oMapper.insertOrderProductList(orderProductListVO);
+				// 재고 차감
+				if(pMapper.decreaseProductRemain
+						(orderProductListVO.getProduct_id(), orderProductListVO.getProduct_count()) == 1) result += 1;
+				else {
+					soldOutList.add(orderProductListVO.getProduct_id());
+				}
 			}
+			if(products.size() != result) {
+				throw new RuntimeException("주문 하신 상품 중 재고가 부족한 상품이 있습니다. 제품 ID : " + soldOutList);
+			}
+			oMapper.insertOrderProductList(products);
 		} else {
 			throw new RuntimeException("상품 리스트가 비어 있습니다." + products);
 		}
 		
 		// 유저의 장바구니 비우기
-		// 유저의 포인트 차감 (추가 예정)		
+		wMapper.deleteShoppingCartByUserId(user_id);
+		
+		// 유저의 포인트 차감 (추가 예정)
 		
 		return result;
 	}
@@ -89,13 +107,11 @@ public class OrderServiceImpl implements OrderService{
 		int result = 0;
 		OrderVO order = oMapper.selectOrder(order_id);
 		order.setOrder_status(order_status);
-		switch (order_status) {
-		case "CANCLE":
-			// 결제 취소 요청
-		case "SHIPPING":
-			//재고 차감
-		default:
-			break;
+		if(order_status.equals("CANCLE")) {
+			// 취소 요청을 위한 비즈니스 로직
+			
+			// 재고량 되돌리기
+			
 		}
 		result = oMapper.insertOrder(order);
 		return result;

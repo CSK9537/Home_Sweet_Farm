@@ -18,6 +18,8 @@ public interface WishListAndShoppingCartMapper {
 	public int insertShoppingCart(ShoppingCartVO vo);
 	public List<ShoppingCartDTO> getShoppingCart(@Param("data")int param, @Param("type")String type);
 	public int deleteShopingCart(@Param("user_id") int user_id, @Param("product_id") int product_id);
+	public int deleteShoppingCartByUserId(int user_id);
 	
 	// Upsert 이미 있으면 update, 데이터가 없으면 insert
+	public int upsertShoppingCart(@Param("user_id") int user_id, @Param("product_id") int product_id, @Param("type")String type);
 }
