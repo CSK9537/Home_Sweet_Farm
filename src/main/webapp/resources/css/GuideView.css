@@ -1,1 +1,217 @@
-@charset "UTF-8";
+.guide {
+  width: 100%;
+}
+
+/* 상단 */
+.guide-hero {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+}
+
+.guide-hero__title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.guide-hero__subtitle {
+  margin: 10px 0 0 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.guide-hero__figure {
+  margin: 0;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.guide-hero__img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 섹션 공통 */
+.guide-section {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.guide-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.guide-section__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.guide-article {
+  width: 100%;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+  background: #fff;
+  padding: 14px 16px;
+}
+
+.guide-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap; /* CLOB 줄바꿈 유지 */
+}
+
+/* 요약 */
+.guide-summary {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.summary-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.summary-item {
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-item__label {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.summary-item__value {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Key-Value */
+.guide-kv {
+  width: 100%;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+  background: #fff;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.guide-kv__row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.guide-kv__label {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.guide-kv__value {
+  font-size: 14px;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+/* 온도 카드 */
+.temp-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.temp-card {
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+  background: #fff;
+  padding: 12px 14px;
+}
+
+.temp-card__title {
+  margin: 0 0 6px 0;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.temp-card__value {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* 빈 화면 */
+.guide-empty {
+  width: 100%;
+  border: 1px dashed rgba(0,0,0,0.25);
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+  margin-top: 20px;
+  background: rgba(255,255,255,0.5);
+}
+
+.guide-empty__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.guide-empty__desc {
+  margin: 10px 0 0 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .guide-kv__row {
+    grid-template-columns: 140px 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .guide-hero__title {
+    font-size: 22px;
+  }
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .temp-grid {
+    grid-template-columns: 1fr;
+  }
+  .guide-kv__row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -54,4 +54,4 @@
 	</footer>
 </body>
 </html>
-<script src="header.js"></script>
+<script defer src="${pageContext.request.contextPath}/resources/js/header.js"></script>
