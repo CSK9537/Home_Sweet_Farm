@@ -1,8 +1,11 @@
 package org.joonzis.chatting.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.joonzis.chatting.dto.ChatRoomDTO;
 import org.joonzis.chatting.mapper.ChatRoomUserMapper;
+import org.joonzis.chatting.mapper.MsgMapper;
 import org.joonzis.chatting.vo.MsgVO;
 import org.joonzis.chatting.vo.RoomVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,33 +24,64 @@ public class ChatServiceImpl implements ChatService{
     private MsgService msgService;
 	@Autowired
     private ChatRoomUserMapper chatRoomUserMapper;
+	@Autowired
+	private MsgMapper msgMapper;
 
     // 1. 메세지 전송
-    public void sendMessage(int sender_id, int receiver_id, MsgVO msgVO) {
+	@Transactional
+    public MsgVO sendMessage(int sender_id, int receiver_id, MsgVO msgVO) {
         //  채팅방 조회 or 생성
         int room_id = roomService.getOrCreateRoom(sender_id, receiver_id);
 
         //  메세지 저장
         msgVO.setRoom_id(room_id);
+        msgVO.setSender_id(sender_id);
         msgService.sendMessage(msgVO);
+        return msgVO;
     }
 
     // 2. 마지막으로 읽은 메세지 이후 메세지 조회
     @Transactional(readOnly = true)
     public List<MsgVO> getMessages(int user_id, int room_id) {
-        Long lastReadMsgId =
-                chatRoomUserMapper.findLastReadMsgId(user_id, room_id);
-
-        if (lastReadMsgId == null) {
-            return msgService.findRoomId(room_id);
-        }
-        return msgService.findAfterMsgId(room_id, lastReadMsgId);
+//        Long lastReadMsgId =
+//            chatRoomUserMapper.findLastReadMsgId(user_id, room_id);
+//
+//        if (lastReadMsgId == null) {
+//            return msgService.findRoomId(room_id);
+//        }
+//        return msgService.findAfterMsgId(room_id, lastReadMsgId);
+    	return msgService.findRoomId(room_id);
     }
+
 
     // 3. 유저가 참여 중인 채팅방 목록
     @Transactional(readOnly = true)
-    public List<RoomVO> getUserRooms(int user_id) {
-        return roomService.findRoomByUser(user_id);
+    public List<ChatRoomDTO> getUserRooms(int user_id) {
+        List<RoomVO> rooms = roomService.findRoomByUser(user_id);
+
+        List<ChatRoomDTO> dtoList = new ArrayList<>();
+        for (RoomVO room : rooms) {
+            int otherUserId = (room.getUser1_id() == user_id) ? room.getUser2_id() : room.getUser1_id();
+
+            // 마지막 메시지 ID 가져오기
+            Long lastMsgId = msgMapper.findLastMsgIdByRoom(room.getRoom_id());
+            MsgVO lastMsg = null;
+            if (lastMsgId != null) {
+                lastMsg = msgMapper.findById(lastMsgId); // findById는 없으면 만들어야 함
+            }
+
+            // 읽지 않은 메시지 수
+            int unreadCount = chatRoomUserMapper.countUnread(room.getRoom_id(), user_id);
+
+            dtoList.add(new ChatRoomDTO(
+                room.getRoom_id(),
+                otherUserId,
+                lastMsg != null ? lastMsg.getContent() : "",
+                unreadCount
+            ));
+        }
+
+        return dtoList;
     }
 
     // 4. 읽음 처리
