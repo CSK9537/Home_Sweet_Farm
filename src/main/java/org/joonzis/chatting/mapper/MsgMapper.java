@@ -15,10 +15,11 @@ public interface MsgMapper {
 	// 특정 메세지 이후의 메세지 조회(마지막으로 읽은 메세지 이후의 메세지 화면에 표시하려는 의도)
 	List<MsgVO> findAfterMsgId(@Param("room_id")int room_id,@Param("msg_id") Long msg_id);
 	
+	// 특정 채팅방의 마지막 메세지 조회
 	Long findLastMsgIdByRoom(int room_id);
 	
-	
-	
+	// 특정 메세지를 아이디로 조회
+	MsgVO findById(@Param("msg_id") Long msg_id);
 	
 	void deleteAll();
 }
