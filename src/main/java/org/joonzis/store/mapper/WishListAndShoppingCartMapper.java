@@ -20,3 +20,4 @@ public interface WishListAndShoppingCartMapper {
 	public int deleteShopingCart(@Param("user_id") int user_id, @Param("product_id") int product_id);
 	
 	// Upsert 이미 있으면 update, 데이터가 없으면 insert
+}
