@@ -128,5 +128,11 @@
 		WHERE user_id = #{user_id}
 		AND is_selected = 1
 	</select>
+	<!-- 유저 닉네임 가져오기  -->
+    <select id="findNicknameById" resultType="String">
+        SELECT nickname
+        FROM TBL_USER
+        WHERE user_id = #{user_id}
+    </select>
 	
 </mapper>
