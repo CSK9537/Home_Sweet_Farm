@@ -8,7 +8,7 @@
 </head>
 <body>
 	<h1>
-	This is find-pw.jsp
+	This is findPw.jsp
 	</h1>
 </body>
 </html>

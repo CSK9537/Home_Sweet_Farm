@@ -18,7 +18,7 @@ public interface UserService {
 	public String findIdByPhone(@Param("phone")String phone);
 	//비밀번호 찾기 대상 확인(이메일)
 	public int existUserByEmail(@Param("username")String username,
-							@Param("phone")String phone);
+							@Param("email")String email);
 	//비밀번호 찾기 대상 확인(전화번호)
 	public int existUserByPhone(@Param("username")String username,
 							@Param("phone")String phone);
