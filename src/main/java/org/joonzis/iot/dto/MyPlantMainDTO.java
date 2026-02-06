@@ -13,7 +13,7 @@ public class MyPlantMainDTO {
 	private int myplantId;
     private String myplantName;
 
-    private Long plantId;
+    private int plantId;
     private String plantName;
 
     private double temperature;
