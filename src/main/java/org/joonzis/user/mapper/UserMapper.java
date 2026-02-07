@@ -1,6 +1,7 @@
 package org.joonzis.user.mapper;
 
 import org.apache.ibatis.annotations.Param;
+import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
 
 public interface UserMapper {
@@ -32,7 +33,26 @@ public interface UserMapper {
 	//아이디 중복 체크
 	public int countByUsername(@Param("username")String username);
 	
+	//이메일 중복 체크
+	public int countByEmail(String email);
+	
+	//전화번호 중복 체크
+	public int countByPhone(String phone);
+	
 	//마케팅수신동의 테스트용 조회
 	public UserVO selectByUsername(String username);
 	
+	
+	//공개형 프로필
+	//1) 닉네임, 프로필, 회원등급, 자기소개
+	public UserDTO selectPublicProfile(int user_id);
+	
+	//2) 전체 답변수
+	public int getReplyCnt(int user_id);
+	
+	//3)조회수
+	public int getViewCnt(int user_id);
+	
+	//4)채택 답변(수)
+	public int getIsSelected(int user_id);
 }

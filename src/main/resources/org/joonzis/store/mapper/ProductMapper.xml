@@ -4,7 +4,7 @@
 
 <mapper namespace="org.joonzis.store.mapper.ProductMapper">
 
-		<insert id="insertProduct">
+	<insert id="insertProduct">
 		INSERT INTO tbl_product
 		VALUES(
 			product_seq.nextval,
@@ -235,6 +235,14 @@
 		ORDER BY p.product_price DESC
 	</select>
 	
-	
+	<update id="decreaseProductRemain">
+	    <![CDATA[
+	    UPDATE tbl_product
+	    SET product_remain = product_remain - #{product_count}
+	    WHERE product_id = #{product_id}
+	        AND product_remain >= #{product_count}
+	        AND product_remain > 0
+	    ]]>
+	</update>
 	
 </mapper>

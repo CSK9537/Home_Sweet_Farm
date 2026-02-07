@@ -1,5 +1,6 @@
 package org.joonzis.user.service;
 
+import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.mapper.UserMapper;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +22,13 @@ public class UserServiceImpl implements UserService{
 				!vo.getPassword().equals(vo.getConfirmPassword())) {
 			throw new IllegalArgumentException("비밀번호 확인이 일치하지 않습니다.");
 		}
-		
-		
 		//2)아이디 중복 체크(예시)
 		if(isIdDuplicate(vo.getUsername())) {
 			throw new IllegalStateException("이미 존재하는 아이디입니다");
 		}
-		
 		//3)마케팅 정보 수신 동의 처리
 		//confirm_event: 0(미동의), 1(동의)
 		vo.setConfirm_event(vo.getConfirm_event() == 1? 1 : 0);
-		
-		
 		//4)DB insert
 		int result = usermapper.insert(vo);
 		if(result != 1) {
@@ -79,6 +75,18 @@ public class UserServiceImpl implements UserService{
 	public int countByUsername(String username) {
 		return usermapper.countByUsername(username);
 	}
-	
+	@Override
+	public UserDTO selectPublicProfile(int user_id) {
+		UserDTO dto =
+		usermapper.selectPublicProfile(user_id);
+		if(dto == null) {
+			throw new IllegalArgumentException("존재하지 않는 회원");
+		}
+		
+		dto.setReply_cnt(usermapper.getReplyCnt(user_id));
+		dto.setView_cnt(usermapper.getViewCnt(user_id));
+		
+		return dto;
+	}
 
 }

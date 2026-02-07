@@ -9,11 +9,13 @@
 		INSERT INTO TBL_USER
 			(user_id, username, password, 
 			nickname, name, email, phone,
-			profile_filename, brith_date, confirm_event)
+			profile_filename, brith_date, 
+			confirm_service, confirm_userinfo, confirm_event)
 		VALUES
 			 (USER_ID_SEQ.NEXTVAL, #{username}, #{password},
 			  #{nickname}, #{name}, #{email}, #{phone}, 
-			  #{profile_filename}, #{brith_date}, #{confirm_event})
+			  #{profile_filename}, #{brith_date}, 
+			  #{confirm_service}, #{confirm_userinfo}, #{confirm_event})
 	</insert>
 	
 	<!-- 데이터 조회  -->
@@ -77,10 +79,54 @@
 		WHERE username = #{username}
 	</select>
 	
+	<!-- 이메일 중복 체크: 본인인증(이메일)을 위해 미리 만들어둠 -->
+	<select id="countByEmail" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_USER
+		WHERE email = #{email}
+	</select>
+	
+	<!-- 전화번호 중복 체크: 본인인증(전화번호)을 위해 미리 만들어둠  -->
+	<select id="countByPhone" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_USER
+		WHERE phone = #{phone}
+	</select>
+	
 	<!-- 마케팅수신동의 테스트용 조회 -->
 	<select id="selectByUsername" parameterType="String" resultType="org.joonzis.user.vo.UserVO">
-		SELECT username, confirm_event 
+		SELECT username, confirm_service, confirm_userinfo, confirm_event 
 		FROM TBL_USER
 		WHERE username = #{username}
 	</select>
+	
+	<!-- 공개 프로필 조회: 닉네임, 프로필, 회원등급, 자기소개   -->
+	<select id="selectPublicProfile" parameterType="int" resultType="org.joonzis.user.dto.UserDTO">
+		SELECT user_id, grade_id, nickname, profile_filename, intro
+		FROM TBL_USER
+		WHERE user_id = #{user_id}
+	</select>
+	
+	<!-- 공개 프로필 조회: 전체 답변수 -->
+	<select id="getReplyCnt" parameterType="int" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_REPLY
+		WHERE user_id = #{user_id}
+	</select>
+	
+	<!-- 공개 프로필 조회: 조회수  -->
+	<select id="getViewCnt" parameterType="int" resultType="int">
+		SELECT NVL(SUM(view_count),0)
+		FROM TBL_BOARD
+		WHERE user_id = #{user_id}
+	</select>
+	
+	<!-- 공개 프로필 조회: 채택 답변수  -->
+	<select id="getIsSelected" parameterType="int" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_BOARD
+		WHERE user_id = #{user_id}
+		AND is_selected = 1
+	</select>
+	
 </mapper>

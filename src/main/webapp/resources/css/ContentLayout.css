@@ -1,0 +1,68 @@
+/* 페이지 배경 */
+.page-shell {
+  background-color: #6b7b61;
+  border: 1px solid #000;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* 컨텐츠 래퍼 */
+.content-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 80px 120px;   /* PC 기본값 수정 */
+}
+
+/* 실제 컨텐츠 박스 */
+.content-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+
+  width: 100%;
+  max-width: 1260px;   /* 고정 width 제거 */
+  padding: 50px 60px;
+
+  background-color: #f4f2ed;
+  border-radius: 10px;
+  border: 3px solid #6b7b61;
+}
+
+.content-card,
+.content-wrap {
+  height: auto;
+  min-height: 1px;
+}
+
+/* =========================
+   Tablet (1024px 이하)
+========================= */
+@media (max-width: 1024px) {
+
+  .content-wrap {
+    padding: 60px 60px;
+  }
+
+  .content-card {
+    padding: 40px 40px;
+  }
+}
+
+/* =========================
+   Mobile (767px 이하)
+========================= */
+@media (max-width: 767px) {
+
+  .content-wrap {
+    padding: 40px 20px;
+  }
+
+  .content-card {
+    padding: 30px 20px;
+    border-width: 2px;
+  }
+}

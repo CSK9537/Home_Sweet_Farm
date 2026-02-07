@@ -1,0 +1,293 @@
+:root{
+  --brand:#6b7b61;
+  --paper:#f4f2ed;
+  --white:#ffffff;
+  --text:#2a2a2a;
+}
+
+/* ===== modal shell ===== */
+.cal-modal{ position:fixed; inset:0; display:none; z-index:9999; }
+.cal-modal[aria-hidden="false"]{ display:block; }
+.cal-modal__backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.35); }
+
+/* 패널: 고정 높이 + 안전한 max-height */
+.cal-modal__panel{
+  position:relative;
+  width:min(1100px, calc(100vw - 24px));
+  height:min(720px, calc(100vh - 24px));
+  margin:12px auto;
+  background:var(--paper);
+  border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  overflow:hidden;
+
+  /* ✅ header + body 레이아웃 */
+  display:flex;
+  flex-direction:column;
+}
+
+/* ===== header ===== */
+.cal-modal__header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  border-bottom:1px solid rgba(107,123,97,.25);
+  background:#fbfaf6;
+  flex:0 0 auto;
+}
+.cal-modal__title{ font-weight:800; color:var(--brand); }
+
+/* ===== body (calendar + memo) ===== */
+.cal-modal__body{
+  flex:1 1 auto;
+  min-height:0;
+
+  display:grid;
+  grid-template-columns: 1fr 320px;
+  gap:14px;
+  padding:14px;
+  box-sizing:border-box;
+}
+
+/* ===== buttons ===== */
+.cal-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 14px;
+  border-radius:12px;
+  font-weight:800;
+  border:2px solid transparent;
+  cursor:pointer;
+  background:#fff;
+  white-space:nowrap;
+}
+.cal-btn--primary{ background:var(--brand); color:var(--paper); }
+.cal-btn--ghost{
+  background:transparent;
+  color:var(--brand);
+  border-color:var(--brand);
+  transition: background .2s ease, color .2s ease;
+}
+.cal-btn--ghost:hover{ background:var(--brand); color:var(--paper); }
+
+/* ===== calendar ===== */
+.cal{
+  background:#fbfaf6;
+  border-radius:14px;
+  border:1px solid rgba(107,123,97,.25);
+  padding:14px;
+
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  min-height:0; /* ✅ 내부 요소가 넘칠 때 계산 안정 */
+}
+
+.cal__top{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(107,123,97,.25);
+}
+
+.cal__month-kr{ font-size:20px; font-weight:900; color:var(--brand); margin-right:10px; }
+.cal__month-en{ font-size:18px; font-family:serif; color:rgba(42,42,42,.75); }
+.cal__nav{ display:flex; gap:8px; }
+
+.cal__dow{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  padding:10px 0;
+  font-weight:800;
+  font-size:12px;
+  color:rgba(42,42,42,.75);
+}
+.cal__dow > div{ text-align:center; }
+
+.cal__grid{
+  flex:1 1 auto;
+  min-height:420px;
+
+  display:grid;
+  grid-template-columns:repeat(7, 1fr);
+  grid-auto-rows: 1fr;
+
+  border-top:1px solid rgba(107,123,97,.18);
+  border-left:1px solid rgba(107,123,97,.18);
+  user-select:none;
+  overflow:hidden; /* ✅ 셀 안이 넘쳐도 footer처럼 밀리지 않게 */
+}
+
+.cal-cell{
+  border-right:1px solid rgba(107,123,97,.18);
+  border-bottom:1px solid rgba(107,123,97,.18);
+  padding:8px;
+  background:#fbfaf6;
+  cursor:pointer;
+}
+.cal-cell--muted{ opacity:.45; background:#f6f4ef; }
+.cal-cell--sun .cal-cell__day{ color:#b04a3a; }
+.cal-cell--sat .cal-cell__day{ color:#2e5aa3; }
+
+.cal-cell__day{
+  font-size:12px;
+  font-weight:900;
+  color:rgba(42,42,42,.85);
+}
+
+.cal-cell--selected{
+  outline:2px solid rgba(107,123,97,.55);
+  outline-offset:-2px;
+  background:rgba(107,123,97,.08);
+}
+
+/* drop highlight */
+.cal-cell--droppable{
+  background:rgba(107,123,97,.12);
+  outline:2px dashed rgba(107,123,97,.55);
+  outline-offset:-2px;
+}
+
+/* ❌ 기존 pill UI는 사용 안 한다면 숨겨도 됨(아이콘 요약으로 대체)
+   (JS에서 cal-pill을 더 이상 만들지 않는다면 이 블록은 남겨도 무관) */
+.cal-pill{
+  margin-top:6px;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  width:fit-content;
+  max-width:100%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.cal-pill--water{ background:#1f4bd6; color:#fff; }
+.cal-pill--nutri{ background:#f2dc00; color:#3a3300; }
+.cal-pill--repot{ background:#b86a00; color:#fff; }
+
+/* ✅ 하단 footer(리셋/돌아가기/확인) 제거 계획이면 안 보이게 */
+.cal__footer{ display:none; }
+
+/* ===== right side ===== */
+.cal-side{
+  background:#fbfaf6;
+  border-radius:14px;
+  border:1px solid rgba(107,123,97,.25);
+  padding:14px;
+
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  min-height:0;
+}
+
+/* ✅ MEMO 헤더 상단(제목 + 취소/저장) */
+.cal-side__head-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.cal-side__actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.cal-side__title{ font-weight:900; color:rgba(42,42,42,.75); letter-spacing:.5px; }
+.cal-side__date{ margin-top:6px; font-size:12px; color:rgba(42,42,42,.65); }
+
+.cal-side__palette{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:12px 0 8px;
+}
+
+.memo-item{
+  border:1px solid rgba(107,123,97,.25);
+  border-radius:999px;
+  padding:8px 12px;
+  font-weight:900;
+  cursor:grab;
+  background:#fff;
+  user-select:none;
+}
+.memo-item:active{ cursor:grabbing; }
+.memo-item--water{ border-color:#1f4bd6; color:#1f4bd6; }
+.memo-item--nutri{ border-color:#c7b400; color:#7a6c00; }
+.memo-item--repot{ border-color:#b86a00; color:#b86a00; }
+
+.cal-side__hint{
+  font-size:11px;
+  color:rgba(42,42,42,.55);
+  line-height:1.4;
+  margin-bottom:10px;
+}
+
+/* 리스트: 기본은 넘치면 스크롤(하지만 버튼을 위로 올렸으니 잘 안 보임) */
+.cal-side__list{
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  flex:1 1 auto;
+}
+.cal-side__list-title{ font-weight:900; color:var(--brand); margin-bottom:8px; }
+
+.cal-list{
+  list-style:none;
+  padding:0;
+  margin:0;
+
+  overflow:auto;
+  border-top:1px solid rgba(107,123,97,.18);
+  padding-top:8px;
+}
+
+.cal-list li{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px 0;
+  border-bottom:1px dashed rgba(107,123,97,.18);
+  font-size:12px;
+}
+.cal-list__title{ font-weight:900; }
+.cal-list__del{
+  border:none;
+  background:transparent;
+  color:#b04a3a;
+  font-weight:900;
+  cursor:pointer;
+}
+
+/* ✅ 달력 날짜칸 이모지 요약 표시(1줄) */
+.cal-marks{
+  margin-top:6px;
+  display:flex;
+  gap:4px;
+  flex-wrap:nowrap;
+  overflow:hidden;
+  white-space:nowrap;
+}
+.cal-mark{
+  font-size:14px;
+  line-height:1;
+}
+.cal-mark--more{
+  font-size:12px;
+  padding:2px 6px;
+  border-radius:999px;
+  border:1px solid rgba(0,0,0,.15);
+}
+
+/* 반응형 */
+@media (max-width: 900px){
+  .cal-modal__body{ grid-template-columns:1fr; }
+}

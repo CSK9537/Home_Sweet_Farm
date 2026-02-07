@@ -1,0 +1,271 @@
+/* ================================
+   개인정보처리방침 Policy Page CSS (이용약관 스타일 통일)
+   - 적용 대상: .content-card.policy 및 .policy 이하
+   - 목표:
+     1) 이용약관처럼 외곽선(바깥+안쪽 테두리)
+     2) 내용이 짧아도 박스 폭 전체 사용 + 충분한 높이 유지
+     3) 본문 왼쪽 정렬
+================================ */
+
+/* [박스(카드) 외곽] : 이용약관 terms__container 느낌(바깥 테두리/배경/패딩) */
+.content-card.policy{
+  position: relative;
+  width: 100%;
+  background-color: #f4f2ed;
+  border: 3px solid #6b7b61;
+  border-radius: 10px;
+
+  /* 이용약관과 비슷한 여백 */
+  padding: 60px 90px;
+
+  /* 내용이 짧아도 "전체 사이즈"로 보이게 */
+  min-height: 70vh;          /* 화면 기준으로 자연스럽게 채움 */
+  box-sizing: border-box;
+}
+
+/* [박스(카드) 안쪽 테두리] : 이용약관처럼 내부 라인(인셋 보더) */
+.content-card.policy::before{
+  content: "";
+  position: absolute;
+  inset: 32px;               /* 안쪽 테두리 위치(원하는 만큼 조절) */
+  border: 2px solid rgba(107, 123, 97, 0.85);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+/* [레이아웃] policy 섹션 전체 */
+.policy{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  color: #555555;
+  box-sizing: border-box;
+}
+
+/* -------------------------------
+   상단 헤더(제목/시행일/소개)
+-------------------------------- */
+
+/* 제목/시행일은 이용약관처럼 중앙 정렬 */
+.policy__header{
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* 제목 */
+.policy__title{
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  color: #6b7b61;
+  font-size: 44px;
+  line-height: 1.2;
+}
+
+/* 시행일 */
+.policy__date{
+  margin: 10px 0 0;
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 300;
+  color: #888888;
+  font-size: 14px;
+}
+
+/* 소개문은 "본문"이므로 왼쪽 정렬 + 폭 전체 사용(가운데로 모이지 않게) */
+.policy__intro{
+  margin: 18px 0 0;
+  max-width: 100%;
+  width: 100%;
+  text-align: left;
+
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 300;
+  color: #555555;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.policy__brand{
+  font-weight: 700;
+  color: #333333;
+}
+
+.policy__intro-text{
+  font-weight: 300;
+  color: #555555;
+}
+
+/* -------------------------------
+   섹션(조항) 공통
+-------------------------------- */
+
+/* 이용약관과 동일하게 섹션 상단 라인 */
+.policy__section{
+  width: 100%;
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 2px solid #e0e0e0;
+  box-sizing: border-box;
+}
+
+/* 섹션 타이틀은 왼쪽 정렬 */
+.policy__section-title{
+  margin: 0 0 12px;
+  text-align: left;
+
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 700;
+  color: #6b7b61;
+  font-size: 24px;
+  line-height: 1.6;
+}
+
+/* 본문은 왼쪽 정렬 + 폭 전체 */
+.policy__text{
+  margin: 10px 0 0;
+  width: 100%;
+  text-align: left;
+
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 300;
+  color: #555555;
+  font-size: 16px;
+  line-height: 1.8;
+  box-sizing: border-box;
+}
+
+/* -------------------------------
+   리스트(중요) : display:flex 제거(가운데로 모이는 현상 방지)
+-------------------------------- */
+
+.policy__list{
+  width: 100%;
+  margin: 12px 0 0;
+  padding-left: 20px;     /* 이용약관과 동일 */
+  text-align: left;
+
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 300;
+  color: #555555;
+  font-size: 16px;
+  line-height: 1.8;
+
+  box-sizing: border-box;
+}
+
+/* ol */
+.policy__list--ordered{
+  list-style: decimal;
+}
+
+/* li 간격은 이용약관처럼 margin으로 */
+.policy__list-item{
+  width: 100%;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+
+.policy__label{
+  font-weight: 700;
+  color: #333333;
+  margin-right: 6px;
+}
+
+/* 서브리스트 */
+.policy__sublist{
+  margin: 8px 0 0;
+  padding-left: 18px;
+  list-style: disc;
+}
+
+.policy__sublist li{
+  margin: 6px 0;
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 300;
+  color: #555555;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+/* -------------------------------
+   개인정보 보호책임자(정보 리스트)
+   - 전체 폭 사용 + 왼쪽 정렬
+-------------------------------- */
+
+.policy__info-list{
+  width: 100%;
+  margin: 12px 0 0;
+  padding-left: 0;
+  list-style: none;
+  text-align: left;
+
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 300;
+  color: #555555;
+  font-size: 16px;
+  line-height: 1.8;
+
+  box-sizing: border-box;
+}
+
+.policy__info-title{
+  margin: 8px 0;
+  font-weight: 700;
+  color: #333333;
+}
+
+.policy__info-item{
+  margin: 8px 0;
+}
+
+.policy__info-label{
+  font-weight: 700;
+  color: #333333;
+  margin-right: 10px;
+}
+
+.policy__info-value{
+  font-weight: 300;
+  color: #555555;
+}
+
+/* -------------------------------
+   CTA 버튼(이용약관과 동일 스펙)
+-------------------------------- */
+
+.policy__actions{
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.policy__home-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 250px;
+  height: 80px;
+
+  border-radius: 50px;
+  border: 5px solid #6b7b61;
+
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #6b7b61;
+  text-decoration: none;
+}
+
+/* (선택) 반응형: 카드 패딩만 줄여서 가독성 확보 */
+@media (max-width: 767px){
+  .content-card.policy{
+    padding: 40px 22px;
+  }
+  .content-card.policy::before{
+    inset: 16px;
+  }
+  .policy__title{
+    font-size: 32px;
+  }
+}

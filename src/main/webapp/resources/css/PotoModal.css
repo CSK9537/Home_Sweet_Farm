@@ -1,0 +1,223 @@
+:root{
+  --brand:#6b7b61;
+  --paper:#f4f2ed;
+  --white:#ffffff;
+  --muted:rgba(42,42,42,.7);
+  --radius:14px;
+}
+
+/* ===== Modal base ===== */
+.photo-modal{ position:fixed; inset:0; display:none; z-index:999999; font-family:inherit; }
+.photo-modal[aria-hidden="false"]{ display:block; }
+
+.photo-modal__backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.35); }
+
+.photo-modal__panel{
+  position:relative;
+  width:min(980px, calc(100vw - 40px));
+  max-height: calc(100vh - 40px);
+  margin: 20px auto;
+  background: var(--paper);
+  border-radius: var(--radius);
+  overflow:hidden;
+  box-shadow: 0 12px 40px rgba(0,0,0,.25);
+  display:flex;
+  flex-direction:column;
+}
+
+.photo-modal__header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 16px 18px;
+  background: rgba(255,255,255,.55);
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+
+.photo-modal__title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:20px;
+  font-weight:800;
+  color: var(--brand);
+}
+
+.photo-modal__icon{ font-size:20px; }
+
+.photo-modal__body{ padding: 18px; overflow:auto; }
+
+/* ===== Grid ===== */
+.photo-grid{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.photo-card{
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow:hidden;
+  border: 1px solid rgba(0,0,0,.06);
+  position:relative;
+}
+
+.photo-card__img{
+  width:100%;
+  aspect-ratio: 1 / 1;
+  object-fit:cover;
+  display:block;
+}
+
+.photo-card__remove{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:34px;
+  height:34px;
+  border-radius:999px;
+  border:1px solid rgba(0,0,0,.12);
+  background: rgba(255,255,255,.85);
+  cursor:pointer;
+  font-size:18px;
+  line-height:1;
+}
+
+/* ===== Add tile ===== */
+.photo-add{
+  background: rgba(255,255,255,.6);
+  border: 2px dashed rgba(107,123,97,.35);
+  border-radius: var(--radius);
+  cursor:pointer;
+  min-height: 170px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 12px;
+}
+
+.photo-add__inner{ text-align:center; color: var(--brand); }
+
+.photo-add__badge{
+  width:42px; height:42px;
+  border-radius:999px;
+  background: rgba(107,123,97,.15);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.photo-add__text{ font-weight:800; }
+.photo-add__sub{ margin-top:4px; font-size:12px; opacity:.8; }
+
+/* ===== Meta / progress ===== */
+.photo-meta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 16px;
+  background: rgba(255,255,255,.55);
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.photo-meta__hint{ color: rgba(0,0,0,.65); font-size:13px; }
+.photo-meta__hint2{ color: rgba(0,0,0,.55); font-size:12px; margin-top:4px; }
+
+.photo-progress{
+  min-width: 240px;
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+
+.photo-progress__bar{
+  flex:1;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(107,123,97,.18);
+  overflow:hidden;
+}
+
+.photo-progress__bar span{
+  display:block;
+  height:100%;
+  width:0%;
+  background: var(--brand);
+  border-radius: 999px;
+}
+
+.photo-progress__txt{ font-weight:800; color: var(--brand); }
+
+/* ===== Footer buttons ===== */
+.photo-modal__footer{
+  display:flex;
+  justify-content:flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* ===== Common button look (닫기/초기화/전송) ===== */
+.photo-modal__close,
+#photoResetBtn,
+#photoSubmitBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: var(--radius);
+  font-weight: 900;
+  letter-spacing: .2px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .06s ease;
+}
+
+.photo-modal__close:active,
+#photoResetBtn:active,
+#photoSubmitBtn:active{
+  transform: translateY(1px);
+}
+
+/* ✅ 아웃라인(=초기화 느낌) : 닫기 + 초기화 */
+.photo-modal__close,
+#photoResetBtn{
+  background: var(--paper);
+  color: var(--brand);
+  border-color: rgba(107,123,97,.75);
+}
+
+.photo-modal__close:hover,
+#photoResetBtn:hover{
+  background: var(--brand);
+  color: var(--paper);
+}
+
+/* ✅ 채움(=저장 느낌) : 전송 */
+#photoSubmitBtn{
+  background: var(--brand);
+  color: var(--paper);
+  border-color: var(--brand);
+}
+
+/* 비활성화 */
+#photoSubmitBtn:disabled{
+  opacity: .55;
+  cursor: not-allowed;
+  filter: none;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px){
+  .photo-grid{ grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px){
+  .photo-grid{ grid-template-columns: repeat(2, 1fr); }
+  .photo-progress{ min-width: 160px; }
+}

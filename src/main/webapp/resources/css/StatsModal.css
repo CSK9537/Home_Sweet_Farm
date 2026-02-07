@@ -1,0 +1,176 @@
+:root{
+  --brand:#6b7b61;
+  --paper:#f4f2ed;
+  --white:#fff;
+  --line:rgba(0,0,0,.12);
+  --muted:rgba(0,0,0,.55);
+  --shadow:0 16px 48px rgba(0,0,0,.25);
+}
+
+/* ===== modal base ===== */
+.stats-modal{ position:fixed; inset:0; display:none; z-index:999999; }
+.stats-modal[aria-hidden="false"]{ display:block; }
+.stats-modal__backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.35); }
+
+.stats-modal__panel{
+  position:relative;
+  width:min(720px, calc(100vw - 28px));
+  height:min(880px, calc(100vh - 28px));
+  margin:14px auto;
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ===== header ===== */
+.stats-modal__header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 14px 10px;
+  background:rgba(255,255,255,.55);
+  border-bottom:1px solid var(--line);
+}
+.stats-modal__tabs{ display:flex; gap:10px; }
+
+/* ===== buttons (tab/close/footer) ===== */
+.stats-tab,
+.stats-modal__close,
+.mp-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:44px;
+  padding:0 18px;
+  border-radius:14px;
+  font-size:14px;
+  font-weight:900;
+  border:2px solid transparent;
+  cursor:pointer;
+  background:var(--white);
+  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .06s ease;
+}
+.stats-tab:active,
+.stats-modal__close:active,
+.mp-btn:active{ transform: translateY(1px); }
+
+/* ghost */
+.stats-tab,
+.stats-modal__close{
+  border-color: rgba(107,123,97,.75);
+  color: var(--brand);
+}
+.stats-tab:hover,
+.stats-modal__close:hover{
+  background: var(--brand);
+  color: var(--paper);
+  border-color: var(--brand);
+}
+
+/* tab active (primary) */
+.stats-tab.is-active{
+  background: var(--brand);
+  color: var(--paper);
+  border-color: var(--brand);
+}
+
+/* close button: 텍스트(닫기) 가로 유지 */
+.stats-modal__close{
+  min-width:80px;
+  white-space:nowrap;
+  word-break:keep-all;
+}
+
+/* footer primary */
+.mp-btn--primary{
+  background: var(--brand);
+  color: var(--paper);
+  border-color: var(--brand);
+}
+.mp-btn--primary:hover{ filter: brightness(.95); }
+
+/* ===== body ===== */
+.stats-modal__body{ padding:12px 14px 14px; overflow:auto; }
+
+/* ===== section ===== */
+.stats-card{ padding:10px 0 8px; border-bottom:1px solid rgba(0,0,0,.07); }
+.stats-card:last-of-type{ border-bottom:0; }
+
+.stats-card__head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  margin-bottom:8px;
+}
+.stats-card__title{ margin:0; font-size:14px; font-weight:900; color:var(--brand); }
+
+/* detail link */
+.stats-detail-link{
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  font-size:12px;
+  color:var(--muted);
+  padding:4px 6px;
+}
+.stats-detail-link:hover{ font-weight:900; text-decoration:underline; color:rgba(0,0,0,.7); }
+
+/* chart */
+.stats-chart-wrap{
+  background:rgba(107,123,97,.18);
+  border:1px solid rgba(0,0,0,.06);
+  border-radius:6px;
+  padding:10px 10px 8px;
+}
+.stats-chart{ width:100%; height:160px; }
+
+/* detail table */
+.stats-detail{
+  margin-top:10px;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:6px;
+  background:rgba(255,255,255,.55);
+  overflow:hidden;
+}
+.stats-detail__table{ max-height:210px; overflow:auto; }
+
+.stats-detail__thead,
+.stats-detail__tbody .row{
+  display:grid;
+  grid-template-columns: 1fr 120px;
+  gap:10px;
+  padding:10px 12px;
+  font-size:12px;
+  color:var(--muted);
+}
+.stats-detail__thead{
+  position:sticky;
+  top:0;
+  background:rgba(244,242,237,.92);
+  border-bottom:1px solid rgba(0,0,0,.08);
+  font-weight:900;
+}
+.stats-detail__tbody .row{
+  padding:7px 12px;
+  border-bottom:1px solid rgba(0,0,0,.06);
+}
+.stats-detail__tbody .row:last-child{ border-bottom:0; }
+
+/* footer */
+.stats-modal__footer{
+  margin-top:10px;
+  display:flex;
+  justify-content:center;
+}
+
+/* mobile */
+@media (max-width: 480px){
+  .stats-tab{ height:40px; padding:0 14px; }
+  .stats-chart{ height:150px; }
+  .stats-detail__thead,
+  .stats-detail__tbody .row{ grid-template-columns: 1fr 90px; }
+}

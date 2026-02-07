@@ -1,0 +1,156 @@
+/* [레이아웃] 약관 전체 래퍼 */
+.terms {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* [컨테이너] 약관 박스(기존 view-6 역할) */
+.terms__container {
+  width: 100%;
+  max-width: 1260px;
+  background-color: #f4f2ed;
+  border: 3px solid #6b7b61;
+  border-radius: 10px;
+  padding: 50px 100px;
+}
+
+/* [상단 헤더] 타이틀/시행일 */
+.terms__header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.terms__title {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  color: #6b7b61;
+  font-size: 44px;
+  line-height: 1.2;
+}
+
+.terms__effective-date {
+  margin: 10px 0 0;
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 300;
+  color: #888888;
+  font-size: 14px;
+}
+
+/* [섹션] 조항 단위 */
+.terms__section {
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 2px solid #e0e0e0;
+}
+
+.terms__section-title {
+  margin: 0 0 12px;
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 700;
+  color: #6b7b61;
+  font-size: 24px;
+  line-height: 1.6;
+}
+
+/* [본문 텍스트] 문단/리드 */
+.terms__lead,
+.terms__paragraph {
+  margin: 10px 0 0;
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 300;
+  color: #555555;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.terms__brand {
+  font-weight: 700;
+  color: #333333;
+}
+
+/* [리스트] 정의/서비스: ordered, 의무: bulleted */
+.terms__list {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 300;
+  color: #555555;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.terms__list--ordered {
+  list-style: decimal;
+}
+
+.terms__list--bulleted {
+  list-style: disc;
+}
+
+.terms__list-item {
+  margin: 8px 0;
+}
+
+.terms__bullet-item {
+  margin: 8px 0;
+}
+
+/* [정의 파트] 용어 강조 */
+.terms__term {
+  font-weight: 700;
+  color: #333333;
+  margin-right: 6px;
+}
+
+.terms__desc {
+  font-weight: 300;
+  color: #555555;
+}
+
+/* [부칙] */
+.terms__appendix {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 2px solid #e0e0e0;
+}
+
+.terms__appendix-title {
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 700;
+  color: #333333;
+  font-size: 16px;
+}
+
+.terms__appendix-text {
+  margin: 10px 0 0;
+  font-family: "Noto Sans KR", sans-serif;
+  font-weight: 300;
+  color: #555555;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+/* [CTA] 홈으로 돌아가기 버튼 */
+.terms__cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.terms__cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 250px;
+  height: 80px;
+  border-radius: 50px;
+  border: 5px solid #6b7b61;
+
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #6b7b61;
+  text-decoration: none;
+}
