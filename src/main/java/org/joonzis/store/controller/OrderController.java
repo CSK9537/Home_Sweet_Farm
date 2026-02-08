@@ -25,6 +25,7 @@ public class OrderController {
 	@Autowired
 	OrderService oService;
 	
+	// 주문 내역 추가
 	@PostMapping(
 			value = "/add/{user_id}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
@@ -38,6 +39,7 @@ public class OrderController {
 		}
 	}
 	
+	// 주문 내역 조회
 	@GetMapping(
 			value = "/getDetail/{order_id}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
@@ -45,6 +47,7 @@ public class OrderController {
 		return new ResponseEntity<OrderDTO>(oService.getOrderDetail(order_id), HttpStatus.OK);
 	}
 	
+	// 유저의 주문 내역 리스트 조회
 	@GetMapping(
 			value = "/getList/user_id/{user_id}}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,6 +56,7 @@ public class OrderController {
 		return new ResponseEntity<List<OrderDTO>>(list,HttpStatus.OK);
 	}
 	
+	// 상품 기준 주문 내역 리스트 조회
 	@GetMapping(
 			value = "/getList/product_id/{product_id}}",
 			produces = MediaType.APPLICATION_JSON_VALUE)

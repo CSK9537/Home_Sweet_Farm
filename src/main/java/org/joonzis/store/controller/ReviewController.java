@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ public class ReviewController {
 	@Autowired
 	StoreService sService;
 	
-	// 댓글 전체 보기(REST)
+	// 제품 기준 리뷰 전체 보기(REST)
 	@GetMapping(
 			value="/get/product/{product_id}",
 			produces=MediaType.APPLICATION_JSON_VALUE)
@@ -34,7 +35,7 @@ public class ReviewController {
 		return new ResponseEntity<List<ProductReviewDTO>>(list, HttpStatus.OK);
 	}
 	
-	// 댓글 추가
+	// 리뷰 추가
 	@PostMapping(
 			value="add/product/{product_id}/user/{user_id}")
 	public ResponseEntity<String> addReview(
@@ -47,6 +48,7 @@ public class ReviewController {
 		return new ResponseEntity<String>("OK" ,HttpStatus.OK);
 	}
 	
+	// 리뷰 수정
 	@PutMapping(
 			value = "modify/review/{product_review_id}",
 			produces=MediaType.APPLICATION_JSON_VALUE)
@@ -56,5 +58,26 @@ public class ReviewController {
 		vo.setProduct_review_id(product_review_id);
 		if(sService.modifyProductReview(vo) == 0) return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		return new ResponseEntity<String>(HttpStatus.OK);
+	}
+	
+	// 리뷰 삭제
+	@DeleteMapping(
+			value = "remove/review/{product_review_id}",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> removeReview(
+			@PathVariable("product_review_id")int product_review_id){
+		int result = sService.removeProductReview(product_review_id);
+		if(result > 0) return new ResponseEntity<String>(HttpStatus.OK);
+		else return new ResponseEntity<String>("Database does not changed",HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	// 유저가 쓴 리뷰들 조회
+	@GetMapping(
+			value="get/user/{user_id}",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ProductReviewDTO>> getReviewsByUserId(
+			@PathVariable("user_id") int user_id){
+		List<ProductReviewDTO> list = sService.getReviewListByUserId(user_id);
+		return new ResponseEntity<List<ProductReviewDTO>>(list, HttpStatus.OK);
 	}
 }
