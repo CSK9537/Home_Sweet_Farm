@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.joonzis.chatting.mapper.MsgMapper">
+
+    <!-- 1. 메시지 삽입 -->
+    <insert id="insert" parameterType="org.joonzis.chatting.vo.MsgVO" keyProperty="msg_id">
+        INSERT INTO tbl_msg (msg_id, room_id, sender_id, content, created_at)
+        VALUES (msg_seq.NEXTVAL, #{room_id}, #{sender_id}, #{content}, SYSTIMESTAMP)
+        <selectKey keyProperty="msg_id" resultType="long" order="AFTER">
+            SELECT msg_seq.CURRVAL FROM dual
+        </selectKey>
+    </insert>
+
+    <!-- 2. 채팅방의 모든 메시지 조회 -->
+    <select id="findByRoomId" parameterType="int" resultType="org.joonzis.chatting.vo.MsgVO">
+        SELECT *
+        FROM tbl_msg
+        WHERE room_id = #{room_id}
+        ORDER BY msg_id ASC
+    </select>
+
+    <!-- 3. 마지막 읽은 메시지 이후 메시지 조회 -->
+    <select id="findAfterMsgId" resultType="org.joonzis.chatting.vo.MsgVO">
+        SELECT *
+        FROM tbl_msg
+        WHERE room_id = #{room_id}
+          AND <![CDATA[msg_id > #{msg_id}]]>
+        ORDER BY msg_id ASC
+    </select>
+
+	<!-- 4. 마지막 메세지 조회(가장 최근 메세지) -->
+	<select id="findLastMsgIdByRoom" resultType="long">
+	    SELECT MAX(msg_id)
+	    FROM tbl_msg
+	    WHERE room_id = #{room_id}
+	</select>
+	
+	<!-- 5. 아이디로 메세지 조회 -->
+	<select id="findById" resultType="org.joonzis.chatting.vo.MsgVO">
+		SELECT *
+		FROM tbl_msg
+		WHERE msg_id = #{msg_id}
+	</select>
+
+
+	<!-- tbl_msg 데이터 전체 삭제 -->
+	<delete id="deleteAll">
+		DELETE FROM tbl_msg
+	</delete>
+</mapper>

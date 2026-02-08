@@ -15,6 +15,7 @@ public class ProductVO {
 	private int product_delivery_price;			// 배달비
 	private int product_remain;					// 남은 재고량
 	private String product_description_brief;	// 간략한 제품 설명
-	private String product_descriptioin_datail;	// 제품의 상세 설명
+	private String product_description_detail;	// 제품의 상세 설명
 	private String product_caution;				// 제품 주의 사항
+	private int product_sale;					// 세일 (0=세일x, 0 이상이면 해당 %만큼 세일)
 }
