@@ -1,27 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-<%
-    java.util.List<java.util.Map<String,Object>> dummyList = new java.util.ArrayList<>();
-
-    for(int i = 1; i <= 11; i++){
-        java.util.Map<String,Object> p = new java.util.HashMap<>();
-
-        p.put("plant_id", i);
-        p.put("plant_name_kor", "더미식물 " + i);
-        p.put("plant_name", "Dummy Plant " + i);
-        p.put("plant_image", "https://picsum.photos/seed/plant" + i + "/600/400");
-
-        // 검색수 (1번이 제일 높게)
-        p.put("plant_searchcount", 100 - i);
-
-        dummyList.add(p);
-    }
-
-    request.setAttribute("popularPlants", dummyList);
-%>
-
-
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/plant/PlantMain.css" />
 
