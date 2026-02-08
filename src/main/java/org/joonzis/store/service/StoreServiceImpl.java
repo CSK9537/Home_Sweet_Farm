@@ -67,12 +67,12 @@ public class StoreServiceImpl implements StoreService{
 		return pMapper.getProductListOnHot();
 	}
 	@Override
-	public int insertProductReview(ProductReviewVO vo) {
+	public int addProductReview(ProductReviewVO vo) {
 		return rMapper.insertProductReview(vo);
 	}
 	@Override
 	public List<ProductReviewDTO> getReviewListByProductId(int product_id) {
-		return rMapper.getReviewListByProductId(product_id);
+		return rMapper.getReviewOneOrList(product_id, "product");
 	}
 	@Override
 	public ProductReviewDTO getTopReviewByProductId(int product_id) {
@@ -90,4 +90,21 @@ public class StoreServiceImpl implements StoreService{
 	public List<ProductForAdminListDTO> getAdminListByPrice() {
 		return pMapper.getProductAdminListByPrice();
 	}
+	@Override
+	public int modifyProductReview(ProductReviewVO vo) {
+		return rMapper.updateProductReview(vo);
+	}
+	@Override
+	public int removeProductReview(int product_review_id) {
+		return rMapper.deletePrdouctReview(product_review_id);
+	}
+	@Override
+	public List<ProductReviewDTO> getReviewListByUserId(int user_id) {
+		return rMapper.getReviewOneOrList(user_id, "user");
+	}
+	@Override
+	public ProductReviewDTO getProductReviewDTO(int product_review_id) {
+		return rMapper.getReviewOneOrList(product_review_id, "review").get(0);
+	}
 }
+
