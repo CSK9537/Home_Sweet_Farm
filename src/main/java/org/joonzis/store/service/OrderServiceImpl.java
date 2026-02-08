@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joonzis.store.dto.OrderDTO;
+import org.joonzis.store.dto.OrderWrapper;
 import org.joonzis.store.mapper.OrderMapper;
 import org.joonzis.store.mapper.ProductMapper;
 import org.joonzis.store.mapper.WishListAndShoppingCartMapper;
@@ -88,6 +89,14 @@ public class OrderServiceImpl implements OrderService{
 		// 유저의 포인트 차감 (추가 예정)
 		
 		return result;
+	}
+	
+	@Override
+	public int addOrder(OrderWrapper orderWrapper) {
+		return addOrder(orderWrapper.getOrder_id(), orderWrapper.getPaymentkey(), orderWrapper.getType(),
+				orderWrapper.getMethod(), orderWrapper.getStatus(), orderWrapper.getApprovedat(),
+				orderWrapper.getUser_id(), orderWrapper.getUser_point(), orderWrapper.getOrder_amount(),
+				orderWrapper.getTotalamount(), orderWrapper.getAccumulate_point(), orderWrapper.getPayment(), orderWrapper.getProducts());
 	}
 	
 	@Override
