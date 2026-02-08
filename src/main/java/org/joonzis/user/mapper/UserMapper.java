@@ -55,4 +55,7 @@ public interface UserMapper {
 	
 	//4)채택 답변(수)
 	public int getIsSelected(int user_id);
+	
+	//유저 닉네임 조회
+    public String findNicknameById(@Param("user_id")int user_id);
 }

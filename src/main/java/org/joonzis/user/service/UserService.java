@@ -6,11 +6,11 @@ import org.joonzis.user.vo.UserVO;
 
 public interface UserService {
 	
-	//데이터 넣기
+	//데이터 넣기(회원가입)
 	public void insert(UserVO vo);
-	//데이터 조회
+	//데이터 조회(로그인)
 	public  UserVO selectLogin(int user_id);
-	//데이터 삭제
+	//데이터 삭제(회원 탈퇴)
 	public int delete(UserVO vo);
 	//아이디 찾기(이메일)
 	public String findIdByEmail(@Param("email")String email);
@@ -18,7 +18,7 @@ public interface UserService {
 	public String findIdByPhone(@Param("phone")String phone);
 	//비밀번호 찾기 대상 확인(이메일)
 	public int existUserByEmail(@Param("username")String username,
-							@Param("phone")String phone);
+							@Param("email")String email);
 	//비밀번호 찾기 대상 확인(전화번호)
 	public int existUserByPhone(@Param("username")String username,
 							@Param("phone")String phone);
