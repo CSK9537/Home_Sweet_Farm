@@ -23,9 +23,13 @@ public interface StoreService {
 	public List<ProductForListDTO> getListOnHot();
 	
 	// 상품 리뷰 관련 비즈니스 로직
-	public int insertProductReview(ProductReviewVO vo);
+	public int addProductReview(ProductReviewVO vo);
 	public List<ProductReviewDTO> getReviewListByProductId(int product_id);
+	public List<ProductReviewDTO> getReviewListByUserId(int user_id);
 	public ProductReviewDTO getTopReviewByProductId(int product_id);
+	public int modifyProductReview(ProductReviewVO vo);
+	public int removeProductReview(int product_review_id);
+	public ProductReviewDTO getProductReviewDTO(int product_review_id);
 	
 	// 관리자 전용 비즈니스 로직
 	public List<ProductForAdminListDTO> getAdminList();

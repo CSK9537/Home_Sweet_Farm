@@ -238,4 +238,16 @@ public class WishListAndShoppingCartMapperTests {
 //			log.info("리스트의 길이가 0임");
 //		}
 //	}
+	
+//	@Test
+//	public void deleteTest() {
+//		int user_id = 2;
+//		int product_id = 2;
+//		log.info("장바구니 삭제 : " + mapper.deleteCartOrWish(user_id, product_id, "cart"));
+//		log.info("찜목록 삭제 : " + mapper.deleteCartOrWish(user_id, product_id, null));
+//		
+//		log.info("장바구니 전체 삭제 : " + mapper.deleteCartOrWish(user_id, null, "cart"));
+//		log.info("찜목록 전체 삭제 : " + mapper.deleteCartOrWish(user_id, null, "wish"));
+//		
+//	}
 }

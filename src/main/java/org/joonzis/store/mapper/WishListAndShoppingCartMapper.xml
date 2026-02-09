@@ -42,10 +42,6 @@
 		DELETE FROM tbl_wish_list
 		WHERE user_id=#{user_id} AND product_id=#{product_id}
 	</delete>
-	<delete id="deleteWishListByUserId">
-		DELETE FROM tbl_wish_list
-		WHERE user_id=#{user_id}
-	</delete>
 	
 	<!-- 장바구니 -->
 	<insert id="insertShoppingCart">
@@ -106,51 +102,4 @@
 			INSERT (user_id, product_id)
 			VALUES(#{user_id},#{product_id})
 	</insert>
-	
-	<select id="checkAlreadyIn" resultType="int">
-		<choose>
-			<when test='type == "cart"'>
-				SELECT 
-					CASE WHEN EXISTS (
-						SELECT 1 
-						FROM tbl_shopping_cart 
-						WHERE 
-							user_id=#{user_id} AND product_id = #{product_id}) 
-					THEN 1 
-					ELSE 0 
-					END AS is_exists
-				FROM DUAL
-			</when>
-			<otherwise>
-				SELECT 
-					CASE WHEN EXISTS (
-						SELECT 1 
-						FROM tbl_wish_list 
-						WHERE 
-							user_id=#{user_id} AND product_id = #{product_id}) 
-					THEN 1 
-					ELSE 0 
-					END AS is_exists
-				FROM DUAL
-			</otherwise>
-		</choose>
-	</select>
-	
-	<delete id="deleteCartOrWish">
-		DELETE FROM
-			<choose>
-				<when test='type == "cart"'>
-					tbl_shopping_cart
-				</when>
-				<otherwise>
-					tbl_wish_list
-				</otherwise>
-			</choose>
-			<where>
-				user_id=#{user_id}
-				<if test="product_id != null">
-					AND product_id=#{product_id}
-				</if>
-			</where>
-	</delete>
 </mapper>
