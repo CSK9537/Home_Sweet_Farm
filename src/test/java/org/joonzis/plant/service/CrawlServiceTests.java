@@ -23,10 +23,10 @@ public class CrawlServiceTests {
 	private CrawlService cservice;
 	
 	@Autowired
-	private PlantMapper pmapper;
+	private CrawlMapper cmapper;
 	
 	@Autowired
-	private CrawlMapper cmapper;
+	private PlantMapper pmapper;
 	
 //	// 소수 데이터로 식물 이름 입력 테스트
 //	@Test
@@ -117,17 +117,21 @@ public class CrawlServiceTests {
 //		}
 //	}
 	
-//	// 실제 가이드 DB 저장
-//	@Test
-//	public void insertTotalGuideDataTest() {
-//		log.info("insert guide data...");
-//		try {
-//			log.info("service 작동 중...");
+	// 실제 가이드 DB 저장
+	@Test
+	public void insertTotalGuideDataTest() {
+		log.info("insert guide data...");
+		try {
+			log.info("service 작동 중...");
 //			List<Integer> list = pmapper.plantIdList();
-//			cservice.insertTotalGuideData(list);
-//			log.info("service 성공!!!");
-//		} catch (Exception e) {
-//			log.error(e);
-//		}
-//	}
+			List<Integer> list = new ArrayList<Integer>();
+			for(int i=1;i<=100;i++) {
+				list.add(i);
+			}
+			cservice.insertTotalGuideData(list);
+			log.info("service 성공!!!");
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
 }
