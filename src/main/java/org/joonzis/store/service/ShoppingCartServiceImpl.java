@@ -85,4 +85,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
 	public int deleteAllWish(int user_id) {
 		return mapper.deleteCartOrWish(user_id, null, "wish");
 	}
+	
+	// 유저가 특정 제품을 찜을 했는지 확인용
+	
+	// 유저가 특정 제품을 장바구니에 담았는지 확인용
 }
