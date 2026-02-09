@@ -6,6 +6,7 @@ import org.joonzis.store.dto.ProductReviewDTO;
 import org.joonzis.store.service.StoreService;
 import org.joonzis.store.vo.ProductReviewVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,8 +45,14 @@ public class ReviewController {
 			@RequestBody ProductReviewVO vo){
 		vo.setProduct_id(product_id);
 		vo.setWriter_id(user_id);
-		if (sService.addProductReview(vo) == 0) return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		return new ResponseEntity<String>("OK" ,HttpStatus.OK);
+		String result = "success";
+		try {
+			sService.addProductReview(vo);			
+		} catch (DuplicateKeyException e) {
+			result = "Duplicate Key";
+			return new ResponseEntity<String>(result,HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<String>(result ,HttpStatus.OK);
 	}
 	
 	// 리뷰 수정

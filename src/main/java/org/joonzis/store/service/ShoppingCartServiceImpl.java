@@ -36,7 +36,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
 	// 찜목록에서 제품 삭제
 	@Override
 	public int deleteWishList(int user_id, int product_id) {
-		return mapper.deleteWishList(new WishListVO(user_id, product_id));
+		return mapper.deleteCartOrWish(user_id, product_id, "cart");
 	}
 	// 장바구니에 제품 추가, 개수 증가
 	@Override
@@ -66,10 +66,23 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
 	// 장바구니에서 제품 삭제
 	@Override
 	public int deleteShopingCart(int user_id, int product_id) {
-		return mapper.deleteShopingCart(user_id, product_id);
+		return mapper.deleteCartOrWish(user_id, product_id, "product");
 	}
 	
 	// 유저가 특정 제품을 찜을 했는지 확인용
-	
-	// 유저가 특정 제품을 장바구니에 담았는지 확인용
+	@Override
+	public String checkAlreadyIn(int user_id, int product_id, String type) {
+		int result = mapper.checkAlreadyIn(user_id, product_id, type);
+		if(result > 0) return "yes";
+		else return "no";
+	}
+	// 장바구니 or 찜목록 전체 삭제
+	@Override
+	public int deleteAllCart(int user_id) {
+		return mapper.deleteCartOrWish(user_id, null, "cart");
+	}
+	@Override
+	public int deleteAllWish(int user_id) {
+		return mapper.deleteCartOrWish(user_id, null, "wish");
+	}
 }

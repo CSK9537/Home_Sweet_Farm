@@ -11,6 +11,7 @@ import org.joonzis.store.mapper.ProductReviewMapper;
 import org.joonzis.store.vo.ProductReviewVO;
 import org.joonzis.store.vo.ProductVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,8 +67,9 @@ public class StoreServiceImpl implements StoreService{
 	public List<ProductForListDTO> getListOnHot() {
 		return pMapper.getProductListOnHot();
 	}
+	// 상품 리뷰 작성
 	@Override
-	public int addProductReview(ProductReviewVO vo) {
+	public int addProductReview(ProductReviewVO vo) throws DuplicateKeyException{
 		return rMapper.insertProductReview(vo);
 	}
 	@Override
