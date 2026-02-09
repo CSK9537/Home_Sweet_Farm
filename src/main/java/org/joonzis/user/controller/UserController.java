@@ -29,13 +29,13 @@ public class UserController {
 	 * */
 	
 	//1)회원가입 화면
-	@GetMapping("/join")
+	@GetMapping("/JoinUser")
 	public String joinForm() {
-		return "userTest/join";
+		return "user/JoinUser";
 	}
 	
 	//2)회원가입 처리
-	@PostMapping("/join") 
+	@PostMapping("/JoinUser") 
 	public String joinProcess(UserVO vo) {
 		uservice.insert(vo);
 		return "redirect:/user/login";
@@ -44,7 +44,7 @@ public class UserController {
 	//3)로그인 화면
 	@GetMapping("/login")
 	public String loginForm() {
-		return "/userTest/login";
+		return "/user/login";
 	}
 	
 	//4)로그인 처리
@@ -55,7 +55,7 @@ public class UserController {
 		UserVO vo = uservice.login(username, password);
 		if (vo == null) {
 			model.addAttribute("msg", "로그인 실패");
-			return "userTest/login";
+			return "user/login";
 		}
 			session.setAttribute("loginUser", vo);
 			return "redirect:/";

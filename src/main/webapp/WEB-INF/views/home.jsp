@@ -68,7 +68,7 @@
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/GuideView.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/plant/GuideView.css" />
 
 <c:set var="g" value="${guide}" />
 
@@ -509,5 +509,5 @@
   </div>
 </div>
 
-<script defer src="${pageContext.request.contextPath}/resources/js/GuideView.js"></script>
+<script defer src="${pageContext.request.contextPath}/resources/js/plant/GuideView.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

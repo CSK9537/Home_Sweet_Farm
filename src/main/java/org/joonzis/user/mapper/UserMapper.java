@@ -61,6 +61,4 @@ public interface UserMapper {
 	//유저 닉네임 조회
     public String findNicknameById(@Param("user_id")int user_id);
     
-    //테스트용 매퍼
-    public int insertMinimal(UserVO vo);
 }
