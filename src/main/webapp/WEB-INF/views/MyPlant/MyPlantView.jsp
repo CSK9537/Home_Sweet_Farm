@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/MyPlantView.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/ScheduleModal.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/PotoModal.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/StatsModal.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/MyPlant/MyPlantView.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/modal/ScheduleModal.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/modal/PotoModal.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/modal/StatsModal.css">
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
@@ -356,7 +356,7 @@
   </div>
 </div>
 
-<script src="ScheduleModal.js"></script>
-<script src="PotoModal.js"></script>
-<script src="StatsModal.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/modal/ScheduleModal.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/modal/PotoModal.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/modal/StatsModal.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

@@ -6,10 +6,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Home Sweet Farm</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/header.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/globals.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/ContentLayout.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/footer.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/header.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/globals.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/ContentLayout.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/footer.css">
 
 </head>
 <body>
@@ -47,8 +47,7 @@
 	                  </div>
 	                </details>
 	
-	                <button type="button" class="fcat__solo" data-main="백과사전">백과사전</button>
-	                <button type="button" class="fcat__solo" data-main="관리가이드">관리가이드</button>
+	                <button type="button" class="fcat__solo" data-main="백과사전">식물</button>
 	
 	                <details class="fcat__item" data-main="스토어">
 	                  <summary class="fcat__summary">스토어</summary>
@@ -146,9 +145,7 @@
 	        </li>
 	
 	        <li class="gnb__sep">||</li>
-	        <li class="gnb__item"><a class="gnb__link" href="#">백과사전</a></li>
-	        <li class="gnb__sep">||</li>
-	        <li class="gnb__item"><a class="gnb__link" href="#">관리가이드</a></li>
+	        <li class="gnb__item"><a class="gnb__link" href="#">식물</a></li>
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">

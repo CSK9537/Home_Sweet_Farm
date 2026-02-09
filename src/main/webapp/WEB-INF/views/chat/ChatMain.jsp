@@ -5,8 +5,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Home Sweet Farm 1:1 Chat</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/globals.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/chat.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/globals.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/chat/chat.css">
 </head>
 <body>
 	<div class="frame-wrapper">
