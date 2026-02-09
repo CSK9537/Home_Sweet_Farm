@@ -2,8 +2,6 @@ package org.joonzis.store.controller;
 
 import java.util.List;
 
-import javax.websocket.server.PathParam;
-
 import org.joonzis.store.dto.ShoppingCartDTO;
 import org.joonzis.store.dto.WishListDTO;
 import org.joonzis.store.service.ShoppingCartService;
@@ -117,7 +115,7 @@ public class WishController {
 	@DeleteMapping(
 			value = "/removeAllCart/user/{user_id}")
 	public ResponseEntity<String> removeAllCart(
-			@PathParam("user_id") int user_id){
+			@PathVariable("user_id") int user_id){
 		int result = cService.deleteAllCart(user_id);
 		if(result > 0) return new ResponseEntity<String>("success", HttpStatus.OK);
 		else return new ResponseEntity<String>("Database does not changed", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -126,7 +124,7 @@ public class WishController {
 	@DeleteMapping(
 			value = "/removeAllWish/user/{user_id}")
 	public ResponseEntity<String> removeAllWish(
-			@PathParam("user_id") int user_id){
+			@PathVariable("user_id") int user_id){
 		int result = cService.deleteAllWish(user_id);
 		if(result > 0) return new ResponseEntity<String>("success", HttpStatus.OK);
 		else return new ResponseEntity<String>("Database does not changed", HttpStatus.INTERNAL_SERVER_ERROR);
