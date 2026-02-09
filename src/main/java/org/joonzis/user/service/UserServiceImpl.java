@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService{
 	
 	@Override
 	public void insert(UserVO vo) {
-		
+	    
 		//1)비밀번호 확인
 		if(vo.getPassword() == null || 
 				!vo.getPassword().equals(vo.getConfirmPassword())) {
@@ -30,17 +30,20 @@ public class UserServiceImpl implements UserService{
 		//confirm_event: 0(미동의), 1(동의)
 		vo.setConfirm_event(vo.getConfirm_event() == 1? 1 : 0);
 		//4)DB insert
-		int result = usermapper.insert(vo);
+//		int result = usermapper.insert(vo);
+		int result = usermapper.insertMinimal(vo);//테스트용 insert
+		
 		if(result != 1) {
 			throw new IllegalStateException("회원가입 실패");
 		}
 	}		
-		
-
-
 	@Override
 	public UserVO selectLogin(int user_id) {
 		return usermapper.selectLogin(user_id);
+	}
+	@Override
+	public UserVO login(String username, String password) {
+		return usermapper.login(username, password);
 	}
 	@Override
 	public int delete(UserVO vo) {

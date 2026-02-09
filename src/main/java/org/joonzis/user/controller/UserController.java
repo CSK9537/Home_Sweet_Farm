@@ -38,7 +38,7 @@ public class UserController {
 	@PostMapping("/join") 
 	public String joinProcess(UserVO vo) {
 		uservice.insert(vo);
-		return "redirect:/userTest/login";
+		return "redirect:/user/login";
 	}
 	
 	//3)로그인 화면
@@ -49,18 +49,26 @@ public class UserController {
 	
 	//4)로그인 처리
 	@PostMapping("/login")
-	public String loginProcess(@RequestParam int user_id,
+	public String loginProcess(@RequestParam String username,
+								@RequestParam String password,
 								HttpSession session, Model model) {
-		UserVO vo = uservice.selectLogin(user_id);
+		UserVO vo = uservice.login(username, password);
 		if (vo == null) {
 			model.addAttribute("msg", "로그인 실패");
 			return "userTest/login";
 		}
-			model.addAttribute("loginUser", vo);
+			session.setAttribute("loginUser", vo);
 			return "redirect:/";
 		}
 	
-	//5)회원 탈퇴
+	//5)로그아웃
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		session.invalidate();
+		return "redirect:/";
+	}
+	
+	//6)회원 탈퇴
 	@PostMapping("/delete")//url 입력하면(즉, get방식으로 하면) 허용되지 않는 메소드(405)뜸
 	public String delete(UserVO vo, HttpSession session) {
 		

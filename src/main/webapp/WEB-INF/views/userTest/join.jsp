@@ -13,9 +13,10 @@
 	
 	<form action="${pageContext.request.contextPath}/user/join" method="post">
 		<%-- <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/> --%>
+		  <input name="name" placeholder="이름">
 		  <input name="username">
 		  <input type="password" name="password" placeholder="비밀번호">
-		  <input type="password" name="passwordConfirm" placeholder="비밀번호 확인">
+		  <input type="password" name="confirmPassword" placeholder="비밀번호 확인">
 		  <input name="email">
 		  <button type="button" onclick="send(this.form)">가입</button>
 	</form>
@@ -25,7 +26,7 @@
 		
 		let username = f.username.value;
 		let pval1 = f.password.value;
-		let pval2 = f.passwordConfirm.value;
+		let pval2 = f.confirmPassword.value;
 		let email = f.email.value;
 		
 		if(!username){
@@ -44,7 +45,6 @@
 			alert("이메일을 입력하세요");
 			return;
 		}
-		f.passwordConfirm.remove();
 		f.submit();
 	}
 </script>

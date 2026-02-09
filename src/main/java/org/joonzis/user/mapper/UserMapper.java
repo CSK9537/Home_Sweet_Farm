@@ -10,6 +10,8 @@ public interface UserMapper {
 	public int insert(UserVO vo);
 	//데이터 조회
 	public  UserVO selectLogin(int user_id);
+	//로그인
+	public UserVO login(@Param("username")String username, @Param("password")String password);
 	//데이터 삭제
 	public int delete(UserVO vo);
 	
@@ -58,4 +60,7 @@ public interface UserMapper {
 	
 	//유저 닉네임 조회
     public String findNicknameById(@Param("user_id")int user_id);
+    
+    //테스트용 매퍼
+    public int insertMinimal(UserVO vo);
 }
