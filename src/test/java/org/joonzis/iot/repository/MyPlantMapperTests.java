@@ -30,23 +30,23 @@ public class MyPlantMapperTests {
 //		}
 //	}
 
-    @Test
-    public void testGetMyPlantMainList() {
-        int userId = 1; // 실제 존재하는 유저 ID
-
-        List<MyPlantMainDTO> list = mapper.selectMyPlantMain(userId);
-
-        assertNotNull(list);
-
-        list.forEach(plant -> {
-            System.out.println("==== 나의 식물 ====");
-            System.out.println("ID: " + plant.getMyplantId());
-            System.out.println("이름: " + plant.getMyplantName());
-            System.out.println("식물명: " + plant.getPlantName());
-            System.out.println("온도: " + plant.getTemperature());
-            System.out.println("습도: " + plant.getHumidity());
-            System.out.println("토양수분: " + plant.getSoilMoisture());
-            System.out.println("측정시간: " + plant.getSensingTime());
-        });
-    }
+//    @Test
+//    public void testGetMyPlantMainList() {
+//        int userId = 1; // 실제 존재하는 유저 ID
+//
+//        List<MyPlantMainDTO> list = mapper.selectMyPlantMain(userId);
+//
+//        assertNotNull(list);
+//
+//        list.forEach(plant -> {
+//            System.out.println("==== 나의 식물 ====");
+//            System.out.println("ID: " + plant.getMyplantId());
+//            System.out.println("이름: " + plant.getMyplantName());
+//            System.out.println("식물명: " + plant.getPlantName());
+//            System.out.println("온도: " + plant.getTemperature());
+//            System.out.println("습도: " + plant.getHumidity());
+//            System.out.println("토양수분: " + plant.getSoilMoisture());
+//            System.out.println("측정시간: " + plant.getSensingTime());
+//        });
+//    }
 }

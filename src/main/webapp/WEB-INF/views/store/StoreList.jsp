@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/storeList.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/StoreList.css" />
 
 <div class="page-shell">
   <div class="content-wrap">
