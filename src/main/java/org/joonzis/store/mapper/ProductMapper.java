@@ -26,7 +26,7 @@ public interface ProductMapper {
 	
 	// 일반 사용자용
 	// 카테고리를 기준으로 상품 리스트 업
-	public List<ProductForListDTO> getProductListByCategoryId(int category_id);
+	public List<ProductForListDTO> getProductListByCategoryId(@Param("category_id")int category_id);
 	// 상품 상세 보기
 	public ProductDetailDTO getProductDetail(int product_id);
 	// 오늘의 Hot 추천
