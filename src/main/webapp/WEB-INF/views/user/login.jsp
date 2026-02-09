@@ -3,7 +3,7 @@
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/login.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/user/login.css">
 
 <div class="page-shell">
   <div class="content-wrap">
@@ -26,14 +26,14 @@
               <button type="button" class="tab-btn is-active" data-target="panel-login" role="tab" aria-selected="true">로그인</button>
               <button type="button" class="tab-btn" data-target="panel-find-id" role="tab" aria-selected="false">아이디 찾기</button>
               <button type="button" class="tab-btn" data-target="panel-find-pw" role="tab" aria-selected="false">비밀번호 찾기</button>
-              <a class="tab-link" href="${pageContext.request.contextPath}/join" title="회원가입 페이지로 이동">회원가입</a>
+              <a class="tab-link" href="${pageContext.request.contextPath}/user/JoinUser" title="회원가입 페이지로 이동">회원가입</a>
             </div>
 
             <!-- PANEL: 로그인 -->
             <section id="panel-login" class="tab-panel is-show" role="tabpanel" aria-label="로그인">
               <h2 class="panel-title">로그인</h2>
 
-              <form class="form-block" method="post" action="${pageContext.request.contextPath}/login" autocomplete="off">
+              <form class="form-block" method="post" action="${pageContext.request.contextPath}/user/login" autocomplete="off">
                 <label class="input-label" for="loginId">아이디</label>
                 <input id="loginId" name="username" class="text-input" type="text" maxlength="20"
                        placeholder="아이디" autocomplete="username" />
@@ -62,7 +62,7 @@
                   <span class="sep">|</span>
                   <button type="button" class="helper-link js-go" data-target="panel-find-pw">비밀번호 찾기</button>
                   <span class="sep">|</span>
-                  <a class="helper-link" href="${pageContext.request.contextPath}/join">회원가입</a>
+                  <a class="helper-link" href="${pageContext.request.contextPath}/user/JoinUser">회원가입</a>
                 </div>
 
                 <p class="security-note">
@@ -75,7 +75,7 @@
             <section id="panel-find-id" class="tab-panel" role="tabpanel" aria-label="아이디 찾기">
               <h2 class="panel-title">아이디 찾기</h2>
 
-              <form class="form-block" method="post" action="${pageContext.request.contextPath}/account/findId" autocomplete="off">
+              <form class="form-block" method="post" action="${pageContext.request.contextPath}/user/findId" autocomplete="off">
                 <label class="input-label" for="findIdName">가입자 이름</label>
                 <input id="findIdName" name="name" class="text-input" type="text" placeholder="이름" />
 
@@ -112,7 +112,7 @@
             <section id="panel-find-pw" class="tab-panel" role="tabpanel" aria-label="비밀번호 찾기">
               <h2 class="panel-title">비밀번호 찾기</h2>
 
-              <form class="form-block" method="post" action="${pageContext.request.contextPath}/account/findPw" autocomplete="off">
+              <form class="form-block" method="post" action="${pageContext.request.contextPath}/user/findPw" autocomplete="off">
                 <label class="input-label" for="findPwId">아이디</label>
                 <input id="findPwId" name="username" class="text-input" type="text" placeholder="아이디" />
 
@@ -157,6 +157,6 @@
   </div><!-- /content-wrap -->
 </div><!-- /page-shell -->
 
-<script src="${pageContext.request.contextPath}/resources/js/login.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/user/login.js"></script>
 
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

@@ -251,7 +251,7 @@
   var goLoginBtn = $("#goLoginBtn");
   if (goLoginBtn) {
     goLoginBtn.addEventListener("click", function () {
-      window.location.href = getCpath() + "/user/login";
+      window.location.href = getCpath() + "/login";
     });
   }
 
