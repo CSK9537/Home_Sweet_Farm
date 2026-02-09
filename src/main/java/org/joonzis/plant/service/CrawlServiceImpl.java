@@ -311,6 +311,9 @@ public class CrawlServiceImpl implements CrawlService{
 					
 					GuideVO gvo = new GuideVO();
 					
+					// 식별 번호 set
+					gvo.setPlant_id(plant_id);
+					
 					// 관리 팁 set
 					WebElement guide_caretip = wait.until(ExpectedConditions.visibilityOfElementLocated(
 							By.cssSelector(".description")
@@ -371,14 +374,121 @@ public class CrawlServiceImpl implements CrawlService{
 						List<WebElement> tags = guider_element.findElements(By.cssSelector(".tag-3"));
 						String content = guider_element.findElement(By.cssSelector(".care-content")).getText();
 						if(title.contains("급수")) {
-							System.out.println(title);
 							for(WebElement tag : tags) {
-								System.out.println(tag.getText());
+								String tag_content = tag.getText();
+								if(tag_content.contains("습도")) {
+									int index = tag_content.indexOf(":") + 1;
+									gvo.setGuide_watering_humiditylevel(tag_content.substring(index).trim());
+								}
 							}
-							System.out.println(content);
+							gvo.setGuide_watering_content(content);
+						}
+						if(title.contains("일조량")) {
+							for(WebElement tag : tags) {
+								String tag_content = tag.getText();
+								if(tag_content.contains("허용")) {
+									int index = tag_content.indexOf(":") + 1;
+									gvo.setGuide_sunlight_tolerance(tag_content.substring(index).trim());
+								}
+							}
+							gvo.setGuide_sunlight_content(content);
+						}
+						if(title.contains("온도")) {
+							for(WebElement tag : tags) {
+								String tag_content = tag.getText();
+								if(tag_content.contains("이상")) {
+									int index = tag_content.indexOf(":") + 1;
+									String temps = tag_content.substring(index).trim();
+									String[] temperature = temps.split(" ");
+									gvo.setGuide_temperature_imin(Integer.parseInt(temperature[0]));
+									gvo.setGuide_temperature_imax(Integer.parseInt(temperature[2]));
+								}
+								if(tag_content.contains("허용")) {
+									int index = tag_content.indexOf(":") + 1;
+									String temps = tag_content.substring(index).trim();
+									String[] temperature = temps.split(" ");
+									gvo.setGuide_temperature_tmin(Integer.parseInt(temperature[0]));
+									gvo.setGuide_temperature_tmax(Integer.parseInt(temperature[2]));
+								}
+							}
+							gvo.setGuide_temperature_content(content);
+						}
+						if(title.contains("토양")) {
+							for(WebElement tag : tags) {
+								String tag_content = tag.getText();
+								if(tag_content.contains("구성")) {
+									int index = tag_content.indexOf(":") + 1;
+									gvo.setGuide_soil_composition(tag_content.substring(index).trim());
+								}
+							}
+							gvo.setGuide_soil_content(content);
+						}
+						if(title.contains("비료")) {
+							gvo.setGuide_fertilizing_content(content);
+						}
+						if(title.contains("가지치기")) {
+							for(WebElement tag : tags) {
+								String tag_content = tag.getText();
+								if(tag_content.contains("시기")) {
+									int index = tag_content.indexOf(":") + 1;
+									gvo.setGuide_pruning_time(tag_content.substring(index).trim());
+								}
+								if(tag_content.contains("장점")) {
+									int index = tag_content.indexOf(":") + 1;
+									gvo.setGuide_pruning_benefits(tag_content.substring(index).trim());
+								}
+							}
+							gvo.setGuide_pruning_content(content);
+						}
+						if(title.contains("번식")) {
+							for(WebElement tag : tags) {
+								String tag_content = tag.getText();
+								if(tag_content.contains("시기")) {
+									int index = tag_content.indexOf(":") + 1;
+									gvo.setGuide_propagation_time(tag_content.substring(index).trim());
+								}
+								if(tag_content.contains("유형")) {
+									int index = tag_content.indexOf(":") + 1;
+									gvo.setGuide_propagation_type(tag_content.substring(index).trim());
+								}
+							}
+							gvo.setGuide_propagation_content(content);
+						}
+						if(title.contains("옮겨심는")) {
+							for(WebElement tag : tags) {
+								String tag_content = tag.getText();
+								if(tag_content.contains("시기")) {
+									int index = tag_content.indexOf(":") + 1;
+									gvo.setGuide_transplanting_time(tag_content.substring(index).trim());
+								}
+							}
+							gvo.setGuide_transplanting_content(content);
+						}
+						if(title.contains("심는") && !title.contains("옮겨심는")) {
+							gvo.setGuide_planting_content(content);
+						}
+						if(title.contains("분갈이")) {
+							for(WebElement tag : tags) {
+								String tag_content = tag.getText();
+								if(tag_content.contains("일정")) {
+									int index = tag_content.indexOf(":") + 1;
+									gvo.setGuide_repotting_schedule(tag_content.substring(index).trim());
+								}
+							}
+							gvo.setGuide_repotting_content(content);
+						}
+						if(title.contains("수확")) {
+							for(WebElement tag : tags) {
+								String tag_content = tag.getText();
+								if(tag_content.contains("시기")) {
+									int index = tag_content.indexOf(":") + 1;
+									gvo.setGuide_harvest_time(tag_content.substring(index).trim());
+								}
+							}
+							gvo.setGuide_harvest_content(content);
 						}
 					}
-
+					gmapper.insertGuideInfo(gvo);
 					// try문 종료
 				} catch (org.openqa.selenium.TimeoutException e) {
 					continue;

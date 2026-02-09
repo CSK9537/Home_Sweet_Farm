@@ -20,8 +20,8 @@
     dummy.setGuide_hardinesszone("9~11");
     dummy.setGuide_toxicity("없음");
 
-    dummy.setGuide_wartering_humiditylevel("중간(40~60%)");
-    dummy.setGuide_wartering_content("겉흙이 마르면 흠뻑 주세요.");
+    dummy.setGuide_watering_humiditylevel("중간(40~60%)");
+    dummy.setGuide_watering_content("겉흙이 마르면 흠뻑 주세요.");
 
     dummy.setGuide_sunlight_tolerance("±1시간");
     dummy.setGuide_sunlight_content("강한 직사광선에서 잎 끝이 탈 수 있어요. 한여름은 차광 추천.");
