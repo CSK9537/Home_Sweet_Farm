@@ -2,62 +2,72 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.joonzis.iot.repository.PlantStatisticsMapper">
-	
-    <select id="selectMyPlantMainList" parameterType="int" resultType="org.joonzis.iot.domain.MyPlantVO">
+<mapper namespace="org.joonzis.iot.repository.MyPlantMapper">
 
-		    SELECT
-		        m.myplant_id        AS myplantId,
-		        m.user_id           AS userId,
-		        m.plant_id          AS plantId,
-		        m.myplant_name      AS myplantName,
-		        m.myplant_regdate   AS myplantRegdate,
-		
-		        s.temperature,
-		        s.humidity,
-		        s.illumination,
-		        s.soil_moisture     AS soilMoisture,
-		        s.sensing_time      AS sensingTime
-		
-		    FROM tbl_myplant m
-		    LEFT JOIN tbl_myplant_statistics s
-		        ON m.myplant_id = s.myplant_id
-		       AND s.sensing_time = (
-		            SELECT MAX(s2.sensing_time)
-		            FROM tbl_myplant_statistics s2
-		            WHERE s2.myplant_id = m.myplant_id
-		       )
-		    WHERE m.user_id = #{userId}
-		    ORDER BY m.myplant_regdate DESC
+    <!-- 메인 화면 -->
+    <select id="selectMyPlantMainList"
+            parameterType="int"
+            resultType="org.joonzis.iot.dto.MyPlantMainDTO">
+        SELECT
+            mp.myplant_id       AS myplantId,
+            mp.myplant_name     AS myplantName,
+            mp.plant_id         AS plantId,
+            p.plant_name        AS plantName,
 
-	</select>
-	<select id="getMyPlantMainList" resultType="org.joonzis.iot.dto.MyPlantMainDTO">
-	        SELECT
-	            mp.myplant_id       AS myplantId,
-	            mp.myplant_name     AS myplantName,
-	            mp.plant_id         AS plantId,
-	            p.plant_name        AS plantName,
-	
-	            ps.temperature,
-	            ps.humidity,
-	            ps.illumination,
-	            ps.soil_moisture    AS soilMoisture,
-	            ps.sensing_time     AS sensingTime
-	
-	        FROM tbl_myplant mp
-	        JOIN tbl_plant p
-	          ON mp.plant_id = p.plant_id
-	
-	        LEFT JOIN tbl_myplant_statistics ps
-	          ON ps.myplant_id = mp.myplant_id
-	         AND ps.sensing_time = (
-	                SELECT MAX(sensing_time)
-	                FROM tbl_myplant_statistics
-	                WHERE myplant_id = mp.myplant_id
-	             )
-	
-	        WHERE mp.user_id = #{userId}
-	        ORDER BY mp.myplant_regdate DESC
+            ps.temperature,
+            ps.humidity,
+            ps.illumination,
+            ps.soil_moisture    AS soilMoisture,
+            ps.sensing_time     AS sensingTime
+
+        FROM tbl_myplant mp
+        JOIN tbl_plant p
+          ON mp.plant_id = p.plant_id
+
+        LEFT JOIN tbl_myplant_statistics ps
+          ON ps.myplant_id = mp.myplant_id
+         AND ps.sensing_time = (
+                SELECT MAX(sensing_time)
+                FROM tbl_myplant_statistics
+                WHERE myplant_id = mp.myplant_id
+             )
+
+        WHERE mp.user_id = #{userId}
+        ORDER BY mp.myplant_regdate DESC
     </select>
-	
+
+    <!-- CRUD -->
+    <select id="getList"
+            parameterType="int"
+            resultType="org.joonzis.iot.vo.MyPlantVO">
+        SELECT
+            myplant_id AS myplantId,
+            user_id AS userId,
+            plant_id AS plantId,
+            myplant_name AS myplantName,
+            myplant_regdate AS myplantRegdate
+        FROM tbl_myplant
+        WHERE user_id = #{userId}
+        ORDER BY myplant_id DESC
+    </select>
+
+    <insert id="insert">
+        INSERT INTO tbl_myplant
+        (myplant_id, user_id, plant_id, myplant_name, myplant_regdate)
+        VALUES
+        (myplant_seq.NEXTVAL, #{userId}, #{plantId}, #{myplantName}, SYSDATE)
+    </insert>
+
+    <update id="update">
+        UPDATE tbl_myplant
+        SET myplant_name = #{myplantName},
+            plant_id = #{plantId}
+        WHERE myplant_id = #{myplantId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM tbl_myplant
+        WHERE myplant_id = #{myplantId}
+    </delete>
+
 </mapper>
