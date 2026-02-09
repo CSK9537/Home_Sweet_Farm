@@ -119,13 +119,38 @@ public class CrawlServiceTests {
 	
 //	// 실제 가이드 DB 저장
 //	@Test
-//	public void insertTotalGuideDataTest() {
+//	public void insertTotalGuideData() {
 //		log.info("insert guide data...");
 //		try {
 //			log.info("service 작동 중...");
 //			List<Integer> list = pmapper.plantIdList();
 //			cservice.insertTotalGuideData(list);
 //			log.info("service 성공!!!");
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
+	
+//	// 소수 데이터 이미지 저장 테스트	
+//	@Test
+//	public void DownloadPlantImagestest() {
+//		log.info("Downloading...");;
+//		try {
+//			List<Integer> list = new ArrayList<Integer>();
+//			list.add(1423);
+//			cservice.DownloadPlantImages(list);
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
+	
+//	// 실제 이미지 저장
+//	@Test
+//	public void DownloadPlantImages() {
+//		log.info("Downloading...");;
+//		try {
+//			List<Integer> list = pmapper.plantIdList();
+//			cservice.DownloadPlantImages(list);
 //		} catch (Exception e) {
 //			log.error(e);
 //		}

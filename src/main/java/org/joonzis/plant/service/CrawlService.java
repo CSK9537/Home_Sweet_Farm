@@ -11,4 +11,5 @@ public interface CrawlService {
 	// 관리가이드 전체 정보 입력(백과사전 DB 기반으로 PictureThis 관리가이드 페이지 이동 후 DB 저장)
 	public void insertTotalGuideData(List<Integer> list);
 	// 식물 이미지 저장
+	public void DownloadPlantImages(List<Integer> list);
 }
