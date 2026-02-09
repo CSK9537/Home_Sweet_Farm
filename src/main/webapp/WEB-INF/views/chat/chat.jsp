@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Insert title here</title>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/chat.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/chat/chat.css">
     </head>
 
     <body>
@@ -114,6 +114,6 @@
     </body>
 	    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-	    <script src="${pageContext.request.contextPath}/resources/js/chat.js"></script>
+	    <script src="${pageContext.request.contextPath}/resources/js/chat/chat.js"></script>
 
     </html>

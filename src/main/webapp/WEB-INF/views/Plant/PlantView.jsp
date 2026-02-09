@@ -1,318 +1,356 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/ContentLayout.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/plant-view.css">
+<jsp:include page="/WEB-INF/views/layout/header.jsp" />
+
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/PlantView.css" />
 
 <div class="page-shell">
-  <%@ include file="/WEB-INF/views/layout/header.jsp" %>
+  <div class="content-wrap">
+    <div class="content-card plant-view" id="plantViewRoot">
 
-  <main class="content-wrap">
-    <section class="content-card">
+      <!-- ===== plant 모델 바인딩(plant / plantVO / plantInfo 등 혼용 대비) ===== -->
+      <c:choose>
+        <c:when test="${not empty plant}">
+          <c:set var="p" value="${plant}" />
+        </c:when>
+        <c:when test="${not empty plantVO}">
+          <c:set var="p" value="${plantVO}" />
+        </c:when>
+        <c:when test="${not empty plantInfo}">
+          <c:set var="p" value="${plantInfo}" />
+        </c:when>
+        <c:otherwise>
+          <c:set var="p" value="${null}" />
+        </c:otherwise>
+      </c:choose>
 
-      <c:if test="${empty plant}">
-        <div class="pview-empty">
-          <p class="pview-empty__title">식물 정보를 불러오지 못했습니다.</p>
-          <a class="pview-empty__link" href="${pageContext.request.contextPath}/plants">목록으로</a>
-        </div>
-      </c:if>
+      <!-- ===== 상단 헤더(이름/요약/썸네일) ===== -->
+      <c:if test="${not empty p}">
+        <section class="pv-hero" data-section>
+          <div class="pv-hero__left">
+            <div class="pv-breadcrumb">홈 / 식물 / 상세</div>
 
-      <c:if test="${not empty plant}">
-
-        <!-- =========================
-             HERO
-        ========================= -->
-        <header class="pview-hero">
-          <div class="pview-hero__media">
-            <c:choose>
-              <c:when test="${not empty plant.plant_image}">
-                <img class="pview-hero__img" src="${plant.plant_image}" alt="${plant.plant_name_kor}" loading="lazy"/>
-              </c:when>
-              <c:otherwise>
-                <img class="pview-hero__img" src="${pageContext.request.contextPath}/resources/images/default_plant.jpg"
-                     alt="default plant" loading="lazy"/>
-              </c:otherwise>
-            </c:choose>
-          </div>
-
-          <div class="pview-hero__head">
-            <p class="pview-hero__kicker">식물 백과사전</p>
-
-            <h1 class="pview-hero__title">
-              <c:out value="${plant.plant_name_kor}" />
+            <h1 class="pv-title">
+              <c:out value="${p.plant_name_kor}" />
             </h1>
 
-            <p class="pview-hero__subtitle">
-              <c:choose>
-                <c:when test="${not empty plant.plant_name}">
-                  <em><c:out value="${plant.plant_name}" /></em>
-                </c:when>
-                <c:when test="${not empty plant.plant_species}">
-                  <em><c:out value="${plant.plant_species}" /></em>
-                </c:when>
-                <c:otherwise>
-                  <em>-</em>
-                </c:otherwise>
-              </c:choose>
-            </p>
+            <c:if test="${not empty p.plant_name}">
+              <div class="pv-subtitle">
+                <c:out value="${p.plant_name}" />
+              </div>
+            </c:if>
 
-            <!-- chips: 값 있을 때만 -->
-            <ul class="pview-chips">
-              <c:if test="${not empty plant.plant_type}">
-                <li class="pview-chip">종류: <c:out value="${plant.plant_type}"/></li>
-              </c:if>
-              <c:if test="${not empty plant.plant_lifespan}">
-                <li class="pview-chip">수명: <c:out value="${plant.plant_lifespan}"/></li>
-              </c:if>
+            <c:if test="${not empty p.plant_description}">
+              <p class="pv-desc">
+                <c:out value="${p.plant_description}" />
+              </p>
+            </c:if>
 
-              <c:if test="${plant.plant_temperature_imin ne 0 or plant.plant_temperature_imax ne 0}">
-                <li class="pview-chip">적정 온도: ${plant.plant_temperature_imin}~${plant.plant_temperature_imax}°C</li>
+            <!-- 학명/분류(간단 요약 라인) -->
+            <div class="pv-mini-meta" data-section>
+              <c:if test="${not empty p.plant_species}">
+                <span class="pv-chip">종: <c:out value="${p.plant_species}" /></span>
               </c:if>
-
-              <c:if test="${not empty plant.plant_toxicity}">
-                <li class="pview-chip pview-chip--warn">독성: <c:out value="${plant.plant_toxicity}"/></li>
+              <c:if test="${not empty p.plant_genus}">
+                <span class="pv-chip">속: <c:out value="${p.plant_genus}" /></span>
               </c:if>
-            </ul>
-
-            <div class="pview-hero__actions">
-              <a class="pview-btn" href="${pageContext.request.contextPath}/plants">목록</a>
+              <c:if test="${not empty p.plant_family}">
+                <span class="pv-chip">과: <c:out value="${p.plant_family}" /></span>
+              </c:if>
             </div>
           </div>
-        </header>
 
-        <!-- =========================
-             TAB (섹션이 존재할 때만 탭 보여주기)
-        ========================= -->
-        <c:set var="hasOverview" value="${not empty plant.plant_description}" />
-        <c:set var="hasClassification"
-               value="${not empty plant.plant_phylum or not empty plant.plant_class or not empty plant.plant_order
-                       or not empty plant.plant_family or not empty plant.plant_genus or not empty plant.plant_species}" />
-        <c:set var="hasTraits"
-               value="${not empty plant.plant_height or not empty plant.plant_spread or not empty plant.plant_stemcolor
-                       or not empty plant.plant_leafcolor or not empty plant.plant_leaftype
-                       or not empty plant.plant_flowercolor or not empty plant.plant_flowersize or not empty plant.plant_bloomtime
-                       or not empty plant.plant_fruitcolor or not empty plant.plant_harvesttime}" />
-        <c:set var="hasCare"
-               value="${not empty plant.plant_growthseason or not empty plant.plant_growthrate or not empty plant.plant_dormancy
-                       or (plant.plant_temperature_imin ne 0) or (plant.plant_temperature_imax ne 0)}" />
-        <c:set var="hasCulture"
-               value="${not empty plant.plant_culture_symbolism or not empty plant.plant_culture_if
-                       or not empty plant.plant_culture_epv or not empty plant.plant_culture_ev
-                       or not empty plant.plant_culture_biv or not empty plant.plant_culture_gu}" />
-        <c:set var="hasToxicity" value="${not empty plant.plant_toxicity}" />
-
-        <nav class="pview-tabs">
-          <c:if test="${hasOverview}">
-            <a class="pview-tab" href="#sec-overview">개요</a>
-          </c:if>
-          <c:if test="${hasClassification}">
-            <a class="pview-tab" href="#sec-classification">분류</a>
-          </c:if>
-          <c:if test="${hasTraits}">
-            <a class="pview-tab" href="#sec-traits">특징</a>
-          </c:if>
-          <c:if test="${hasCare}">
-            <a class="pview-tab" href="#sec-care">관리</a>
-          </c:if>
-          <c:if test="${hasCulture}">
-            <a class="pview-tab" href="#sec-culture">상징·가치</a>
-          </c:if>
-          <c:if test="${hasToxicity}">
-            <a class="pview-tab pview-tab--warn" href="#sec-toxicity">독성</a>
-          </c:if>
-        </nav>
-
-        <!-- =========================
-             CONTENT GRID
-        ========================= -->
-        <div class="pview-grid">
-          <article class="pview-main">
-
-            <!-- 개요 -->
-            <c:if test="${hasOverview}">
-              <section id="sec-overview" class="pview-card">
-                <h2 class="pview-card__title">개요</h2>
-                <p class="pview-text"><c:out value="${plant.plant_description}"/></p>
-              </section>
+          <div class="pv-hero__right" data-section>
+            <c:if test="${not empty p.plant_image}">
+              <img class="pv-thumb" src="<c:out value='${p.plant_image}'/>" alt="식물 이미지" loading="lazy" />
             </c:if>
+          </div>
+        </section>
 
-            <!-- 분류 -->
-            <c:if test="${hasClassification}">
-              <section id="sec-classification" class="pview-card">
-                <h2 class="pview-card__title">분류</h2>
-
-                <dl class="pview-dl">
-                  <c:if test="${not empty plant.plant_phylum}">
-                    <div class="pview-dl__row"><dt>문</dt><dd><c:out value="${plant.plant_phylum}"/></dd></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_class}">
-                    <div class="pview-dl__row"><dt>강</dt><dd><c:out value="${plant.plant_class}"/></dd></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_order}">
-                    <div class="pview-dl__row"><dt>목</dt><dd><c:out value="${plant.plant_order}"/></dd></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_family}">
-                    <div class="pview-dl__row"><dt>과</dt><dd><c:out value="${plant.plant_family}"/></dd></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_genus}">
-                    <div class="pview-dl__row"><dt>속</dt><dd><c:out value="${plant.plant_genus}"/></dd></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_species}">
-                    <div class="pview-dl__row"><dt>종</dt><dd><c:out value="${plant.plant_species}"/></dd></div>
-                  </c:if>
-                </dl>
-              </section>
-            </c:if>
-
-            <!-- 특징 -->
-            <c:if test="${hasTraits}">
-              <section id="sec-traits" class="pview-card">
-                <h2 class="pview-card__title">특징</h2>
-
-                <div class="pview-facts">
-                  <c:if test="${not empty plant.plant_height}">
-                    <div class="pview-fact"><span>식물 높이</span><b><c:out value="${plant.plant_height}"/></b></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_spread}">
-                    <div class="pview-fact"><span>꼭대기 지름</span><b><c:out value="${plant.plant_spread}"/></b></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_stemcolor}">
-                    <div class="pview-fact"><span>줄기 색</span><b><c:out value="${plant.plant_stemcolor}"/></b></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_leafcolor}">
-                    <div class="pview-fact"><span>잎 색</span><b><c:out value="${plant.plant_leafcolor}"/></b></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_leaftype}">
-                    <div class="pview-fact"><span>잎 종류</span><b><c:out value="${plant.plant_leaftype}"/></b></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_flowercolor}">
-                    <div class="pview-fact"><span>꽃 색</span><b><c:out value="${plant.plant_flowercolor}"/></b></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_flowersize}">
-                    <div class="pview-fact"><span>꽃 지름</span><b><c:out value="${plant.plant_flowersize}"/></b></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_bloomtime}">
-                    <div class="pview-fact"><span>개화 시기</span><b><c:out value="${plant.plant_bloomtime}"/></b></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_fruitcolor}">
-                    <div class="pview-fact"><span>과일 색</span><b><c:out value="${plant.plant_fruitcolor}"/></b></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_harvesttime}">
-                    <div class="pview-fact"><span>수확 시기</span><b><c:out value="${plant.plant_harvesttime}"/></b></div>
-                  </c:if>
-                </div>
-              </section>
-            </c:if>
-
-            <!-- 관리 -->
-            <c:if test="${hasCare}">
-              <section id="sec-care" class="pview-card">
-                <h2 class="pview-card__title">관리</h2>
-
-                <div class="pview-care">
-                  <c:if test="${not empty plant.plant_growthseason}">
-                    <div class="pview-care__item"><span>성장기</span><b><c:out value="${plant.plant_growthseason}"/></b></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_growthrate}">
-                    <div class="pview-care__item"><span>성장률</span><b><c:out value="${plant.plant_growthrate}"/></b></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_dormancy}">
-                    <div class="pview-care__item"><span>휴면</span><b><c:out value="${plant.plant_dormancy}"/></b></div>
-                  </c:if>
-
-                  <c:if test="${plant.plant_temperature_imin ne 0 or plant.plant_temperature_imax ne 0}">
-                    <div class="pview-care__item">
-                      <span>이상적 적정 온도</span>
-                      <b>${plant.plant_temperature_imin}~${plant.plant_temperature_imax}°C</b>
-                    </div>
-                  </c:if>
-                </div>
-              </section>
-            </c:if>
-
-            <!-- 상징·가치 -->
-            <c:if test="${hasCulture}">
-              <section id="sec-culture" class="pview-card">
-                <h2 class="pview-card__title">상징·가치</h2>
-
-                <c:if test="${not empty plant.plant_culture_symbolism}">
-                  <h3 class="pview-subtitle">상징</h3>
-                  <p class="pview-text"><c:out value="${plant.plant_culture_symbolism}"/></p>
-                </c:if>
-
-                <c:if test="${not empty plant.plant_culture_if}">
-                  <h3 class="pview-subtitle">흥미로운 사실</h3>
-                  <p class="pview-text"><c:out value="${plant.plant_culture_if}"/></p>
-                </c:if>
-
-                <div class="pview-values">
-                  <c:if test="${not empty plant.plant_culture_epv}">
-                    <div class="pview-value"><span>환경 보호 가치</span><p><c:out value="${plant.plant_culture_epv}"/></p></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_culture_ev}">
-                    <div class="pview-value"><span>경제적 가치</span><p><c:out value="${plant.plant_culture_ev}"/></p></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_culture_biv}">
-                    <div class="pview-value"><span>미용 개선 가치</span><p><c:out value="${plant.plant_culture_biv}"/></p></div>
-                  </c:if>
-                  <c:if test="${not empty plant.plant_culture_gu}">
-                    <div class="pview-value"><span>정원 용도</span><p><c:out value="${plant.plant_culture_gu}"/></p></div>
-                  </c:if>
-                </div>
-              </section>
-            </c:if>
-
-            <!-- 독성 -->
-            <c:if test="${hasToxicity}">
-              <section id="sec-toxicity" class="pview-card pview-card--warn">
-                <h2 class="pview-card__title">독성</h2>
-                <p class="pview-text"><c:out value="${plant.plant_toxicity}"/></p>
-              </section>
-            </c:if>
-
-          </article>
-
-          <!-- 오른쪽 요약: 최소 정보만 (없으면 항목 숨김) -->
-          <aside class="pview-aside">
-            <div class="pview-aside__box">
-              <h3 class="pview-aside__title">요약</h3>
-
-              <ul class="pview-aside__list">
-                <li><span>한글명</span><b><c:out value="${plant.plant_name_kor}"/></b></li>
-
-                <c:if test="${not empty plant.plant_name}">
-                  <li><span>영문명</span><b><c:out value="${plant.plant_name}"/></b></li>
-                </c:if>
-
-                <c:if test="${not empty plant.plant_type}">
-                  <li><span>종류</span><b><c:out value="${plant.plant_type}"/></b></li>
-                </c:if>
-
-                <c:if test="${not empty plant.plant_lifespan}">
-                  <li><span>수명</span><b><c:out value="${plant.plant_lifespan}"/></b></li>
-                </c:if>
-
-                <c:if test="${plant.plant_temperature_imin ne 0 or plant.plant_temperature_imax ne 0}">
-                  <li><span>온도</span><b>${plant.plant_temperature_imin}~${plant.plant_temperature_imax}°C</b></li>
-                </c:if>
-              </ul>
-
-              <div class="pview-aside__toc">
-                <c:if test="${hasOverview}"><a href="#sec-overview">개요</a></c:if>
-                <c:if test="${hasClassification}"><a href="#sec-classification">분류</a></c:if>
-                <c:if test="${hasTraits}"><a href="#sec-traits">특징</a></c:if>
-                <c:if test="${hasCare}"><a href="#sec-care">관리</a></c:if>
-                <c:if test="${hasCulture}"><a href="#sec-culture">상징·가치</a></c:if>
-                <c:if test="${hasToxicity}"><a href="#sec-toxicity">독성</a></c:if>
-              </div>
+        <!-- ===== CTA 카드 (스크린샷의 큰 박스 느낌) ===== -->
+        <section class="pv-cta" data-section>
+          <div class="pv-cta__box">
+            <div class="pv-cta__title">식물을 키워서 식물을 잘 아신다면?</div>
+            <div class="pv-cta__text">같이 키우는 사람들과 팁을 공유하고 관리 기록을 남겨보세요.</div>
+            <div class="pv-cta__actions">
+              <a class="btn btn-primary" href="${pageContext.request.contextPath}/community/write?plant_id=${p.plant_id}">
+                	글 작성하러 가기
+              </a>
             </div>
-          </aside>
+          </div>
+        </section>
 
-        </div>
+        <!-- ===== 아이콘 성격(스펙) 영역: 값 없으면 항목 숨김 ===== -->
+        <section class="pv-spec" data-section>
+          <div class="pv-spec__grid">
+            <c:if test="${not empty p.plant_toxicity}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">☣</div>
+                <div class="spec-txt">
+                  <div class="spec-k">독성</div>
+                  <div class="spec-v"><c:out value="${p.plant_toxicity}" /></div>
+                </div>
+              </div>
+            </c:if>
+
+            <c:if test="${not empty p.plant_lifespan}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">⏳</div>
+                <div class="spec-txt">
+                  <div class="spec-k">수명</div>
+                  <div class="spec-v"><c:out value="${p.plant_lifespan}" /></div>
+                </div>
+              </div>
+            </c:if>
+
+            <c:if test="${not empty p.plant_type}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">🌿</div>
+                <div class="spec-txt">
+                  <div class="spec-k">종류</div>
+                  <div class="spec-v"><c:out value="${p.plant_type}" /></div>
+                </div>
+              </div>
+            </c:if>
+
+            <c:if test="${not empty p.plant_height}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">📏</div>
+                <div class="spec-txt">
+                  <div class="spec-k">높이</div>
+                  <div class="spec-v"><c:out value="${p.plant_height}" /></div>
+                </div>
+              </div>
+            </c:if>
+
+            <c:if test="${not empty p.plant_spread}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">↔</div>
+                <div class="spec-txt">
+                  <div class="spec-k">퍼짐</div>
+                  <div class="spec-v"><c:out value="${p.plant_spread}" /></div>
+                </div>
+              </div>
+            </c:if>
+
+            <c:if test="${p.plant_temperature_imin ne 0 || p.plant_temperature_imax ne 0}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">🌡</div>
+                <div class="spec-txt">
+                  <div class="spec-k">이상 온도</div>
+                  <div class="spec-v">
+                    <c:out value="${p.plant_temperature_imin}" />°C ~ <c:out value="${p.plant_temperature_imax}" />°C
+                  </div>
+                </div>
+              </div>
+            </c:if>
+
+            <c:if test="${not empty p.plant_growthrate}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">📈</div>
+                <div class="spec-txt">
+                  <div class="spec-k">성장률</div>
+                  <div class="spec-v"><c:out value="${p.plant_growthrate}" /></div>
+                </div>
+              </div>
+            </c:if>
+
+            <c:if test="${not empty p.plant_growthseason}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">🗓</div>
+                <div class="spec-txt">
+                  <div class="spec-k">성장기</div>
+                  <div class="spec-v"><c:out value="${p.plant_growthseason}" /></div>
+                </div>
+              </div>
+            </c:if>
+          </div>
+        </section>
+
+        <!-- ===== 분류 테이블 ===== -->
+        <section class="pv-box" data-section>
+          <div class="pv-box__head">
+            <h2 class="pv-h2">학명/분류</h2>
+          </div>
+
+          <table class="pv-table" data-section>
+            <tbody>
+              <c:if test="${not empty p.plant_species}">
+                <tr><th>종</th><td><c:out value="${p.plant_species}" /></td></tr>
+              </c:if>
+              <c:if test="${not empty p.plant_genus}">
+                <tr><th>속</th><td><c:out value="${p.plant_genus}" /></td></tr>
+              </c:if>
+              <c:if test="${not empty p.plant_family}">
+                <tr><th>과</th><td><c:out value="${p.plant_family}" /></td></tr>
+              </c:if>
+              <c:if test="${not empty p.plant_order}">
+                <tr><th>목</th><td><c:out value="${p.plant_order}" /></td></tr>
+              </c:if>
+              <c:if test="${not empty p.plant_class}">
+                <tr><th>강</th><td><c:out value="${p.plant_class}" /></td></tr>
+              </c:if>
+              <c:if test="${not empty p.plant_phylum}">
+                <tr><th>문</th><td><c:out value="${p.plant_phylum}" /></td></tr>
+              </c:if>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ===== 이미지 스트립(여러 장) : plantImages(List<String>) 있으면 사용, 없으면 기본이미지 1장만 ===== -->
+        <section class="pv-box" data-section>
+          <div class="pv-box__head">
+            <h2 class="pv-h2">이미지</h2>
+          </div>
+
+          <div class="pv-gallery" data-section>
+            <button type="button" class="pv-gbtn pv-gbtn--prev" aria-label="이전 이미지">‹</button>
+
+            <div class="pv-gtrack" id="pvGalleryTrack">
+              <c:choose>
+                <c:when test="${not empty plantImages}">
+                  <c:forEach var="img" items="${plantImages}">
+                    <c:if test="${not empty img}">
+                      <img class="pv-gimg" src="<c:out value='${img}'/>" alt="식물 이미지" loading="lazy" />
+                    </c:if>
+                  </c:forEach>
+                </c:when>
+                <c:otherwise>
+                  <c:if test="${not empty p.plant_image}">
+                    <img class="pv-gimg" src="<c:out value='${p.plant_image}'/>" alt="식물 이미지" loading="lazy" />
+                  </c:if>
+                </c:otherwise>
+              </c:choose>
+            </div>
+
+            <button type="button" class="pv-gbtn pv-gbtn--next" aria-label="다음 이미지">›</button>
+          </div>
+        </section>
+
+        <!-- ===== 문화/가치 섹션: 긴 텍스트(CLOB)들 ===== -->
+        <section class="pv-box" data-section>
+          <div class="pv-box__head">
+            <h2 class="pv-h2">문화</h2>
+          </div>
+
+          <div class="pv-article" data-section>
+            <c:if test="${not empty p.plant_culture_symbolism}">
+              <h3 class="pv-h3">상징</h3>
+              <p class="pv-p"><c:out value="${p.plant_culture_symbolism}" /></p>
+            </c:if>
+
+            <c:if test="${not empty p.plant_culture_if}">
+              <h3 class="pv-h3">흥미로운 사실들</h3>
+              <p class="pv-p"><c:out value="${p.plant_culture_if}" /></p>
+            </c:if>
+
+            <c:if test="${not empty p.plant_culture_gu}">
+              <h3 class="pv-h3">정원 용도</h3>
+              <p class="pv-p"><c:out value="${p.plant_culture_gu}" /></p>
+            </c:if>
+
+            <c:if test="${not empty p.plant_culture_epv}">
+              <h3 class="pv-h3">환경 보호 가치</h3>
+              <p class="pv-p"><c:out value="${p.plant_culture_epv}" /></p>
+            </c:if>
+
+            <c:if test="${not empty p.plant_culture_ev}">
+              <h3 class="pv-h3">경제적 가치</h3>
+              <p class="pv-p"><c:out value="${p.plant_culture_ev}" /></p>
+            </c:if>
+
+            <c:if test="${not empty p.plant_culture_biv}">
+              <h3 class="pv-h3">미용 개선 가치</h3>
+              <p class="pv-p"><c:out value="${p.plant_culture_biv}" /></p>
+            </c:if>
+          </div>
+        </section>
+
+        <!-- ===== 특징(색상/꽃/열매 등) ===== -->
+        <section class="pv-box" data-section>
+          <div class="pv-box__head">
+            <h2 class="pv-h2">특성</h2>
+          </div>
+
+          <div class="pv-kvgrid" data-section>
+            <c:if test="${not empty p.plant_stemcolor}">
+              <div class="kv"><div class="k">줄기 색</div><div class="v"><c:out value="${p.plant_stemcolor}" /></div></div>
+            </c:if>
+            <c:if test="${not empty p.plant_leafcolor}">
+              <div class="kv"><div class="k">잎 색</div><div class="v"><c:out value="${p.plant_leafcolor}" /></div></div>
+            </c:if>
+            <c:if test="${not empty p.plant_leaftype}">
+              <div class="kv"><div class="k">잎 종류</div><div class="v"><c:out value="${p.plant_leaftype}" /></div></div>
+            </c:if>
+
+            <c:if test="${not empty p.plant_flowercolor}">
+              <div class="kv"><div class="k">꽃 색</div><div class="v"><c:out value="${p.plant_flowercolor}" /></div></div>
+            </c:if>
+            <c:if test="${not empty p.plant_flowersize}">
+              <div class="kv"><div class="k">꽃 지름</div><div class="v"><c:out value="${p.plant_flowersize}" /></div></div>
+            </c:if>
+            <c:if test="${not empty p.plant_bloomtime}">
+              <div class="kv"><div class="k">개화 시기</div><div class="v"><c:out value="${p.plant_bloomtime}" /></div></div>
+            </c:if>
+
+            <c:if test="${not empty p.plant_fruitcolor}">
+              <div class="kv"><div class="k">과일 색</div><div class="v"><c:out value="${p.plant_fruitcolor}" /></div></div>
+            </c:if>
+            <c:if test="${not empty p.plant_harvesttime}">
+              <div class="kv"><div class="k">수확 시기</div><div class="v"><c:out value="${p.plant_harvesttime}" /></div></div>
+            </c:if>
+
+            <c:if test="${not empty p.plant_dormancy}">
+              <div class="kv"><div class="k">휴면</div><div class="v"><c:out value="${p.plant_dormancy}" /></div></div>
+            </c:if>
+          </div>
+        </section>
+
+        <!-- ===== 추천/연관 식물(있을 때만) : similarPlants(List<PlantVO>) 가정 ===== -->
+        <c:if test="${not empty similarPlants}">
+          <section class="pv-box" data-section>
+            <div class="pv-box__head">
+              <h2 class="pv-h2">당신이 좋아할 만한 다른 식물들</h2>
+            </div>
+
+            <div class="pv-sim-grid">
+              <c:forEach var="sp" items="${similarPlants}">
+                <c:if test="${not empty sp}">
+                  <a class="pv-sim-card" href="${pageContext.request.contextPath}/plant/view?plant_id=${sp.plant_id}">
+                    <div class="pv-sim-thumb">
+                      <c:if test="${not empty sp.plant_image}">
+                        <img src="<c:out value='${sp.plant_image}'/>" alt="연관 식물" loading="lazy"/>
+                      </c:if>
+                    </div>
+                    <div class="pv-sim-body">
+                      <div class="pv-sim-name"><c:out value="${sp.plant_name_kor}" /></div>
+                      <c:if test="${not empty sp.plant_name}">
+                        <div class="pv-sim-sub"><c:out value="${sp.plant_name}" /></div>
+                      </c:if>
+                    </div>
+                  </a>
+                </c:if>
+              </c:forEach>
+            </div>
+          </section>
+        </c:if>
+
       </c:if>
 
-    </section>
-  </main>
+      <!-- plant 자체가 없을 때 -->
+      <c:if test="${empty p}">
+        <section class="pv-empty">
+          <h2>식물 정보를 찾을 수 없습니다.</h2>
+          <p>잘못된 접근이거나 데이터가 삭제되었을 수 있습니다.</p>
+          <a class="btn btn-primary" href="${pageContext.request.contextPath}/plant/PlantMain">목록으로</a>
+        </section>
+      </c:if>
 
-  <%@ include file="/WEB-INF/views/layout/footer.jsp" %>
+    </div>
+  </div>
 </div>
+
+<script src="${pageContext.request.contextPath}/resources/js/plant/PlantView.js"></script>
+<jsp:include page="/WEB-INF/views/layout/footer.jsp" />

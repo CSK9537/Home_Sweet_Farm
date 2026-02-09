@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/Personal.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/law/Personal.css">
 
 <div class="page-shell">
   <%@ include file="/WEB-INF/views/layout/header.jsp" %>

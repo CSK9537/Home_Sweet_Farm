@@ -1,0 +1,425 @@
+/* storeDetail.css */
+.store-detail { position: relative; width: 100%; }
+
+/* 우측 플로팅 */
+.store-floating {
+  position: absolute;
+  right: -60px;
+  top: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.store-floating__btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  text-decoration: none;
+  color: #222;
+  border: 1px solid rgba(0,0,0,0.2);
+}
+.store-floating__btn--wish { background: #f2f084; }
+.store-floating__btn--cart { background: #f6a3a3; }
+
+@media (max-width: 1024px) { .store-floating { display:none; } }
+
+/* 상단 2컬럼 */
+.detail-top {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 26px;
+  margin-top: 8px;
+}
+
+@media (max-width: 1024px) {
+  .detail-top { grid-template-columns: 1fr; }
+}
+
+/* 갤러리 */
+.gallery {
+  width: 100%;
+  background: #efefef;
+  border: 1px solid #d6d1c8;
+  border-radius: 6px;
+  padding: 14px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.gallery__stage {
+  width: 100%;
+  height: 300px;
+  background: #d8d8d8;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gallery__main {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.gallery__dummy {
+  position: absolute;
+  color: #333;
+  font-size: 12px;
+}
+
+.gallery__nav {
+  position: absolute;
+  top: 165px;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid #6b7b61;
+  background: #f4f2ed;
+  color: #2b2b2b;
+  cursor: pointer;
+}
+.gallery__nav--prev { left: 18px; }
+.gallery__nav--next { right: 18px; }
+
+/* 썸네일 */
+.thumbs {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+.thumb {
+  height: 54px;
+  border: 1px solid #cfc8bb;
+  background: #e7e7e7;
+  border-radius: 4px;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+}
+.thumb img { width:100%; height:100%; object-fit: cover; display:block; }
+.thumb__dummy { font-size: 10px; color:#444; display:flex; align-items:center; justify-content:center; height:100%; }
+.thumb--active { border: 2px solid #6b7b61; background: #f4f2ed; }
+
+/* 제품 설명 바 */
+.gallery__bar {
+  margin-top: 10px;
+  height: 34px;
+  border-top: 1px solid #cfc8bb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+}
+.gallery__bar-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2b2b2b;
+}
+.gallery__bar-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  border: 1px solid #6b7b61;
+  background: #f4f2ed;
+  cursor: pointer;
+}
+
+/* 리뷰 박스 */
+.review-box {
+  margin-top: 10px;
+  background: #e1e1e1;
+  border-radius: 6px;
+  border: 1px solid #cfc8bb;
+  padding: 12px;
+}
+.review-box__title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2b2b2b;
+  margin-bottom: 10px;
+}
+.review-box__panel {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: 12px;
+}
+.review-tabs { display:flex; gap:8px; margin-bottom: 8px; }
+.review-tab {
+  font-size: 11px;
+  padding: 4px 8px;
+  border: 1px solid #cfc8bb;
+  border-radius: 4px;
+  background: #f4f2ed;
+}
+.review-tab--active { border-color:#6b7b61; }
+
+.review-content {
+  background: #fff;
+  border: 1px solid #cfc8bb;
+  border-radius: 4px;
+  height: 110px;
+  overflow: auto;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.review-item__head { display:flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
+.review-item__nick { font-weight: 700; color:#2b2b2b; }
+.review-item__rate { color:#6b7b61; font-weight: 700; }
+.review-item__body { font-size: 11px; color:#333; line-height: 1.35; }
+.review-empty { font-size: 11px; color:#666; }
+
+.review-box__right {
+  display: grid;
+  gap: 10px;
+}
+.review-stat {
+  background: #f4f2ed;
+  border: 1px solid #cfc8bb;
+  border-radius: 4px;
+  padding: 8px;
+}
+.review-stat__label { font-size: 10px; color:#666; margin-bottom: 4px; }
+.review-stat__value { font-size: 12px; font-weight: 700; color:#2b2b2b; }
+
+/* 우측 정보 카드 */
+.info-card {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #d6d1c8;
+  border-radius: 6px;
+  padding: 14px;
+  box-sizing: border-box;
+  min-height: 260px;
+}
+.info-card__name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #2b2b2b;
+}
+.info-card__price {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #2b2b2b;
+}
+.info-card__rating {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.info-card__rating .stars { color:#6b7b61; }
+.info-card__rating .count { color:#777; }
+
+.info-card__brief {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #444;
+  background: #f4f2ed;
+  border: 1px solid #cfc8bb;
+  border-radius: 4px;
+  padding: 10px;
+  height: 90px;
+  overflow: auto;
+}
+
+.info-card__actions { margin-top: 12px; display: grid; gap: 10px; }
+.action-row { margin:0; }
+.btn {
+  width: 100%;
+  height: 34px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.btn--solid {
+  border: 1px solid #6b7b61;
+  background: #6b7b61;
+  color: #fff;
+}
+.btn--ghost {
+  border: 1px solid #6b7b61;
+  background: #f4f2ed;
+  color: #2b2b2b;
+}
+
+/* 하단 섹션 */
+.sub-section {
+  margin-top: 18px;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+.sub-section__left {
+  font-size: 12px;
+  font-weight: 800;
+  color: #2b2b2b;
+}
+.sub-section__right {
+  font-size: 11px;
+  color: #6b7b61;
+}
+
+/* 가로 제품 리스트 */
+.h-row {
+  margin-top: 10px;
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+.h-row::-webkit-scrollbar { height: 8px; }
+.h-row::-webkit-scrollbar-thumb { background: rgba(107,123,97,0.35); border-radius: 999px; }
+.h-row::-webkit-scrollbar-track { background: transparent; }
+
+.product-mini {
+  min-width: 120px;
+  width: 120px;
+  border: 1px solid #d6d1c8;
+  border-radius: 6px;
+  background: #fff;
+  overflow: hidden;
+  cursor: pointer;
+}
+.product-mini__thumb {
+  height: 90px;
+  background: #e8e8e8;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.product-mini__thumb img { width:100%; height:100%; object-fit: cover; display:block; }
+.mini-dummy { font-size: 11px; color:#444; }
+
+.product-mini__name {
+  padding: 8px 8px 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #222;
+  min-height: 28px;
+}
+.product-mini__meta {
+  padding: 6px 8px 10px;
+  font-size: 10px;
+  color: #444;
+  display:flex;
+  align-items:center;
+  gap: 6px;
+}
+.product-mini__meta .stars { color:#6b7b61; }
+.product-mini__meta .count { color:#777; }
+
+/* 페이지네이션 */
+.store-paging {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 90px;
+  padding-top: 18px;
+  border-top: 1px solid #6b7b61;
+}
+.pg-btn, .pg-num {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #6b7b61;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #2b2b2b;
+  text-decoration: none;
+  background: transparent;
+}
+.pg-num--active { background: #6b7b61; color: #fff; }
+
+/* 모달(2번째 이미지 느낌 + 1번째 톤 유지) */
+.modal { display: none; }
+.modal.is-open { display: block; }
+
+.modal__dim {
+  position: fixed;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.35);
+  z-index: 9998;
+}
+.modal__panel {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 860px;
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+
+  background: #f4f2ed;              /* 공통 베이지 */
+  border: 2px solid #6b7b61;        /* 공통 그린 */
+  border-radius: 10px;
+  z-index: 9999;
+  box-sizing: border-box;
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(107,123,97,0.35);
+}
+.modal__title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #2b2b2b;
+}
+.modal__close {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #6b7b61;
+  background: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.modal__body {
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.modal__block {
+  background: #fff;
+  border: 1px solid #cfc8bb;
+  border-radius: 8px;
+  padding: 14px;
+}
+.modal__block-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #2b2b2b;
+  margin-bottom: 10px;
+}
+.modal__block-content {
+  font-size: 12px;
+  color: #333;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+/* 모달 오픈 시 바디 스크롤 잠금용 클래스 */
+body.modal-open { overflow: hidden; }
