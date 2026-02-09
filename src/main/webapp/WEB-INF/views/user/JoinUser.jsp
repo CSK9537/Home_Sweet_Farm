@@ -153,16 +153,16 @@
           <!-- STEP 3: 회원정보 입력 + 최종 가입 -->
           <section class="step-panel" id="step-profile" data-step="profile" aria-label="회원정보 입력">
             <!-- 최종 제출 폼 (서버 insert용) -->
-            <form id="joinForm" method="post" action="${pageContext.request.contextPath}/user/JoinUser" autocomplete="off">
+            <form id="joinForm" method="post" action="${pageContext.request.contextPath}/user/join" autocomplete="off">
               <!-- STEP1 값들 hidden으로 전달 -->
               <input type="hidden" name="user_id" id="hidUserId" />
-              <input type="hidden" name="password" id="hidPassword" />
-              <input type="hidden" name="confirm_service" id="hidConfirmService" />
-              <input type="hidden" name="confirm_userinfo" id="hidConfirmUserinfo" />
-              <input type="hidden" name="confirm_event" id="hidConfirmEvent" />
-              <input type="hidden" name="phone" id="hidPhone" />
-              <input type="hidden" name="email" id="hidEmail" />
-              <input type="hidden" name="aspect" id="hidAspect" />
+              <input type="hidden" name="user_pw" id="hidUserPw" />
+              <input type="hidden" name="agree_service" id="hidAgreeService" />
+              <input type="hidden" name="agree_privacy" id="hidAgreePrivacy" />
+              <input type="hidden" name="agree_marketing" id="hidAgreeMarketing" />
+              <input type="hidden" name="verified_sms" id="hidVerifiedSms" />
+              <input type="hidden" name="verified_email" id="hidVerifiedEmail" />
+              <input type="hidden" name="interest_plants" id="hidInterests" />
 
               <div class="profile-head">
                 <h3 class="profile-title">회원 정보 입력</h3>

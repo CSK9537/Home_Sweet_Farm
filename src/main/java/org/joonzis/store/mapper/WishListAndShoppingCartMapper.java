@@ -21,5 +21,19 @@ public interface WishListAndShoppingCartMapper {
 	public int deleteShoppingCartByUserId(int user_id);
 	
 	// Upsert 이미 있으면 update, 데이터가 없으면 insert
-	public int upsertShoppingCart(@Param("user_id") int user_id, @Param("product_id") int product_id, @Param("type")String type);
+	public int upsertShoppingCart(
+			@Param("user_id") int user_id, 
+			@Param("product_id") int product_id, 
+			@Param("type")String type);
+
+	// 유저가 특정 제품을 찜(or 장바구니)을 했는지 확인용
+	public int checkAlreadyIn(
+			@Param("user_id") int user_id, 
+			@Param("product_id") int product_id,
+			@Param("type")String type);
+	
+	public int deleteCartOrWish(
+			@Param("user_id")int user_id,
+			@Param("product_id")Integer product_id,
+			@Param("type")String type);
 }

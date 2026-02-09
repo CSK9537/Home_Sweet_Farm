@@ -11,6 +11,7 @@ import org.joonzis.store.mapper.ProductReviewMapper;
 import org.joonzis.store.vo.ProductReviewVO;
 import org.joonzis.store.vo.ProductVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,13 +67,14 @@ public class StoreServiceImpl implements StoreService{
 	public List<ProductForListDTO> getListOnHot() {
 		return pMapper.getProductListOnHot();
 	}
+	// 상품 리뷰 작성
 	@Override
-	public int insertProductReview(ProductReviewVO vo) {
+	public int addProductReview(ProductReviewVO vo) throws DuplicateKeyException{
 		return rMapper.insertProductReview(vo);
 	}
 	@Override
 	public List<ProductReviewDTO> getReviewListByProductId(int product_id) {
-		return rMapper.getReviewListByProductId(product_id);
+		return rMapper.getReviewOneOrList(product_id, "product");
 	}
 	@Override
 	public ProductReviewDTO getTopReviewByProductId(int product_id) {
@@ -90,4 +92,21 @@ public class StoreServiceImpl implements StoreService{
 	public List<ProductForAdminListDTO> getAdminListByPrice() {
 		return pMapper.getProductAdminListByPrice();
 	}
+	@Override
+	public int modifyProductReview(ProductReviewVO vo) {
+		return rMapper.updateProductReview(vo);
+	}
+	@Override
+	public int removeProductReview(int product_review_id) {
+		return rMapper.deletePrdouctReview(product_review_id);
+	}
+	@Override
+	public List<ProductReviewDTO> getReviewListByUserId(int user_id) {
+		return rMapper.getReviewOneOrList(user_id, "user");
+	}
+	@Override
+	public ProductReviewDTO getProductReviewDTO(int product_review_id) {
+		return rMapper.getReviewOneOrList(product_review_id, "review").get(0);
+	}
 }
+
