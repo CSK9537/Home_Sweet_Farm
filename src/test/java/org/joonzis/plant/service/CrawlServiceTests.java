@@ -118,16 +118,16 @@ public class CrawlServiceTests {
 //	}
 	
 	// 실제 가이드 DB 저장
-	@Test
-	public void insertTotalGuideDataTest() {
-		log.info("insert guide data...");
-		try {
-			log.info("service 작동 중...");
-			List<Integer> list = pmapper.plantIdList();
-			cservice.insertTotalGuideData(list);
-			log.info("service 성공!!!");
-		} catch (Exception e) {
-			log.error(e);
-		}
-	}
+//	@Test
+//	public void insertTotalGuideDataTest() {
+//		log.info("insert guide data...");
+//		try {
+//			log.info("service 작동 중...");
+//			List<Integer> list = pmapper.plantIdList();
+//			cservice.insertTotalGuideData(list);
+//			log.info("service 성공!!!");
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
 }
