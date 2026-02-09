@@ -407,8 +407,12 @@ public class CrawlServiceImpl implements CrawlService{
 									int index = tag_content.indexOf(":") + 1;
 									String temps = tag_content.substring(index).trim();
 									String[] temperature = temps.split(" ");
-									gvo.setGuide_temperature_tmin(Integer.parseInt(temperature[0]));
-									gvo.setGuide_temperature_tmax(Integer.parseInt(temperature[2]));
+									if(temperature.length > 2) {
+										gvo.setGuide_temperature_tmin(Integer.parseInt(temperature[0]));
+										gvo.setGuide_temperature_tmax(Integer.parseInt(temperature[2]));
+									} else {
+										gvo.setGuide_temperature_tmin(Integer.parseInt(temperature[0]));
+									}
 								}
 							}
 							gvo.setGuide_temperature_content(content);

@@ -123,11 +123,7 @@ public class CrawlServiceTests {
 		log.info("insert guide data...");
 		try {
 			log.info("service 작동 중...");
-//			List<Integer> list = pmapper.plantIdList();
-			List<Integer> list = new ArrayList<Integer>();
-			for(int i=1;i<=100;i++) {
-				list.add(i);
-			}
+			List<Integer> list = pmapper.plantIdList();
 			cservice.insertTotalGuideData(list);
 			log.info("service 성공!!!");
 		} catch (Exception e) {
