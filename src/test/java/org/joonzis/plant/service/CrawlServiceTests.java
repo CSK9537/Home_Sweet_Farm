@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joonzis.plant.mapper.CrawlMapper;
+import org.joonzis.plant.mapper.PlantMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class CrawlServiceTests {
 	
 	@Autowired
 	private CrawlMapper cmapper;
+	
+	@Autowired
+	private PlantMapper pmapper;
 	
 //	// 소수 데이터로 식물 이름 입력 테스트
 //	@Test
@@ -94,18 +98,36 @@ public class CrawlServiceTests {
 //		}
 //	}
 	
-	// 소수 데이터로 가이드 입력 테스트
-	@Test
-	public void insertTotalGuideDataTest() {
-		log.info("insert guide data...");
-		try {
-			log.info("service 작동 중...");
-			List<Integer> tmplist = new ArrayList<Integer>();
-			tmplist.add(1220);
-			cservice.insertTotalGuideData(tmplist);
-			log.info("service 성공!!!");
-		} catch (Exception e) {
-			log.error(e);
-		}
-	}
+//	// 소수 데이터로 가이드 입력 테스트
+//	@Test
+//	public void insertTotalGuideDataTest() {
+//		log.info("insert guide data...");
+//		try {
+//			log.info("service 작동 중...");
+//			List<Integer> tmplist = new ArrayList<Integer>();
+//			tmplist.add(1220);
+//			tmplist.add(1221);
+//			tmplist.add(1222);
+//			tmplist.add(1223);
+//			tmplist.add(1224);
+//			cservice.insertTotalGuideData(tmplist);
+//			log.info("service 성공!!!");
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
+	
+//	// 실제 가이드 DB 저장
+//	@Test
+//	public void insertTotalGuideDataTest() {
+//		log.info("insert guide data...");
+//		try {
+//			log.info("service 작동 중...");
+//			List<Integer> list = pmapper.plantIdList();
+//			cservice.insertTotalGuideData(list);
+//			log.info("service 성공!!!");
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
 }

@@ -35,9 +35,9 @@ public class GuideVO {
 	// 독성
 	private String guide_toxicity;
 	// 급수 습도 수준
-	private String guide_wartering_humiditylevel;
+	private String guide_watering_humiditylevel;
 	// 급수 내용
-	private String guide_wartering_content;
+	private String guide_watering_content;
 	// 일조량 허용 오차
 	private String guide_sunlight_tolerance;
 	// 일조량 내용
