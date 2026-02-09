@@ -97,8 +97,8 @@
 
       	<!-- 급수 -->
 		<c:if test="${not empty g.guide_watering_schedule 
-		             or not empty g.guide_wartering_humiditylevel 
-		             or not empty g.guide_wartering_content}">
+		             or not empty g.guide_watering_humiditylevel 
+		             or not empty g.guide_watering_content}">
 		             
 		  <section class="guide-section js-empty-scan">
 		    <div class="guide-section__head">
@@ -116,21 +116,21 @@
 		        </div>
 		      </c:if>
 		
-		      <c:if test="${not empty g.guide_wartering_humiditylevel}">
+		      <c:if test="${not empty g.guide_watering_humiditylevel}">
 		        <div class="guide-kv__row">
 		          <span class="guide-kv__label">급수 습도 수준</span>
 		          <span class="guide-kv__value">
-		            ${g.guide_wartering_humiditylevel}
+		            ${g.guide_watering_humiditylevel}
 		          </span>
 		        </div>
 		      </c:if>
 		
 		    </div>
 		
-		    <c:if test="${not empty g.guide_wartering_content}">
+		    <c:if test="${not empty g.guide_watering_content}">
 		      <article class="guide-article">
 		        <p class="guide-text">
-		          ${g.guide_wartering_content}
+		          ${g.guide_watering_content}
 		        </p>
 		      </article>
 		    </c:if>

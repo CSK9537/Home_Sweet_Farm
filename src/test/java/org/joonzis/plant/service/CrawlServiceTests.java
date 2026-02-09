@@ -117,7 +117,7 @@ public class CrawlServiceTests {
 //		}
 //	}
 	
-	// 실제 가이드 DB 저장
+//	// 실제 가이드 DB 저장
 //	@Test
 //	public void insertTotalGuideDataTest() {
 //		log.info("insert guide data...");

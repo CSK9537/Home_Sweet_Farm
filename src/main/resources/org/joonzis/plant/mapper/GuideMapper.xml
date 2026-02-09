@@ -5,7 +5,7 @@
 <mapper namespace="org.joonzis.plant.mapper.GuideMapper">
 	<!-- 가이드 정보 입력 -->
 	<insert id="insertGuideInfo">
-		INSERT INTO tmp_guide(
+		INSERT INTO tbl_guide(
 			plant_id,
 			guide_caretip,
 			guide_toughness,
