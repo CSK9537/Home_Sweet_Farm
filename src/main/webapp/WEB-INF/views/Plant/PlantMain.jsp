@@ -2,23 +2,22 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/PlantMain.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/plant/PlantMain.css" />
 
 <div class="page-shell">
 	<section class="content-wrap">
 		<div class="content-card plant">
 
 			<div class="plant__header">
-			  <h2 class="plant__title">식물</h2>
-			  <div class="plant__divider"></div>
-			</div>	
+				<h2 class="plant__title">식물</h2>
+				<div class="plant__divider"></div>
+			</div>
 
-			<!-- 인기 식물 (검색수 순) -->
 			<section class="plant-section" data-section="popular">
-			  <div class="plant-section__head">
-			    <h3 class="plant-section__title">인기 식물</h3>
-			  </div>
-			
+				<div class="plant-section__head">
+					<h3 class="plant-section__title">인기 식물</h3>
+				</div>
+
 				<!-- 1) 상단 Top3 (3열) -->
 				<div class="plant-grid plant-grid--top3" id="popularTopGrid">
 				  <c:forEach var="p" items="${popularPlants}" varStatus="st">
@@ -40,11 +39,6 @@
 				  </c:forEach>
 				</div>
 				
-				<div class="plant__header">
-					<h2 class="plant__title">식물 목록</h2>
-					<div class="plant__divider"></div>
-				</div>	
-
 				<!-- 2) 하단 목록 (4열, 2줄 = 8개) : 4번째 ~ 11번째 -->
 				<div class="plant-grid plant-grid--rank" id="popularGrid">
 				  <c:forEach var="p" items="${popularPlants}" varStatus="st">
@@ -64,25 +58,11 @@
 				    </c:if>
 				  </c:forEach>
 				</div>
-			
-			  <!-- 더보기: 하단 목록만 추가 (4개씩, 최대 5번) -->
-			  <div class="plant-section__more">
-			    <button type="button"
-			            class="btn-more"
-			            data-target="#popularGrid"
-			            data-section="popular"
-			            data-offset="${empty popularOffset ? 11 : popularOffset}"
-			            data-limit="4"
-			            data-clicks="0"
-			            data-max-clicks="5">
-			      	더보기
-			    </button>
-			  </div>
 			</section>
 
 		</div>
 	</section>
 </div>
 
-<script defer src="${pageContext.request.contextPath}/resources/js/PlantMain.js"></script>
+<script defer src="${pageContext.request.contextPath}/resources/js/plant/PlantMain.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

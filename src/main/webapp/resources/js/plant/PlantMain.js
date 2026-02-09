@@ -1,4 +1,3 @@
-/* ===== PlantMain.js ===== */
 document.addEventListener("DOMContentLoaded", function () {
   // contextPath (body data-ctx 또는 window.ctx 또는 "")
   var ctx = "";

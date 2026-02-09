@@ -4,7 +4,7 @@
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/GuideView.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/plant/GuideView.css" />
 
 <c:set var="g" value="${guide}" />
 
@@ -95,7 +95,7 @@
         </section>
       </c:if>
 
-		<!-- 급수 -->
+      	<!-- 급수 -->
 		<c:if test="${not empty g.guide_watering_schedule 
 		             or not empty g.guide_wartering_humiditylevel 
 		             or not empty g.guide_wartering_content}">
@@ -116,7 +116,6 @@
 		        </div>
 		      </c:if>
 		
-		      <!-- VO 기준 wartering 그대로 사용 -->
 		      <c:if test="${not empty g.guide_wartering_humiditylevel}">
 		        <div class="guide-kv__row">
 		          <span class="guide-kv__label">급수 습도 수준</span>
@@ -138,6 +137,7 @@
 		
 		  </section>
 		</c:if>
+
 
       <!-- 햇빛 -->
       <c:if test="${not empty g.guide_sunlight_requirements or not empty g.guide_sunlight_tolerance or not empty g.guide_sunlight_content}">
@@ -187,10 +187,10 @@
                       ${g.guide_temperature_imin} ~ ${g.guide_temperature_imax}℃
                     </c:when>
                     <c:when test="${g.guide_temperature_imin ne 0}">
-                      	최저 ${g.guide_temperature_imin}℃
+                      최저 ${g.guide_temperature_imin}℃
                     </c:when>
                     <c:otherwise>
-                     	 최고 ${g.guide_temperature_imax}℃
+                      최고 ${g.guide_temperature_imax}℃
                     </c:otherwise>
                   </c:choose>
                 </p>
@@ -206,10 +206,10 @@
                       ${g.guide_temperature_tmin} ~ ${g.guide_temperature_tmax}℃
                     </c:when>
                     <c:when test="${g.guide_temperature_tmin ne 0}">
-                      	최저 ${g.guide_temperature_tmin}℃
+                      최저 ${g.guide_temperature_tmin}℃
                     </c:when>
                     <c:otherwise>
-                      	최고 ${g.guide_temperature_tmax}℃
+                      최고 ${g.guide_temperature_tmax}℃
                     </c:otherwise>
                   </c:choose>
                 </p>
@@ -446,4 +446,5 @@
 </div>
 
 <script defer src="${pageContext.request.contextPath}/resources/js/GuideView.js"></script>
+
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />
