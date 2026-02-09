@@ -17,10 +17,4 @@ public class MyPlantVO {
     private String myplantName;
     private Date myplantRegdate;
     
-    // 최신 센서 데이터 (없을 수도 있음)
-    private double temperature;
-    private double humidity;
-    private double illumination;
-    private double soilMoisture;
-    private Date sensingTime;
 }

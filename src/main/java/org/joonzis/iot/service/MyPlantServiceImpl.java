@@ -12,15 +12,33 @@ import org.springframework.stereotype.Service;
 public class MyPlantServiceImpl implements MyPlantService {
 	@Autowired
 	private MyPlantMapper mapper;
-	
-	@Override
-	public List<MyPlantVO> getMyPlantsByUser(int userId){
-		return mapper.selectMyPlantsByUser(userId);
-	}
 
 	@Override
 	public List<MyPlantMainDTO> getMyPlantMainList(int userId) {
 		return mapper.selectMyPlantMain(userId);
 	}
-	
+	 @Override
+	    public List<MyPlantVO> getList(int userId) {
+	        return mapper.getList(userId);
+	    }
+
+	    @Override
+	    public MyPlantVO get(int myplantId) {
+	        return mapper.get(myplantId);
+	    }
+
+	    @Override
+	    public void register(MyPlantVO vo) {
+	        mapper.insert(vo);
+	    }
+
+	    @Override
+	    public boolean modify(MyPlantVO vo) {
+	        return mapper.update(vo) == 1;
+	    }
+
+	    @Override
+	    public boolean remove(int myplantId) {
+	        return mapper.delete(myplantId) == 1;
+	    }
 }
