@@ -1,5 +1,6 @@
 package org.joonzis.store.service;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 import org.joonzis.store.dto.ShoppingCartDTO;
@@ -8,6 +9,7 @@ import org.joonzis.store.mapper.WishListAndShoppingCartMapper;
 import org.joonzis.store.vo.ShoppingCartVO;
 import org.joonzis.store.vo.WishListVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.log4j.Log4j;
@@ -20,7 +22,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
 	
 	// 찜목록에 추가
 	@Override
-	public int addWishList(int user_id, int product_id) {
+	public int addWishList(int user_id, int product_id) throws DuplicateKeyException{
 		return mapper.insertWishList(new WishListVO(user_id, product_id));
 	}
 	// 사용자의 찜목록 불러오기

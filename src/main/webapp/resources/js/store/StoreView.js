@@ -137,3 +137,41 @@
     init();
   }
 })();
+
+// 장바구니 추가
+document.querySelector("#addCart").addEventListener("click", function () {
+  const product_id = document.querySelector("#product_id").getAttribute("value");
+  fetch(`/store/cart/addCart/user/2/product/${product_id}?type=plus`, {
+    method: "PUT",
+  })
+    .then((response) => {
+      if (response.ok) {
+        alert("장바구니에 담았습니다.");
+      } else {
+        alert("장바구니에 담지 못했습니다.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+});
+
+// 찜목록 추가
+document.querySelector("#addWish").addEventListener("click", function() {
+  const product_id = document.querySelector("#product_id").getAttribute("value");
+  fetch(`/store/cart/addWish/user/2/product/${product_id}`, {
+    method: "POST",
+  })
+    .then((response) => {
+      if (response.ok) {
+        alert("찜목록에 추가했습니다.");
+      } else {
+        response.text().then((data) => {
+          alert(data);
+        }); 
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+});

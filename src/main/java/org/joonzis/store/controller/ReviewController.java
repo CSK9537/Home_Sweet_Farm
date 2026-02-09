@@ -38,7 +38,8 @@ public class ReviewController {
 	
 	// 리뷰 추가
 	@PostMapping(
-			value="add/product/{product_id}/user/{user_id}")
+			value="add/product/{product_id}/user/{user_id}",
+			produces = "text/plain;charset=UTF-8")
 	public ResponseEntity<String> addReview(
 			@PathVariable("product_id")int product_id,
 			@PathVariable("user_id")int user_id,
@@ -58,7 +59,7 @@ public class ReviewController {
 	// 리뷰 수정
 	@PutMapping(
 			value = "modify/review/{product_review_id}",
-			produces=MediaType.APPLICATION_JSON_VALUE)
+			produces = "text/plain;charset=UTF-8")
 	public ResponseEntity<String> modifyProductReview(
 			@PathVariable("product_review_id") int product_review_id,
 			@RequestBody ProductReviewVO vo){
@@ -70,7 +71,7 @@ public class ReviewController {
 	// 리뷰 삭제
 	@DeleteMapping(
 			value = "remove/review/{product_review_id}",
-			produces = MediaType.APPLICATION_JSON_VALUE)
+			produces = "text/plain;charset=UTF-8")
 	public ResponseEntity<String> removeReview(
 			@PathVariable("product_review_id")int product_review_id){
 		int result = sService.removeProductReview(product_review_id);
