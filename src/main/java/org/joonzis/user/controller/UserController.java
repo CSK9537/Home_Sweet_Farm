@@ -38,7 +38,7 @@ public class UserController {
 	@PostMapping("/JoinUser") 
 	public String joinProcess(UserVO vo) {
 		uservice.insert(vo);
-		return "redirect:/user/login";
+		return "redirect:/";
 	}
 	
 	//3)로그인 화면
