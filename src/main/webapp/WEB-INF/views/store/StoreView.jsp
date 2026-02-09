@@ -30,9 +30,9 @@
 
             <div class="gallery__stage" id="galleryStage">
               <img id="mainImage" class="gallery__main"
-                   src="<c:out value='${empty product.image_list ? "" : pageContext.request.contextPath.concat("/upload/").concat(product.image_list[0])}'/>"
+                   src="<c:out value='${empty product.saved_name ? "" : pageContext.request.contextPath.concat("/upload/").concat(product.saved_name)}'/>"
                    alt="<c:out value='${product.product_name}'/>" />
-              <c:if test="${empty product.image_list}">
+              <c:if test="${empty product.saved_name}">
                 <div class="gallery__dummy" id="mainDummy">상품 이미지</div>
               </c:if>
             </div>

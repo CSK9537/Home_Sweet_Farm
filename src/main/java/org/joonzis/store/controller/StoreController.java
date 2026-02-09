@@ -28,14 +28,14 @@ public class StoreController {
 	public String main(Model model) {
 		model.addAttribute("hotList",sService.getListOnHot());		// hot 리스트
 		model.addAttribute("saleList", sService.getListOnSale());	// 세일 중인 리스트
-		return "/store/StoreMain";
+		return "/store/main";
 	}
 	
 	// 카테고리 별 리스트 화면
-	@GetMapping("/productListPage/category/{category_id}")
+	@GetMapping("/productListPage/category_id/{category_id}")
 	public String productListByCategory(@PathVariable("category_id") int category_id, Model model) {
 		model.addAttribute("list", sService.getListByCategoryId(category_id));
-		return "/store/StoreList";
+		return "/store/list";
 	}
 	
 	// 상세 보기
@@ -43,7 +43,7 @@ public class StoreController {
 	public String productInfo(@PathVariable("product_id") int product_id ,Model model) {
 		model.addAttribute("product", sService.getProductDetail(product_id));
 		model.addAttribute("topReview", sService.getTopReviewByProductId(product_id));
-		return "/store/StoreView";
+		return "/store/get";
 	}
 	
 	// 장바구니 확인 페이지 이동
