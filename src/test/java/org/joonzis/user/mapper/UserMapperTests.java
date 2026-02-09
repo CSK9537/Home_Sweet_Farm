@@ -40,6 +40,12 @@ public class UserMapperTests {
 //		UserVO vo = usermapper.selectLogin(user_id);
 //	}
 //	@Test
+//	public void testLogin() {
+//		String username = "lili8888";
+//		String password = "1111";
+//		usermapper.login(username, password);
+//	}
+//	@Test
 //	public void testFindIdByEmail() {
 //		String email = "test@test.com";
 //		usermapper.findIdByEmail(email);

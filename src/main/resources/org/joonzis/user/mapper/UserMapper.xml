@@ -26,6 +26,14 @@
 		WHERE user_id = #{user_id}
 	</select>
 	
+	<!-- 로그인  -->
+	<select id="login" resultType="org.joonzis.user.vo.UserVO">
+		SELECT *
+		FROM TBL_USER
+		WHERE username = #{username}
+		AND password = #{password}
+	</select>
+	
 	<!-- 데이터 삭제  -->
 	<delete id="delete" parameterType="org.joonzis.user.vo.UserVO">
 		DELETE 
