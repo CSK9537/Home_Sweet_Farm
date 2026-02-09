@@ -96,7 +96,7 @@
 		USING DUAL
 			ON(c.user_id =#{user_id} AND c.product_id=#{product_id})
 		WHEN MATCHED THEN
-		<if test='type == "plus" and type == null'>
+		<if test='type == "plus" or type == null'>
 			UPDATE SET c.product_count = c.product_count + 1
 		</if>
 		<if test='type == "minus" '>

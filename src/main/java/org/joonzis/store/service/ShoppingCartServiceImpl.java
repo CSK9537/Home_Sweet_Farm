@@ -1,5 +1,6 @@
 package org.joonzis.store.service;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 import org.joonzis.store.dto.ShoppingCartDTO;
@@ -8,7 +9,9 @@ import org.joonzis.store.mapper.WishListAndShoppingCartMapper;
 import org.joonzis.store.vo.ShoppingCartVO;
 import org.joonzis.store.vo.WishListVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.log4j.Log4j;
 
@@ -20,7 +23,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
 	
 	// 찜목록에 추가
 	@Override
-	public int addWishList(int user_id, int product_id) {
+	public int addWishList(int user_id, int product_id) throws DuplicateKeyException{
 		return mapper.insertWishList(new WishListVO(user_id, product_id));
 	}
 	// 사용자의 찜목록 불러오기
@@ -36,7 +39,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
 	// 찜목록에서 제품 삭제
 	@Override
 	public int deleteWishList(int user_id, int product_id) {
-		return mapper.deleteCartOrWish(user_id, product_id, "cart");
+		return mapper.deleteCartOrWish(user_id, product_id, "wish");
 	}
 	// 장바구니에 제품 추가, 개수 증가
 	@Override
@@ -66,7 +69,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
 	// 장바구니에서 제품 삭제
 	@Override
 	public int deleteShopingCart(int user_id, int product_id) {
-		return mapper.deleteCartOrWish(user_id, product_id, "product");
+		return mapper.deleteCartOrWish(user_id, product_id, "cart");
 	}
 	
 	// 유저가 특정 제품을 찜을 했는지 확인용
@@ -78,12 +81,21 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
 	}
 	// 장바구니 or 찜목록 전체 삭제
 	@Override
-	public int deleteAllCart(int user_id) {
+	public int deleteAllCart(int user_id) throws Exception{
 		return mapper.deleteCartOrWish(user_id, null, "cart");
 	}
 	@Override
-	public int deleteAllWish(int user_id) {
+	public int deleteAllWish(int user_id) throws Exception{
 		return mapper.deleteCartOrWish(user_id, null, "wish");
+	}
+	
+	// 찜목록에서 장바구니로 이동
+	@Transactional
+	@Override
+	public int moveToCart(int user_id, int product_id) throws Exception {
+		int result = mapper.deleteCartOrWish(user_id, product_id, null);
+		result += mapper.upsertShoppingCart(user_id, product_id, "plus");
+		return result;
 	}
 	
 	// 유저가 특정 제품을 찜을 했는지 확인용
