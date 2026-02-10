@@ -22,16 +22,37 @@
 			  #{confirm_service}, #{confirm_userinfo}, #{confirm_event})
 	</insert>
 	
-	<!-- 관심사 중간 테이블 insert -->
-	<insert id="insertUserAspects" parameterType="map">
+	<!-- 관심사  -->
+	<!-- 1)유저 시퀀스  -->
+	<select id="getNextUserId" resultType="int">
+	  SELECT USER_ID_SEQ.NEXTVAL FROM dual
+	</select>
+	
+	<!-- 2)해시태그 id 조회  -->
+	<select id="findHashtagIdByName" resultType="int">
+		SELECT hashtag_id
+		FROM TBL_HASHTAG_LIST
+		WHERE hashtag_name = #{hashtag_name}
+	</select>
+	
+	<!-- 3)해시태그 테이블 insert -->
+	<insert id="insertHashtag" >
+		INSERT INTO TBL_HASHTAG_LIST
+		(hashtag_id, hashtag_name)
+		VALUES(HASHTAG_SEQ.NEXTVAL,
+		#{hashtag_name})
+	</insert>
+	
+	<!-- 4) 관심사 중간 테이블 insert -->
+	<insert id="insertUserAspect" parameterType="map">
 		INSERT INTO TBL_USER_ASPECT
 		(user_id, hashtag_id)
 		VALUES
 		(#{user_id}, #{hashtag_id})
 	</insert>
 	
-	<!-- 수정 시 기존 관심사 삭제  -->
-	<delete id="deleteUserAspects" parameterType="int">
+	<!-- 5)관심사  중간 테이블 delete  -->
+	<delete id="deleteUserAspect" >
 		DELETE FROM TBL_USER_ASPECT 
 		WHERE
 		user_id = #{user_id} 

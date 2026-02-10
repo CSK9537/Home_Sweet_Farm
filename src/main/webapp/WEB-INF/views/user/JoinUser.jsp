@@ -157,9 +157,10 @@
               <!-- STEP1 값들 hidden으로 전달 -->
               <input type="hidden" name="username" id="hidUserId" />
               <input type="hidden" name="password" id="hidUserPw" />
-              <input type="hidden" name="confirm_service" id="hidAgreeService" />
-              <input type="hidden" name="confirm_userinfo" id="hidAgreePrivacy" />
-              <input type="hidden" name="confirm_event" id="hidAgreeMarketing" />
+              <input type="hidden" name="confirmPassword" id="hidUserPw2" />
+              <input type="hidden" name="confirm_service" id="hidAgreeService"  value="0"/>
+              <input type="hidden" name="confirm_userinfo" id="hidAgreePrivacy" value="0"/>
+              <input type="hidden" name="confirm_event" id="hidAgreeMarketing" value="0"/>
               <input type="hidden" id="hidVerifiedSms" />
               <input type="hidden" id="hidVerifiedEmail" />
 
