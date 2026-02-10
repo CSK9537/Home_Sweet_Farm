@@ -145,7 +145,7 @@
 	        </li>
 	
 	        <li class="gnb__sep">||</li>
-	        <li class="gnb__item"><a class="gnb__link" href="#">식물</a></li>
+	        <li class="gnb__item"><a class="gnb__link" href="/plant">식물</a></li>
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
