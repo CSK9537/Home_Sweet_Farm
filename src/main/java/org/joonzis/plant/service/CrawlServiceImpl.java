@@ -1,5 +1,11 @@
 package org.joonzis.plant.service;
 
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.List;
 
@@ -507,7 +513,50 @@ public class CrawlServiceImpl implements CrawlService{
 		
 	}
 	
-	public void imageTest() {
+	@Override
+	public void DownloadPlantImages(List<Integer> list) {
 		
+		WebDriver driver = driver();
+		// 명시적 대기를 위한 객체 생성(최대 대기 시간)
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+		
+		try {
+			
+			for(Integer plant_id : list) {
+				
+				try {
+					
+					String plant_name = pmapper.getPlantInfo(plant_id).getPlant_name();
+					String middleUrl = plant_name.replace(" ", "_").replace("'", "_");
+					driver.get("https://www.picturethisai.com/ko/wiki/" + middleUrl + ".html");
+					
+					// 이미지 파일 경로 추출
+					WebElement plant_image = wait.until(ExpectedConditions.visibilityOfElementLocated(
+							By.cssSelector(".description-main-image")
+							));
+					String[] src = plant_image.getAttribute("src").split("\\?");
+					String realsrc = src[0];
+					
+					Path targetPath = Paths.get("\\\\192.168.0.153\\projecthsf").resolve(plant_name + ".jpeg");
+					
+//					// 디렉토리가 없으면 생성
+//					Files.createDirectories(targetPath.getParent());
+					
+					try (InputStream in = new URL(realsrc).openStream()) {
+		                Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
+		            }
+					
+					// try문 종료
+				} catch (org.openqa.selenium.TimeoutException e) {
+					continue;
+				}
+				
+			} // for문 종료
+			// try문 종료
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			driver.quit();
+		}
 	}
 }
