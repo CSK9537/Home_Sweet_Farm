@@ -1,5 +1,7 @@
 package org.joonzis.user.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.user.dto.UserDTO;
@@ -36,8 +38,12 @@ public class UserController {
 	
 	//2)회원가입 처리
 	@PostMapping("/JoinUser") 
-	public String joinProcess(UserVO vo) {
-		uservice.insert(vo);
+	public String joinProcess(UserVO vo,
+	@RequestParam(value ="aspectNames", required=false)
+				String aspectNames, 
+				@RequestParam("brith_date_js") String brith_date_js) {
+		System.out.println(brith_date_js);
+		//uservice.insert(vo, aspectNames);
 		return "redirect:/user/login";
 	}
 	

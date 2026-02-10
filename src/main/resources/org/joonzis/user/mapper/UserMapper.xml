@@ -4,19 +4,40 @@
 
 <mapper namespace="org.joonzis.user.mapper.UserMapper">
 	
+	<insert id="insertUser" parameterType="org.joonzis.user.vo.UserVO">
+		<selectKey keyProperty="user_id" resultType="int" order="BEFORE">
+			SELECT USER_ID_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+	</insert>
+	
 	<!-- 회원가입  -->
 	<insert id="insert" parameterType="org.joonzis.user.vo.UserVO">
 		INSERT INTO TBL_USER
 			(user_id, username, password, 
-			nickname, name, email, phone,address
-			profile_filename, brith_date, 
+			name, nickname, brith_date, phone, email, address, 
 			confirm_service, confirm_userinfo, confirm_event)
 		VALUES
 			 (USER_ID_SEQ.NEXTVAL, #{username}, #{password},
-			  #{nickname}, #{name}, #{email}, #{phone}, #{address}
-			  #{profile_filename}, #{brith_date}, 
+			  #{name}, #{nickname}, #{brith_date}, #{phone}, #{email}, #{address},  
 			  #{confirm_service}, #{confirm_userinfo}, #{confirm_event})
 	</insert>
+	
+	<!-- 관심사 중간 테이블 insert -->
+	<insert id="insertUserAspects" parameterType="map">
+		INSERT INTO TBL_USER_ASPECT
+		(user_id, hashtag_id)
+		VALUES
+		(#{user_id}, #{hashtag_id})
+	</insert>
+	
+	<!-- 수정 시 기존 관심사 삭제  -->
+	<delete id="deleteUserAspects" parameterType="int">
+		DELETE FROM TBL_USER_ASPECT 
+		WHERE
+		user_id = #{user_id} 
+	</delete>
+	
+	
 	
 	<!-- 데이터 조회  -->
 	<select id="selectLogin" parameterType="org.joonzis.user.vo.UserVO"

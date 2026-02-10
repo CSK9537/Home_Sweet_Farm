@@ -162,7 +162,6 @@
               <input type="hidden" name="confirm_event" id="hidAgreeMarketing" />
               <input type="hidden" id="hidVerifiedSms" />
               <input type="hidden" id="hidVerifiedEmail" />
-              <input type="hidden" name="aspect" id="hidInterests" />
 
               <div class="profile-head">
                 <h3 class="profile-title">회원 정보 입력</h3>
@@ -182,7 +181,7 @@
 
                 <div class="form-col">
                   <label class="form-label" for="userInterest">관심사</label>
-                  <input class="form-input light" type="text" id="userInterest" placeholder="다육식물, 병해충, 비료" />
+                  <input class="form-input light" type="text" name="aspectNames" id="userInterest" placeholder="다육식물, 병해충, 비료" />
                 </div>
 
                 <div class="form-col">
@@ -195,7 +194,7 @@
 
                 <div class="form-col">
                   <label class="form-label" for="userBirth">생년월일</label>
-                  <input class="form-input light" type="date" id="userBirth" name="brith_date" placeholder="yyyy.mm.dd" />
+                  <input class="form-input light" type="date" id="userBirth" name="brith_date_js" placeholder="yyyy.mm.dd" />
                 </div>
 
                 <div class="form-col">

@@ -1,10 +1,13 @@
 package org.joonzis.user.service;
 
+import java.util.List;
+
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.mapper.UserMapper;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.log4j.Log4j;
 
@@ -15,7 +18,8 @@ public class UserServiceImpl implements UserService{
 	private UserMapper usermapper;
 	
 	@Override
-	public void insert(UserVO vo) {
+	@Transactional
+	public void insert(UserVO vo, String aspectNames) {
 	    
 		//1)비밀번호 확인
 		if(vo.getPassword() == null || 
@@ -29,13 +33,35 @@ public class UserServiceImpl implements UserService{
 		//3)마케팅 정보 수신 동의 처리
 		//confirm_event: 0(미동의), 1(동의)
 		vo.setConfirm_event(vo.getConfirm_event() == 1? 1 : 0);
+		
+		//user_id 미리 채우기
+		int newUserId = usermapper.getNextUserId();
+						vo.setUser_id(newUserId);
 		//4)DB insert
 		int result = usermapper.insert(vo);
 		
 		if(result != 1) {
 			throw new IllegalStateException("회원가입 실패");
 		}
-	}		
+		//관심사(중간테이블) 저장
+		//aspectNames 예: "다육식물, 병해충, 비료"
+		if(aspectNames == null || aspectNames.trim().isEmpty()) return;
+		
+		String[] names = aspectNames.split(",");
+			for(String raw : names) {
+				String name = raw.trim();
+				if(name.isEmpty())
+				continue;
+				Integer hashtagId = usermapper.findHashtagIdByName(name);
+				if(hashtagId == null) {
+					usermapper.insertHashtag(name);
+				hashtagId = usermapper.findHashtagIdByName(name);
+				}
+		//중간 테이블(insert)
+		usermapper.insertUserAspect(newUserId, hashtagId);
+		}
+	}
+	
 	@Override
 	public UserVO selectLogin(int user_id) {
 		return usermapper.selectLogin(user_id);

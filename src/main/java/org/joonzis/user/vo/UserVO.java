@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class UserVO {
   private int user_id, enable, confirm_event, point, auth_id, 
-  grade_id, aspect, confirm_service, confirm_userinfo;
+  grade_id, confirm_service, confirm_userinfo;
   private String username,password, nickname, name, email, profile_filename, address, phone, intro;
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date brith_date, reg_date;
