@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/MyPlant/MyPlantMain.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/myplant/MyPlantMain.css">
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
@@ -165,6 +165,5 @@
   </div>
 </div>
 
-<script defer src="${pageContext.request.contextPath}/resources/js/Myplant/MyPlantMainModal.js"></script>
-
+<script defer src="${pageContext.request.contextPath}/resources/js/myplant/MyPlantMainModal.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

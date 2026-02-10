@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-<jsp:include page="/WEB-INF/views/layout/header.jsp" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/user/JoinUser.css" />
 
 <div class="page-shell">
@@ -17,7 +16,7 @@
                     class="join-brand"
                     id="goHomeBtn"
                     aria-label="메인으로 이동">
-              Home Sweet Farm
+              	Home Sweet Farm
             </button>
           </div>
         </div>
@@ -32,13 +31,13 @@
           <!-- STEP NAV (현재 상태 표시용) -->
           <div class="step-nav" role="tablist" aria-label="회원가입 단계">
             <button type="button" class="step-nav__btn is-active" data-step-link="account" role="tab" aria-selected="true">
-              계정
+              	계정
             </button>
             <button type="button" class="step-nav__btn" data-step-link="verify" role="tab" aria-selected="false">
-              본인인증
+              	본인인증
             </button>
             <button type="button" class="step-nav__btn" data-step-link="profile" role="tab" aria-selected="false">
-              회원정보
+              	회원정보
             </button>
           </div>
 
@@ -97,7 +96,7 @@
                 </div>
 
                 <p class="security-note">
-                  회원가입은 민감 정보(비밀번호/연락처/이메일)를 포함합니다. 공용 PC에서는 자동완성을 주의하세요.
+                 	 회원가입은 민감 정보(비밀번호/연락처/이메일)를 포함합니다. 공용 PC에서는 자동완성을 주의하세요.
                 </p>
               </div>
 
@@ -122,8 +121,8 @@
             <div class="verify-card">
               <h3 class="verify-title">본인인증</h3>
               <p class="verify-desc">
-                회원님의 개인정보 보호를 위해 <strong>본인인증</strong>이 필요합니다.<br/>
-                원하시는 인증 방식을 선택해 진행해주세요.
+               	 회원님의 개인정보 보호를 위해 <strong>본인인증</strong>이 필요합니다.<br/>
+                	원하시는 인증 방식을 선택해 진행해주세요.
               </p>
 
               <div class="verify-actions">
@@ -301,7 +300,7 @@
               </div>
 
               <p class="hint">
-                실제 발송/검증은 서버(API)에서 처리하세요. 여기서는 UI 흐름만 제공합니다.
+                	실제 발송/검증은 서버(API)에서 처리하세요. 여기서는 UI 흐름만 제공합니다.
               </p>
             </div>
           </div>
@@ -330,7 +329,7 @@
               </div>
 
               <p class="hint">
-                실제 발송/검증은 서버에서 처리하세요. 여기서는 UI 흐름만 제공합니다.
+                	실제 발송/검증은 서버에서 처리하세요. 여기서는 UI 흐름만 제공합니다.
               </p>
             </div>
           </div>
@@ -363,4 +362,3 @@
 </div>
 
 <script src="${pageContext.request.contextPath}/resources/js/user/JoinUser.js"></script>
-<jsp:include page="/WEB-INF/views/layout/footer.jsp" />

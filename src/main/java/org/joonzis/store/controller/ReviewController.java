@@ -2,9 +2,12 @@ package org.joonzis.store.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.joonzis.store.dto.ProductReviewDTO;
 import org.joonzis.store.service.StoreService;
 import org.joonzis.store.vo.ProductReviewVO;
+import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -38,11 +41,13 @@ public class ReviewController {
 	
 	// 리뷰 추가
 	@PostMapping(
-			value="add/product/{product_id}/user/{user_id}")
+			value="add/product/{product_id}",
+			produces = "text/plain;charset=UTF-8")
 	public ResponseEntity<String> addReview(
 			@PathVariable("product_id")int product_id,
-			@PathVariable("user_id")int user_id,
-			@RequestBody ProductReviewVO vo){
+			@RequestBody ProductReviewVO vo,
+			HttpSession session){
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		vo.setProduct_id(product_id);
 		vo.setWriter_id(user_id);
 		String result = "success";
@@ -58,7 +63,7 @@ public class ReviewController {
 	// 리뷰 수정
 	@PutMapping(
 			value = "modify/review/{product_review_id}",
-			produces=MediaType.APPLICATION_JSON_VALUE)
+			produces = "text/plain;charset=UTF-8")
 	public ResponseEntity<String> modifyProductReview(
 			@PathVariable("product_review_id") int product_review_id,
 			@RequestBody ProductReviewVO vo){
@@ -70,7 +75,7 @@ public class ReviewController {
 	// 리뷰 삭제
 	@DeleteMapping(
 			value = "remove/review/{product_review_id}",
-			produces = MediaType.APPLICATION_JSON_VALUE)
+			produces = "text/plain;charset=UTF-8")
 	public ResponseEntity<String> removeReview(
 			@PathVariable("product_review_id")int product_review_id){
 		int result = sService.removeProductReview(product_review_id);
@@ -80,10 +85,11 @@ public class ReviewController {
 	
 	// 유저가 쓴 리뷰들 조회
 	@GetMapping(
-			value="get/user/{user_id}",
+			value="get/user",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ProductReviewDTO>> getReviewsByUserId(
-			@PathVariable("user_id") int user_id){
+			HttpSession session){
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		List<ProductReviewDTO> list = sService.getReviewListByUserId(user_id);
 		return new ResponseEntity<List<ProductReviewDTO>>(list, HttpStatus.OK);
 	}

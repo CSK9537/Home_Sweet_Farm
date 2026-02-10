@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/storeDetail.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/StoreView.css" />
 
 <div class="page-shell">
   <div class="content-wrap">
@@ -12,10 +12,10 @@
       <!-- 우측 플로팅(찜/장바구니) -->
       <div class="store-floating">
         <a class="store-floating__btn store-floating__btn--wish"
-           href="${pageContext.request.contextPath}/store/wish"
+           href="${pageContext.request.contextPath}/store/wishPage"
            title="찜목록">찜목록</a>
         <a class="store-floating__btn store-floating__btn--cart"
-           href="${pageContext.request.contextPath}/store/cart"
+           href="${pageContext.request.contextPath}/store/cartPage"
            title="장바구니">장바구니</a>
       </div>
 
@@ -30,7 +30,7 @@
 
             <div class="gallery__stage" id="galleryStage">
               <img id="mainImage" class="gallery__main"
-                   src="<c:out value='${empty product.image_list ? "" : pageContext.request.contextPath.concat("/upload/").concat(product.image_list[0])}'/>"
+                   src="<c:out value='${not empty product.image_list ? pageContext.request.contextPath.concat("/upload/").concat(product.image_list[0]) : ""}'/>"
                    alt="<c:out value='${product.product_name}'/>" />
               <c:if test="${empty product.image_list}">
                 <div class="gallery__dummy" id="mainDummy">상품 이미지</div>
@@ -137,13 +137,13 @@
 
             <div class="info-card__actions">
               <form action="${pageContext.request.contextPath}/store/cart/add" method="post" class="action-row">
-                <input type="hidden" name="product_id" value="${product.product_id}" />
-                <button type="submit" class="btn btn--solid">장바구니</button>
+                <input type="hidden" name="product_id" value="${product.product_id}" id="product_id" />
+                <button type="button" class="btn btn--solid" id="addCart">장바구니</button>
               </form>
 
               <form action="${pageContext.request.contextPath}/store/wish/add" method="post" class="action-row">
                 <input type="hidden" name="product_id" value="${product.product_id}" />
-                <button type="submit" class="btn btn--ghost">찜하기</button>
+                <button type="button" class="btn btn--ghost" id="addWish">찜하기</button>
               </form>
             </div>
 
@@ -222,30 +222,6 @@
         </div>
       </c:if>
 
-      <!-- 하단 페이지네이션(필요 시) -->
-      <c:if test="${not empty paging}">
-        <div class="store-paging">
-          <c:if test="${paging.prev}">
-            <a class="pg-btn" href="${pageContext.request.contextPath}/store/product/detail?product_id=${product.product_id}&currentPage=${paging.beginPage-1}">&lt;</a>
-          </c:if>
-
-          <c:forEach var="i" begin="${paging.beginPage}" end="${paging.endPage}">
-            <c:choose>
-              <c:when test="${i == paging.currentPage}">
-                <span class="pg-num pg-num--active"><c:out value="${i}" /></span>
-              </c:when>
-              <c:otherwise>
-                <a class="pg-num" href="${pageContext.request.contextPath}/store/product/detail?product_id=${product.product_id}&currentPage=${i}"><c:out value="${i}" /></a>
-              </c:otherwise>
-            </c:choose>
-          </c:forEach>
-
-          <c:if test="${paging.next}">
-            <a class="pg-btn" href="${pageContext.request.contextPath}/store/product/detail?product_id=${product.product_id}&currentPage=${paging.endPage+1}">&gt;</a>
-          </c:if>
-        </div>
-      </c:if>
-
       <!-- 제품설명 모달(요구사항) -->
       <div class="modal" id="descModal" aria-hidden="true">
         <div class="modal__dim" id="modalDim"></div>
@@ -265,7 +241,7 @@
                     <c:out value="${product.product_description_detail}" escapeXml="false"/>
                   </c:when>
                   <c:otherwise>
-                    상세 설명이 없습니다.
+                    	상세 설명이 없습니다.
                   </c:otherwise>
                 </c:choose>
               </div>
@@ -279,7 +255,7 @@
                     <c:out value="${product.product_caution}" escapeXml="false"/>
                   </c:when>
                   <c:otherwise>
-                    주의사항이 없습니다.
+                    	주의사항이 없습니다.
                   </c:otherwise>
                 </c:choose>
               </div>
@@ -293,10 +269,8 @@
   </div>
 </div>
 
-<script>
-  // 리스트로 유지되는 경우 경로 보정용(선택)
-  window.__CTX__ = "${pageContext.request.contextPath}";
-</script>
-<script src="${pageContext.request.contextPath}/resources/js/store/storeDetail.js"></script>
+
+
+<script src="${pageContext.request.contextPath}/resources/js/store/StoreView.js"></script>
 
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

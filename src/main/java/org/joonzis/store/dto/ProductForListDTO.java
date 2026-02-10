@@ -16,7 +16,7 @@ public class ProductForListDTO {
 	private int product_delivery_price; // 배달비
 	private int product_sale;			// 세일
 	
-	private String saved_name; 			// 상품 썸네일 이미지
+	private String thumbnail; 			// 상품 썸네일 이미지
 
 	private double product_rate;		// 상품 평점
 	private int review_count;			// 리뷰 개수

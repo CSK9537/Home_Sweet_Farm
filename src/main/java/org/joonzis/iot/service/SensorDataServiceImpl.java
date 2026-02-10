@@ -5,7 +5,7 @@ import java.util.Date;
 import javax.inject.Inject;
 
 import org.joonzis.iot.dto.SensorDataDTO;
-import org.joonzis.iot.repository.PlantStatisticsMapper;
+import org.joonzis.iot.mapper.PlantStatisticsMapper;
 import org.joonzis.iot.vo.PlantStatisticsVO;
 import org.springframework.stereotype.Service;
 
