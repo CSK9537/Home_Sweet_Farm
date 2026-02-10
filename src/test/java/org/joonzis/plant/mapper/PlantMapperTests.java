@@ -22,7 +22,7 @@ public class PlantMapperTests {
 	
 //	@Test
 //	public void insertPlantInfoTest() {
-//		log.info("insert plant info...");
+//		log.info("insert plant info test...");
 //		try {
 //			PlantVO pvo = new PlantVO();
 //			pvo.setPlant_name("Epipremnum aureum");
@@ -68,10 +68,10 @@ public class PlantMapperTests {
 //	}
 	
 //	@Test
-//	public void plantIdListTest() {
-//		log.info("get plant id list...");
+//	public void getPlantIdListTest() {
+//		log.info("get plant id list test...");
 //		try {
-//			List<Integer> list = pmapper.plantIdList();
+//			List<Integer> list = pmapper.getPlantIdList();
 //			int lastindex = list.size() - 1;
 //			log.info(list.get(lastindex) + "...");
 //			log.info("success!!!");
@@ -81,8 +81,33 @@ public class PlantMapperTests {
 //	}
 	
 //	@Test
+//	public void getPlantListByRankTest() {
+//		log.info("get plant list by rank test...");
+//		try {
+//			List<PlantVO> pvolist = pmapper.getPlantListByRank(100);
+//			int i = 0;
+//			for(PlantVO pvo : pvolist) {
+//				log.info(++i);
+//				log.info(pvo);
+//			}
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
+	
+//	@Test
+//	public void getPlantIdTest() {
+//		log.info("get plant id test...");
+//		try {
+//			log.info(pmapper.getPlantId("Monstera deliciosa"));
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
+	
+//	@Test
 //	public void getPlantInfoTest() {
-//		log.info("get plant info...");
+//		log.info("get plant info test...");
 //		
 //		int plant_id = 100;
 //		

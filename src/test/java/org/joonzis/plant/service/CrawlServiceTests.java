@@ -21,10 +21,8 @@ public class CrawlServiceTests {
 	
 	@Autowired
 	private CrawlService cservice;
-	
 	@Autowired
 	private CrawlMapper cmapper;
-	
 	@Autowired
 	private PlantMapper pmapper;
 	
@@ -123,7 +121,7 @@ public class CrawlServiceTests {
 //		log.info("insert guide data...");
 //		try {
 //			log.info("service 작동 중...");
-//			List<Integer> list = pmapper.plantIdList();
+//			List<Integer> list = pmapper.getPlantIdList();
 //			cservice.insertTotalGuideData(list);
 //			log.info("service 성공!!!");
 //		} catch (Exception e) {
@@ -149,7 +147,7 @@ public class CrawlServiceTests {
 //	public void DownloadPlantImages() {
 //		log.info("Downloading...");;
 //		try {
-//			List<Integer> list = pmapper.plantIdList();
+//			List<Integer> list = pmapper.getPlantIdList();
 //			cservice.DownloadPlantImages(list);
 //		} catch (Exception e) {
 //			log.error(e);
