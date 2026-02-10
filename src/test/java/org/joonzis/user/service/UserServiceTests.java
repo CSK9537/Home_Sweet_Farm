@@ -44,6 +44,13 @@ public class UserServiceTests {
 //		int user_id = 3;
 //		UserVO vo = uservice.selectLogin(user_id);
 //	}
+	
+//	@Test
+//	public void testLogin() {
+//		String username = "lili8888";
+//		String password = "1111";
+//		uservice.login(username, password);
+//	}
 //	@Test
 //	public void testFindIdByEmail() {
 //		String email = "test@test.com";

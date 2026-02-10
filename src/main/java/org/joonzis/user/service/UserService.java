@@ -8,8 +8,10 @@ public interface UserService {
 	
 	//데이터 넣기(회원가입)
 	public void insert(UserVO vo);
-	//데이터 조회(로그인)
+	//데이터 조회
 	public  UserVO selectLogin(int user_id);
+	//로그인
+	public UserVO login(@Param("username")String username, @Param("password")String password);
 	//데이터 삭제(회원 탈퇴)
 	public int delete(UserVO vo);
 	//아이디 찾기(이메일)
