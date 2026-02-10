@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.joonzis.iot.dto.MyPlantMainDTO;
+import org.joonzis.iot.mapper.MyPlantMapper;
 import org.joonzis.iot.vo.MyPlantVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
