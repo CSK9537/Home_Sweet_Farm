@@ -158,30 +158,6 @@
         </div>
       </c:if>
 
-      <!-- 페이지네이션(목록형 페이지에서 사용할 때) -->
-      <c:if test="${not empty paging}">
-        <div class="store-paging">
-          <c:if test="${paging.prev}">
-            <a class="pg-btn" href="${pageContext.request.contextPath}/store?currentPage=${paging.beginPage - 1}">&lt;</a>
-          </c:if>
-
-          <c:forEach var="i" begin="${paging.beginPage}" end="${paging.endPage}">
-            <c:choose>
-              <c:when test="${i == paging.currentPage}">
-                <span class="pg-num pg-num--active"><c:out value="${i}" /></span>
-              </c:when>
-              <c:otherwise>
-                <a class="pg-num" href="${pageContext.request.contextPath}/store?currentPage=${i}"><c:out value="${i}" /></a>
-              </c:otherwise>
-            </c:choose>
-          </c:forEach>
-
-          <c:if test="${paging.next}">
-            <a class="pg-btn" href="${pageContext.request.contextPath}/store?currentPage=${paging.endPage + 1}">&gt;</a>
-          </c:if>
-        </div>
-      </c:if>
-
     </div>
   </div>
 </div>

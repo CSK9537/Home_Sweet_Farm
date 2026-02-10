@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/storeList.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/StoreList.css" />
 
 <div class="page-shell">
   <div class="content-wrap">
@@ -115,42 +115,9 @@
         </div>
       </c:if>
 
-      <!-- 페이지네이션(이미지 하단) -->
-      <c:if test="${not empty paging}">
-        <div class="store-paging">
-          <c:if test="${paging.prev}">
-            <a class="pg-btn"
-               href="${pageContext.request.contextPath}/store/list?category_id=${param.category_id}&currentPage=${paging.beginPage - 1}${not empty param.keyword ? '&keyword=' : ''}${not empty param.keyword ? param.keyword : ''}">
-              &lt;
-            </a>
-          </c:if>
-
-          <c:forEach var="i" begin="${paging.beginPage}" end="${paging.endPage}">
-            <c:choose>
-              <c:when test="${i == paging.currentPage}">
-                <span class="pg-num pg-num--active"><c:out value="${i}" /></span>
-              </c:when>
-              <c:otherwise>
-                <a class="pg-num"
-                   href="${pageContext.request.contextPath}/store/list?category_id=${param.category_id}&currentPage=${i}${not empty param.keyword ? '&keyword=' : ''}${not empty param.keyword ? param.keyword : ''}">
-                  <c:out value="${i}" />
-                </a>
-              </c:otherwise>
-            </c:choose>
-          </c:forEach>
-
-          <c:if test="${paging.next}">
-            <a class="pg-btn"
-               href="${pageContext.request.contextPath}/store/list?category_id=${param.category_id}&currentPage=${paging.endPage + 1}${not empty param.keyword ? '&keyword=' : ''}${not empty param.keyword ? param.keyword : ''}">
-              &gt;
-            </a>
-          </c:if>
-        </div>
-      </c:if>
-
     </div>
   </div>
 </div>
 
-<script src="${pageContext.request.contextPath}/resources/js/store/storeList.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/store/StoreList.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />
