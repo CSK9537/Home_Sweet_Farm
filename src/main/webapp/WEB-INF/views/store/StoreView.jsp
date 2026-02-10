@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/storeDetail.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/StoreView.css" />
 
 <div class="page-shell">
   <div class="content-wrap">
@@ -222,30 +222,6 @@
         </div>
       </c:if>
 
-      <!-- 하단 페이지네이션(필요 시) -->
-      <c:if test="${not empty paging}">
-        <div class="store-paging">
-          <c:if test="${paging.prev}">
-            <a class="pg-btn" href="${pageContext.request.contextPath}/store/product/detail?product_id=${product.product_id}&currentPage=${paging.beginPage-1}">&lt;</a>
-          </c:if>
-
-          <c:forEach var="i" begin="${paging.beginPage}" end="${paging.endPage}">
-            <c:choose>
-              <c:when test="${i == paging.currentPage}">
-                <span class="pg-num pg-num--active"><c:out value="${i}" /></span>
-              </c:when>
-              <c:otherwise>
-                <a class="pg-num" href="${pageContext.request.contextPath}/store/product/detail?product_id=${product.product_id}&currentPage=${i}"><c:out value="${i}" /></a>
-              </c:otherwise>
-            </c:choose>
-          </c:forEach>
-
-          <c:if test="${paging.next}">
-            <a class="pg-btn" href="${pageContext.request.contextPath}/store/product/detail?product_id=${product.product_id}&currentPage=${paging.endPage+1}">&gt;</a>
-          </c:if>
-        </div>
-      </c:if>
-
       <!-- 제품설명 모달(요구사항) -->
       <div class="modal" id="descModal" aria-hidden="true">
         <div class="modal__dim" id="modalDim"></div>
@@ -265,7 +241,7 @@
                     <c:out value="${product.product_description_detail}" escapeXml="false"/>
                   </c:when>
                   <c:otherwise>
-                    상세 설명이 없습니다.
+                    	상세 설명이 없습니다.
                   </c:otherwise>
                 </c:choose>
               </div>
@@ -279,7 +255,7 @@
                     <c:out value="${product.product_caution}" escapeXml="false"/>
                   </c:when>
                   <c:otherwise>
-                    주의사항이 없습니다.
+                    	주의사항이 없습니다.
                   </c:otherwise>
                 </c:choose>
               </div>
@@ -297,6 +273,5 @@
   // 리스트로 유지되는 경우 경로 보정용(선택)
   window.__CTX__ = "${pageContext.request.contextPath}";
 </script>
-<script src="${pageContext.request.contextPath}/resources/js/store/storeDetail.js"></script>
-
+<script src="${pageContext.request.contextPath}/resources/js/store/StoreView.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

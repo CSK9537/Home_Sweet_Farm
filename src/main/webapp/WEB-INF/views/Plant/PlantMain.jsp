@@ -58,6 +58,19 @@
 				    </c:if>
 				  </c:forEach>
 				</div>
+				<!-- 더보기: 하단 목록만 추가 (4개씩, 최대 5번) -->
+				<div class="plant-section__more">
+					<button type="button"
+							class="btn-more"
+							data-target="#popularGrid"
+							data-section="popular"
+							data-offset="${empty popularOffset ? 11 : popularOffset}"
+							data-limit="4"
+							data-clicks="0"
+							data-max-clicks="5">
+						더보기
+					</button>
+				</div>
 			</section>
 
 		</div>

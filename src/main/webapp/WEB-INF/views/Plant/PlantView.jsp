@@ -4,7 +4,7 @@
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/PlantView.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/plant/PlantView.css" />
 
 <div class="page-shell">
   <div class="content-wrap">
