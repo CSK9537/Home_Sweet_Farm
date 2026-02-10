@@ -29,5 +29,8 @@
 	<context:component-scan base-package="org.joonzis.store.controller" />
 	<context:component-scan base-package="org.joonzis.user.controller" />
 	<context:component-scan base-package="org.joonzis.plant.controller" />
+	<context:component-scan base-package="org.joonzis.myplant.controller" />
+	<context:component-scan base-package="org.joonzis.common.error" />
+	
 	
 </beans:beans>
