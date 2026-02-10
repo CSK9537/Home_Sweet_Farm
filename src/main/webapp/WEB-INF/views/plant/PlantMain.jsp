@@ -24,10 +24,10 @@
 				    <c:if test="${st.count <= 3}">
 				      <article class="plant-card plant-card--top" data-id="${p.plant_id}">
 				        <a class="plant-card__link"
-				           href="${pageContext.request.contextPath}/plant/detail?plant_id=${p.plant_id}">
+				           href="/plant/info/${p.plant_name}">
 				          <div class="plant-card__thumb">
 				            <span class="plant-card__badge plant-card__badge--rank">${st.count}위</span>
-				            <img src="${p.plant_image}" alt="${p.plant_name_kor}" loading="lazy" />
+				            <img src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" loading="lazy" />
 				          </div>
 				          <div class="plant-card__body">
 				            <div class="plant-card__name">${p.plant_name_kor}</div>
@@ -45,9 +45,9 @@
 				    <c:if test="${st.count >= 4 && st.count <= 11}">
 				      <article class="plant-card" data-id="${p.plant_id}">
 				        <a class="plant-card__link"
-				           href="${pageContext.request.contextPath}/plant/detail?plant_id=${p.plant_id}">
+				           href="/plant/info/${p.plant_name}">
 				          <div class="plant-card__thumb">
-				            <img src="${p.plant_image}" alt="${p.plant_name_kor}" loading="lazy" />
+				            <img src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" loading="lazy" />
 				          </div>
 				          <div class="plant-card__body">
 				            <div class="plant-card__name">${p.plant_name_kor}</div>

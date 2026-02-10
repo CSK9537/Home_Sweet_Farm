@@ -2,10 +2,16 @@ package org.joonzis.plant.controller;
 
 import org.joonzis.plant.service.PlantService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.extern.log4j.Log4j;
 
@@ -25,6 +31,19 @@ public class PlantController {
 		return "plant/PlantMain";
 	}
 	
+	// 식물 이미지 가져오기
+	@ResponseBody
+	@GetMapping("/image/{plant_image:.+}")
+	public ResponseEntity<Resource> showImage(@PathVariable("plant_image") String plant_image) {
+		String[] paths = plant_image.split("_");
+		String path = "\\\\" + paths[0] + "\\" + paths[1] + "\\" + paths[2] + "." + paths[3];
+		Resource resource = new FileSystemResource(path);
+		if (!resource.exists()) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(resource);
+	}
+	
 	// 백과사전 상세 페이지
 	@RequestMapping("/info/{plant_name:.+}")
 	public String plantView(@PathVariable("plant_name") String plant_name, Model model) {
@@ -35,7 +54,7 @@ public class PlantController {
 	// 가이드 상세 페이지
 	@RequestMapping("/guide/{plant_name:.+}")
 	public String guideView(@PathVariable("plant_name") String plant_name, Model model) {
-		model.addAttribute("guide", pservice.guideInfo(plant_name));
+		model.addAttribute("guideInfo", pservice.guideInfo(plant_name));
 		return "plant/GuideView";
 	}
 }
