@@ -87,7 +87,6 @@ public class StoreController {
 	
 	@GetMapping("/search")
 	public String searchProductList(
-			@RequestParam(value="category_id", required=false) Integer old_category_id,
 			@ModelAttribute SearchProductDTO search, 
 			Model model) {
 		
