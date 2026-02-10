@@ -47,20 +47,20 @@
             <form id="accountForm" autocomplete="off">
               <div class="form-col">
                 <label class="form-label" for="userId">아이디</label>
-                <input class="form-input" type="text" id="userId" name="user_id"
+                <input class="form-input" type="text" id="userId" name="username"
                        placeholder="아이디 입력 (6~20자)" minlength="6" maxlength="20" required />
               </div>
 
               <div class="form-col">
                 <label class="form-label" for="userPw">비밀번호</label>
-                <input class="form-input" type="password" id="userPw" name="user_pw"
+                <input class="form-input" type="password" id="userPw" name="password"
                        placeholder="영문 대/소문자, 숫자, 특수문자 포함 8~20자"
                        minlength="8" maxlength="20" required />
               </div>
 
               <div class="form-col">
                 <label class="form-label" for="userPw2">비밀번호 확인</label>
-                <input class="form-input" type="password" id="userPw2"
+                <input class="form-input" type="password" id="userPw2" name="confirmPassword"
                        placeholder="비밀번호 확인" minlength="8" maxlength="20" required />
               </div>
 
@@ -153,16 +153,16 @@
           <!-- STEP 3: 회원정보 입력 + 최종 가입 -->
           <section class="step-panel" id="step-profile" data-step="profile" aria-label="회원정보 입력">
             <!-- 최종 제출 폼 (서버 insert용) -->
-            <form id="joinForm" method="post" action="${pageContext.request.contextPath}/user/join" autocomplete="off">
+            <form id="joinForm" method="post" action="${pageContext.request.contextPath}/user/JoinUser" autocomplete="off">
               <!-- STEP1 값들 hidden으로 전달 -->
-              <input type="hidden" name="user_id" id="hidUserId" />
-              <input type="hidden" name="user_pw" id="hidUserPw" />
-              <input type="hidden" name="agree_service" id="hidAgreeService" />
-              <input type="hidden" name="agree_privacy" id="hidAgreePrivacy" />
-              <input type="hidden" name="agree_marketing" id="hidAgreeMarketing" />
-              <input type="hidden" name="verified_sms" id="hidVerifiedSms" />
-              <input type="hidden" name="verified_email" id="hidVerifiedEmail" />
-              <input type="hidden" name="interest_plants" id="hidInterests" />
+              <input type="hidden" name="username" id="hidUserId" />
+              <input type="hidden" name="password" id="hidUserPw" />
+              <input type="hidden" name="confirm_service" id="hidAgreeService" />
+              <input type="hidden" name="confirm_userinfo" id="hidAgreePrivacy" />
+              <input type="hidden" name="confirm_event" id="hidAgreeMarketing" />
+              <input type="hidden" id="hidVerifiedSms" />
+              <input type="hidden" id="hidVerifiedEmail" />
+              <input type="hidden" name="aspect" id="hidInterests" />
 
               <div class="profile-head">
                 <h3 class="profile-title">회원 정보 입력</h3>
@@ -172,17 +172,17 @@
               <div class="form-grid">
                 <div class="form-col">
                   <label class="form-label" for="userName">이름</label>
-                  <input class="form-input light" type="text" id="userName" name="user_name" placeholder="이름 입력" />
+                  <input class="form-input light" type="text" id="userName" name="name" placeholder="이름 입력" />
                 </div>
 
                 <div class="form-col">
                   <label class="form-label" for="userNick">닉네임</label>
-                  <input class="form-input light" type="text" id="userNick" name="user_nickname" placeholder="닉네임 입력" />
+                  <input class="form-input light" type="text" id="userNick" name="nickname" placeholder="닉네임 입력" />
                 </div>
 
                 <div class="form-col">
                   <label class="form-label" for="userInterest">관심사</label>
-                  <input class="form-input light" type="text" id="userInterest" name="user_interest" placeholder="다육식물, 병해충, 비료" />
+                  <input class="form-input light" type="text" id="userInterest" placeholder="다육식물, 병해충, 비료" />
                 </div>
 
                 <div class="form-col">
@@ -195,22 +195,22 @@
 
                 <div class="form-col">
                   <label class="form-label" for="userBirth">생년월일</label>
-                  <input class="form-input light" type="text" id="userBirth" name="user_birth" placeholder="yyyy.mm.dd" />
+                  <input class="form-input light" type="date" id="userBirth" name="brith_date" placeholder="yyyy.mm.dd" />
                 </div>
 
                 <div class="form-col">
                   <label class="form-label" for="userPhone">휴대전화번호</label>
-                  <input class="form-input light" type="text" id="userPhone" name="user_phone" placeholder="휴대전화번호를 입력하세요(- 포함)" />
+                  <input class="form-input light" type="text" id="userPhone" name="phone" placeholder="휴대전화번호를 입력하세요(- 포함)" />
                 </div>
 
                 <div class="form-col">
                   <label class="form-label" for="userEmail">이메일 주소</label>
-                  <input class="form-input light" type="email" id="userEmail" name="user_email" placeholder="plant@gmail.com" />
+                  <input class="form-input light" type="email" id="userEmail" name="email" placeholder="plant@gmail.com" />
                 </div>
 
                 <div class="form-col">
                   <label class="form-label" for="userAddr">주소</label>
-                  <input class="form-input light" type="text" id="userAddr" name="user_address" placeholder="주소 입력" />
+                  <input class="form-input light" type="text" id="userAddr" name="address" placeholder="주소 입력" />
                 </div>
               </div>
 

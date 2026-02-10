@@ -18,7 +18,7 @@
 	
 	    <!-- 데스크탑/태블릿: 로고 / 필터검색 / 로그인 유지 -->
 	    <div class="header__top">
-	      <a class="logo" href="#" aria-label="Home Sweet Farm">
+	      <a class="logo" href="/main" aria-label="Home Sweet Farm">
 	        <span class="logo__text">Home Sweet Farm</span>
 	      </a>
 	
@@ -91,9 +91,9 @@
 	      </div>
 	
 	      <div class="auth auth--desktop">
-	        <a class="auth__link" href="#">로그인</a>
+	        <a class="auth__link" href="/user/login">로그인</a>
 	        <span class="auth__sep" aria-hidden="true">||</span>
-	        <a class="auth__link" href="#">회원가입</a>
+	        <a class="auth__link" href="/user/JoinUser">회원가입</a>
 	      </div>
 	    </div>
 	
@@ -111,15 +111,15 @@
 	      </button>
 	
 	      <div class="auth auth--mobile">
-	        <a class="auth__link" href="#">로그인</a>
+	        <a class="auth__link" href="/user/login">로그인</a>
 	        <span class="auth__sep" aria-hidden="true">||</span>
-	        <a class="auth__link" href="#">회원가입</a>
+	        <a class="auth__link" href="/user/JoinUser">회원가입</a>
 	      </div>
 	    </div>
 	
 	    <!-- 모바일 2줄: 로고 -->
 	    <div class="mrow mrow--logo">
-	      <a class="mlogo" href="#" aria-label="Home Sweet Farm">Home Sweet Farm</a>
+	      <a class="mlogo" href="/main" aria-label="Home Sweet Farm">Home Sweet Farm</a>
 	    </div>
 	
 	    <!-- 모바일 3줄: 필터 없는 검색창 -->

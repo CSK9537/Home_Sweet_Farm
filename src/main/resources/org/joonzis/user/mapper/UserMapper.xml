@@ -8,12 +8,12 @@
 	<insert id="insert" parameterType="org.joonzis.user.vo.UserVO">
 		INSERT INTO TBL_USER
 			(user_id, username, password, 
-			nickname, name, email, phone,
+			nickname, name, email, phone,address
 			profile_filename, brith_date, 
 			confirm_service, confirm_userinfo, confirm_event)
 		VALUES
 			 (USER_ID_SEQ.NEXTVAL, #{username}, #{password},
-			  #{nickname}, #{name}, #{email}, #{phone}, 
+			  #{nickname}, #{name}, #{email}, #{phone}, #{address}
 			  #{profile_filename}, #{brith_date}, 
 			  #{confirm_service}, #{confirm_userinfo}, #{confirm_event})
 	</insert>

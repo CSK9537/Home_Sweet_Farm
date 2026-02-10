@@ -38,13 +38,13 @@ public class UserController {
 	@PostMapping("/JoinUser") 
 	public String joinProcess(UserVO vo) {
 		uservice.insert(vo);
-		return "redirect:/";
+		return "redirect:/user/login";
 	}
 	
 	//3)로그인 화면
 	@GetMapping("/login")
 	public String loginForm() {
-		return "/user/login";
+		return "user/login";
 	}
 	
 	//4)로그인 처리
