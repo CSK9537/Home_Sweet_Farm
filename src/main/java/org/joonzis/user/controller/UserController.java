@@ -1,5 +1,7 @@
 package org.joonzis.user.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.user.dto.UserDTO;
@@ -34,17 +36,37 @@ public class UserController {
 		return "user/JoinUser";
 	}
 	
-	//2)회원가입 처리
+//	//2)회원가입 처리
+//	@PostMapping("/JoinUser") 
+//	public String joinProcess(UserVO vo,
+//	@RequestParam(value ="aspectNames", required=false)
+//				String aspectNames, 
+//				@RequestParam("brith_date_js") String brith_date_js) {
+//		System.out.println(brith_date_js);
+//		//uservice.insert(vo, aspectNames);
+//		return "redirect:/user/login";
+//	}
+	
 	@PostMapping("/JoinUser") 
-	public String joinProcess(UserVO vo) {
-		uservice.insert(vo);
-		return "redirect:/";
+	public String joinProcess(
+			UserVO vo, 
+			@RequestParam(value ="aspectNames", required=false)String aspectNames,
+			@RequestParam("brith_date_js") String brith_date_js) {
+	    
+		// yyyy-MM-dd 형식의 문자열을 java.sql.Date로 변환
+		if (brith_date_js != null && !brith_date_js.isEmpty()) {
+	        vo.setBrith_date(java.sql.Date.valueOf(brith_date_js));
+	    }
+	    uservice.insert(vo, aspectNames);
+	    
+	    // ... 서비스 호출
+	    return "redirect:/user/login";
 	}
 	
 	//3)로그인 화면
 	@GetMapping("/login")
 	public String loginForm() {
-		return "/user/login";
+		return "user/login";
 	}
 	
 	//4)로그인 처리
@@ -84,31 +106,32 @@ public class UserController {
 	 * */
 	
 	//1)화면요청용 컨트롤러
-		@GetMapping("/find-id")
+		@GetMapping("/findId")
 		public String findIdForm() {
-			return "/userTest/findId";
+			return "/user/findId";
 		}
-		@GetMapping("/find-pw")
+		
+		@GetMapping("/findPw")
 		public String findPwForm() {
-			return "/userTest/findPw";
+			return "/user/findPw";
 		}
-	
+
 	//2)아이디 찾기(이메일)-비동기 방식
-	@GetMapping("/find-id/email")//url예시: http://localhost:8081/user/find-id/email?email=test@test.com
+	@GetMapping("/findId/email")//url예시: http://localhost:8081/user/find-id/email?email=test@test.com
 	@ResponseBody
 	public String findIdByEmail(@RequestParam String email) {
 		return uservice.findIdByEmail(email);
 	}
 	
 	//3)아이디 찾기(전화번호)
-	@GetMapping("/find-id/phone") //url예시: http://localhost:8081/user/find-id/phone?phone=13571357
+	@GetMapping("/findId/phone") //url예시: http://localhost:8081/user/find-id/phone?phone=13571357
 	@ResponseBody
 	public String findIdByPhone(@RequestParam String phone) {
 		return uservice.findIdByPhone(phone);
 	}
 	
 	//4)비밀번호 찾기 대상 확인(이메일)
-	@GetMapping("/find-pw/email") //url예시: http://localhost:8081/user/find-pw/email?username=linwee&email=test@test.com
+	@GetMapping("/findPw/email") //url예시: http://localhost:8081/user/find-pw/email?username=linwee&email=test@test.com
 	@ResponseBody
 	public int existByEmail(@RequestParam String username, 
 									@RequestParam String email) {
@@ -116,7 +139,7 @@ public class UserController {
 	}
 	
 	//5)비밀번호 찾기 대상 확인(전화번호)
-	@GetMapping("/find-pw/phone") //url예시: http://localhost:8081/user/find-pw/phone?username=linwee&phone=12345678
+	@GetMapping("/findPw/phone") //url예시: http://localhost:8081/user/find-pw/phone?username=linwee&phone=12345678
 	@ResponseBody
 	public int existByPhone(@RequestParam String username,
 							@RequestParam String phone) {

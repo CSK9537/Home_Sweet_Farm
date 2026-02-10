@@ -251,7 +251,7 @@
   var goLoginBtn = $("#goLoginBtn");
   if (goLoginBtn) {
     goLoginBtn.addEventListener("click", function () {
-      window.location.href = getCpath() + "/user/login";
+      window.location.href = getCpath() + "/login";
     });
   }
 
@@ -295,16 +295,21 @@
       // hidden copy (서버에서 최종 검증/해시 처리 필수)
       var hidUserId = $("#hidUserId");
       var hidUserPw = $("#hidUserPw");
+      var hidUserPw2 = $("#hidUserPw2");
       var hidAgreeService = $("#hidAgreeService");
       var hidAgreePrivacy = $("#hidAgreePrivacy");
       var hidAgreeMarketing = $("#hidAgreeMarketing");
 
       if (hidUserId) hidUserId.value = userId;
       if (hidUserPw) hidUserPw.value = pw;
-      if (hidAgreeService) hidAgreeService.value = String(agreeService);
-      if (hidAgreePrivacy) hidAgreePrivacy.value = String(agreePrivacy);
-      if (hidAgreeMarketing) hidAgreeMarketing.value = String($("#agreeMarketing") ? $("#agreeMarketing").checked : false);
-
+      if (hidUserPw2) hidUserPw2.value = pw2;
+//      if (hidAgreeService) hidAgreeService.value = String(agreeService);
+      if (hidAgreeService) hidAgreeService.value = agreeService ? "1" : "0";
+//      if (hidAgreePrivacy) hidAgreePrivacy.value = String(agreePrivacy);
+      if (hidAgreePrivacy) hidAgreePrivacy.value = agreePrivacy ? "1" : "0";
+//      if (hidAgreeMarketing) hidAgreeMarketing.value = String($("#agreeMarketing") ? $("#agreeMarketing").checked : false);
+      if (hidAgreeMarketing) hidAgreeMarketing.value = ($("#agreeMarketing") && $("#agreeMarketing").checked)? "1" : "0";
+      
       setActiveStep("verify");
     });
   }

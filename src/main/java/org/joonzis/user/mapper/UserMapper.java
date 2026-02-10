@@ -6,12 +6,28 @@ import org.joonzis.user.vo.UserVO;
 
 public interface UserMapper {
 	
-	//데이터 넣기
+	//회원가입
 	public int insert(UserVO vo);
+	
+	//관심사
+	//1)유저 시퀀스
+	public int getNextUserId();
+	//2)해시태그 id 조회
+	public Integer findHashtagIdByName(@Param("hashtag_name") String hashtag_name);
+	//3)해시태그 테이블 insert
+	public int insertHashtag(@Param("hashtag_name") String hashtag_name);
+	//4)관심사 중간 테이블 insert
+	public int insertUserAspect(@Param("user_id") int userId,
+								@Param("hashtag_id") int hashtagId);
+	//5)관심사  중간 테이블 delete
+	public int deleteUserAspect(@Param("user_id") int user_id);
+	
 	//데이터 조회
 	public  UserVO selectLogin(int user_id);
+	
 	//로그인
 	public UserVO login(@Param("username")String username, @Param("password")String password);
+	
 	//데이터 삭제
 	public int delete(UserVO vo);
 	
@@ -43,7 +59,6 @@ public interface UserMapper {
 	
 	//마케팅수신동의 테스트용 조회
 	public UserVO selectByUsername(String username);
-	
 	
 	//공개형 프로필
 	//1) 닉네임, 프로필, 회원등급, 자기소개
