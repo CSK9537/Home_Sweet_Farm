@@ -2,12 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.joonzis.iot.repository.MyPlantMapper">
+<mapper namespace="org.joonzis.iot.mapper.MyPlantMapper">
 
     <!-- 메인 화면 -->
-    <select id="selectMyPlantMainList"
-            parameterType="int"
-            resultType="org.joonzis.iot.dto.MyPlantMainDTO">
+    <select id="selectMyPlantMainList" parameterType="int" resultType="org.joonzis.iot.dto.MyPlantMainDTO">
         SELECT
             mp.myplant_id       AS myplantId,
             mp.myplant_name     AS myplantName,
@@ -37,9 +35,7 @@
     </select>
 
     <!-- CRUD -->
-    <select id="getList"
-            parameterType="int"
-            resultType="org.joonzis.iot.vo.MyPlantVO">
+    <select id="getList" parameterType="int" resultType="org.joonzis.iot.vo.MyPlantVO">
         SELECT
             myplant_id AS myplantId,
             user_id AS userId,

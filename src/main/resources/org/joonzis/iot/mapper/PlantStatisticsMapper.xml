@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.joonzis.iot.repository.PlantStatisticsMapper">
+<mapper namespace="org.joonzis.iot.mapper.PlantStatisticsMapper">
 	
-    <insert id="insert" parameterType="PlantStatistics">
+    <insert id="insert" parameterType="org.joonzis.iot.vo.PlantStatisticsVO">
         INSERT INTO tbl_myplant_statistics
         (myplant_seq,myplant_id, temperature, humidity, illumination, soil_moisture, sensing_time)
         VALUES
@@ -12,7 +12,7 @@
          #{illumination}, #{soilMoisture}, SYSDATE)
     </insert>
 
-    <select id="findLatestByMyplantId" resultType="org.joonzis.iot.repository.PlantStatisticsMapper">
+    <select id="findLatestByMyplantId" resultType="org.joonzis.iot.mapper.PlantStatisticsMapper">
         SELECT *
         FROM tbl_myplant_statistics
         WHERE myplant_id = #{myplantId}
@@ -20,7 +20,7 @@
         FETCH FIRST 1 ROWS ONLY
     </select>
 
-    <select id="findByPeriod" resultType="org.joonzis.iot.repository.PlantStatisticsMapper">
+    <select id="findByPeriod" resultType="org.joonzis.iot.mapper.PlantStatisticsMapper">
         SELECT *
         FROM tbl_myplant_statistics
         WHERE myplant_id = #{myplantId}

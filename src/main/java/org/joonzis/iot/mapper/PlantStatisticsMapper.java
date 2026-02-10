@@ -1,4 +1,4 @@
-package org.joonzis.iot.repository;
+package org.joonzis.iot.mapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
