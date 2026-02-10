@@ -72,6 +72,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 14px;
+  width: 100%;
 }
 
 /* 제품 카드 */

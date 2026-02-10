@@ -12,10 +12,10 @@
       <!-- 우측 플로팅(찜/장바구니) -->
       <div class="store-floating">
         <a class="store-floating__btn store-floating__btn--wish"
-           href="${pageContext.request.contextPath}/store/wish"
+           href="${pageContext.request.contextPath}/store/wishPage"
            title="찜목록">찜목록</a>
         <a class="store-floating__btn store-floating__btn--cart"
-           href="${pageContext.request.contextPath}/store/cart"
+           href="${pageContext.request.contextPath}/store/cartPage"
            title="장바구니">장바구니</a>
       </div>
 
@@ -30,7 +30,7 @@
 
             <div class="gallery__stage" id="galleryStage">
               <img id="mainImage" class="gallery__main"
-                   src="<c:out value='${empty product.image_list ? "" : pageContext.request.contextPath.concat("/upload/").concat(product.image_list[0])}'/>"
+                   src="<c:out value='${not empty product.image_list ? pageContext.request.contextPath.concat("/upload/").concat(product.image_list[0]) : ""}'/>"
                    alt="<c:out value='${product.product_name}'/>" />
               <c:if test="${empty product.image_list}">
                 <div class="gallery__dummy" id="mainDummy">상품 이미지</div>
@@ -137,13 +137,13 @@
 
             <div class="info-card__actions">
               <form action="${pageContext.request.contextPath}/store/cart/add" method="post" class="action-row">
-                <input type="hidden" name="product_id" value="${product.product_id}" />
-                <button type="submit" class="btn btn--solid">장바구니</button>
+                <input type="hidden" name="product_id" value="${product.product_id}" id="product_id" />
+                <button type="button" class="btn btn--solid" id="addCart">장바구니</button>
               </form>
 
               <form action="${pageContext.request.contextPath}/store/wish/add" method="post" class="action-row">
                 <input type="hidden" name="product_id" value="${product.product_id}" />
-                <button type="submit" class="btn btn--ghost">찜하기</button>
+                <button type="button" class="btn btn--ghost" id="addWish">찜하기</button>
               </form>
             </div>
 
@@ -269,9 +269,8 @@
   </div>
 </div>
 
-<script>
-  // 리스트로 유지되는 경우 경로 보정용(선택)
-  window.__CTX__ = "${pageContext.request.contextPath}";
-</script>
+
+
 <script src="${pageContext.request.contextPath}/resources/js/store/StoreView.js"></script>
+
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

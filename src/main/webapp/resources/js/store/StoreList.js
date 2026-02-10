@@ -43,8 +43,8 @@
       if (form) {
         var inputs = form.getElementsByTagName("input");
         for (var i = 0; i < inputs.length; i++) {
-          if (inputs[i].name === "category_id" && inputs[i].value) {
-            qs.push("category_id=" + encodeURIComponent(inputs[i].value));
+          if (inputs[i].name === "categoryId" && inputs[i].value) {
+            qs.push("categoryId=" + encodeURIComponent(inputs[i].value));
           }
         }
       }

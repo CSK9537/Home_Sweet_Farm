@@ -6,6 +6,8 @@ import org.joonzis.store.dto.ProductDetailDTO;
 import org.joonzis.store.dto.ProductForAdminListDTO;
 import org.joonzis.store.dto.ProductForListDTO;
 import org.joonzis.store.dto.ProductReviewDTO;
+import org.joonzis.store.dto.SearchProductDTO;
+import org.joonzis.store.vo.ProductCategoryVO;
 import org.joonzis.store.vo.ProductReviewVO;
 import org.joonzis.store.vo.ProductVO;
 
@@ -35,4 +37,8 @@ public interface StoreService {
 	public List<ProductForAdminListDTO> getAdminList();
 	public List<ProductForAdminListDTO> getAdminListByCategoryId(int category_id);
 	public List<ProductForAdminListDTO> getAdminListByPrice();
+	
+	// 검색
+	public List<ProductForListDTO> searchProduct(SearchProductDTO search);
+	public ProductCategoryVO getCategoryInfo(int category_id);
 }

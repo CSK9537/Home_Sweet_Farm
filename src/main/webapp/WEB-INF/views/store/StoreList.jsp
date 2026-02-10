@@ -23,8 +23,11 @@
             autocomplete="off"
           />
           <!-- 카테고리 유지 필요 시 -->
+          <c:if test="${not empty param.categoryId}">
+            <input type="hidden" name="categoryId" value="${param.categoryId}" />
+          </c:if>
           <c:if test="${not empty param.category_id}">
-            <input type="hidden" name="category_id" value="${param.category_id}" />
+            <input type="hidden" name="categoryId" value="${param.category_id}" />
           </c:if>
         </form>
       </div>
@@ -32,10 +35,10 @@
       <!-- 우측 플로팅(찜/장바구니) -->
       <div class="store-floating">
         <a class="store-floating__btn store-floating__btn--wish"
-           href="${pageContext.request.contextPath}/store/wish"
+           href="${pageContext.request.contextPath}/store/wishPage"
            title="찜목록">찜목록</a>
         <a class="store-floating__btn store-floating__btn--cart"
-           href="${pageContext.request.contextPath}/store/cart"
+           href="${pageContext.request.contextPath}/store/cartPage"
            title="장바구니">장바구니</a>
       </div>
 
@@ -63,9 +66,6 @@
                  data-href="${pageContext.request.contextPath}/store/product/detail?product_id=${p.product_id}">
               <div class="product-card__thumb">
                 <c:choose>
-                  <c:when test="${not empty p.saved_name}">
-                    <img src="${pageContext.request.contextPath}/upload/${p.saved_name}" alt="${p.product_name}" />
-                  </c:when>
                   <c:when test="${not empty p.thumbnail}">
                     <img src="${pageContext.request.contextPath}/upload/${p.thumbnail}" alt="${p.product_name}" />
                   </c:when>
@@ -112,6 +112,47 @@
       <c:if test="${empty products}">
         <div class="empty-box">
           표시할 상품이 없습니다.
+        </div>
+      </c:if>
+
+      <!-- 페이지네이션(이미지 하단) -->
+      <c:if test="${not empty paging}">
+        <div class="store-paging">
+          <c:if test="${paging.prev}">
+            <c:url var="prevUrl" value="/store/search">
+              <c:if test="${not empty param.categoryId}"><c:param name="categoryId" value="${param.categoryId}" /></c:if>
+              <c:if test="${not empty param.keyword}"><c:param name="keyword" value="${param.keyword}" /></c:if>
+              <c:param name="currentPage" value="${paging.beginPage - 1}" />
+            </c:url>
+            <a class="pg-btn" href="${prevUrl}">&lt;</a>
+          </c:if>
+
+          <c:forEach var="i" begin="${paging.beginPage}" end="${paging.endPage}">
+            <c:choose>
+              <c:when test="${i == paging.currentPage}">
+                <span class="pg-num pg-num--active"><c:out value="${i}" /></span>
+              </c:when>
+              <c:otherwise>
+                <c:url var="pageUrl" value="/store/search">
+                  <c:if test="${not empty param.categoryId}"><c:param name="categoryId" value="${param.categoryId}" /></c:if>
+                  <c:if test="${not empty param.keyword}"><c:param name="keyword" value="${param.keyword}" /></c:if>
+                  <c:param name="currentPage" value="${i}" />
+                </c:url>
+                <a class="pg-num" href="${pageUrl}">
+                  <c:out value="${i}" />
+                </a>
+              </c:otherwise>
+            </c:choose>
+          </c:forEach>
+
+          <c:if test="${paging.next}">
+            <c:url var="nextUrl" value="/store/search">
+              <c:if test="${not empty param.categoryId}"><c:param name="categoryId" value="${param.categoryId}" /></c:if>
+              <c:if test="${not empty param.keyword}"><c:param name="keyword" value="${param.keyword}" /></c:if>
+              <c:param name="currentPage" value="${paging.endPage + 1}" />
+            </c:url>
+            <a class="pg-btn" href="${nextUrl}">&gt;</a>
+          </c:if>
         </div>
       </c:if>
 
