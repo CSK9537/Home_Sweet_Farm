@@ -10,14 +10,8 @@
   <div class="content-wrap">
     <div class="content-card plant-view" id="plantViewRoot">
 
-      <!-- ===== plant 모델 바인딩(plant / plantVO / plantInfo 등 혼용 대비) ===== -->
+      <!-- ===== plant 모델 바인딩  ===== -->
       <c:choose>
-        <c:when test="${not empty plant}">
-          <c:set var="p" value="${plant}" />
-        </c:when>
-        <c:when test="${not empty plantVO}">
-          <c:set var="p" value="${plantVO}" />
-        </c:when>
         <c:when test="${not empty plantInfo}">
           <c:set var="p" value="${plantInfo}" />
         </c:when>
@@ -64,7 +58,7 @@
 
           <div class="pv-hero__right" data-section>
             <c:if test="${not empty p.plant_image}">
-              <img class="pv-thumb" src="<c:out value='${p.plant_image}'/>" alt="식물 이미지" loading="lazy" />
+              <img class="pv-thumb" src="/plant/image/${p.plant_image}" alt="식물 이미지" loading="lazy" />
             </c:if>
           </div>
         </section>
@@ -200,7 +194,7 @@
         </section>
 
         <!-- ===== 이미지 스트립(여러 장) : plantImages(List<String>) 있으면 사용, 없으면 기본이미지 1장만 ===== -->
-        <section class="pv-box" data-section>
+        <%-- <section class="pv-box" data-section>
           <div class="pv-box__head">
             <h2 class="pv-h2">이미지</h2>
           </div>
@@ -227,7 +221,7 @@
 
             <button type="button" class="pv-gbtn pv-gbtn--next" aria-label="다음 이미지">›</button>
           </div>
-        </section>
+        </section> --%>
 
         <!-- ===== 문화/가치 섹션: 긴 텍스트(CLOB)들 ===== -->
         <section class="pv-box" data-section>
