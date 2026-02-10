@@ -22,20 +22,20 @@ public class PlantController {
 	public String plantMain(Model model) {
 		// 등수 지정(plantListByRank(rank))
 		model.addAttribute("popularPlants", pservice.plantListByRank(15));
-		return "Plant/PlantMain";
+		return "plant/PlantMain";
 	}
 	
 	// 백과사전 상세 페이지
 	@RequestMapping("/info/{plant_name:.+}")
 	public String plantView(@PathVariable("plant_name") String plant_name, Model model) {
 		model.addAttribute("plantInfo",pservice.plantInfo(plant_name));
-		return "Plant/PlantView";
+		return "plant/PlantView";
 	}
 	
 	// 가이드 상세 페이지
 	@RequestMapping("/guide/{plant_name:.+}")
 	public String guideView(@PathVariable("plant_name") String plant_name, Model model) {
 		model.addAttribute("guide", pservice.guideInfo(plant_name));
-		return "Plant/GuideView";
+		return "plant/GuideView";
 	}
 }
