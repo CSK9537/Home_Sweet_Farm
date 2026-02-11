@@ -36,17 +36,6 @@ public class UserController {
 		return "user/JoinUser";
 	}
 	
-//	//2)회원가입 처리
-//	@PostMapping("/JoinUser") 
-//	public String joinProcess(UserVO vo,
-//	@RequestParam(value ="aspectNames", required=false)
-//				String aspectNames, 
-//				@RequestParam("brith_date_js") String brith_date_js) {
-//		System.out.println(brith_date_js);
-//		//uservice.insert(vo, aspectNames);
-//		return "redirect:/user/login";
-//	}
-	
 	@PostMapping("/JoinUser") 
 	public String joinProcess(
 			UserVO vo, 
