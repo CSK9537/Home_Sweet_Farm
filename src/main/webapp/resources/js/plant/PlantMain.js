@@ -91,8 +91,8 @@ function attachMoreHandler(btn, ctx) {
           var p = data[j] || {};
           var plantId = (p.plant_id !== undefined && p.plant_id !== null) ? String(p.plant_id) : "";
           var nameKor = p.plant_name_kor ? p.plant_name_kor : "";
-          var nameEn = p.plant_name ? p.plant_name : "";
-          var img = p.plant_image ? p.plant_image : "https://picsum.photos/seed/empty/600/400";
+          var name = p.plant_name ? p.plant_name : "";
+          var img = p.plant_image ? p.plant_image : "";
 
           var card = document.createElement("article");
           card.className = "plant-card";
@@ -101,15 +101,21 @@ function attachMoreHandler(btn, ctx) {
           var detailUrl = ctx + "/plant/detail?plant_id=" + encodeURIComponent(plantId);
 
           card.innerHTML =
-            '<a class="plant-card__link" href="' + detailUrl + '">' +
-              '<div class="plant-card__thumb">' +
-                '<img src="' + escapeHtmlAttr(img) + '" alt="' + escapeHtmlAttr(nameKor) + '" loading="lazy" />' +
-              "</div>" +
-              '<div class="plant-card__body">' +
-                '<div class="plant-card__name">' + escapeHtmlText(nameKor) + "</div>" +
-                '<div class="plant-card__sub">' + escapeHtmlText(nameEn) + "</div>" +
-              "</div>" +
-            "</a>";
+        	`<div class="hover-area-wrapper">` +
+              `<div class="hover-area hover-area--left" onclick="location.href='/plant/info/` + escapeHtmlText(name) + `'"></div>` +
+              `<div class="hover-area hover-area--right" onclick="location.href='/plant/guide/` + escapeHtmlText(name) + `'"></div>` +
+            `</div>` +
+            `<div class="plant-card__link">` +
+              `<div class="plant-card__thumb">` +
+                `<img src="/plant/image/` + escapeHtmlAttr(img) + `" alt="` + escapeHtmlAttr(nameKor) + `" loading="lazy" />` +
+                `<span class="text left-text">백과사전</span>` +
+	            `<span class="text right-text">가이드</span>` +
+              `</div>` +
+              `<div class="plant-card__body">` +
+                `<div class="plant-card__name">` + escapeHtmlText(nameKor) + `</div>` +
+                `<div class="plant-card__sub">` + escapeHtmlText(name) + `</div>` +
+              `</div>` +
+            `</div>`;
 
           frag.appendChild(card);
         }

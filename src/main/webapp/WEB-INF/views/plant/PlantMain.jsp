@@ -18,34 +18,18 @@
 					<h3 class="plant-section__title">인기 식물</h3>
 				</div>
 
-				<!-- 1) 상단 Top3 (3열) -->
+				<!-- 상단 Top3 (3열) -->
 				<div class="plant-grid plant-grid--top3" id="popularTopGrid">
 				  <c:forEach var="p" items="${popularPlants}" varStatus="st">
 				    <c:if test="${st.count <= 3}">
 				      <article class="plant-card plant-card--top" data-id="${p.plant_id}">
-				        <a class="plant-card__link"
-				           href="/plant/info/${p.plant_name}">
-				          <div class="plant-card__thumb">
-				            <span class="plant-card__badge plant-card__badge--rank">${st.count}위</span>
-				            <img src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" loading="lazy" />
-				          </div>
-				          <div class="plant-card__body">
-				            <div class="plant-card__name">${p.plant_name_kor}</div>
-				            <div class="plant-card__sub">${p.plant_name}</div>
-				          </div>
-				        </a>
-				      </article>
-				    </c:if>
-				  </c:forEach>
-				</div>
-				
-				<!-- 2) 하단 목록 (4열, 2줄 = 8개) : 4번째 ~ 11번째 -->
-				<div class="plant-grid plant-grid--rank" id="popularGrid">
-				  <c:forEach var="p" items="${popularPlants}" varStatus="st">
-				    <c:if test="${st.count >= 4 && st.count <= 11}">
-				      <article class="plant-card" data-id="${p.plant_id}">
+				        <div class="hover-area-wrapper">
+                          <div class="hover-area hover-area--left" onclick="location.href='/plant/info/${p.plant_name}'"></div>
+                          <div class="hover-area hover-area--right" onclick="location.href='/plant/guide/${p.plant_name}'"></div>
+                        </div>
 				        <div class="plant-card__link">
 				          <div class="plant-card__thumb">
+				            <span class="plant-card__badge plant-card__badge--rank">${st.count}위</span>
 				            <img src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" loading="lazy" />
 				            <span class="text left-text">백과사전</span>
 				            <span class="text right-text">가이드</span>
@@ -55,12 +39,31 @@
 				            <div class="plant-card__sub">${p.plant_name}</div>
 				          </div>
 				        </div>
-				        <div class="hover-area-wrapper">
-                          <div class="hover-area hover-area--left"></div>
-                          <div class="hover-area hover-area--right"></div>
-                        </div>
 				      </article>
 				    </c:if>
+				  </c:forEach>
+				</div>
+				
+				<!-- 하단 목록 (4개씩) -->
+				<div class="plant-grid plant-grid--random" id="popularGrid">
+				  <c:forEach var="p" items="${randomPlants}">
+			        <article class="plant-card" data-id="${p.plant_id}">
+			          <div class="hover-area-wrapper">
+                           <div class="hover-area hover-area--left" onclick="location.href='/plant/info/${p.plant_name}'"></div>
+                           <div class="hover-area hover-area--right" onclick="location.href='/plant/guide/${p.plant_name}'"></div>
+                         </div>
+			          <div class="plant-card__link">
+			            <div class="plant-card__thumb">
+			              <img src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" loading="lazy" />
+			              <span class="text left-text">백과사전</span>
+			              <span class="text right-text">가이드</span>
+			            </div>
+			            <div class="plant-card__body">
+			              <div class="plant-card__name">${p.plant_name_kor}</div>
+			              <div class="plant-card__sub">${p.plant_name}</div>
+			            </div>
+			          </div>
+			        </article>
 				  </c:forEach>
 				</div>
 				<!-- 더보기: 하단 목록만 추가 (4개씩, 최대 5번) -->

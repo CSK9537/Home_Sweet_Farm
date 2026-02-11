@@ -5,8 +5,10 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.store.dto.OrderDTO;
-import org.joonzis.store.dto.OrderWrapper;
+import org.joonzis.store.dto.PaymentDTO;
 import org.joonzis.store.service.OrderService;
+import org.joonzis.store.vo.OrderProductListVO;
+import org.joonzis.store.vo.PaymentInfoVO;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,24 +30,6 @@ public class OrderController {
 	@Autowired
 	OrderService oService;
 	
-	// 주문 내역 추가
-	@PostMapping(
-			value = "/add",
-			produces = "text/plain;charset=UTF-8")
-	public ResponseEntity<String> addOrder(
-			@RequestBody OrderWrapper oWrapper,
-			HttpSession session){
-		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		if(oWrapper.getUser_id() == 0) oWrapper.setUser_id(user_id);
-		try {
-			oService.addOrder(oWrapper);
-			return new ResponseEntity<String>("success",HttpStatus.OK);
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-	}
-	
 	// 주문 내역 조회
 	@GetMapping(
 			value = "/getDetail/{order_id}",
@@ -59,7 +43,8 @@ public class OrderController {
 			value = "/getList",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<OrderDTO>> getOrderListByUserId(HttpSession session){
-		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
+//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
+		int user_id = 2;
 		List<OrderDTO> list = oService.getOrderListByUserId(user_id);
 		return new ResponseEntity<List<OrderDTO>>(list,HttpStatus.OK);
 	}
@@ -71,5 +56,75 @@ public class OrderController {
 	public ResponseEntity<List<OrderDTO>> getOrderListByProductId(@PathVariable("product_id")int product_id){
 		List<OrderDTO> list = oService.getOrderListByProductId(product_id);
 		return new ResponseEntity<List<OrderDTO>>(list,HttpStatus.OK);
+	}
+	
+	// 결제 승인 이전
+	@PostMapping(
+			value = "/ready",
+			produces = "text/plain;charset=UTP-8;")
+	public ResponseEntity<String> readyOrder(
+			HttpSession session,
+			@RequestBody int use_point,
+			@RequestBody int order_amount,
+			@RequestBody Integer accumulate_point,
+			@RequestBody String delivery_addr,
+			@RequestBody List<OrderProductListVO> products
+			){
+//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
+		int user_id = 2;
+		
+		String order_id = oService.createRandomOrderId(); // UUID 생성
+		try {
+			oService.addOrderBeforePay(order_id, user_id, use_point, order_amount, accumulate_point, delivery_addr, products);
+			return new ResponseEntity<String>(order_id, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	// 결제 승인
+	@PostMapping(
+			value = "/confirm",
+			produces = "text/plain;charset=UTF-8")
+	public ResponseEntity<String> confirmOrder(
+			@RequestBody String paymentKey,
+			@RequestBody String orderId,
+			@RequestBody int amount){
+		PaymentDTO payment = null;
+		PaymentInfoVO paymentInfo = null;
+		try {
+			payment = oService.confirmPayment(paymentKey, orderId, amount);
+			if(payment.getMethod().equals("카드"))paymentInfo = payment.getCard();
+			else if (payment.getMethod().equals("계좌이체"))paymentInfo = payment.getTransfer();
+			else throw new RuntimeException("지원하지 않는 결제 방식");
+			
+			oService.AfterPay(
+					orderId, payment.getStatus(), paymentKey, payment.getType(), 
+					payment.getMethod(), payment.getTotalAmount(), payment.getRequestedAt(), paymentInfo);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<String>("success", HttpStatus.ACCEPTED);
+	}
+	
+	// 결제 취소
+	@PostMapping(
+			value = "/cancel",
+			produces = "text/plain;charset=UTF-8")
+	public ResponseEntity<String> cancelOrder(
+			@RequestBody String paymentKey,
+			@RequestBody String orderId,
+			@RequestBody String reason){
+		int result = 0;
+		try {
+			result = oService.cancelOrder(paymentKey, reason, orderId);
+			if(result > 0) return new ResponseEntity<String>(HttpStatus.ACCEPTED);
+			else throw new RuntimeException("결제 취소가 이루어지지 않음");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

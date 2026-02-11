@@ -121,7 +121,53 @@
   width: 100%;
 }
 
-/* 공통 아이템 */
+/* =========================================================
+   MARKET 전용 UI (상태 배지 + 가격)
+   - 카드/앨범: 썸네일 위 absolute 배지
+   - 리스트: 이미지가 없으므로 배지를 inline-chip 형태로 보여주도록 보조 규칙 제공
+   ========================================================= */
+
+/* 공통 배지 */
+.marketBadge{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  color: #fff;
+  z-index: 4;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+}
+
+/* 상태별 컬러 */
+.marketBadge--sell{ background:#ff6b3d; }
+.marketBadge--share{ background:#3b82f6; }
+.marketBadge--done{ background:#9aa0a6; }
+
+/* 가격(공통) */
+.marketPrice{
+  font-weight: 900;
+  letter-spacing: -0.2px;
+}
+
+/* 카드/리스트 본문 가격 */
+.marketPrice--body{
+  margin: 6px 0 6px;
+  font-size: 15px;
+  color: #ff6b3d;
+}
+
+/* 앨범 오버레이 가격(오버레이 안에서 더 잘 보이도록) */
+.marketPrice--overlay{
+  margin-top: 6px;
+  font-size: 13px;
+  color: rgba(47, 58, 42, 0.95);
+  font-weight: 900;
+}
+
+/* ===== 공통 아이템 ===== */
 .postItem {
   display: flex;
   gap: 14px;
@@ -172,7 +218,7 @@
   bottom: 0;
 
   padding: 10px 10px 8px;
-  background: rgba(244, 242, 237, 0.75);
+  background: rgba(244, 242, 237, 0.78);
 
   display: none;
 }
@@ -265,6 +311,11 @@
   display: none;
 }
 
+/* 카드에서 가격이 메타에 붙어서 줄바꿈이 이상해지지 않도록(선택) */
+.view-card .marketPrice--body{
+  display: inline-block;
+}
+
 /* ====== 뷰 모드: ALBUM ====== */
 .view-album {
   display: grid;
@@ -287,12 +338,22 @@
   border-radius: 14px;
 }
 
+/* 앨범에서는 오버레이 항상 노출 */
 .view-album .postItem__overlay {
   display: block;
 }
 
+/* 앨범형은 바디 숨김 */
 .view-album .postItem__body {
-  display: none; /* 앨범형은 오버레이로만 정보 표현 */
+  display: none;
+}
+
+/* 앨범에서 배지가 더 튀도록 약간 크게 */
+.view-album .marketBadge{
+  top: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  font-size: 12px;
 }
 
 /* ====== 뷰 모드: LIST ====== */
@@ -305,19 +366,41 @@
   display: none; /* 리스트형은 이미지 숨김 */
 }
 
+/* 리스트형은 제목 위주 */
 .view-list .postItem__title {
   font-size: 14px;
 }
 
+/* 리스트형은 작성자/본문 숨김 */
 .view-list .postItem__writer,
 .view-list .postItem__content {
-  display: none; /* 리스트형은 제목+우측 메타 느낌 */
+  display: none;
 }
 
 .view-list .postItem__meta {
   border-bottom: 0;
   padding-bottom: 0;
   margin-top: 2px;
+}
+
+/* 리스트형에서 marketPrice가 너무 튀지 않게 */
+.view-list .marketPrice--body{
+  margin: 0 0 4px;
+  font-size: 13px;
+}
+
+/* 리스트형은 imgWrap이 없어서 absolute 배지가 보일 자리가 없음.
+   -> JSP에서 리스트형일 때 배지를 제목 옆에 inline으로 뿌리는 경우를 대비한 스타일
+   (현재 JSP는 imgWrap 안에만 배지를 넣지만, 추후 확장 대비) */
+.view-list .marketBadge{
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+  box-shadow: none;
+  font-size: 11px;
+  padding: 3px 8px;
 }
 
 /* ===== 하단 영역 ===== */

@@ -25,8 +25,8 @@ import lombok.extern.log4j.Log4j;
 		"file:src/main/webapp/WEB-INF/spring/root-context.xml")
 public class OrderMapperTests {
 
-	@Autowired
-	OrderMapper mapper;
+//	@Autowired
+//	OrderMapper mapper;
 	
 //	@Test
 //	public void insertOrderTest() {

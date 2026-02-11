@@ -1,0 +1,181 @@
+/* 공용 레이아웃은 ContentLayout.css 사용 */
+
+.community-view{ width:100%; border-radius:12px; box-sizing:border-box; }
+
+/* 상단 네비 버튼 */
+.cv-top-actions{ width:100%; display:flex; justify-content:flex-end; gap:10px; margin-bottom:16px; }
+.cv-top-btn{
+  border:1px solid #cfcac0; background:#f7f5f0; color:#2a2a2a;
+  padding:10px 14px; border-radius:10px; cursor:pointer; font-size:14px;
+}
+.cv-top-btn:hover{ background:#efebe3; }
+
+/* 게시글 */
+.cv-post{
+  width:100%; border:2px solid #6b7b61; border-radius:12px;
+  padding:22px 22px 16px; background:#f7f5f0; box-sizing:border-box;
+}
+.cv-breadcrumb{ display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.cv-category{ color:#2f7d32; font-weight:700; font-size:14px; }
+.cv-sep{ color:#7b7b7b; font-size:13px; }
+.cv-title{ margin:0; font-size:28px; letter-spacing:-0.5px; color:#1f1f1f; }
+
+.cv-meta{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; margin-top:14px; }
+.cv-writer{ display:flex; align-items:center; gap:12px; }
+
+.cv-avatar{
+  width:44px; height:44px; border-radius:999px; overflow:hidden;
+  border:1px solid #cfcac0; background:#f0eee7; box-sizing:border-box; flex:0 0 auto;
+}
+.cv-avatar-sm{ width:34px; height:34px; }
+.cv-avatar-fallback{
+  display:block; width:100%; height:100%;
+  background: radial-gradient(circle at 30% 30%, #d6d1c6, #bfb9ad);
+}
+
+.cv-writer-info{ display:flex; flex-direction:column; gap:4px; }
+.cv-nick{ color:#1f1f1f; font-weight:800; text-decoration:none; }
+.cv-nick:hover{ text-decoration:underline; }
+
+.cv-date-line{ display:flex; align-items:center; gap:8px; color:#6a6a6a; font-size:13px; }
+.cv-dot{ color:#c2bdb2; }
+
+.cv-stats{ color:#6a6a6a; font-size:13px; white-space:nowrap; }
+.cv-bar{ margin:0 8px; color:#c2bdb2; }
+
+.cv-divider{ height:1px; background:#d9d4c8; margin:16px 0; }
+.cv-content{ min-height:220px; color:#222; font-size:15px; line-height:1.7; white-space:pre-line; }
+
+/* 첨부파일 */
+.cv-attachments{ margin-top:18px; padding-top:14px; border-top:1px solid #d9d4c8; display:flex; gap:16px; }
+.cv-attach-title{ min-width:72px; font-weight:800; color:#404040; font-size:14px; }
+.cv-attach-list{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px; }
+.cv-attach-link{ color:#2a5db0; text-decoration:none; }
+.cv-attach-link:hover{ text-decoration:underline; }
+
+/* 공통 버튼 */
+.cv-btn{
+  border:1px solid #cfcac0; background:#f7f5f0; color:#2a2a2a;
+  padding:10px 14px; border-radius:10px; cursor:pointer; font-size:14px;
+}
+.cv-btn:hover{ background:#efebe3; }
+.cv-btn-primary{ border-color:#2f7d32; background:#2f7d32; color:#fff; }
+.cv-btn-primary:hover{ background:#276a2a; }
+.cv-btn-ghost{ background:#f7f5f0; }
+.cv-btn-danger{ border-color:#d9534f; background:#d9534f; color:#fff; }
+.cv-btn-danger:hover{ background:#c64541; }
+.cv-btn-sm{ padding:8px 10px; border-radius:10px; font-size:13px; }
+
+/* ✅ 하단 버튼: 좌/우 그룹 */
+.cv-post-actions{
+  margin-top:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.cv-post-actions__left,
+.cv-post-actions__right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* (목록 옆) 신고 버튼은 기본 버튼 톤 그대로 */
+.cv-report-btn{}
+
+/* 댓글 작성 */
+.cv-comment-write{
+  width:100%; margin-top:18px; border:2px solid #6b7b61; border-radius:12px;
+  background:#f7f5f0; padding:18px; box-sizing:border-box;
+}
+.cv-section-title{ font-size:15px; font-weight:900; color:#1f1f1f; margin-bottom:12px; }
+.cv-comment-form{ display:flex; flex-direction:column; gap:10px; }
+.cv-textarea{
+  width:100%; height:90px; resize:none; border:1px solid #cfcac0; border-radius:10px;
+  padding:12px; box-sizing:border-box; background:#fbfaf7; outline:none; font-size:14px;
+}
+.cv-textarea:focus{ border-color:#6b7b61; }
+.cv-form-actions{ display:flex; justify-content:flex-end; gap:10px; }
+
+/* 댓글 목록 */
+.cv-comments{
+  width:100%; margin-top:18px; border:2px solid #6b7b61; border-radius:12px;
+  background:#f7f5f0; padding:18px; box-sizing:border-box;
+}
+.cv-comment-scroll{ max-height:420px; overflow-y:auto; padding-right:6px; }
+.cv-comment-scroll::-webkit-scrollbar{ width:10px; }
+.cv-comment-scroll::-webkit-scrollbar-thumb{ background:#cfcac0; border-radius:999px; border:2px solid #f7f5f0; }
+
+.cv-comment-list{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:14px; }
+.cv-comment-item{ display:flex; gap:10px; padding-bottom:14px; border-bottom:1px solid #d9d4c8; }
+.cv-comment-item:last-child{ border-bottom:0; padding-bottom:0; }
+.cv-comment-body{ flex:1; min-width:0; }
+
+.cv-comment-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.cv-comment-head-right{ display:flex; align-items:center; gap:10px; }
+.cv-comment-date{ color:#7a7a7a; font-size:12px; }
+
+.cv-icon-btn{
+  width:34px; height:34px; border-radius:10px; border:1px solid #cfcac0;
+  background:#fbfaf7; cursor:pointer; font-size:18px; line-height:1;
+}
+.cv-icon-btn:hover{ background:#efebe3; }
+
+.cv-comment-text{ margin-top:8px; font-size:14px; line-height:1.6; color:#222; white-space:pre-line; }
+.cv-comment-actions{ margin-top:10px; display:flex; align-items:center; gap:14px; color:#666; }
+.cv-action-btn{ border:0; background:transparent; color:#666; cursor:pointer; padding:6px 0; font-size:13px; }
+.cv-action-btn:hover{ text-decoration:underline; }
+.cv-action-btn.is-open{ font-weight:800; }
+.cv-caret{ margin-left:6px; color:#8a8a8a; }
+
+/* 답글 영역 */
+.cv-replies{ margin-top:12px; padding-left:8px; border-left:2px solid #d9d4c8; }
+.cv-reply-list{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+
+/* 표현은 최대 3단계 */
+.cv-reply-item{ display:flex; margin-top:10px; }
+.cv-reply-item[data-ui-level="1"]{ margin-left:0; }
+.cv-reply-item[data-ui-level="2"]{ margin-left:24px; }
+.cv-reply-item[data-ui-level="3"]{ margin-left:48px; }
+
+.cv-reply-bubble{
+  width:100%; background:#fbfaf7; border:1px solid #cfcac0; border-radius:12px;
+  padding:10px 12px; font-size:13px; line-height:1.5; box-sizing:border-box;
+}
+.cv-reply-text{ margin-top:6px; }
+.cv-mention{ font-weight:800; color:#2a5db0; margin-right:6px; }
+
+.cv-reply-write{ margin-top:10px; display:flex; gap:10px; align-items:center; }
+.cv-input{
+  flex:1; border:1px solid #cfcac0; border-radius:10px; padding:10px 12px;
+  background:#fbfaf7; outline:none; font-size:13px;
+}
+.cv-input:focus{ border-color:#6b7b61; }
+
+/* 팝업 */
+.cv-pop{
+  background:#ffffff; border:1px solid #d9d4c8; border-radius:12px;
+  box-shadow:0 10px 24px rgba(0,0,0,0.08);
+  overflow:hidden; min-width:180px; z-index:1000;
+}
+.cv-pop-item{
+  width:100%; text-align:left; border:0; background:#fff;
+  padding:12px 14px; cursor:pointer; font-size:13px; color:#2a2a2a;
+}
+.cv-pop-item:hover{ background:#f3f1ea; }
+.cv-pop-danger{ color:#d9534f; }
+
+/* fixed로 띄워 스크롤 영향 제거 */
+.cv-user-pop{ position:fixed; min-width:200px; }
+.cv-cmt-pop{ position:fixed; min-width:120px; }
+
+.cv-loading,.cv-end{ text-align:center; padding:12px 0; color:#7a7a7a; font-size:13px; }
+
+@media (max-width:767px){
+  .cv-title{ font-size:22px; }
+  .cv-meta{ flex-direction:column; align-items:flex-start; }
+  .cv-post-actions{ flex-direction:column; align-items:stretch; }
+  .cv-post-actions__left, .cv-post-actions__right{ justify-content:flex-end; }
+  .cv-comment-scroll{ max-height:360px; }
+}
