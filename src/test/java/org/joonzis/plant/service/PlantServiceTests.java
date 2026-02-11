@@ -36,6 +36,36 @@ public class PlantServiceTests {
 //	}
 	
 //	@Test
+//	public void plantListByRandomTest() {
+//		log.info("plant list by random test...");
+//		try {
+//			List<PlantVO> plantlist = pservice.plantListByRandom(3, 72, 12);
+//			int i = 0;
+//			for(PlantVO pvo : plantlist) {
+//				log.info(++i);
+//				log.info(pvo);
+//			}
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
+	
+//	@Test
+//	public void plantListByRandomPlusTest() {
+//		log.info("plant list by random plus test...");
+//		try {
+//			List<PlantVO> plantlistplus = pservice.plantListByRandomPlus(12);
+//			int i = 0;
+//			for(PlantVO pvo : plantlistplus) {
+//				log.info(++i);
+//				log.info(pvo);
+//			}
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
+	
+//	@Test
 //	public void plantInfoTest() {
 //		log.info("plant info test...");
 //		try {

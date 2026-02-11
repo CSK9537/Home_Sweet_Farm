@@ -24,7 +24,7 @@
       <c:if test="${not empty p}">
         <section class="pv-hero" data-section>
           <div class="pv-hero__left">
-            <div class="pv-breadcrumb">홈 / 식물 / 상세</div>
+            <!-- <div class="pv-breadcrumb">홈 / 식물 / 상세</div> -->
 
             <h1 class="pv-title">
               <c:out value="${p.plant_name_kor}" />
@@ -69,7 +69,9 @@
             <div class="pv-cta__title">식물을 키워서 식물을 잘 아신다면?</div>
             <div class="pv-cta__text">같이 키우는 사람들과 팁을 공유하고 관리 기록을 남겨보세요.</div>
             <div class="pv-cta__actions">
-              <a class="btn btn-primary" href="${pageContext.request.contextPath}/community/write?plant_id=${p.plant_id}">
+              <!-- 오류 제거를 위한 href 제거, 커뮤니티 완성시 추가할 것 -->
+              <!-- href="${pageContext.request.contextPath}/community/write?plant_id=${p.plant_id} -->
+              <a class="btn btn-primary">
                 	글 작성하러 가기
               </a>
             </div>
@@ -133,7 +135,7 @@
               <div class="spec-item">
                 <div class="spec-ico" aria-hidden="true">🌡</div>
                 <div class="spec-txt">
-                  <div class="spec-k">이상 온도</div>
+                  <div class="spec-k">이상적인 온도</div>
                   <div class="spec-v">
                     <c:out value="${p.plant_temperature_imin}" />°C ~ <c:out value="${p.plant_temperature_imax}" />°C
                   </div>

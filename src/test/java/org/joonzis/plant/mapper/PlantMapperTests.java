@@ -96,6 +96,21 @@ public class PlantMapperTests {
 //	}
 	
 //	@Test
+//	public void getPlantListByRandomTest() {
+//		log.info("get plant list by random test...");
+//		try {
+//			List<PlantVO> pvolist = pmapper.getPlantListByRandom(3350, 3);
+//			int i = 0;
+//			for(PlantVO pvo : pvolist) {
+//				log.info(++i);
+//				log.info(pvo);
+//			}
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
+	
+//	@Test
 //	public void getPlantIdTest() {
 //		log.info("get plant id test...");
 //		try {
