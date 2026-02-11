@@ -1,0 +1,145 @@
+/* CommunityInsert.css */
+
+.insert-head{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+.insert-title{ font-size:22px; font-weight:800; }
+.insert-actions{ display:flex; gap:10px; }
+
+.btn{
+  border:1px solid #6b7b61;
+  background:#fff;
+  border-radius:10px;
+  padding:10px 14px;
+  cursor:pointer;
+  font-weight:700;
+}
+.btn--primary{ background:#6b7b61; color:#fff; }
+.btn--ghost{ background:#fff; color:#2b2b2b; }
+
+.form-row{ width:100%; margin:12px 0; }
+.form-row--grid{
+  width:100%;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+.form-field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.label{ font-weight:800; }
+.input, .select{
+  width:100%;
+  border:1px solid #d7d3c8;
+  border-radius:10px;
+  padding:12px 12px;
+  background:#fff;
+  outline:none;
+}
+.hint{
+  font-size:12px;
+  color:#666;
+  line-height:1.4;
+}
+
+.editor-box{
+  width:100%;
+  border:1px solid #d7d3c8;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+/* WYSIWYG만 사용 */
+.toastui-editor-mode-switch{
+  display:none !important;
+}
+
+/* 첨부파일 목록 */
+.file-list{
+  margin-top:6px;
+  padding:10px;
+  border:1px dashed #d7d3c8;
+  border-radius:10px;
+  background:#faf9f6;
+  max-height:110px;
+  overflow:auto;
+  font-size:13px;
+}
+.file-item{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:4px 0;
+}
+.file-item__name{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.file-item__tag{
+  font-size:12px;
+  color:#6b7b61;
+  flex:0 0 auto;
+}
+
+/* 해시태그 */
+.tag-input-wrap{ position:relative; }
+.tag-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:8px;
+}
+.tag-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#eef1ea;
+  border:1px solid #d7d3c8;
+  font-size:13px;
+  font-weight:700;
+}
+.tag-chip button{
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  font-weight:900;
+  line-height:1;
+}
+.tag-suggest{
+  position:absolute;
+  left:0;
+  right:0;
+  top: calc(100% + 6px);
+  background:#fff;
+  border:1px solid #d7d3c8;
+  border-radius:10px;
+  box-shadow:0 10px 20px rgba(0,0,0,0.06);
+  max-height:220px;
+  overflow:auto;
+  z-index:50;
+}
+.tag-suggest-item{
+  padding:10px 12px;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.tag-suggest-item:hover{ background:#f4f3ee; }
+.tag-suggest-item .muted{
+  color:#777;
+  font-size:12px;
+}
+
+@media (max-width: 767px){
+  .form-row--grid{ grid-template-columns:1fr; }
+}
