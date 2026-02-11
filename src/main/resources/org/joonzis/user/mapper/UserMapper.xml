@@ -23,7 +23,7 @@
 	
 	<!-- 관심사  -->
 	
-	<!-- 1)해시태그 id 조회  -->
+	<!-- 2)해시태그 id 조회  -->
 	<select id="findHashtagIdByName" resultType="int">
 		SELECT hashtag_id
 		FROM TBL_HASHTAG_LIST
@@ -53,6 +53,12 @@
 		user_id = #{user_id} 
 	</delete>
 	
+	<select id="selectAspectNamesByUserId" resultType="string">
+	  SELECT h.hashtag_name
+	  FROM TBL_USER_ASPECT ua
+	  JOIN TBL_HASHTAG_LIST h ON h.hashtag_id = ua.hashtag_id
+	  WHERE ua.user_id = #{user_id}
+	</select>
 	
 	<!-- 데이터 조회  -->
 	<select id="selectLogin" parameterType="org.joonzis.user.vo.UserVO"
