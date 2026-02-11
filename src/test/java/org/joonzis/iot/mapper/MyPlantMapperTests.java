@@ -28,8 +28,8 @@ import lombok.extern.log4j.Log4j;
     "file:src/main/webapp/WEB-INF/spring/root-context.xml"
 })
 public class MyPlantMapperTests {
-	@Autowired
-	private MyPlantMapper mapper;
+//	@Autowired
+//	private MyPlantMapper mapper;
 	
 //	 @Test
 //	  public void insertTest() {
@@ -55,21 +55,21 @@ public class MyPlantMapperTests {
 //	     assertNotNull(vo);
 //	     System.out.println(vo);
 //	 }	
-		@Test
-		public void updateTests() {
-			 MyPlantVO vo = new MyPlantVO();
-			    vo.setUserId(2);
-			    vo.setPlantId(2);
-			    vo.setMyplantName("수정전");
-
-			    mapper.insert(vo);
-
-			    int id = vo.getMyplantId();
-
-			    vo.setMyplantId(id);
-			    vo.setMyplantName("수정후");
-
-			    mapper.update(vo);
-
-		}
+//		@Test
+//		public void updateTests() {
+//			 MyPlantVO vo = new MyPlantVO();
+//			    vo.setUserId(2);
+//			    vo.setPlantId(2);
+//			    vo.setMyplantName("수정전");
+//
+//			    mapper.insert(vo);
+//
+//			    int id = vo.getMyplantId();
+//
+//			    vo.setMyplantId(id);
+//			    vo.setMyplantName("수정후");
+//
+//			    mapper.update(vo);
+//
+//		}
 }

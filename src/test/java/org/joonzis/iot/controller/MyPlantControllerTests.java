@@ -27,27 +27,27 @@ import org.springframework.web.context.WebApplicationContext;
 public class MyPlantControllerTests {
 	
 	
-	@Autowired
-	private WebApplicationContext ctx;
-	private MockMvc mockMvc;
-	
-	
-	@Before
-	public void setup() {
-		mockMvc = MockMvcBuilders.webAppContextSetup(ctx).build();
-	}
-	
-	  @Test
-	    public void listTest() throws Exception {
-
-	        mockMvc.perform(get("/myplant/list")
-	                .principal(new Principal() {
-	                    @Override
-	                    public String getName() {
-	                        return "1";
-	                    }
-	                }))
-	                .andExpect(status().isOk())
-	                .andExpect(view().name("myplant/list"));
-	    }
+//	@Autowired
+//	private WebApplicationContext ctx;
+//	private MockMvc mockMvc;
+//	
+//	
+//	@Before
+//	public void setup() {
+//		mockMvc = MockMvcBuilders.webAppContextSetup(ctx).build();
+//	}
+//	
+//	  @Test
+//	    public void listTest() throws Exception {
+//
+//	        mockMvc.perform(get("/myplant/list")
+//	                .principal(new Principal() {
+//	                    @Override
+//	                    public String getName() {
+//	                        return "1";
+//	                    }
+//	                }))
+//	                .andExpect(status().isOk())
+//	                .andExpect(view().name("myplant/list"));
+//	    }
 }

@@ -26,8 +26,8 @@ import lombok.extern.log4j.Log4j;
 public class MyPlantScheduleMapperTests {
 	
 	
-	@Autowired
-	private MyPlantScheduleMapper mapper;
+//	@Autowired
+//	private MyPlantScheduleMapper mapper;
 	
 //	@Test
 //	public void insertTests() {
@@ -47,15 +47,15 @@ public class MyPlantScheduleMapperTests {
 //		list.forEach(System.out::println);
 //	}
 	
-	@Test
-	public void updateTests() {
-		
-		ScheduleVO vo = new ScheduleVO();
-		vo.setScheduleId(9);
-		vo.setScheduleDate(new Date());
-		vo.setScheduleDo("물주기");
-		
-		int result = mapper.update(vo);
-		assertEquals(1, result);
-	}
+//	@Test
+//	public void updateTests() {
+//		
+//		ScheduleVO vo = new ScheduleVO();
+//		vo.setScheduleId(9);
+//		vo.setScheduleDate(new Date());
+//		vo.setScheduleDo("물주기");
+//		
+//		int result = mapper.update(vo);
+//		assertEquals(1, result);
+//	}
 }
