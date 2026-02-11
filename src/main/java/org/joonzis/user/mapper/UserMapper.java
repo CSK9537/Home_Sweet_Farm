@@ -53,9 +53,6 @@ public interface UserMapper {
 	//이메일 중복 체크
 	public int countByEmail(String email);
 	
-	//전화번호 중복 체크
-	public int countByPhone(String phone);
-	
 	//마케팅수신동의 테스트용 조회
 	public UserVO selectByUsername(String username);
 	
