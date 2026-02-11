@@ -1,29 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-
-<%
-    // ====== 뷰 확인용 더미 데이터 ======
-    java.util.List<java.util.Map<String,Object>> posts = new java.util.ArrayList<>();
-
-    for (int i = 1; i <= 12; i++) {
-        java.util.Map<String,Object> p = new java.util.HashMap<>();
-        p.put("id", i);
-        p.put("title", "게시글 제목 " + i);
-        p.put("writer", "작성자" + i);
-        p.put("date", "2026.01.25");
-        p.put("views", 312 + i);
-        p.put("likes", 312);
-        p.put("comments", 48 - (i % 10));
-        p.put("content", "내용 미리보기입니다. 카드형에서는 이 영역이 조금 더 길게 보이고, 앨범형/리스트형에서는 간략화됩니다.");
-        p.put("img", "https://picsum.photos/seed/community" + i + "/600/400"); // 더미 이미지
-        posts.add(p);
-    }
-    request.setAttribute("posts", posts);
-%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/community/CommunityList.css" />
-
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
+
+<%-- =========================================================
+     게시판 타입 결정
+     - 파라미터 type이 없으면 FREE로 처리
+     - FREE: 자유게시판 / MARKET: 벼룩시장
+   ========================================================= --%>
+<c:set var="boardType" value="${empty param.type ? 'FREE' : param.type}" />
 
 <div class="page-shell">
   <div class="content-wrap">
@@ -32,18 +19,31 @@
       <!-- 상단 타이틀/탭/버튼 -->
       <div class="community__header">
         <div class="community__titleRow">
-          <h2 class="community__title">자유게시판</h2>
+          <h2 class="community__title">
+            <c:choose>
+              <c:when test="${boardType eq 'MARKET'}">벼룩시장</c:when>
+              <c:otherwise>자유게시판</c:otherwise>
+            </c:choose>
+          </h2>
 
-          <a class="community__writeBtn" href="${pageContext.request.contextPath}/community/write">
+          <%-- 글쓰기: 현재 타입 유지 --%>
+          <a class="community__writeBtn"
+             href="${pageContext.request.contextPath}/community/write?type=${boardType}">
             	글쓰기
           </a>
         </div>
 
         <div class="community__subRow">
           <div class="community__tabs" role="tablist" aria-label="게시판 탭">
-            <a class="community__tab is-active" href="#" role="tab" aria-selected="true">자유게시판</a>
+            <a class="community__tab ${boardType ne 'MARKET' ? 'is-active' : ''}"
+               href="${pageContext.request.contextPath}/community/list?type=FREE"
+               role="tab"
+               aria-selected="${boardType ne 'MARKET'}">자유게시판</a>
             <span class="community__tabSep">|</span>
-            <a class="community__tab" href="#" role="tab" aria-selected="false">비움시장</a>
+            <a class="community__tab ${boardType eq 'MARKET' ? 'is-active' : ''}"
+               href="${pageContext.request.contextPath}/community/list?type=MARKET"
+               role="tab"
+               aria-selected="${boardType eq 'MARKET'}">벼룩시장</a>
           </div>
 
           <div class="community__viewBtns" aria-label="보기 방식">
@@ -60,17 +60,67 @@
       <div id="communityList" class="community__list view-card">
 
         <c:forEach var="p" items="${posts}">
-          <a class="postItem" href="${pageContext.request.contextPath}/community/detail?id=${p.id}">
+          <%-- 상세보기: 현재 타입 유지 --%>
+          <a class="postItem"
+             href="${pageContext.request.contextPath}/community/detail?id=${p.id}&type=${boardType}">
+
             <div class="postItem__imgWrap">
-              <img class="postItem__img" src="${p.img}" alt="게시글 썸네일" />
+
+              <%-- 썸네일: 없으면 기본 이미지 --%>
+              <c:choose>
+                <c:when test="${empty p.img}">
+                  <img class="postItem__img"
+                       src="${pageContext.request.contextPath}/resources/image/Default_Plant.jpg"
+                       alt="기본 썸네일" />
+                </c:when>
+                <c:otherwise>
+                  <img class="postItem__img" src="${p.img}" alt="게시글 썸네일" />
+                </c:otherwise>
+              </c:choose>
+
+              <%-- (MARKET일 때만) 거래 상태 배지: 판매/나눔/완료 --%>
+              <c:if test="${boardType eq 'MARKET'}">
+                <c:choose>
+                  <c:when test="${p.status eq 'sell'}">
+                    <span class="marketBadge marketBadge--sell">판매</span>
+                  </c:when>
+                  <c:when test="${p.status eq 'share'}">
+                    <span class="marketBadge marketBadge--share">나눔</span>
+                  </c:when>
+                  <c:otherwise>
+                    <span class="marketBadge marketBadge--done">완료</span>
+                  </c:otherwise>
+                </c:choose>
+              </c:if>
+
               <!-- 앨범형 오버레이 텍스트 -->
               <div class="postItem__overlay">
                 <div class="postItem__overlayTitle">${p.title}</div>
+
+                <%-- (MARKET일 때만) 오버레이 가격 --%>
+                <c:if test="${boardType eq 'MARKET'}">
+                  <div class="marketPrice marketPrice--overlay">
+                    <c:choose>
+                      <c:when test="${p.status eq 'share' || p.price == 0}">
+                        	나눔
+                      </c:when>
+                      <c:when test="${empty p.price}">
+                        <%-- 판매글인데 price가 비어있을 수 있는 상황 방어 --%>
+                        	가격정보없음
+                      </c:when>
+                      <c:otherwise>
+                        <fmt:formatNumber value="${p.price}" pattern="#,###"/>원
+                      </c:otherwise>
+                    </c:choose>
+                  </div>
+                </c:if>
+
                 <div class="postItem__overlayMeta">
                   <span>${p.writer}</span>
                   <span class="sep">|</span>
                   <span>${p.date}</span>
                 </div>
+
                 <div class="postItem__overlayStats">
                   <span>조회수 ${p.views}</span><span class="sep">|</span>
                   <span>좋아요 ${p.likes}</span><span class="sep">|</span>
@@ -81,6 +131,24 @@
 
             <div class="postItem__body">
               <div class="postItem__title">${p.title}</div>
+
+              <%-- (MARKET일 때만) 본문 가격 --%>
+              <c:if test="${boardType eq 'MARKET'}">
+                <div class="marketPrice marketPrice--body">
+                  <c:choose>
+                    <c:when test="${p.status eq 'share' || p.price == 0}">
+                      	나눔
+                    </c:when>
+                    <c:when test="${empty p.price}">
+                      	가격정보없음
+                    </c:when>
+                    <c:otherwise>
+                      <fmt:formatNumber value="${p.price}" pattern="#,###"/>원
+                    </c:otherwise>
+                  </c:choose>
+                </div>
+              </c:if>
+
               <div class="postItem__writer">${p.writer}</div>
 
               <div class="postItem__meta">
@@ -96,6 +164,7 @@
 
               <div class="postItem__content">${p.content}</div>
             </div>
+
           </a>
         </c:forEach>
 
@@ -114,6 +183,8 @@
         </div>
 
         <form class="searchBar" action="${pageContext.request.contextPath}/community/list" method="get">
+          <%-- 검색 시에도 현재 타입 유지 --%>
+          <input type="hidden" name="type" value="${boardType}" />
           <input type="text" name="q" class="searchInput" placeholder="검색어를 입력하세요" />
           <button type="submit" class="searchBtn">검색</button>
         </form>
