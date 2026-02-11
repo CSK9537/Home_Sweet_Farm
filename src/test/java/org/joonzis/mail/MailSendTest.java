@@ -3,6 +3,7 @@ package org.joonzis.mail;
 import javax.mail.internet.MimeMessage;
 
 import org.joonzis.user.mapper.UserMapperTests;
+import org.joonzis.user.service.EmailService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ import lombok.extern.log4j.Log4j;
 @ContextConfiguration("file:src/main/webapp/WEB-INF/spring/root-context.xml")
 public class MailSendTest {
 
-	@Autowired
-	private JavaMailSender mailSender;
+//	@Autowired
+//	private JavaMailSender mailSender;
 	
 //	@Test
 //	public void mailSendTest() {
@@ -38,4 +39,25 @@ public class MailSendTest {
 //		mailSender.send(msg);
 //		log.info("이메일 발송 완료, 확인 바람");
 //	}
+	
+//	@Autowired
+//	EmailService service;
+//	
+//	@Test
+//	public void emailServiceTest() {
+//		String code = service.createRandomNumber();
+//		log.info("랜덤 생성된 코드 :  " + code);
+//		
+//		try {
+//			if(service.sendEmail("jinjin75767@gmail.com", code)) {
+//				log.info("이메일 발송 테스트 성공");
+//			} else {
+//				log.error("이메일 발송 테스트 실패 : 결과값이 false");
+//			}
+//		} catch (Exception e) {
+//			log.error("이메일 발송 테스트 실패 : 예외 발생");
+//			e.printStackTrace();
+//		}
+//	}
+	
 }
