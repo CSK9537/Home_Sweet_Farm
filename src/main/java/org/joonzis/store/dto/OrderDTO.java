@@ -3,6 +3,7 @@ package org.joonzis.store.dto;
 import lombok.Data;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +31,13 @@ public class OrderDTO {
 	private String nickname;
 	
 	private Date order_date;
+	private Timestamp approvedat;
 	private String status;			// 결제 상태
 	private String order_status;	// 주문 상태
 	private int use_point;
 	private int order_amount;
 	private int totalamount;
 	private int accumulate_point;
+	private String delivery_addr;
 	
 }
