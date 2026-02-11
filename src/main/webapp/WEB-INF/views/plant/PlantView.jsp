@@ -78,9 +78,37 @@
           </div>
         </section>
 
+        <!-- ===== 분류 테이블 ===== -->
+        <section class="pv-box" data-section>
+
+          <table class="pv-table" data-section>
+            <tbody>
+              <c:if test="${not empty p.plant_species}">
+                <tr><th>종</th><td><c:out value="${p.plant_species}" /></td></tr>
+              </c:if>
+              <c:if test="${not empty p.plant_genus}">
+                <tr><th>속</th><td><c:out value="${p.plant_genus}" /></td></tr>
+              </c:if>
+              <c:if test="${not empty p.plant_family}">
+                <tr><th>과</th><td><c:out value="${p.plant_family}" /></td></tr>
+              </c:if>
+              <c:if test="${not empty p.plant_order}">
+                <tr><th>목</th><td><c:out value="${p.plant_order}" /></td></tr>
+              </c:if>
+              <c:if test="${not empty p.plant_class}">
+                <tr><th>강</th><td><c:out value="${p.plant_class}" /></td></tr>
+              </c:if>
+              <c:if test="${not empty p.plant_phylum}">
+                <tr><th>문</th><td><c:out value="${p.plant_phylum}" /></td></tr>
+              </c:if>
+            </tbody>
+          </table>
+        </section>
+
         <!-- ===== 아이콘 성격(스펙) 영역: 값 없으면 항목 숨김 ===== -->
         <section class="pv-spec" data-section>
           <div class="pv-spec__grid">
+          
             <c:if test="${not empty p.plant_toxicity}">
               <div class="spec-item">
                 <div class="spec-ico" aria-hidden="true">☣</div>
@@ -105,7 +133,7 @@
               <div class="spec-item">
                 <div class="spec-ico" aria-hidden="true">🌿</div>
                 <div class="spec-txt">
-                  <div class="spec-k">종류</div>
+                  <div class="spec-k">식물 타입</div>
                   <div class="spec-v"><c:out value="${p.plant_type}" /></div>
                 </div>
               </div>
@@ -125,7 +153,7 @@
               <div class="spec-item">
                 <div class="spec-ico" aria-hidden="true">↔</div>
                 <div class="spec-txt">
-                  <div class="spec-k">퍼짐</div>
+                  <div class="spec-k">꼭대기 지름</div>
                   <div class="spec-v"><c:out value="${p.plant_spread}" /></div>
                 </div>
               </div>
@@ -162,38 +190,101 @@
                 </div>
               </div>
             </c:if>
+            
+            <c:if test="${not empty p.plant_stemcolor}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">🌿</div>
+                <div class="spec-txt">
+                  <div class="spec-k">줄기 색</div>
+                  <div class="spec-v"><c:out value="${p.plant_stemcolor}" /></div>
+                </div>
+              </div>
+            </c:if>
+            
+            <c:if test="${not empty p.plant_leafcolor}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">🍃</div>
+                <div class="spec-txt">
+                  <div class="spec-k">잎 색</div>
+                  <div class="spec-v"><c:out value="${p.plant_leafcolor}" /></div>
+                </div>
+              </div>
+            </c:if>
+            
+            <c:if test="${not empty p.plant_leaftype}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">🍃</div>
+                <div class="spec-txt">
+                  <div class="spec-k">잎 종류</div>
+                  <div class="spec-v"><c:out value="${p.plant_leaftype}" /></div>
+                </div>
+              </div>
+            </c:if>
+            
+            <c:if test="${not empty p.plant_flowercolor}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">🌸</div>
+                <div class="spec-txt">
+                  <div class="spec-k">꽃 색 </div>
+                  <div class="spec-v"><c:out value="${p.plant_flowercolor}" /></div>
+                </div>
+              </div>
+            </c:if>
+            
+            <c:if test="${not empty p.plant_flowersize}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">🌸</div>
+                <div class="spec-txt">
+                  <div class="spec-k">꽃 지름</div>
+                  <div class="spec-v"><c:out value="${p.plant_flowersize}" /></div>
+                </div>
+              </div>
+            </c:if>
+            
+            <c:if test="${not empty p.plant_bloomtime}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">🗓</div>
+                <div class="spec-txt">
+                  <div class="spec-k">개화 시기</div>
+                  <div class="spec-v"><c:out value="${p.plant_bloomtime}" /></div>
+                </div>
+              </div>
+            </c:if>
+            
+            <c:if test="${not empty p.plant_fruitcolor}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">🍎</div>
+                <div class="spec-txt">
+                  <div class="spec-k">과일 색</div>
+                  <div class="spec-v"><c:out value="${p.plant_fruitcolor}" /></div>
+                </div>
+              </div>
+            </c:if>
+            
+            <c:if test="${not empty p.plant_harvesttime}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">🗓</div>
+                <div class="spec-txt">
+                  <div class="spec-k">수확 시기</div>
+                  <div class="spec-v"><c:out value="${p.plant_harvesttime}" /></div>
+                </div>
+              </div>
+            </c:if>
+            
+            <c:if test="${not empty p.plant_dormancy}">
+              <div class="spec-item">
+                <div class="spec-ico" aria-hidden="true">🗓</div>
+                <div class="spec-txt">
+                  <div class="spec-k">휴면기</div>
+                  <div class="spec-v"><c:out value="${p.plant_dormancy}" /></div>
+                </div>
+              </div>
+            </c:if>
+            
           </div>
         </section>
 
-        <!-- ===== 분류 테이블 ===== -->
-        <section class="pv-box" data-section>
-          <div class="pv-box__head">
-            <h2 class="pv-h2">학명/분류</h2>
-          </div>
 
-          <table class="pv-table" data-section>
-            <tbody>
-              <c:if test="${not empty p.plant_species}">
-                <tr><th>종</th><td><c:out value="${p.plant_species}" /></td></tr>
-              </c:if>
-              <c:if test="${not empty p.plant_genus}">
-                <tr><th>속</th><td><c:out value="${p.plant_genus}" /></td></tr>
-              </c:if>
-              <c:if test="${not empty p.plant_family}">
-                <tr><th>과</th><td><c:out value="${p.plant_family}" /></td></tr>
-              </c:if>
-              <c:if test="${not empty p.plant_order}">
-                <tr><th>목</th><td><c:out value="${p.plant_order}" /></td></tr>
-              </c:if>
-              <c:if test="${not empty p.plant_class}">
-                <tr><th>강</th><td><c:out value="${p.plant_class}" /></td></tr>
-              </c:if>
-              <c:if test="${not empty p.plant_phylum}">
-                <tr><th>문</th><td><c:out value="${p.plant_phylum}" /></td></tr>
-              </c:if>
-            </tbody>
-          </table>
-        </section>
 
         <!-- ===== 이미지 스트립(여러 장) : plantImages(List<String>) 있으면 사용, 없으면 기본이미지 1장만 ===== -->
         <%-- <section class="pv-box" data-section>
@@ -264,45 +355,6 @@
           </div>
         </section>
 
-        <!-- ===== 특징(색상/꽃/열매 등) ===== -->
-        <section class="pv-box" data-section>
-          <div class="pv-box__head">
-            <h2 class="pv-h2">특성</h2>
-          </div>
-
-          <div class="pv-kvgrid" data-section>
-            <c:if test="${not empty p.plant_stemcolor}">
-              <div class="kv"><div class="k">줄기 색</div><div class="v"><c:out value="${p.plant_stemcolor}" /></div></div>
-            </c:if>
-            <c:if test="${not empty p.plant_leafcolor}">
-              <div class="kv"><div class="k">잎 색</div><div class="v"><c:out value="${p.plant_leafcolor}" /></div></div>
-            </c:if>
-            <c:if test="${not empty p.plant_leaftype}">
-              <div class="kv"><div class="k">잎 종류</div><div class="v"><c:out value="${p.plant_leaftype}" /></div></div>
-            </c:if>
-
-            <c:if test="${not empty p.plant_flowercolor}">
-              <div class="kv"><div class="k">꽃 색</div><div class="v"><c:out value="${p.plant_flowercolor}" /></div></div>
-            </c:if>
-            <c:if test="${not empty p.plant_flowersize}">
-              <div class="kv"><div class="k">꽃 지름</div><div class="v"><c:out value="${p.plant_flowersize}" /></div></div>
-            </c:if>
-            <c:if test="${not empty p.plant_bloomtime}">
-              <div class="kv"><div class="k">개화 시기</div><div class="v"><c:out value="${p.plant_bloomtime}" /></div></div>
-            </c:if>
-
-            <c:if test="${not empty p.plant_fruitcolor}">
-              <div class="kv"><div class="k">과일 색</div><div class="v"><c:out value="${p.plant_fruitcolor}" /></div></div>
-            </c:if>
-            <c:if test="${not empty p.plant_harvesttime}">
-              <div class="kv"><div class="k">수확 시기</div><div class="v"><c:out value="${p.plant_harvesttime}" /></div></div>
-            </c:if>
-
-            <c:if test="${not empty p.plant_dormancy}">
-              <div class="kv"><div class="k">휴면</div><div class="v"><c:out value="${p.plant_dormancy}" /></div></div>
-            </c:if>
-          </div>
-        </section>
 
         <!-- ===== 추천/연관 식물(있을 때만) : similarPlants(List<PlantVO>) 가정 ===== -->
         <c:if test="${not empty similarPlants}">

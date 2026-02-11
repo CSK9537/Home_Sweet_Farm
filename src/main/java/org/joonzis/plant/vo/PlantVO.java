@@ -36,7 +36,7 @@ public class PlantVO {
 	private String plant_toxicity;
 	// 수명
 	private String plant_lifespan;
-	// 종류
+	// 종류(식물 타입)
 	private String plant_type;
 	// 식물 높이
 	private String plant_height;
