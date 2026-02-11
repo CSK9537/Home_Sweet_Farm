@@ -23,7 +23,7 @@
 	
 	<!-- 관심사  -->
 	
-	<!-- 2)해시태그 id 조회  -->
+	<!-- 1)해시태그 id 조회  -->
 	<select id="findHashtagIdByName" resultType="int">
 		SELECT hashtag_id
 		FROM TBL_HASHTAG_LIST
