@@ -62,7 +62,7 @@
 }
 
 /* 하단: 4열 (초기 8개면 2줄) */
-.plant-grid--rank {
+.plant-grid--random {
   grid-template-columns: repeat(4, 1fr);
 }
 
@@ -245,7 +245,7 @@
   .plant-grid--top3 {
     grid-template-columns: repeat(2, 1fr);
   }
-  .plant-grid--rank {
+  .plant-grid--random {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -254,7 +254,7 @@
   .plant-grid--top3 {
     grid-template-columns: repeat(1, 1fr);
   }
-  .plant-grid--rank {
+  .plant-grid--random {
     grid-template-columns: repeat(2, 1fr);
   }
 }

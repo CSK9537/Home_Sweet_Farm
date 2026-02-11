@@ -1,6 +1,9 @@
 package org.joonzis.plant.controller;
 
+import java.util.List;
+
 import org.joonzis.plant.service.PlantService;
+import org.joonzis.plant.vo.PlantVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -26,9 +29,32 @@ public class PlantController {
 	// 식물 메인 페이지
 	@RequestMapping("")
 	public String plantMain(Model model) {
-		// 등수 지정(plantListByRank(rank))
-		model.addAttribute("popularPlants", pservice.plantListByRank(15));
+		// 3등까지 가져오기(plantListByRank(rank))
+		model.addAttribute("popularPlants", pservice.plantListByRank(3));
+		// rank등수 제외, 총 리스트 수 : total, 처음 호출할 갯수 : index
+		model.addAttribute("randomPlants", pservice.plantListByRandom(3, 72, 12));
 		return "plant/PlantMain";
+	}
+	
+	// 식물 메인 페이지 추가 목록
+	@ResponseBody
+	@GetMapping("/more")
+	public List<PlantVO> randomPlants() {
+		//(호출 1회 가져올 갯수 : num)
+		return pservice.plantListByRandomPlus(12);
+	}
+	
+	// 식물 이미지 출력
+	@ResponseBody
+	@GetMapping("/image/{plant_image:.+}")
+	public ResponseEntity<Resource> showImage(@PathVariable("plant_image") String plant_image) {
+		String[] paths = plant_image.split("_");
+		String path = "\\\\" + paths[0] + "\\" + paths[1] + "\\" + paths[2] + "." + paths[3];
+		Resource resource = new FileSystemResource(path);
+		if (!resource.exists()) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(resource);
 	}
 	
 	// 백과사전 상세 페이지
@@ -46,18 +72,5 @@ public class PlantController {
 		model.addAttribute("plant_image", pservice.plantInfo(plant_name).getPlant_image());
 		model.addAttribute("guideInfo", pservice.guideInfo(plant_name));
 		return "plant/GuideView";
-	}
-	
-	// 식물 이미지 출력
-	@ResponseBody
-	@GetMapping("/image/{plant_image:.+}")
-	public ResponseEntity<Resource> showImage(@PathVariable("plant_image") String plant_image) {
-		String[] paths = plant_image.split("_");
-		String path = "\\\\" + paths[0] + "\\" + paths[1] + "\\" + paths[2] + "." + paths[3];
-		Resource resource = new FileSystemResource(path);
-		if (!resource.exists()) {
-			return ResponseEntity.notFound().build();
-		}
-		return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(resource);
 	}
 }
