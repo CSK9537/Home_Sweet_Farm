@@ -255,7 +255,31 @@
     });
   }
 
-  
+
+document.querySelector("#userId").addEventListener('input', (e)=>{
+	let target = e.target.value;
+	
+	// 아이디 중복 체크
+    fetch(getCpath() + "/checkId?username=" + encodeURIComponent(target))
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP" + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        if (data.duplicate) {
+          console.log("이미 존재하는 아이디입니다.");
+          e.target.focus();
+          return;   // ❗ 여기서 완전 종료
+        }
+
+        // ✅ 여기까지 왔으면 전부 통과
+        setActiveStep("verify");
+      })
+      .catch(function (err) {
+      	console.error(err);
+      	console.log("중복 확인 중 서버 오류가 발생했습니다.");
+      });
+});
 //step1 -> step2
   var toVerifyBtn = $("#toVerifyBtn");
   if (toVerifyBtn) {
@@ -273,6 +297,8 @@
         if (userIdEl) userIdEl.focus();
         return;
       }
+      
+      
 
       if (pw.length < 8 || pw.length > 20) {
         alert("비밀번호는 8~20자로 입력해주세요.");
@@ -285,6 +311,8 @@
         if (pw2El) pw2El.focus();
         return;
       }
+      
+
 
       var agreeService = $("#agreeService") ? $("#agreeService").checked : false;
       var agreePrivacy = $("#agreePrivacy") ? $("#agreePrivacy").checked : false;
