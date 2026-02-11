@@ -362,5 +362,4 @@
     </div>
   </div>
 </div>
-
 <script src="${pageContext.request.contextPath}/resources/js/user/JoinUser.js"></script>

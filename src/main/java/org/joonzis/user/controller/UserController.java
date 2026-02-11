@@ -99,15 +99,14 @@ public class UserController {
 	
 	
 	//아이디 중복 체크
-		@GetMapping(value="/checkId", produces = "application/json")
-		@ResponseBody
-		public Map<String, Boolean> 
-		checkId(@RequestParam String username) 
-		{
-		    boolean isDuplicate = 
-		    uservice.isIdDuplicate(username);
-		    return Map.of("duplicate", isDuplicate);
-		}
+	@GetMapping(value="/checkId")
+	@ResponseBody
+	public Map<String, Boolean> checkId(@RequestParam String username){
+	    boolean isDuplicate = uservice.isIdDuplicate(username);
+	    System.out.println(isDuplicate);
+	    
+	    return Map.of("duplicate", isDuplicate);
+	}
 	
 	
 	//1)화면요청용 컨트롤러
