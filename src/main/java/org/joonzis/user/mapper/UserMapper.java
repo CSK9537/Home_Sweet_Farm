@@ -10,8 +10,7 @@ public interface UserMapper {
 	public int insert(UserVO vo);
 	
 	//관심사
-	//1)유저 시퀀스
-	public int getNextUserId();
+	public int findUserIdByUsername(@Param("username")String username);
 	//2)해시태그 id 조회
 	public Integer findHashtagIdByName(@Param("hashtag_name") String hashtag_name);
 	//3)해시태그 테이블 insert
