@@ -24,7 +24,7 @@
       <c:if test="${not empty p}">
         <section class="pv-hero" data-section>
           <div class="pv-hero__left">
-            <div class="pv-breadcrumb">홈 / 식물 / 상세</div>
+            <!-- <div class="pv-breadcrumb">홈 / 식물 / 상세</div> -->
 
             <h1 class="pv-title">
               <c:out value="${p.plant_name_kor}" />

@@ -23,17 +23,22 @@
 				  <c:forEach var="p" items="${popularPlants}" varStatus="st">
 				    <c:if test="${st.count <= 3}">
 				      <article class="plant-card plant-card--top" data-id="${p.plant_id}">
-				        <a class="plant-card__link"
-				           href="/plant/info/${p.plant_name}">
+				        <div class="hover-area-wrapper">
+                          <div class="hover-area hover-area--left" onclick="location.href='/plant/info/${p.plant_name}'"></div>
+                          <div class="hover-area hover-area--right" onclick="location.href='/plant/guide/${p.plant_name}'"></div>
+                        </div>
+				        <div class="plant-card__link">
 				          <div class="plant-card__thumb">
 				            <span class="plant-card__badge plant-card__badge--rank">${st.count}위</span>
 				            <img src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" loading="lazy" />
+				            <span class="text left-text">백과사전</span>
+				            <span class="text right-text">가이드</span>
 				          </div>
 				          <div class="plant-card__body">
 				            <div class="plant-card__name">${p.plant_name_kor}</div>
 				            <div class="plant-card__sub">${p.plant_name}</div>
 				          </div>
-				        </a>
+				        </div>
 				      </article>
 				    </c:if>
 				  </c:forEach>
@@ -44,6 +49,10 @@
 				  <c:forEach var="p" items="${popularPlants}" varStatus="st">
 				    <c:if test="${st.count >= 4 && st.count <= 11}">
 				      <article class="plant-card" data-id="${p.plant_id}">
+				        <div class="hover-area-wrapper">
+                          <div class="hover-area hover-area--left" onclick="location.href='/plant/info/${p.plant_name}'"></div>
+                          <div class="hover-area hover-area--right" onclick="location.href='/plant/guide/${p.plant_name}'"></div>
+                        </div>
 				        <div class="plant-card__link">
 				          <div class="plant-card__thumb">
 				            <img src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" loading="lazy" />
@@ -55,10 +64,6 @@
 				            <div class="plant-card__sub">${p.plant_name}</div>
 				          </div>
 				        </div>
-				        <div class="hover-area-wrapper">
-                          <div class="hover-area hover-area--left"></div>
-                          <div class="hover-area hover-area--right"></div>
-                        </div>
 				      </article>
 				    </c:if>
 				  </c:forEach>

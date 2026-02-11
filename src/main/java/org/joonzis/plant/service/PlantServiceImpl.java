@@ -34,6 +34,7 @@ public class PlantServiceImpl implements PlantService{
 		int plant_id = plantId(plant_name);
 		return pmapper.getPlantInfo(plant_id);
 	}
+	
 	// 관리가이드 DB에서 데이터 출력
 	@Override
 	public GuideVO guideInfo(String plant_name) {
