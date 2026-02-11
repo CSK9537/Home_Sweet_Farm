@@ -1,6 +1,8 @@
 package org.joonzis.user.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -36,21 +38,41 @@ public class UserController {
 		return "user/JoinUser";
 	}
 	
+//	@PostMapping("/JoinUser") 
+//	public String joinProcess(
+//			UserVO vo, 
+//			@RequestParam(value ="aspectNames", required=false)String aspectNames,
+//			@RequestParam("brith_date_js") String brith_date_js) {
+//	    
+//		// yyyy-MM-dd 형식의 문자열을 java.sql.Date로 변환
+//		if (brith_date_js != null && !brith_date_js.isEmpty()) {
+//	        vo.setBrith_date(java.sql.Date.valueOf(brith_date_js));
+//	    }
+//	    uservice.insert(vo, aspectNames);
+//	    
+//	    // ... 서비스 호출
+//	    return "redirect:/user/login";
+//	}
+	
 	@PostMapping("/JoinUser") 
 	public String joinProcess(
 			UserVO vo, 
 			@RequestParam(value ="aspectNames", required=false)String aspectNames,
-			@RequestParam("brith_date_js") String brith_date_js) {
-	    
-		// yyyy-MM-dd 형식의 문자열을 java.sql.Date로 변환
-		if (brith_date_js != null && !brith_date_js.isEmpty()) {
-	        vo.setBrith_date(java.sql.Date.valueOf(brith_date_js));
-	    }
-	    uservice.insert(vo, aspectNames);
-	    
-	    // ... 서비스 호출
-	    return "redirect:/user/login";
+			@RequestParam(value ="brith_date_js", required=false) String brith_date_js, Model model) {
+	    try {
+	    	// yyyy-MM-dd 형식의 문자열을 java.sql.Date로 변환
+			if (brith_date_js != null && !brith_date_js.isEmpty()) {
+		        vo.setBrith_date(java.sql.Date.valueOf(brith_date_js));
+		    }
+			uservice.insert(vo, aspectNames);
+			return "redirect:/user/login";
+		} catch (Exception e) {
+			model.addAttribute("vo", vo);
+			return "user/JoinUser"; //회원가입 화면으로 다시 돌아감
+		}
 	}
+	
+	
 	
 	//3)로그인 화면
 	@GetMapping("/login")
@@ -90,9 +112,18 @@ public class UserController {
 		return "redirect:";
 	}
 	
-	/*
-	 * 아이디&비밀번호 찾기
-	 * */
+	
+	//아이디 중복 체크
+		@GetMapping(value="/checkId", produces = "application/json")
+		@ResponseBody
+		public Map<String, Boolean> 
+		checkId(@RequestParam String username) 
+		{
+		    boolean isDuplicate = 
+		    uservice.isIdDuplicate(username);
+		    return Map.of("duplicate", isDuplicate);
+		}
+	
 	
 	//1)화면요청용 컨트롤러
 		@GetMapping("/findId")

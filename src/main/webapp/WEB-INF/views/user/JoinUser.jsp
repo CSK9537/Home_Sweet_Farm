@@ -40,7 +40,9 @@
               	회원정보
             </button>
           </div>
-
+			<c:if test="${not empty error}">
+				  <div style="color:red; margin-bottom:10px;">${error}</div>
+			</c:if>
           <!-- STEP 1: 계정 정보 -->
           <section class="step-panel is-active" id="step-account" data-step="account" aria-label="계정 정보">
             <form id="accountForm" autocomplete="off">
