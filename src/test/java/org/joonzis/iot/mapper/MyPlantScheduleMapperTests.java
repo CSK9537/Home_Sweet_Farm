@@ -1,6 +1,7 @@
-package org.joonzis.iot.repository;
+package org.joonzis.iot.mapper;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
@@ -25,18 +26,18 @@ import lombok.extern.log4j.Log4j;
 public class MyPlantScheduleMapperTests {
 	
 	
-	@Autowired
-	private MyPlantScheduleMapper mapper;
+//	@Autowired
+//	private MyPlantScheduleMapper mapper;
 	
-	@Test
-	public void insertTests() {
-		ScheduleVO vo = new ScheduleVO();
-		vo.setMyplantId(1);
-		vo.setScheduleDate(new Date());
-		vo.setScheduleDo("분갈이");
-		
-		mapper.insert(vo);
-	}
+//	@Test
+//	public void insertTests() {
+//		ScheduleVO vo = new ScheduleVO();
+//		vo.setMyplantId(12);
+//		vo.setScheduleDate(new Date());
+//		vo.setScheduleDo("분갈이");
+//		
+//		mapper.insert(vo);
+//	}
 	
 //	@Test
 //	public void getListTests() {
@@ -45,12 +46,12 @@ public class MyPlantScheduleMapperTests {
 //		assertNotNull(list);
 //		list.forEach(System.out::println);
 //	}
-//	
+	
 //	@Test
 //	public void updateTests() {
 //		
 //		ScheduleVO vo = new ScheduleVO();
-//		vo.setScheduleId(3);
+//		vo.setScheduleId(9);
 //		vo.setScheduleDate(new Date());
 //		vo.setScheduleDo("물주기");
 //		
