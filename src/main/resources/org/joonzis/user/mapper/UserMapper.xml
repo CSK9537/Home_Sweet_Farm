@@ -4,12 +4,6 @@
 
 <mapper namespace="org.joonzis.user.mapper.UserMapper">
 	
-	<insert id="insertUser" parameterType="org.joonzis.user.vo.UserVO">
-		<selectKey keyProperty="user_id" resultType="int" order="BEFORE">
-			SELECT USER_ID_SEQ.NEXTVAL FROM DUAL
-		</selectKey>
-	</insert>
-	
 	<!-- 회원가입  -->
 	<insert id="insert" parameterType="org.joonzis.user.vo.UserVO">
 		INSERT INTO TBL_USER
@@ -22,11 +16,12 @@
 			  #{confirm_service}, #{confirm_userinfo}, #{confirm_event})
 	</insert>
 	
-	<!-- 관심사  -->
-	<!-- 1)유저 시퀀스  -->
-	<select id="getNextUserId" resultType="int">
-	  SELECT USER_ID_SEQ.NEXTVAL FROM dual
+	<!-- user-id 조회  -->
+	<select id="findUserIdByUsername" resultType="int">
+	  SELECT user_id FROM TBL_USER WHERE username = #{username}
 	</select>
+	
+	<!-- 관심사  -->
 	
 	<!-- 2)해시태그 id 조회  -->
 	<select id="findHashtagIdByName" resultType="int">
@@ -58,6 +53,12 @@
 		user_id = #{user_id} 
 	</delete>
 	
+	<select id="selectAspectNamesByUserId" resultType="string">
+	  SELECT h.hashtag_name
+	  FROM TBL_USER_ASPECT ua
+	  JOIN TBL_HASHTAG_LIST h ON h.hashtag_id = ua.hashtag_id
+	  WHERE ua.user_id = #{user_id}
+	</select>
 	
 	
 	<!-- 데이터 조회  -->

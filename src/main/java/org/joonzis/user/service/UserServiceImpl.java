@@ -34,11 +34,11 @@ public class UserServiceImpl implements UserService{
 		//confirm_event: 0(미동의), 1(동의)
 		vo.setConfirm_event(vo.getConfirm_event() == 1? 1 : 0);
 		
-		//user_id 미리 채우기
-		int newUserId = usermapper.getNextUserId();
-						vo.setUser_id(newUserId);
 		//4)DB insert
 		int result = usermapper.insert(vo);
+		
+		int newUserId = usermapper.findUserIdByUsername(vo.getUsername());
+		
 		
 		if(result != 1) {
 			throw new IllegalStateException("회원가입 실패");
@@ -53,11 +53,12 @@ public class UserServiceImpl implements UserService{
 				if(name.isEmpty())
 				continue;
 				Integer hashtagId = usermapper.findHashtagIdByName(name);
+				
 				if(hashtagId == null) {
 					usermapper.insertHashtag(name);
 				hashtagId = usermapper.findHashtagIdByName(name);
 				}
-		//중간 테이블(insert)
+		//관심사 (중간 테이블)insert
 		usermapper.insertUserAspect(newUserId, hashtagId);
 		}
 	}
