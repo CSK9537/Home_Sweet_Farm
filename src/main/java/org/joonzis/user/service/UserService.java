@@ -1,13 +1,16 @@
 package org.joonzis.user.service;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
 	
 	//데이터 넣기(회원가입)
-	public void insert(UserVO vo);
+	public void insert(UserVO vo, String aspectNames);
 	//데이터 조회
 	public  UserVO selectLogin(int user_id);
 	//로그인
@@ -31,6 +34,7 @@ public interface UserService {
 	public boolean isIdDuplicate(String username);
 	
 	public int countByUsername(String username);
+	
 	
 	//공개형 프로필
 	//1) 닉네임, 프로필, 회원등급, 자기소개

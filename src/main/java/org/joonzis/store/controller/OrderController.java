@@ -2,36 +2,23 @@ package org.joonzis.store.controller;
 
 import java.util.List;
 
-import org.joonzis.store.dto.OrderDTO;
-import org.joonzis.store.dto.OrderWrapper;
-import org.joonzis.store.service.OrderService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import javax.servlet.http.HttpSession;
 
 import org.joonzis.store.dto.OrderDTO;
 import org.joonzis.store.dto.OrderWrapper;
 import org.joonzis.store.service.OrderService;
+import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.extern.log4j.Log4j;
 
 @Log4j
@@ -43,9 +30,13 @@ public class OrderController {
 	
 	// 주문 내역 추가
 	@PostMapping(
-			value = "/add/{user_id}",
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> addOrder(@RequestBody OrderWrapper oWrapper){
+			value = "/add",
+			produces = "text/plain;charset=UTF-8")
+	public ResponseEntity<String> addOrder(
+			@RequestBody OrderWrapper oWrapper,
+			HttpSession session){
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
+		if(oWrapper.getUser_id() == 0) oWrapper.setUser_id(user_id);
 		try {
 			oService.addOrder(oWrapper);
 			return new ResponseEntity<String>("success",HttpStatus.OK);
@@ -65,16 +56,17 @@ public class OrderController {
 	
 	// 유저의 주문 내역 리스트 조회
 	@GetMapping(
-			value = "/getList/user_id/{user_id}}",
+			value = "/getList",
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<OrderDTO>> getOrderListByUserId(@PathVariable("user_id")int user_id){
+	public ResponseEntity<List<OrderDTO>> getOrderListByUserId(HttpSession session){
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		List<OrderDTO> list = oService.getOrderListByUserId(user_id);
 		return new ResponseEntity<List<OrderDTO>>(list,HttpStatus.OK);
 	}
 	
 	// 상품 기준 주문 내역 리스트 조회
 	@GetMapping(
-			value = "/getList/product_id/{product_id}}",
+			value = "/getList/product_id/{product_id}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<OrderDTO>> getOrderListByProductId(@PathVariable("product_id")int product_id){
 		List<OrderDTO> list = oService.getOrderListByProductId(product_id);

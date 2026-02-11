@@ -1,6 +1,8 @@
 package org.joonzis.iot.controller;
 
 
+import java.security.Principal;
+
 import org.joonzis.iot.service.MyPlantService;
 import org.joonzis.iot.vo.MyPlantVO;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,50 +25,50 @@ public class MyPlantController {
     // 메인 화면
     @GetMapping("/main")
     public String main(Model model,
-                       @AuthenticationPrincipal User user) {
-
-        int userId = Integer.parseInt(user.getUsername());
+                       Principal principal) {
+    	int userId = 50;
+        // int userId = Integer.parseInt(principal.getName());
 
         model.addAttribute(
             "myPlants",
             myPlantService.getMyPlantMainList(userId)
         );
 
-        return "MyPlant/MyPlantMain";
+        return "myplant/main";
     }
 
     // 목록
     @GetMapping("/list")
     public String list(Model model,
-                       @AuthenticationPrincipal User user) {
+                       Principal principal) {
 
-        int userId = Integer.parseInt(user.getUsername());
+        int userId = Integer.parseInt(principal.getName());
         model.addAttribute("list", myPlantService.getList(userId));
-        return "myplant/list";
+        return "myplant/main";
     }
 
     // 등록
     @PostMapping("/register")
     public String register(MyPlantVO vo,
-                           @AuthenticationPrincipal User user) {
+    		Principal principal) {
 
-        vo.setUserId(Integer.parseInt(user.getUsername()));
+        vo.setUserId(Integer.parseInt(principal.getName()));
         myPlantService.register(vo);
-        return "redirect:/myplant/list";
+        return "redirect:/myplant/main";
     }
 
     // 수정
     @PostMapping("/modify")
     public String modify(MyPlantVO vo) {
         myPlantService.modify(vo);
-        return "redirect:/myplant/list";
+        return "redirect:/myplant/main";
     }
 
     // 삭제
     @PostMapping("/remove")
     public String remove(int myplantId) {
         myPlantService.remove(myplantId);
-        return "redirect:/myplant/list";
+        return "redirect:/myplant/main";
     }
 }
 

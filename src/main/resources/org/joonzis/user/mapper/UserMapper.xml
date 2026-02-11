@@ -8,15 +8,51 @@
 	<insert id="insert" parameterType="org.joonzis.user.vo.UserVO">
 		INSERT INTO TBL_USER
 			(user_id, username, password, 
-			nickname, name, email, phone,
-			profile_filename, brith_date, 
+			name, nickname, brith_date, phone, email, address, 
 			confirm_service, confirm_userinfo, confirm_event)
 		VALUES
 			 (USER_ID_SEQ.NEXTVAL, #{username}, #{password},
-			  #{nickname}, #{name}, #{email}, #{phone}, 
-			  #{profile_filename}, #{brith_date}, 
+			  #{name}, #{nickname}, #{brith_date}, #{phone}, #{email}, #{address},  
 			  #{confirm_service}, #{confirm_userinfo}, #{confirm_event})
 	</insert>
+	
+	<!-- user-id 조회  -->
+	<select id="findUserIdByUsername" resultType="int">
+	  SELECT user_id FROM TBL_USER WHERE username = #{username}
+	</select>
+	
+	<!-- 관심사  -->
+	
+	<!-- 2)해시태그 id 조회  -->
+	<select id="findHashtagIdByName" resultType="int">
+		SELECT hashtag_id
+		FROM TBL_HASHTAG_LIST
+		WHERE hashtag_name = #{hashtag_name}
+	</select>
+	
+	<!-- 3)해시태그 테이블 insert -->
+	<insert id="insertHashtag" >
+		INSERT INTO TBL_HASHTAG_LIST
+		(hashtag_id, hashtag_name)
+		VALUES(HASHTAG_SEQ.NEXTVAL,
+		#{hashtag_name})
+	</insert>
+	
+	<!-- 4) 관심사 중간 테이블 insert -->
+	<insert id="insertUserAspect" parameterType="map">
+		INSERT INTO TBL_USER_ASPECT
+		(user_id, hashtag_id)
+		VALUES
+		(#{user_id}, #{hashtag_id})
+	</insert>
+	
+	<!-- 5)관심사  중간 테이블 delete  -->
+	<delete id="deleteUserAspect" >
+		DELETE FROM TBL_USER_ASPECT 
+		WHERE
+		user_id = #{user_id} 
+	</delete>
+	
 	
 	<!-- 데이터 조회  -->
 	<select id="selectLogin" parameterType="org.joonzis.user.vo.UserVO"

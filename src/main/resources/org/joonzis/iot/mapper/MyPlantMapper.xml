@@ -2,44 +2,43 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.joonzis.iot.repository.MyPlantMapper">
+<mapper namespace="org.joonzis.iot.mapper.MyPlantMapper">
 
     <!-- 메인 화면 -->
-    <select id="selectMyPlantMainList"
-            parameterType="int"
-            resultType="org.joonzis.iot.dto.MyPlantMainDTO">
-        SELECT
-            mp.myplant_id       AS myplantId,
-            mp.myplant_name     AS myplantName,
-            mp.plant_id         AS plantId,
-            p.plant_name        AS plantName,
-
-            ps.temperature,
-            ps.humidity,
-            ps.illumination,
-            ps.soil_moisture    AS soilMoisture,
-            ps.sensing_time     AS sensingTime
-
-        FROM tbl_myplant mp
-        JOIN tbl_plant p
-          ON mp.plant_id = p.plant_id
-
-        LEFT JOIN tbl_myplant_statistics ps
-          ON ps.myplant_id = mp.myplant_id
-         AND ps.sensing_time = (
-                SELECT MAX(sensing_time)
-                FROM tbl_myplant_statistics
-                WHERE myplant_id = mp.myplant_id
-             )
-
-        WHERE mp.user_id = #{userId}
-        ORDER BY mp.myplant_regdate DESC
-    </select>
+    <select id="selectMyPlantMainList" parameterType="int" resultType="org.joonzis.iot.dto.MyPlantMainDTO">
+       SELECT
+		    mp.myplant_id       AS myplantId,
+		    mp.myplant_name     AS myplantName,
+		    mp.plant_id         AS plantId,
+		    p.plant_name        AS plantName,
+		    ps.temperature,
+		    ps.humidity,
+		    ps.illumination,
+		    ps.soil_moisture    AS soilMoisture,
+		    ps.sensing_time     AS sensingTime
+		FROM tbl_myplant mp
+		JOIN tbl_plant p
+		  ON mp.plant_id = p.plant_id
+		
+		LEFT JOIN (
+		    SELECT s.*
+		    FROM tbl_myplant_statistics s
+		    JOIN (
+		        SELECT myplant_id, MAX(sensing_time) AS max_time
+		        FROM tbl_myplant_statistics
+		        GROUP BY myplant_id
+		    ) m
+		      ON s.myplant_id = m.myplant_id
+		     AND s.sensing_time = m.max_time
+		) ps
+		  ON ps.myplant_id = mp.myplant_id
+		
+		WHERE mp.user_id = #{userId}
+		ORDER BY mp.myplant_regdate DESC
+	</select>
 
     <!-- CRUD -->
-    <select id="getList"
-            parameterType="int"
-            resultType="org.joonzis.iot.vo.MyPlantVO">
+    <select id="getList" parameterType="int" resultType="org.joonzis.iot.vo.MyPlantVO">
         SELECT
             myplant_id AS myplantId,
             user_id AS userId,
@@ -52,6 +51,9 @@
     </select>
 
     <insert id="insert">
+		<selectKey keyProperty="myplantId" resultType="int" order="BEFORE">
+		    SELECT myplant_seq.NEXTVAL FROM dual
+		</selectKey>
         INSERT INTO tbl_myplant
         (myplant_id, user_id, plant_id, myplant_name, myplant_regdate)
         VALUES

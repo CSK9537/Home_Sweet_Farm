@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.joonzis.iot.mapper.MyPlantScheduleMapper">
+	<resultMap id="ScheduleVO" type="org.joonzis.iot.vo.ScheduleVO">
+	    <result column="schedule_id" property="scheduleId"/>
+	    <result column="myplant_id" property="myplantId"/>
+	    <result column="myplant_schedule_date" property="scheduleDate"/>
+	    <result column="myplant_schedule_do" property="scheduleDo"/>
+	</resultMap>
+
+	<select id="getListByMyPlant" parameterType="int" resultMap="ScheduleVO">
+	
+	    SELECT
+	        schedule_id,
+	        myplant_id,
+	        myplant_schedule_date,
+	        myplant_schedule_do
+	    FROM tbl_myplant_schedule
+	    WHERE myplant_id = #{myplantId}
+	    ORDER BY myplant_schedule_date
+	
+	</select>
+	<insert id="insert" parameterType="org.joonzis.iot.vo.ScheduleVO">
+
+	    INSERT INTO tbl_myplant_schedule (
+	        schedule_id,
+	        myplant_id,
+	        myplant_schedule_date,
+	        myplant_schedule_do
+	    ) VALUES (
+	        schedule_seq.nextval,
+	        #{myplantId},
+	        #{scheduleDate},
+	        #{scheduleDo}
+	    )
+	
+	</insert>
+	<update id="update" parameterType="org.joonzis.iot.vo.ScheduleVO">
+
+	    UPDATE tbl_myplant_schedule
+	    SET
+	        myplant_schedule_date = #{scheduleDate},
+	        myplant_schedule_do   = #{scheduleDo}
+	    WHERE schedule_id = #{scheduleId}
+	</update>
+	<delete id="delete" parameterType="int">
+		DELETE
+	    FROM tbl_myplant_schedule
+	    WHERE schedule_id = #{scheduleId}
+	</delete>
+	
+</mapper>

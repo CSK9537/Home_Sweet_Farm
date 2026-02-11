@@ -43,10 +43,10 @@
       <!-- 우측 플로팅(찜/장바구니) -->
       <div class="store-floating">
         <a class="store-floating__btn store-floating__btn--wish"
-           href="${pageContext.request.contextPath}/store/wish"
+           href="${pageContext.request.contextPath}/store/wishPage"
            title="찜목록">찜목록</a>
         <a class="store-floating__btn store-floating__btn--cart"
-           href="${pageContext.request.contextPath}/store/cart"
+           href="${pageContext.request.contextPath}/store/cartPage"
            title="장바구니">장바구니</a>
       </div>
 
@@ -64,9 +64,6 @@
                    data-href="${pageContext.request.contextPath}/store/product/detail?product_id=${p.product_id}">
                 <div class="product-card__thumb">
                   <c:choose>
-                    <c:when test="${not empty p.saved_name}">
-                      <img src="${pageContext.request.contextPath}/upload/${p.saved_name}" alt="${p.product_name}" />
-                    </c:when>
                     <c:when test="${not empty p.thumbnail}">
                       <img src="${pageContext.request.contextPath}/upload/${p.thumbnail}" alt="${p.product_name}" />
                     </c:when>
@@ -112,9 +109,6 @@
                    data-href="${pageContext.request.contextPath}/store/product/detail?product_id=${p.product_id}">
                 <div class="product-card__thumb">
                   <c:choose>
-                    <c:when test="${not empty p.saved_name}">
-                      <img src="${pageContext.request.contextPath}/upload/${p.saved_name}" alt="${p.product_name}" />
-                    </c:when>
                     <c:when test="${not empty p.thumbnail}">
                       <img src="${pageContext.request.contextPath}/upload/${p.thumbnail}" alt="${p.product_name}" />
                     </c:when>

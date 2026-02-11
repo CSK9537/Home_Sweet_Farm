@@ -6,7 +6,7 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/plant/GuideView.css" />
 
-<c:set var="g" value="${guide}" />
+<c:set var="g" value="${guideInfo}" />
 
 <div class="page-shell">
   <div class="content-wrap">
@@ -17,19 +17,19 @@
         <div class="guide-hero__titlebox">
           <h1 class="guide-hero__title">
             <c:choose>
-              <c:when test="${not empty plantName}">${plantName}</c:when>
+              <c:when test="${not empty plant_name_kor}">${plant_name_kor} 관리 가이드</c:when>
               <c:otherwise>식물 관리 가이드</c:otherwise>
             </c:choose>
           </h1>
 
-          <c:if test="${not empty subtitle}">
-            <p class="guide-hero__subtitle">${subtitle}</p>
+          <c:if test="${not empty plant_name}">
+            <p class="guide-hero__subtitle">${plant_name}</p>
           </c:if>
         </div>
 
-        <c:if test="${not empty heroImageUrl}">
+        <c:if test="${not empty plant_image}">
           <figure class="guide-hero__figure">
-            <img class="guide-hero__img" src="${heroImageUrl}" alt="식물 이미지">
+            <img class="guide-hero__img" src="/plant/image/${plant_image}" alt="${plant_name_kor}">
           </figure>
         </c:if>
       </section>
@@ -129,9 +129,7 @@
 		
 		    <c:if test="${not empty g.guide_watering_content}">
 		      <article class="guide-article">
-		        <p class="guide-text">
-		          ${g.guide_watering_content}
-		        </p>
+		        <p class="guide-text">${g.guide_watering_content}</p>
 		      </article>
 		    </c:if>
 		

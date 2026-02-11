@@ -10,14 +10,8 @@
   <div class="content-wrap">
     <div class="content-card plant-view" id="plantViewRoot">
 
-      <!-- ===== plant 모델 바인딩(plant / plantVO / plantInfo 등 혼용 대비) ===== -->
+      <!-- ===== plant 모델 바인딩  ===== -->
       <c:choose>
-        <c:when test="${not empty plant}">
-          <c:set var="p" value="${plant}" />
-        </c:when>
-        <c:when test="${not empty plantVO}">
-          <c:set var="p" value="${plantVO}" />
-        </c:when>
         <c:when test="${not empty plantInfo}">
           <c:set var="p" value="${plantInfo}" />
         </c:when>
@@ -30,7 +24,7 @@
       <c:if test="${not empty p}">
         <section class="pv-hero" data-section>
           <div class="pv-hero__left">
-            <div class="pv-breadcrumb">홈 / 식물 / 상세</div>
+            <!-- <div class="pv-breadcrumb">홈 / 식물 / 상세</div> -->
 
             <h1 class="pv-title">
               <c:out value="${p.plant_name_kor}" />
@@ -64,7 +58,7 @@
 
           <div class="pv-hero__right" data-section>
             <c:if test="${not empty p.plant_image}">
-              <img class="pv-thumb" src="<c:out value='${p.plant_image}'/>" alt="식물 이미지" loading="lazy" />
+              <img class="pv-thumb" src="/plant/image/${p.plant_image}" alt="식물 이미지" loading="lazy" />
             </c:if>
           </div>
         </section>
@@ -75,7 +69,9 @@
             <div class="pv-cta__title">식물을 키워서 식물을 잘 아신다면?</div>
             <div class="pv-cta__text">같이 키우는 사람들과 팁을 공유하고 관리 기록을 남겨보세요.</div>
             <div class="pv-cta__actions">
-              <a class="btn btn-primary" href="${pageContext.request.contextPath}/community/write?plant_id=${p.plant_id}">
+              <!-- 오류 제거를 위한 href 제거, 커뮤니티 완성시 추가할 것 -->
+              <!-- href="${pageContext.request.contextPath}/community/write?plant_id=${p.plant_id} -->
+              <a class="btn btn-primary">
                 	글 작성하러 가기
               </a>
             </div>
@@ -139,7 +135,7 @@
               <div class="spec-item">
                 <div class="spec-ico" aria-hidden="true">🌡</div>
                 <div class="spec-txt">
-                  <div class="spec-k">이상 온도</div>
+                  <div class="spec-k">이상적인 온도</div>
                   <div class="spec-v">
                     <c:out value="${p.plant_temperature_imin}" />°C ~ <c:out value="${p.plant_temperature_imax}" />°C
                   </div>
@@ -200,7 +196,7 @@
         </section>
 
         <!-- ===== 이미지 스트립(여러 장) : plantImages(List<String>) 있으면 사용, 없으면 기본이미지 1장만 ===== -->
-        <section class="pv-box" data-section>
+        <%-- <section class="pv-box" data-section>
           <div class="pv-box__head">
             <h2 class="pv-h2">이미지</h2>
           </div>
@@ -227,7 +223,7 @@
 
             <button type="button" class="pv-gbtn pv-gbtn--next" aria-label="다음 이미지">›</button>
           </div>
-        </section>
+        </section> --%>
 
         <!-- ===== 문화/가치 섹션: 긴 텍스트(CLOB)들 ===== -->
         <section class="pv-box" data-section>

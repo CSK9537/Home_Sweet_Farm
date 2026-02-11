@@ -80,8 +80,37 @@
 	</insert>
 	
 	<!-- 식물 번호 목록 가져오기 -->
-	<select id="plantIdList" resultType="Integer">
+	<select id="getPlantIdList" resultType="Integer">
 		SELECT plant_id FROM tbl_plant
+	</select>
+	
+	<!-- 식물 목록 가져오기(rank등수 이상) -->
+	<select id="getPlantListByRank" resultType="org.joonzis.plant.vo.PlantVO">
+		<![CDATA[
+			SELECT * FROM (SELECT * FROM tbl_plant ORDER BY plant_searchcount DESC) WHERE ROWNUM <= #{rank}
+		]]>
+	</select>
+	
+	<!-- rank등수 제외 식물 목록 num개 -->
+	<select id="getPlantListByRandom" resultType="org.joonzis.plant.vo.PlantVO">
+		<![CDATA[
+			SELECT * FROM (
+				SELECT * FROM tbl_plant WHERE plant_id NOT IN (
+					SELECT plant_id FROM (
+						SELECT plant_id FROM tbl_plant
+						ORDER BY plant_searchcount DESC
+						)
+					WHERE ROWNUM <= #{rank}
+					)
+				ORDER BY DBMS_RANDOM.VALUE
+				)
+			WHERE ROWNUM <= #{total}
+		]]>
+	</select>
+	
+	<!-- 식물 이름으로 식별번호 가져오기 -->
+	<select id="getPlantId" resultType="Integer">
+		SELECT plant_id FROM tbl_plant WHERE plant_name = #{plant_name}
 	</select>
 	
 	<!-- 식물 정보 출력(plant_id) -->
