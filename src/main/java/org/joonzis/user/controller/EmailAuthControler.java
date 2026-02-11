@@ -1,0 +1,68 @@
+package org.joonzis.user.controller;
+
+import javax.servlet.http.HttpSession;
+
+import org.joonzis.user.service.EmailService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.extern.log4j.Log4j;
+
+@Log4j
+@RestController
+@RequestMapping("/eamil")
+public class EmailAuthControler {
+	@Autowired
+	EmailService emailer;
+	
+	@PostMapping(
+			value = "/send",
+			produces = "text/plain;charset=UTF-8")
+	public ResponseEntity<String> sendEmail(
+			@RequestParam("email") String email,
+			HttpSession session){
+		String code = emailer.createRandomNumber();
+		log.info("생성된 코드 : " + code);
+		log.info("전달 받은 이메일 : " + email);
+		try {
+			if(!emailer.sendEmail(email, code)) throw new RuntimeException("이메일 발송에 실패함");
+			session.setAttribute("code", code);
+			return new ResponseEntity<String>(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PutMapping(
+			value = "/check/{userInput}",
+			produces = "text/plain;charset=UTF-8")
+	public ResponseEntity<String> checkCode(
+			@PathVariable("userInput")String userInput,
+			HttpSession session){
+		String code;
+		try {
+			code = session.getAttribute("code").toString();
+		} catch (NullPointerException e) {
+			log.error(e.getMessage());
+			log.error("세션에 코드가 없음, 올바르지 않는 과정의 요청");
+			return new ResponseEntity<String>("올바르지 않는 요청", HttpStatus.BAD_REQUEST);
+		}
+		if(userInput.equals(code)) {
+			session.setAttribute("emailVerifiedStatus", "true");
+			return new ResponseEntity<String>("verified",HttpStatus.ACCEPTED);			
+		} else {
+			log.info("유저의 입력 : " + userInput);
+			log.info("세션에 저장된 코드 : " + code);
+			return new ResponseEntity<String>("reject", HttpStatus.BAD_REQUEST);
+		}
+	}
+}
