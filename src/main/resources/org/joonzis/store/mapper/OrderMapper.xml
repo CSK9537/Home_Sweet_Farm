@@ -18,7 +18,8 @@
 			#{use_point},
 			#{order_amount},
 			#{totalamount},
-			#{accumulate_point}
+			#{accumulate_point},
+			#{delivery_addr}
 		)
 	</insert>
 	
@@ -28,7 +29,7 @@
 			product_id,
 			product_count
 		)
-		<foreach collection="products" item="product" separator=" UNION ALL ">
+		<foreach collection="list" item="product" separator=" UNION ALL ">
 			SELECT
 				#{product.order_id},
 				#{product.product_id},
@@ -38,11 +39,28 @@
 	</insert>
 	
 	<insert id="insertOrderCard">
-		INSERT INTO tbl_order_card
+		INSERT INTO tbl_order_card(
+			order_id,
+			issuercode,
+			acquirercode,
+			cardnumber,
+			installmentplanmonths,
+			approveno,
+			usercardpoint,
+			cardtype,
+			ownertype
+		)
 		VALUES(
 			#{order_id},
 			#{issuercode},
-			#{acquirercode},
+			<choose>
+				<when test="acquirercode != null">
+					#{acquirercode},
+				</when>
+				<otherwise>
+					#{issuercode},
+				</otherwise>
+			</choose>
 			#{cardnumber},
 			#{installmentplanmonths},
 			#{approveno},
@@ -143,6 +161,7 @@
 		<result property="order_amount" column="order_amount"/>
 		<result property="totalamount" column="totalamount"/>
 		<result property="accumulate_point" column="accumulate_point"/>
+		<result property="delivery_addr" column="delivery_addr"/>
 		<association property="card_info" javaType="org.joonzis.store.dto.OrderCardDTO">
 			<id property="issuercode" column="issuercode"/>
 			<result property="issuer_name" column="issuer_name_kr"/>
@@ -185,4 +204,72 @@
 	<select id="selectOrder" resultType="org.joonzis.store.vo.OrderVO">
 		SELECT * FROM tbl_order WHERE order_id=#{order_id}
 	</select>
+	
+	<insert id="addOrderBeforePay">
+	    INSERT INTO tbl_order(
+	        order_id, 
+	        user_id, 
+	        order_date, 
+	        order_status,
+	        use_point,
+	        order_amount, 
+			<if test="accumulate_point != null">
+		        accumulate_point, 
+			</if>
+	        delivery_addr,
+	        status)
+	    VALUES(
+	        #{order_id},
+	        #{user_id},
+	        SYSDATE,
+	        'CHECKING',
+	        #{use_point},
+	        #{order_amount},
+	        <if test="accumulate_point != null">
+		        #{accumulate_point},
+	        </if>
+	        #{delivery_addr},
+	        'READY'
+	    )
+	</insert>
+	
+	<update id="updateAfterPayByOrderId">
+	    UPDATE tbl_order
+	    <set>
+	        <if test="paymentkey != null">
+	            paymentkey = #{paymentkey},
+	            type = #{type},
+	            method = #{method},
+	            totalamount = #{totalamount},
+	            approvedat = #{approvedat}, </if>
+	        <choose>
+	            <when test='status == "DONE"'>
+	                order_status = 'CONFIRMED',
+	            </when>
+	            
+	            <when test='status == "WAITING_FOR_DEPOSIT"'>
+	                order_status = 'CHECKING',
+	            </when>
+	
+	            <when test='status == "CANCELED" or 
+	                        status == "PARTIAL_CANCELED" or 
+	                        status == "ABORTED" or 
+	                        status == "EXPIRED"'>
+	                order_status = 'CANCEL',
+	            </when>
+	        </choose>
+	        status = #{status}
+	    </set>
+	    WHERE order_id = #{order_id}
+	</update>
+	
+	<update id="updateCancelOrder">
+		UPDATE tbl_order
+		<set>
+			status='CANCLE'
+		</set>
+		<where>
+			order_id=#{order_id}
+		</where>
+	</update>
 </mapper>
