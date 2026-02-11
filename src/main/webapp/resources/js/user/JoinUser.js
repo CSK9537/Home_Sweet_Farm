@@ -255,7 +255,8 @@
     });
   }
 
-  // step1 -> step2
+  
+//step1 -> step2
   var toVerifyBtn = $("#toVerifyBtn");
   if (toVerifyBtn) {
     toVerifyBtn.addEventListener("click", function () {
