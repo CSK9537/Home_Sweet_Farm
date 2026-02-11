@@ -93,9 +93,9 @@ public class StoreController {
 		log.info("searchProductList - params: " + search);
 		
 		// category_id 파라미터가 들어올 경우 categoryId로 매핑 (하위 호환 및 null 방지)
-		if (search.getCategoryId() == null && old_category_id != null) {
-			search.setCategoryId(old_category_id);
-		}
+//		if (search.getCategoryId() == null && old_category_id != null) {
+//			search.setCategoryId(old_category_id);
+//		}
 		
 		model.addAttribute("products", sService.searchProduct(search));
 		

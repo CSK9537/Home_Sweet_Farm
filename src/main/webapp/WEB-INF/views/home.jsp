@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <%
+    /*
     // --- 임시 더미 가이드 데이터 (뷰 테스트용) ---
     GuideVO dummy = new GuideVO();
     dummy.setPlant_id(1);
@@ -61,6 +62,7 @@
     request.setAttribute("plantName", "오이(테스트)");
     request.setAttribute("subtitle", "뷰 단독 확인용 더미 데이터");
     request.setAttribute("heroImageUrl", request.getContextPath() + "/resources/images/sample.jpg");
+    */
 %>
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/community/CommunityList.css" />
@@ -95,7 +97,7 @@
             <p class="guide-text">${g.guide_caretip}</p>
           </article>
         </section>
-      </c:if>
+      <%-- </c:if> --%>
 
 		<!-- 급수 -->
 		<c:if test="${not empty g.guide_watering_schedule 

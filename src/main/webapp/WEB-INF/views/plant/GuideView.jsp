@@ -6,7 +6,7 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/plant/GuideView.css" />
 
-<c:set var="g" value="${guide}" />
+<c:set var="g" value="${guideInfo}" />
 
 <div class="page-shell">
   <div class="content-wrap">

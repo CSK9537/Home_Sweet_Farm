@@ -1,5 +1,7 @@
 package org.joonzis.user.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.user.dto.UserDTO;
@@ -34,17 +36,37 @@ public class UserController {
 		return "user/JoinUser";
 	}
 	
-	//2)회원가입 처리
+//	//2)회원가입 처리
+//	@PostMapping("/JoinUser") 
+//	public String joinProcess(UserVO vo,
+//	@RequestParam(value ="aspectNames", required=false)
+//				String aspectNames, 
+//				@RequestParam("brith_date_js") String brith_date_js) {
+//		System.out.println(brith_date_js);
+//		//uservice.insert(vo, aspectNames);
+//		return "redirect:/user/login";
+//	}
+	
 	@PostMapping("/JoinUser") 
-	public String joinProcess(UserVO vo) {
-		uservice.insert(vo);
-		return "redirect:/";
+	public String joinProcess(
+			UserVO vo, 
+			@RequestParam(value ="aspectNames", required=false)String aspectNames,
+			@RequestParam("brith_date_js") String brith_date_js) {
+	    
+		// yyyy-MM-dd 형식의 문자열을 java.sql.Date로 변환
+		if (brith_date_js != null && !brith_date_js.isEmpty()) {
+	        vo.setBrith_date(java.sql.Date.valueOf(brith_date_js));
+	    }
+	    uservice.insert(vo, aspectNames);
+	    
+	    // ... 서비스 호출
+	    return "redirect:/user/login";
 	}
 	
 	//3)로그인 화면
 	@GetMapping("/login")
 	public String loginForm() {
-		return "/user/login";
+		return "user/login";
 	}
 	
 	//4)로그인 처리
