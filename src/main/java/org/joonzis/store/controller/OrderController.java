@@ -61,7 +61,7 @@ public class OrderController {
 	// 결제 승인 이전
 	@PostMapping(
 			value = "/ready",
-			produces = "text/plain;charset=UTP-8;")
+			produces = "text/plain;charset=UTF-8;")
 	public ResponseEntity<String> readyOrder(
 			HttpSession session,
 			@RequestBody int use_point,
