@@ -183,25 +183,37 @@ body {
 
 /* 검색 박스 */
 .chat-search-box {
-    height: 100px;
+    min-height: 80px;
+    height: auto;
     background-color: #ffffff;
     display: flex;
-    align-items: center;
-    /* 세로 중앙 */
+    flex-direction: column;
     justify-content: center;
-    /* 전체 가로 중앙 */
-    padding: 0 10px;
+    padding: 8px 10px;
     border: 1px solid #ccc;
     box-sizing: border-box;
-    gap: 10px;
-    /* input과 button 사이 간격 */
+    gap: 8px;
 }
 
-.chat-search-box input {
+.search-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-bottom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-nav {
+    display: flex;
+    margin-left: auto;
+}
+
+.search-top input {
     flex: 1;
-    /* 남는 공간 모두 차지 */
-    max-width: 70%;
-    /* 최대 너비 제한 */
     height: 40px;
     padding: 0 10px;
     border: 1px solid #ccc;
@@ -210,20 +222,24 @@ body {
     box-sizing: border-box;
 }
 
-.chat-search-box .btn-search {
-    height: 40px;
-    padding: 0 15px;
-    border: none;
-    background-color: #6B715D;
-    color: #fff;
-    font-weight: bold;
-    border-radius: 8px;
+#searchType {
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 14px;
     cursor: pointer;
 }
 
-.chat-search-box .btn-search:hover {
-    background-color: #505545;
+.search-counter {
+    min-width: 50px;
+    font-size: 13px;
+    color: #666;
 }
+
+
+
 
 /* 채팅 목록 하단 */
 .chat-list-footer {
@@ -260,13 +276,21 @@ body {
 /* 채팅방 상단 영역 */
 .chat-header {
     padding-left: 20px;
-    height: 100px;
+    flex: 0 0 100px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     /* 왼쪽 프로필과 오른쪽 버튼 사이 간격 */
     background-color: #ffffff;
     border-bottom: 1px solid #ccc;
+}
+
+#chat-view {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+    min-height: 0;
 }
 
 .chat-header img {
@@ -294,6 +318,14 @@ body {
     text-align: center;
     /* 중앙 정렬 */
 }
+
+/* 검색어 강조 */
+.highlight-search {
+    background-color: #fff3a0;
+    padding: 0;
+}
+
+
 
 .chat-header .role {
     background-color: red;
@@ -516,9 +548,26 @@ body {
     text-align: right;
 }
 
+/* 새 메세지 */
+.new-msg-btn {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 14px;
+    border: none;
+    border-radius: 20px;
+    background: #333;
+    color: #fff;
+    cursor: pointer;
+    display: none;
+    z-index: 100;
+}
+
+
 /* 하단 입력 + 버튼 */
 .chat-input-container {
-    height: 160px;
+    flex: 0 0 160px;
     display: flex;
     flex-direction: column;
     border-top: 1px solid #ccc;

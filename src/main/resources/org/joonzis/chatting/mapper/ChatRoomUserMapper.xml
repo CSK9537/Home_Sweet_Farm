@@ -2,61 +2,74 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.joonzis.chatting.mapper.ChatRoomUserMapper">
-    <!-- 1. 채팅방 유저 정보 추가 -->
-    
-    <insert id="insert" parameterType="org.joonzis.chatting.vo.ChatRoomUserVO">
-        INSERT INTO tbl_chat_room_user (
-            room_id,
-            user_id,
-            last_read_msg_id,
-            joined_at
-        ) VALUES (
-            #{room_id},
-            #{user_id},
-            #{last_read_msg_id,jdbcType=NUMERIC},
-            CURRENT_TIMESTAMP
-        )
-    </insert>
+<mapper
+	namespace="org.joonzis.chatting.mapper.ChatRoomUserMapper">
+	<!-- 1. 채팅방 유저 정보 추가 -->
 
-    <!-- 2. 마지막 읽은 메시지 ID 업데이트 -->
-    <update id="updateLastReadMsgId">
-        UPDATE tbl_chat_room_user
-        SET last_read_msg_id = #{msg_id}
-        WHERE room_id = #{room_id}
-          AND user_id = #{user_id}
-    </update>
-    
-    <!-- 3. 마지막 읽은 메시지 ID 조회 -->
-    <select id="findLastReadMsgId" resultType="java.lang.Long">
-        SELECT last_read_msg_id
-        FROM tbl_chat_room_user
-        WHERE room_id = #{room_id}
-          AND user_id = #{user_id}
-    </select>
-    
-    <!-- 4. 읽지 않은 메세지 수 세기 -->
-	<select id="countUnread" resultType="java.lang.Integer">
-	    SELECT COUNT(*)
-	    FROM tbl_msg m
-	    JOIN tbl_chat_room_user cru
-	      ON m.room_id = cru.room_id
-	    WHERE cru.user_id = #{user_id}
-	      AND cru.room_id = #{room_id}
-	      AND m.sender_id != #{user_id}
+	<insert id="insert"
+		parameterType="org.joonzis.chatting.vo.ChatRoomUserVO">
+		INSERT INTO tbl_chat_room_user (
+		room_id,
+		user_id,
+		last_read_msg_id,
+		joined_at
+		) VALUES (
+		#{room_id},
+		#{user_id},
+		#{last_read_msg_id,jdbcType=NUMERIC},
+		CURRENT_TIMESTAMP
+		)
+	</insert>
+
+	<!-- 2. 마지막 읽은 메시지 ID 업데이트 -->
+	<update id="updateLastReadMsgId">
+		UPDATE tbl_chat_room_user
+		SET last_read_msg_id =
+		#{msg_id}
+		WHERE room_id = #{room_id}
+		AND user_id = #{user_id}
+	</update>
+
+	<!-- 3. 마지막 읽은 메시지 ID 조회 -->
+	<select id="findLastReadMsgId" resultType="java.lang.Long">
+		SELECT
+		last_read_msg_id
+		FROM tbl_chat_room_user
+		WHERE room_id = #{room_id}
+		AND
+		user_id = #{user_id}
+	</select>
+
+	<!-- 4. 읽지 않은 메세지 수 세기 -->
+	<select id="countUnread" resultType="int">
+		SELECT COUNT(*)
+		FROM tbl_msg m
+		JOIN tbl_chat_room_user cru
+		ON m.room_id =
+		cru.room_id
+		WHERE cru.user_id = #{user_id}
+		AND cru.room_id = #{room_id}
+		AND m.sender_id != #{user_id}
 	      <![CDATA[
 	          AND m.msg_id > NVL(cru.last_read_msg_id, 0)
 	      ]]>
 	</select>
-	
-	
-	
-	
-	
-	
-	<!-- tbl_chat_room_user 데이터 전부 삭제 -->
-	<delete id="deleteAll">
-		DELETE FROM tbl_chat_room_user
-	</delete>
+
+	<!-- 5. 검색으로 유저 조회 -->
+	<select id="searchByUser" parameterType="map"
+		resultType="org.joonzis.chatting.dto.RoomSearchResultDTO">
+		SELECT
+			r.room_id,
+			NULL AS search_msg_id,
+			u.nickname AS otherUserName,
+			u.user_id AS otherUserId
+		FROM tbl_room r
+		JOIN tbl_chat_room_user cru ON cru.room_id = r.room_id
+		JOIN tbl_user u ON u.user_id = cru.user_id
+		WHERE cru.user_id != #{user_id}
+			AND u.nickname LIKE '%' || #{keyword}|| '%'
+	</select>
+
+
 
 </mapper>

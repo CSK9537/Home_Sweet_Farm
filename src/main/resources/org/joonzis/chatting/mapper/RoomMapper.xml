@@ -47,12 +47,4 @@
 	</select>
 	
 	
-	
-	
-	
-	<!-- tbl_room 데이터 전부 삭제 -->
-	<delete id="deleteAll">
-		DELETE FROM tbl_room
-	</delete>
-
 </mapper>

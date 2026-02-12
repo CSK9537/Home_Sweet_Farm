@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatSendDTO {
-	private int sender_id;
-	private int receiver_id;
-	private String content;
+    private Integer roomId;
+    private int senderId;
+    private int receiverId;
+    private String content;
 }

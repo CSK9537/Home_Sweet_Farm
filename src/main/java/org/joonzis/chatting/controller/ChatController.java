@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.chatting.dto.ChatRoomDTO;
+import org.joonzis.chatting.dto.RoomSearchResultDTO;
 import org.joonzis.chatting.service.ChatService;
 import org.joonzis.chatting.vo.MsgVO;
 import org.joonzis.chatting.vo.RoomVO;
@@ -28,25 +29,28 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
+    
     /**
      * 메세지 전송 (텍스트만)
      */
     @PostMapping("/messages")
-    public ResponseEntity<Void> send_message(
+    public ResponseEntity<MsgVO> send_message(
             @RequestParam int receiver_id,
             @RequestParam String content,
+            @RequestParam(required = false)Integer testUser_id,
             HttpSession session
     ) {
-        UserVO login_user = (UserVO) session.getAttribute("loginUser");
-        int sender_id = login_user.getUser_id();
+        int sender_id = getUserId(session, testUser_id);
 
+        
         MsgVO msgVO = new MsgVO();
         msgVO.setSender_id(sender_id);
         msgVO.setContent(content);
         msgVO.setMsg_type("TEXT");
-
-        chatService.sendMessage(sender_id, receiver_id, msgVO);
-        return ResponseEntity.ok().build();
+        
+        MsgVO savedMsg = chatService.sendMessage(sender_id, receiver_id, msgVO);
+        
+        return ResponseEntity.ok(savedMsg);
     }
 
     /**
@@ -59,24 +63,26 @@ public class ChatController {
     	    produces = "application/json; charset=UTF-8"
     	)
     	public List<MsgVO> getMessages(
-    	        @PathVariable int room_id
+    	        @PathVariable int room_id,
+                @RequestParam(required = false)Integer testUser_id,
+                HttpSession session
     	) {
-    	    int user_id = 2;
+    	    int user_id = getUserId(session, testUser_id);
     	    return chatService.getMessages(user_id, room_id);
-    	}
+    }
 
     /**
      * 채팅방 목록 조회
      */
-    @GetMapping(value = "/rooms", produces = "application/json")
-    public List<ChatRoomDTO> getUserRooms(HttpSession session) {
-//        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-//        int user_id = loginUser.getUser_id();
-//
-//        return ResponseEntity.ok(
-//            chatService.getUserRooms(user_id)
-//        );
-        int user_id = 2; // 테스트용 로그인 유저
+    @GetMapping(
+    		value = "/rooms", 
+    		produces = "application/json"
+    )
+    public List<ChatRoomDTO> getUserRooms(
+    		@RequestParam(required = false)Integer testUser_id,
+    		HttpSession session
+    	) {
+        int user_id = getUserId(session, testUser_id);
         return chatService.getUserRooms(user_id);
     }
 
@@ -88,11 +94,10 @@ public class ChatController {
     @PostMapping("/rooms/{room_id}/read")
     public ResponseEntity<Void> readMessage(
             @PathVariable int room_id,
+            @RequestParam(required = false)Integer testUser_id,
             HttpSession session
     ) {
-        UserVO login_user = (UserVO) session.getAttribute("loginUser");
-        int user_id = login_user.getUser_id();
-
+    	int user_id = getUserId(session, testUser_id);
         chatService.readMessage(user_id, room_id);
         return ResponseEntity.ok().build();
     }
@@ -103,26 +108,33 @@ public class ChatController {
     @PostMapping("/rooms")
     public ResponseEntity<Integer> createRoom(
             @RequestParam int target_user_id,
+            @RequestParam(required = false)Integer testUser_id,
             HttpSession session
     ) {
-        UserVO login_user = (UserVO) session.getAttribute("loginUser");
-        int user_id = login_user.getUser_id();
-
+        int user_id = getUserId(session, testUser_id);
         int room_id = chatService.createRoom(user_id, target_user_id);
         return ResponseEntity.ok(room_id);
     }
     
-    /**
-     * 메세지 받기
-     */
-    @GetMapping("/chat/room/{room_id}/messages")
-    @ResponseBody
-    public List<MsgVO> getMessages(
-            @PathVariable int room_id,
-            @RequestParam int user_id) {
-
-        return chatService.getMessages(room_id, user_id);
+    private int getUserId(HttpSession session, Integer testUser_id) {
+    	if(testUser_id != null) return testUser_id;
+    	UserVO login_user = (UserVO) session.getAttribute("login_user");
+    	return login_user != null ? login_user.getUser_id() : 1; // default user_id : 1
     }
+    
+    /**
+     *  채팅방 검색
+     */
+    @GetMapping(value = "/rooms/search", produces = "application/json; charset=UTF-8")
+    public List<RoomSearchResultDTO> searchRooms(
+            @RequestParam int user_id,
+            @RequestParam String keyword,
+            @RequestParam String type) {
+
+            return chatService.searchRooms(user_id, keyword, type);
+    }
+
+    
 }
 
 
