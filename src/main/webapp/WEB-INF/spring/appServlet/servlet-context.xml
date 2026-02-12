@@ -21,10 +21,10 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	
-	<context:component-scan base-package="org.joonzis.controller" />
+	<context:component-scan base-package="org.joonzis.common.controller" />
 	<context:component-scan base-package="org.joonzis.chatting.controller" />
 	<context:component-scan base-package="org.joonzis.chatting.config" />
-	
+
 	<context:component-scan base-package="org.joonzis.iot.controller" />
 	<context:component-scan base-package="org.joonzis.store.controller" />
 	<context:component-scan base-package="org.joonzis.user.controller" />

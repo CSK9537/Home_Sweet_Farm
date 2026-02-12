@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<%@ include file="/WEB-INF/views/layout/header.jsp" %>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/main.css">
 
 <div class="page-shell">
-	<%@ include file="/WEB-INF/views/layout/header.jsp" %>
-	
+  
   <div class="content-wrap">
     <section class="content-card main-content">
 
@@ -13,22 +13,18 @@
       <section class="hero">
         <h2 class="hero__title">
           	Home Sweet Farm 에 어서오세요.<br/>
-          	식물집사로 거듭나기 위한 정보들을 얻어가세요.
+          	식집사로 거듭나기 위한 정보들을 얻어가세요.
         </h2>
 
         <div class="hero__grid">
           <!-- 좌: 이미지 슬라이드 자리 -->
           <article class="hero-slide" aria-label="식물 사진 슬라이드">
             <div class="hero-slide__media">
-              <img class="hero-slide__img" src="${pageContext.request.contextPath}/resources/images/default_plant.jpg" alt="default plant" />
+              <img class="hero-slide__img" id="img1" src="" alt="default plant1" />
+              <img class="hero-slide__img" id="img2" src="" alt="default plant2" />
             </div>
-            <button class="hero-slide__arrow hero-slide__arrow--prev" aria-label="이전 사진">
-			  &#10094;
-			</button>
-			
-			<button class="hero-slide__arrow hero-slide__arrow--next" aria-label="다음 사진">
-			  &#10095;
-			</button>
+            <button class="hero-slide__arrow hero-slide__arrow--prev" aria-label="이전 사진">&#10094;</button>
+            <button class="hero-slide__arrow hero-slide__arrow--next" aria-label="다음 사진">&#10095;</button>
           </article>
 
           <!-- 우: 추천 가이드 이동 -->
@@ -219,5 +215,6 @@
       </section>
     </section>
   </div>
-  <%@ include file="/WEB-INF/views/layout/footer.jsp" %>
 </div>
+<script defer src="${pageContext.request.contextPath}/resources/js/main.js"></script>
+<%@ include file="/WEB-INF/views/layout/footer.jsp" %>

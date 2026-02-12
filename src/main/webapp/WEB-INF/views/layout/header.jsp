@@ -18,7 +18,7 @@
 	
 	    <!-- 데스크탑/태블릿: 로고 / 필터검색 / 로그인 유지 -->
 	    <div class="header__top">
-	      <a class="logo" href="/main" aria-label="Home Sweet Farm">
+	      <a class="logo" href="/" aria-label="Home Sweet Farm">
 	        <span class="logo__text">Home Sweet Farm</span>
 	      </a>
 	

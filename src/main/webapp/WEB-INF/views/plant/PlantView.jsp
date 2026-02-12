@@ -318,9 +318,11 @@
 
         <!-- ===== 문화/가치 섹션: 긴 텍스트(CLOB)들 ===== -->
         <section class="pv-box" data-section>
-          <div class="pv-box__head">
-            <h2 class="pv-h2">문화</h2>
-          </div>
+          <c:if test="${not empty p.plant_culture_symbolism || not empty p.plant_culture_if || not empty p.plant_culture_gu || not empty p.plant_culture_epv || not empty p.plant_culture_ev || not empty p.plant_culture_biv}">
+            <div class="pv-box__head">
+              <h2 class="pv-h2">문화</h2>
+            </div>
+          </c:if>
 
           <div class="pv-article" data-section>
             <c:if test="${not empty p.plant_culture_symbolism}">
