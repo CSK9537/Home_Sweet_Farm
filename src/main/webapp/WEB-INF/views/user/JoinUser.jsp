@@ -50,6 +50,11 @@
                 <label class="form-label" for="userId">아이디</label>
                 <input class="form-input" type="text" id="userId" name="username"
                        placeholder="아이디 입력 (6~20자)" minlength="6" maxlength="20" required />
+                  <!-- 중복확인 버튼 -->
+				  <button type="button" id="checkIdBtn" class="form-btn">중복확인</button>
+				
+				  <!-- 결과 메시지 -->
+				  <p id="idMsg" style="margin-top:6px; font-size:14px;"></p> 
               </div>
 
               <div class="form-col">

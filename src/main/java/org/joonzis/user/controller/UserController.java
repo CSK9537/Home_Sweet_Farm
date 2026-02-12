@@ -1,5 +1,6 @@
 package org.joonzis.user.controller;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.service.UserService;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +40,7 @@ public class UserController {
 		return "user/JoinUser";
 	}
 	
+
 	@PostMapping("/JoinUser") 
 	public String joinProcess(
 			UserVO vo, 
@@ -97,16 +100,28 @@ public class UserController {
 	}
 	
 	
-	//아이디 중복 체크
-	@GetMapping(value="/checkId")
-	@ResponseBody
-	public Map<String, Boolean> checkId(@RequestParam String username){
-	    boolean isDuplicate = uservice.isIdDuplicate(username);
-	    System.out.println(isDuplicate);
-	    
-	    return Map.of("duplicate", isDuplicate);
-	}
+//	//아이디 중복 체크
+//		@GetMapping(value="/checkId", produces = "application/json")
+//		@ResponseBody
+//		public Map<String, Boolean> 
+//		checkId(@RequestParam String username) 
+//		{
+//		    boolean isDuplicate = 
+//		    uservice.isIdDuplicate(username);
+//		    return Map.of("duplicate", isDuplicate);
+//		}
 	
+// ✅ 호출: /user/checkId?username=abc123
+		 @GetMapping(value = "/checkId", produces = MediaType.APPLICATION_JSON_VALUE)
+		 @ResponseBody
+		 public Map<String, Boolean> checkId(@RequestParam("username") String username) {
+		       boolean isDuplicate = uservice.isIdDuplicate(username.trim());
+		       return Collections.singletonMap("duplicate", isDuplicate);
+		    }	
+	
+	
+	
+
 	
 	//1)화면요청용 컨트롤러
 		@GetMapping("/findId")

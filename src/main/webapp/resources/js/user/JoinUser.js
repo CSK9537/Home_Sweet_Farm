@@ -256,50 +256,100 @@
   }
 
 
-document.querySelector("#userId").addEventListener('input', (e)=>{
-	let target = e.target.value;
-	
-	// 아이디 중복 체크
-    fetch(getCpath() + "/checkId?username=" + encodeURIComponent(target))
-      .then(function (res) {
-        if (!res.ok) throw new Error("HTTP" + res.status);
-        return res.json();
-      })
-      .then(function (data) {
-        if (data.duplicate) {
-          console.log("이미 존재하는 아이디입니다.");
-          e.target.focus();
-          return;   // ❗ 여기서 완전 종료
-        }
 
-        // ✅ 여기까지 왔으면 전부 통과
-        setActiveStep("verify");
-      })
-      .catch(function (err) {
-      	console.error(err);
-      	console.log("중복 확인 중 서버 오류가 발생했습니다.");
-      });
+////step1 -> step2
+//  var toVerifyBtn = $("#toVerifyBtn");
+//  if (toVerifyBtn) {
+//    toVerifyBtn.addEventListener("click", function () {
+//      var userIdEl = $("#userId");
+//      var pwEl = $("#userPw");
+//      var pw2El = $("#userPw2");
+//
+//      var userId = userIdEl ? (userIdEl.value || "").replace(/^\s+|\s+$/g, "") : "";
+//      var pw = pwEl ? (pwEl.value || "") : "";
+//      var pw2 = pw2El ? (pw2El.value || "") : "";
+//
+//      if (!userId || userId.length < 6 || userId.length > 20) {
+//        alert("아이디는 6~20자로 입력해주세요.");
+//        if (userIdEl) userIdEl.focus();
+//        return;
+//      }
+//      
+//      
+//
+//      if (pw.length < 8 || pw.length > 20) {
+//        alert("비밀번호는 8~20자로 입력해주세요.");
+//        if (pwEl) pwEl.focus();
+//        return;
+//      }
+//
+//      if (pw !== pw2) {
+//        alert("비밀번호 확인이 일치하지 않습니다.");
+//        if (pw2El) pw2El.focus();
+//        return;
+//      }
+      
+  
+//===== step1 -> step2 (account -> verify) =====
+// 아이디 중복확인
+var checkedOk = (typeof idCheckedOk !== "undefined") ? idCheckedOk : false;
+var checkedId = (typeof lastCheckedId !== "undefined") ? lastCheckedId : "";
+  
+document.querySelector('#checkIdBtn').addEventListener('click', e=>{
+	
+	let val = document.querySelector('#userId').value;
+	
+	fetch(getCpath() + "/checkId?username=" + val)
+		.then(response => {
+			
+			if(!response.ok || response.status != 200){
+				return new Error("에러발생");
+			}
+			
+			return response.json();
+		})
+		.then(data => {
+			let result = data.duplicate;
+			// result -> 아이디가 중복되면 true
+			
+			// false == 사용 가능한 아이디
+			if(!result){
+				checkedOk = !result;
+				checkedId = val;
+			}
+			
+		})
+		.catch(err => console.log(err));
 });
-//step1 -> step2
+
+// 다음 버튼 클릭
   var toVerifyBtn = $("#toVerifyBtn");
   if (toVerifyBtn) {
-    toVerifyBtn.addEventListener("click", function () {
+    toVerifyBtn.addEventListener("click", function (e) {
+      if (e && e.preventDefault) e.preventDefault(); // submit 방지
+
       var userIdEl = $("#userId");
       var pwEl = $("#userPw");
       var pw2El = $("#userPw2");
 
-      var userId = userIdEl ? (userIdEl.value || "").replace(/^\s+|\s+$/g, "") : "";
+      var userId = userIdEl ? (userIdEl.value || "").trim() : "";
       var pw = pwEl ? (pwEl.value || "") : "";
       var pw2 = pw2El ? (pw2El.value || "") : "";
 
+      // 1) 아이디 기본 검증
       if (!userId || userId.length < 6 || userId.length > 20) {
         alert("아이디는 6~20자로 입력해주세요.");
         if (userIdEl) userIdEl.focus();
         return;
       }
-      
-      
 
+      if (!checkedOk || checkedId !== userId) {
+        alert("아이디 중복확인을 먼저 완료해주세요.");
+        if (userIdEl) userIdEl.focus();
+        return;
+      }
+
+      // 3) 비밀번호 검증
       if (pw.length < 8 || pw.length > 20) {
         alert("비밀번호는 8~20자로 입력해주세요.");
         if (pwEl) pwEl.focus();
@@ -311,17 +361,19 @@ document.querySelector("#userId").addEventListener('input', (e)=>{
         if (pw2El) pw2El.focus();
         return;
       }
-      
 
+      // 4) 필수 약관 체크
+      var agreeServiceEl = $("#agreeService");
+      var agreePrivacyEl = $("#agreePrivacy");
+      var agreeService = agreeServiceEl ? agreeServiceEl.checked : false;
+      var agreePrivacy = agreePrivacyEl ? agreePrivacyEl.checked : false;
 
-      var agreeService = $("#agreeService") ? $("#agreeService").checked : false;
-      var agreePrivacy = $("#agreePrivacy") ? $("#agreePrivacy").checked : false;
       if (!agreeService || !agreePrivacy) {
         alert("[필수] 약관 동의가 필요합니다.");
         return;
       }
 
-      // hidden copy (서버에서 최종 검증/해시 처리 필수)
+      // 5) hidden copy
       var hidUserId = $("#hidUserId");
       var hidUserPw = $("#hidUserPw");
       var hidUserPw2 = $("#hidUserPw2");
@@ -332,13 +384,15 @@ document.querySelector("#userId").addEventListener('input', (e)=>{
       if (hidUserId) hidUserId.value = userId;
       if (hidUserPw) hidUserPw.value = pw;
       if (hidUserPw2) hidUserPw2.value = pw2;
-//      if (hidAgreeService) hidAgreeService.value = String(agreeService);
+
       if (hidAgreeService) hidAgreeService.value = agreeService ? "1" : "0";
-//      if (hidAgreePrivacy) hidAgreePrivacy.value = String(agreePrivacy);
       if (hidAgreePrivacy) hidAgreePrivacy.value = agreePrivacy ? "1" : "0";
-//      if (hidAgreeMarketing) hidAgreeMarketing.value = String($("#agreeMarketing") ? $("#agreeMarketing").checked : false);
-      if (hidAgreeMarketing) hidAgreeMarketing.value = ($("#agreeMarketing") && $("#agreeMarketing").checked)? "1" : "0";
-      
+
+      var agreeMarketingEl = $("#agreeMarketing");
+      var agreeMarketing = agreeMarketingEl ? agreeMarketingEl.checked : false;
+      if (hidAgreeMarketing) hidAgreeMarketing.value = agreeMarketing ? "1" : "0";
+
+      // 6) step2 이동
       setActiveStep("verify");
     });
   }
