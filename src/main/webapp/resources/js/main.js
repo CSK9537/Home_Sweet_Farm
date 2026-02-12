@@ -15,4 +15,3 @@ function setPlantImg(){
 }
 
 setPlantImg();
-setInterval(setPlantImg, 3000);

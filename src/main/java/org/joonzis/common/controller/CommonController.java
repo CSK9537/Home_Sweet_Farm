@@ -14,7 +14,6 @@ public class CommonController {
 	}
 	@RequestMapping("/")
 	public String main() {
-		log.info("main page...");
 		return "main";
 	}
 }

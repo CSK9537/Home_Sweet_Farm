@@ -85,5 +85,5 @@
 	</section>
 </div>
 
-<script defer src="${pageContext.request.contextPath}/resources/js/plant/PlantMain.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/plant/PlantMain.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

@@ -218,5 +218,5 @@
   </section>
 </div>
 
-<script defer src="${pageContext.request.contextPath}/resources/js/community/CommunityMain.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/community/CommunityMain.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

@@ -443,6 +443,6 @@
   </div>
 </div>
 
-<script defer src="${pageContext.request.contextPath}/resources/js/GuideView.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/GuideView.js"></script>
 
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />
