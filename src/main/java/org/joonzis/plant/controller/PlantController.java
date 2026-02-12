@@ -2,6 +2,8 @@ package org.joonzis.plant.controller;
 
 import java.util.List;
 
+import javax.servlet.ServletContext;
+
 import org.joonzis.plant.service.PlantService;
 import org.joonzis.plant.vo.PlantVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ import lombok.extern.log4j.Log4j;
 @RequestMapping("/plant")
 public class PlantController {
 	
+	@Autowired
+	private ServletContext servletContext;
 	@Autowired
 	private PlantService pservice;
 	
@@ -49,11 +53,19 @@ public class PlantController {
 	@GetMapping("/image/{plant_image:.+}")
 	public ResponseEntity<Resource> showImage(@PathVariable("plant_image") String plant_image) {
 		String[] paths = plant_image.split("_");
-		String path = "\\\\" + paths[0] + "\\" + paths[1] + "\\" + paths[2] + "\\" + paths[3] + "\\" + paths[4] + "." + paths[5];
-		Resource resource = new FileSystemResource(path);
-		if (!resource.exists()) {
-			return ResponseEntity.notFound().build();
+		String path = "";
+		if(paths.length > 5) {
+			path = "\\\\" + paths[0] + "\\" + paths[1] + "\\" + paths[2] + "\\" + paths[3] + "\\" + paths[4] + "." + paths[5];			
 		}
+		Resource resource = new FileSystemResource(path);
+		if(!resource.exists()) {
+			String defaultPath = servletContext.getRealPath("/resources/image/Default_Plant.jpg");
+		    resource = new FileSystemResource(defaultPath);
+			if (!resource.exists()) {
+				return ResponseEntity.notFound().build();
+			}
+		}
+		
 		return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(resource);
 	}
 	
