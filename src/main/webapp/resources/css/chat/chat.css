@@ -325,7 +325,12 @@ body {
     padding: 0;
 }
 
-
+/* 이미지 */
+.chat-img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+}
 
 .chat-header .role {
     background-color: red;

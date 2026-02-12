@@ -27,6 +27,7 @@ let currentSearchKeyword = "";
 const searchCounter = document.querySelector(".search-counter"); // 검색 데이터 수
 
 let isLoadingMessages = false; // 메시지 로딩 중 플래그
+const fileInput = document.getElementById("fileInput");
 
 // 웹소켓 연결
 function connectWS() {
@@ -85,8 +86,11 @@ function subscribeRoom(room_id) {
             }
 
             appendMessage(data);
-            if (isScrollBottom()) {
-                markAsReadSafe();
+            if (data.sender_id === myUserId) {
+                const container = document.getElementById("messages");
+                requestAnimationFrame(() => {
+                    container.scrollTop = container.scrollHeight;
+                });
             }
         }
     );
@@ -147,9 +151,11 @@ function loadMessages(room_id) {
                 const msg = list[i];
 
                 const date = new Date(msg.created_at);
+                const days = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+                const dayOfWeek = days[date.getDay()];
 
                 const dateStr =
-                    `${date.getFullYear()}년 ${(date.getMonth() + 1).toString().padStart(2, '0')}월 ${date.getDate().toString().padStart(2, '0')}일`;
+                    `${date.getFullYear()}년 ${(date.getMonth() + 1).toString().padStart(2, '0')}월 ${date.getDate().toString().padStart(2, '0')}일 ${dayOfWeek}`;
 
                 const timeStr =
                     `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
@@ -192,29 +198,19 @@ function loadMessages(room_id) {
                 const container = document.getElementById("messages");
 
                 if (jumpMsgId && isSearchJump) {
-
-                    const doJump = () => {
-                        jumpToMessage(jumpMsgId, currentSearchKeyword);
-                    };
-
-                    const target = container.querySelector(`[data-msg_id="${jumpMsgId}"]`);
-
-                    if (target) {
-                        doJump();
-                    } else {
-                        requestAnimationFrame(doJump);
-                    }
-
+                    jumpToMessage(jumpMsgId, currentSearchKeyword);
                     currentSearchIndex = 0;
                     updateSearchCounter();
                     jumpMsgId = null;
                     isSearchJump = false;
                 } else {
-                    // 일반 스크롤
+                    // 일반 메시지 로드 후 맨 아래로
                     container.scrollTop = container.scrollHeight;
                 }
+
                 isLoadingMessages = false;
             });
+
 
         })
         .catch(err => {
@@ -292,7 +288,14 @@ function appendMessage(data) {
     // 메시지 박스
     const box = document.createElement("div");
     box.classList.add("message-box");
-    box.innerText = `[${data.msg_id}] ${data.content}`;
+
+    if (data.msg_type === "TEXT") {
+        box.innerText = data.content;
+    } else if (data.msg_type === "FILE") {
+        box.innerHTML = `<a href="${data.file_path}" target="_blank">${data.original_name}</a>`;
+    } else if (data.msg_type === "IMAGE") {
+        box.innerHTML = `<img src="${data.file_path}" class="chat-img" />`;
+    }
     row.appendChild(box);
 
     // 시간 표시
@@ -301,11 +304,6 @@ function appendMessage(data) {
     time.innerText = timeStr;
     row.appendChild(time);
 
-    /* 스크롤 관련
-     * 현재 스크롤이 맨 아래일 경우에는 메세지가 계속 맨 아래에 붙도록 초기화
-     * 내가 메세지를 보내는 경우에는 예외처리(내가 메세지를 보내면 초기화)
-     * 그 외의 경우에는 스크롤 유지
-     */
     container.appendChild(row);
 
     lastSenderId = data.sender_id;
@@ -322,7 +320,7 @@ function loadChatRooms() {
     fetch(`/chat/rooms?testUser_id=${myUserId}`)
         .then(res => res.json())
         .then(rooms => {
-            console.log("채팅방 데이터:", rooms); 
+            console.log("채팅방 데이터:", rooms);
             chatListContainer.innerHTML = ""; // 기존 내용 초기화
 
             rooms.forEach(room => {
@@ -509,6 +507,13 @@ function updateSearchCounter() {
         `${currentSearchIndex + 1} / ${searchMsgIds.length}`;
 }
 
+// 스크롤 맨 밑으로
+function isScrollBottom() {
+    const container = document.getElementById("messages");
+    if (!container) return false;
+    return container.scrollHeight - container.scrollTop - container.clientHeight < 5;
+}
+
 //------------------------- 클릭 이벤트 --------------------------------------------
 //좌측 채팅 목록 상단 탭
 document.addEventListener('DOMContentLoaded', () => {
@@ -541,13 +546,34 @@ document.addEventListener('DOMContentLoaded', () => {
         tabSearch.classList.remove('active');
         searchBox.style.display = 'none';
 
-
         if (searchInput) searchInput.value = "";
 
         // 채팅방 전체 다시 표시
         document.querySelectorAll(".chat-item").forEach(item => {
-            item.style.display = "flex";
+            item.dataset.jump_msg_id = "";
+            item.dataset.search_msg_ids = "[]";
         });
+
+        // 검색 하이라이트 제거
+        document.querySelectorAll(".highlight-search, .highlight-jump").forEach(el => {
+            const box = el.closest(".message-box");
+            if (box && box.dataset.original) {
+                box.innerText = box.dataset.original;
+                delete box.dataset.original;
+            } else {
+                el.replaceWith(el.innerText); // fallback
+            }
+        });
+
+        // 검색 상태 초기화
+        isSearchMode = false;
+        searchMsgIds = [];
+        currentSearchIndex = -1;
+        currentSearchKeyword = "";
+        jumpMsgId = null;
+        isSearchJump = false;
+
+        updateSearchCounter();
     });
 
     tabSearch.addEventListener('click', () => {
@@ -746,6 +772,31 @@ document.querySelector(".btn-send").addEventListener("click", () => {
     stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(payload));
 
     textarea.value = "";
+});
+
+// 파일 첨부
+fileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("sender_id", myUserId);
+    formData.append("receiver_id", receiverId);
+    formData.append("room_id", currentRoomId);
+
+    fetch("/chat/rooms/upload", {
+        method: "POST",
+        body: formData
+    })
+        .then(res => res.json())
+        .then(data => {
+            // 전송 후 appendMessage 호출 가능
+            appendMessage(data);
+        })
+        .catch(err => console.error("파일 전송 실패", err));
+
+    fileInput.value = ""; // 다음 업로드를 위해 초기화
 });
 
 

@@ -1,18 +1,24 @@
 package org.joonzis.chatting.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.chatting.dto.ChatRoomDTO;
 import org.joonzis.chatting.dto.RoomSearchResultDTO;
 import org.joonzis.chatting.service.ChatService;
+import org.joonzis.chatting.service.MsgService;
 import org.joonzis.chatting.vo.MsgVO;
 import org.joonzis.chatting.vo.RoomVO;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -28,6 +35,10 @@ public class ChatController {
 
     @Autowired
     private ChatService chatService;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private MsgService msgService;
 
     
     /**
@@ -125,7 +136,7 @@ public class ChatController {
             resultId = login_user != null ? login_user.getUser_id() : 1; // default user_id : 1
         }
 
-        // 🔹 로그 추가
+        // 로그 추가
         System.out.println("[DEBUG] 서버에서 사용하는 user_id: " + resultId
                 + ", testUser_id 파라미터: " + testUser_id
                 + ", 세션 login_user: " + session.getAttribute("login_user"));
@@ -145,7 +156,44 @@ public class ChatController {
             return chatService.searchRooms(user_id, keyword, type);
     }
 
-    
+    @PostMapping("/rooms/upload")
+    public ResponseEntity<MsgVO> uploadFile(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam int room_id,
+            @RequestParam(required = false) Integer testUser_id,
+            HttpSession session
+    ) throws IOException {
+
+        // 1️ 업로드 유저
+        int sender_id = getUserId(session, testUser_id);
+
+        // 2️ 파일 저장
+        String savedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String path = "/upload/files/" + savedName; // DB에 저장할 상대 경로
+        File dest = new File("/서버/절대경로" + path); // 실제 서버 절대경로
+        dest.getParentFile().mkdirs(); // 폴더 없으면 생성
+        file.transferTo(dest);
+
+        // 3️ MsgVO 생성
+        MsgVO msg = new MsgVO();
+        msg.setSender_id(sender_id);
+        msg.setRoom_id(room_id);
+        msg.setMsg_type("FILE");
+        msg.setOriginal_name(file.getOriginalFilename());
+        msg.setSaved_name(savedName);
+        msg.setFile_path(path);
+        msg.setCreated_at(new Date());
+
+        // 4️ DB 저장
+        msgService.save(msg);
+
+        // 5️ WebSocket 전송
+        messagingTemplate.convertAndSend("/topic/room." + room_id, msg);
+
+        return ResponseEntity.ok(msg);
+    }
+
+
 }
 
 
