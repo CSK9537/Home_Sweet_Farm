@@ -309,6 +309,7 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 			return response.json();
 		})
 		.then(data => {
+<<<<<<< HEAD
 			let result = data.duplicate; // -> 아이디가 중복되면 true
 			
 			const msgEl = document.querySelector('#idCheckMsg');
@@ -323,6 +324,14 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 				msgEl.innerText = "사용 가능한 아이디입니다.";
 				msgEl.style.color = "green";
 				checkedOk = true;
+=======
+			let result = data.duplicate;
+			// result -> 아이디가 중복되면 true
+			
+			// false == 사용 가능한 아이디
+			if(!result){
+				checkedOk = !result;
+>>>>>>> ae0285ad95f20243cb0ff73629136e0a380eb80a
 				checkedId = val;
 			}
 			
