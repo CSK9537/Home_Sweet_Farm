@@ -309,12 +309,20 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 			return response.json();
 		})
 		.then(data => {
-			let result = data.duplicate;
-			// result -> 아이디가 중복되면 true
+			let result = data.duplicate; // -> 아이디가 중복되면 true
 			
-			// false == 사용 가능한 아이디
-			if(!result){
-				checkedOk = !result;
+			const msgEl = document.querySelector('#idCheckMsg');
+			
+			if(result){
+				//중복일때
+				msgEl.innerText = "아이디가 중복되었습니다.";
+				msgEl.style.color = "red";
+				checkedOk = false;
+			}else{
+				//사용 가능
+				msgEl.innerText = "사용 가능한 아이디입니다.";
+				msgEl.style.color = "green";
+				checkedOk = true;
 				checkedId = val;
 			}
 			
