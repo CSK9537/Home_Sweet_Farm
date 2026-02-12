@@ -137,7 +137,7 @@
 		WHERE phone = #{phone}
 	</select>
 	
-	<!-- 마케팅수신동의 테스트용 조회 -->
+	<!-- 마케팅수신동의 테스트용 조회 --> <!-- 시큐리티에서 유저 정보를 가져올 때도 사용 -->
 	<select id="selectByUsername" parameterType="String" resultType="org.joonzis.user.vo.UserVO">
 		SELECT username, confirm_service, confirm_userinfo, confirm_event 
 		FROM TBL_USER

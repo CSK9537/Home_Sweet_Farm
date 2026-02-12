@@ -5,13 +5,55 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<!-- 1. 시큐리티 처리 시 사용하는 비밀번호 암호화 객체 등록 (현재는 암호화 없이 사용하도록 설정) -->
+	<bean id="passwordEncoder" class="org.springframework.security.crypto.password.NoOpPasswordEncoder" factory-method="getInstance" />
+
+	<!-- 2. DB에서 유저 정보를 가져올 서비스 객체 등록 (우리가 만든 CustomUserDetailsService) -->
+	<bean id="customUserService" class="org.joonzis.security.CustomUserDetailsService" />
+
+	<!-- 권한 계층 설정 -->
+	<bean id="roleHierarchy" class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
+	    <property name="hierarchy">
+	        <value>
+	            ROLE_ADMIN > ROLE_USER
+	            GRADE_EXPERT > GRADE_GOSU
+	            GRADE_GOSU > GRADE_NOMAL
+	        </value>
+	    </property>
+	</bean>
+	
+	<!-- 시큐리티 표현식 핸들러 설정 (계층 구조 반영) -->
+	<bean id="webSecurityExpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler">
+	    <property name="roleHierarchy" ref="roleHierarchy" />
+	</bean>
+	
 	<!-- HTTP 통신 보안 구성 요소 -> 통신에 관한 것들-->
-	<security:http>
-		<security:form-login/>
+	<security:http auto-config="true" use-expressions="true">
+		<!-- 모든 사용자가 모든 경로에 접근 가능하도록 허용 (Permissive Mode) -->
+		<security:intercept-url pattern="/**" access="permitAll" />	<!--모든 요청(경로)을 허용한다는 뜻-->
+		
+		<!-- CSRF 토큰 검사 비활성화 (로그인 403 에러 방지용) -->
+		<security:csrf disabled="true"/> <!-- csrf를 꺼두면 기존의 403이 사라짐 -->
+		
+		<!-- 핸들러 연결 -->
+		<security:expression-handler ref="webSecurityExpressionHandler" />
+
+		<!-- [미래 확장성] 소셜 로그인(OAuth2) 설정 포인트 
+		     나중에 라이브러리(spring-security-oauth2-client) 추가 후 아래 주석을 해제하여 사용하세요.
+		<security:oauth2-login 
+			client-registration-repository-ref="clientRegistrationRepository"
+			authorized-client-service-ref="authorizedClientService">
+		</security:oauth2-login>
+		-->
 	</security:http>
 	
-	<!-- 사용자 인증 관리 -> 로그인, 권한에 관한 것들 -->
+	<!-- 사용자 인증 관리 -> 로그인 및 권한 검증 설정 -->
 	<security:authentication-manager>
+		<!-- 우리가 만든 customUserService를 사용하여 사용자를 인증하도록 설정 -->
+		<security:authentication-provider user-service-ref="customUserService">
+			<!-- 등록한 비밀번호 암호화 객체를 시큐리티에 연결 -->
+			<security:password-encoder ref="passwordEncoder"/>
+		</security:authentication-provider>
 	</security:authentication-manager>
 	
 </beans>

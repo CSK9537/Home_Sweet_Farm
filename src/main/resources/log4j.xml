@@ -9,6 +9,14 @@
 			<param name="ConversionPattern" value="%-5p: %c - %m%n" />
 		</layout>
 	</appender>
+	<!-- log 파일 생성 설정 -->
+<!-- 	<appender name="dailyFile" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="${project.basedir}/../logs/project_error.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss}] [%p] %m%n" />
+		</layout>
+	</appender> -->
 	
 	<!-- Application Loggers -->
 	<logger name="org.joonzis.controller">
@@ -32,10 +40,16 @@
 		<level value="info" />
 	</logger>
 
+	<!-- ProjectErrorController -->	
+	<logger name="org.joonzis.common.error">
+		<level value="warn"/>
+		<appender-ref ref="console"/>
+<!-- 		<appender-ref ref="dailyFile"/>	 -->	
+	</logger>
+
 	<!-- Root Logger -->
 	<root>
 		<priority value="warn" />
 		<appender-ref ref="console" />
 	</root>
-	
 </log4j:configuration>
