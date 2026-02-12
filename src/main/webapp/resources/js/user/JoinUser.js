@@ -254,40 +254,6 @@
       window.location.href = getCpath() + "/login";
     });
   }
-
-
-
-////step1 -> step2
-//  var toVerifyBtn = $("#toVerifyBtn");
-//  if (toVerifyBtn) {
-//    toVerifyBtn.addEventListener("click", function () {
-//      var userIdEl = $("#userId");
-//      var pwEl = $("#userPw");
-//      var pw2El = $("#userPw2");
-//
-//      var userId = userIdEl ? (userIdEl.value || "").replace(/^\s+|\s+$/g, "") : "";
-//      var pw = pwEl ? (pwEl.value || "") : "";
-//      var pw2 = pw2El ? (pw2El.value || "") : "";
-//
-//      if (!userId || userId.length < 6 || userId.length > 20) {
-//        alert("아이디는 6~20자로 입력해주세요.");
-//        if (userIdEl) userIdEl.focus();
-//        return;
-//      }
-//      
-//      
-//
-//      if (pw.length < 8 || pw.length > 20) {
-//        alert("비밀번호는 8~20자로 입력해주세요.");
-//        if (pwEl) pwEl.focus();
-//        return;
-//      }
-//
-//      if (pw !== pw2) {
-//        alert("비밀번호 확인이 일치하지 않습니다.");
-//        if (pw2El) pw2El.focus();
-//        return;
-//      }
       
   
 //===== step1 -> step2 (account -> verify) =====
@@ -309,10 +275,9 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 			return response.json();
 		})
 		.then(data => {
-<<<<<<< HEAD
-			let result = data.duplicate; // -> 아이디가 중복되면 true
-			
 			const msgEl = document.querySelector('#idCheckMsg');
+			let result = data.duplicate;
+			// result -> 아이디가 중복되면 true
 			
 			if(result){
 				//중복일때
@@ -324,14 +289,6 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 				msgEl.innerText = "사용 가능한 아이디입니다.";
 				msgEl.style.color = "green";
 				checkedOk = true;
-=======
-			let result = data.duplicate;
-			// result -> 아이디가 중복되면 true
-			
-			// false == 사용 가능한 아이디
-			if(!result){
-				checkedOk = !result;
->>>>>>> ae0285ad95f20243cb0ff73629136e0a380eb80a
 				checkedId = val;
 			}
 			

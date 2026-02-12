@@ -52,10 +52,8 @@
                        placeholder="아이디 입력 (6~20자)" minlength="6" maxlength="20" required />
                   <!-- 중복확인 버튼 -->
 				  <button type="button" id="checkIdBtn" class="form-btn">중복확인</button>
-<<<<<<< HEAD
+
 				  <span id="idCheckMsg"></span>
-=======
->>>>>>> ae0285ad95f20243cb0ff73629136e0a380eb80a
 				
 				  <!-- 결과 메시지 -->
 				  <p id="idMsg" style="margin-top:6px; font-size:14px;"></p> 
