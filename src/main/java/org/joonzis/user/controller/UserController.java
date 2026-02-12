@@ -68,9 +68,10 @@ public class UserController {
 			model.addAttribute("msg", "로그인 실패");
 			return "user/login";
 		}
-			session.setAttribute("loginUser", vo);
-			return "redirect:/";
-		}
+		session.setAttribute("loginUser", vo);
+		log.error("로그인 성공 - 세션 저장 유저: " + session.getAttribute("loginUser"));
+		return "redirect:/";
+	}
 	
 	//5)로그아웃
 	@GetMapping("/logout")
@@ -157,7 +158,7 @@ public class UserController {
 	//8)공개형 프로필
 	@GetMapping("/profile/{userId}") //url예시: http://localhost:8081/user/profile/65
 	public String publicProfile(@PathVariable int userId, Model model) {
-		UserDTO profile =
+		// UserDTO profile =
 		uservice.selectPublicProfile(userId);
 		return "userTest/publicProfile";
 	}
