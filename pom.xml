@@ -346,6 +346,14 @@
 		    <version>5.0.7.RELEASE</version>
 		</dependency>
 		-->
+		
+	 	<!-- LocalDateTime -->
+		<!-- java.time 타입을 JSON으로 변환/역변환할 수 있게 도와주는 라이브러리 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.12.2</version>
+        </dependency>
 	</dependencies>
 	
     <build>
