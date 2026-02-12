@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@JsonIgnoreProperties
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PaymentDTO {
 	private String paymentKey;
 	private String type;
@@ -30,7 +30,7 @@ public class PaymentDTO {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Getter
-	@JsonIgnoreProperties
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class CancelDTO{
 		private int cancelAmount;
 		private String cancelReason;

@@ -111,4 +111,27 @@ public class StoreController {
 		
 		return "/store/StoreList";
 	}
+	
+	// 결제 성공 페이지 이동
+	@GetMapping("/order/success")
+	public String orderSuccess(
+			@RequestParam String orderId,
+			@RequestParam String paymentKey,
+			@RequestParam int amount,
+			Model model) {
+		model.addAttribute("paymentKey", paymentKey);
+		model.addAttribute("orderId", orderId);
+		model.addAttribute("amount", amount);
+		return "store/success";
+	}
+
+	// 결제 실패 페이지 이동
+	@GetMapping("/order/fail")
+	public String orderFail(Model model, 
+			@RequestParam(value = "code", required = false) String code,
+			@RequestParam(value = "message", required = false) String message) {
+		model.addAttribute("code", code);
+		model.addAttribute("message", message);
+		return "/store/fail";
+	}
 }

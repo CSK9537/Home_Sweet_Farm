@@ -31,7 +31,7 @@
 		)
 		<foreach collection="list" item="product" separator=" UNION ALL ">
 			SELECT
-				#{product.order_id},
+				#{product.order_id, jdbcType=VARCHAR},
 				#{product.product_id},
 				#{product.product_count}
 			FROM DUAL
@@ -84,7 +84,7 @@
 		SET
 			paymentkey = #{paymentkey},
 			type = #{type},
-			method = #{metohd},
+			method = #{method},
 			status = #{status},
 			order_status = #{order_status}
 		WHERE order_id = #{order_id}

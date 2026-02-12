@@ -1,6 +1,7 @@
 package org.joonzis.store.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -10,6 +11,9 @@ import org.joonzis.store.service.OrderService;
 import org.joonzis.store.vo.OrderProductListVO;
 import org.joonzis.store.vo.PaymentInfoVO;
 import org.joonzis.user.vo.UserVO;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,7 +34,7 @@ public class OrderController {
 	@Autowired
 	OrderService oService;
 	
-	// 주문 내역 조회
+	// 특정 주문 내역 조회
 	@GetMapping(
 			value = "/getDetail/{order_id}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
@@ -64,20 +68,26 @@ public class OrderController {
 			produces = "text/plain;charset=UTF-8;")
 	public ResponseEntity<String> readyOrder(
 			HttpSession session,
-			@RequestBody int use_point,
-			@RequestBody int order_amount,
-			@RequestBody Integer accumulate_point,
-			@RequestBody String delivery_addr,
-			@RequestBody List<OrderProductListVO> products
+			@RequestBody Map<String, Object> map
 			){
 //		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		int user_id = 2;
 		
+		int use_point = (int)map.get("use_point");
+		int order_amount = (int)map.get("order_amount");
+		Integer accumulate_point = (Integer)map.get("accumulate_point");
+		String delivery_addr = (String)map.get("delivery_addr");
+		
+		// List<OrderProductListVO> 변환
+		ObjectMapper mapper = new ObjectMapper();
+		List<OrderProductListVO> products = mapper.convertValue(map.get("products"), new TypeReference<List<OrderProductListVO>>() {});
+
 		String order_id = oService.createRandomOrderId(); // UUID 생성
 		try {
 			oService.addOrderBeforePay(order_id, user_id, use_point, order_amount, accumulate_point, delivery_addr, products);
 			return new ResponseEntity<String>(order_id, HttpStatus.OK);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -86,16 +96,22 @@ public class OrderController {
 	@PostMapping(
 			value = "/confirm",
 			produces = "text/plain;charset=UTF-8")
-	public ResponseEntity<String> confirmOrder(
-			@RequestBody String paymentKey,
-			@RequestBody String orderId,
-			@RequestBody int amount){
+	public ResponseEntity<String> confirmOrder(@RequestBody Map<String, Object> map, HttpSession session){
+//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
+		int user_id = 2;
+		String paymentKey = (String)map.get("paymentKey");
+		String orderId = (String)map.get("orderId");
+		int amount = Integer.parseInt(map.get("amount").toString());
+
 		PaymentDTO payment = null;
 		PaymentInfoVO paymentInfo = null;
 		try {
-			payment = oService.confirmPayment(paymentKey, orderId, amount);
+			payment = oService.confirmPayment(paymentKey, orderId, amount, user_id);
+			log.info("payment : "+payment);
+			log.info("card : " + payment.getCard());
 			if(payment.getMethod().equals("카드"))paymentInfo = payment.getCard();
 			else if (payment.getMethod().equals("계좌이체"))paymentInfo = payment.getTransfer();
+			else if (payment.getMethod().equals("간편결제")) paymentInfo =payment.getCard();
 			else throw new RuntimeException("지원하지 않는 결제 방식");
 			
 			oService.AfterPay(
@@ -127,4 +143,5 @@ public class OrderController {
 			return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
 }
