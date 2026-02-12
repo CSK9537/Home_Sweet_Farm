@@ -66,5 +66,33 @@
 		<param-value>/WEB-INF/spring/root-context.xml <!-- 혹시 몰라서 다시 root-context를 읽고 -->
 			/WEB-INF/spring/security-context.xml		<!-- 다음에 시큐리티 context를 읽기 -->
 		</param-value>
-	</context-param>
+	</context-param> -->
+	
+	<!-- Error -->
+	<error-page>
+		<error-code>400</error-code>
+		<location>/error400</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/error403</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/error404</location>
+	</error-page>
+	<error-page>
+		<error-code>405</error-code>
+		<location>/error405</location>
+	</error-page>
+
+	<error-page>
+		<error-code>415</error-code>
+		<location>/error415</location>
+	</error-page>
+
+	<error-page>
+		<error-code>500</error-code>
+		<location>/error500</location>
+	</error-page>
 </web-app>
