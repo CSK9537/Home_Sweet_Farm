@@ -1,13 +1,23 @@
 package org.joonzis.chatting.controller;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.joonzis.chatting.dto.ChatSendDTO;
 import org.joonzis.chatting.service.ChatService;
+import org.joonzis.chatting.service.MsgService;
 import org.joonzis.chatting.vo.MsgVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 @Controller
 public class WebSocketController {
 
@@ -15,24 +25,46 @@ public class WebSocketController {
     private SimpMessagingTemplate messagingTemplate;
     @Autowired
     private ChatService chatService;
+    @Autowired
+    private MsgService msgService;
     
+
+    @GetMapping("/chat")
+    public String chatPage() {
+        return "chat/chat";
+    }
+    
+
 
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(ChatSendDTO dto) {
-        System.out.println("WS HIT");
+
+        if(dto == null) return;
+
         MsgVO msgVO = new MsgVO();
-        msgVO.setSender_id(dto.getSender_id());
         msgVO.setContent(dto.getContent());
 
         MsgVO savedMsg = chatService.sendMessage(
-            dto.getSender_id(),
-            dto.getReceiver_id(),
+            dto.getSenderId(),
+            dto.getReceiverId(),
             msgVO
         );
+        System.out.println("savedMsg = " + savedMsg);
+        Map<String, Object> msgMap = new HashMap<>();
+        msgMap.put("msg_id", savedMsg.getMsg_id());
+        msgMap.put("room_id", savedMsg.getRoom_id());
+        msgMap.put("sender_id", savedMsg.getSender_id());
+        msgMap.put("receiver_id", dto.getReceiverId());
+        msgMap.put("content", savedMsg.getContent());
+        msgMap.put("msg_type", "TEXT");
+        msgMap.put("created_at", savedMsg.getCreated_at());
 
-        messagingTemplate.convertAndSend(
-            "/topic/room." + msgVO.getRoom_id(),
-            savedMsg
-        );
+        messagingTemplate.convertAndSend("/topic/room." + savedMsg.getRoom_id(), msgMap);
+        messagingTemplate.convertAndSend("/topic/user." + dto.getReceiverId(), msgMap);
+        messagingTemplate.convertAndSend("/topic/user." + savedMsg.getSender_id(), msgMap);
     }
+
+
+
+
 }

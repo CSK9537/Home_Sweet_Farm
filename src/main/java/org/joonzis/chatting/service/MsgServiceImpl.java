@@ -12,6 +12,7 @@ import lombok.extern.log4j.Log4j;
 
 @Log4j
 @Service
+@Transactional
 public class MsgServiceImpl implements MsgService{
 
 	@Autowired
@@ -33,15 +34,16 @@ public class MsgServiceImpl implements MsgService{
     public List<MsgVO> findAfterMsgId(int roomId, Long msgId) {
         return msgMapper.findAfterMsgId(roomId, msgId);
     }
+    
+  // 5. 특정 메세지 조회 
+  public MsgVO findById(Long msgId) {
+      return msgMapper.findById(msgId);
+  }
 
 //    // 4. 메세지 삭제
 //    public void deleltMessage(Long msgId) {
 //        // msgMapper.delete(msgId);
 //    }
 
-//    // 5. 특정 메세지 조회 
-//    public MsgVO findMessage(Long msgId) {
-//        // msgMapper.findById(msgId);
-//        return null;
-//    }
+
 }

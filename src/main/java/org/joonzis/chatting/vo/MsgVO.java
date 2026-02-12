@@ -1,6 +1,6 @@
 package org.joonzis.chatting.vo;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +19,6 @@ public class MsgVO {
 	private String original_name;		// 파일 원본명
 	private String saved_name;			// 파일 저장명(UUID)
 	private String file_path;			// 파일 경로
-	private LocalDateTime created_at;	// 작성 시간
-	private char is_active;				// 메세지 활성화/비활성화
+	private Date created_at;	// 작성 시간
+	private String is_active;				// 메세지 활성화/비활성화
 }

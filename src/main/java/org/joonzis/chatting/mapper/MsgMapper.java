@@ -1,8 +1,10 @@
 package org.joonzis.chatting.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
+import org.joonzis.chatting.dto.RoomSearchResultDTO;
 import org.joonzis.chatting.vo.MsgVO;
 
 public interface MsgMapper {
@@ -20,7 +22,10 @@ public interface MsgMapper {
 	
 	// 특정 메세지를 아이디로 조회
 	MsgVO findById(@Param("msg_id") Long msg_id);
-	
+
+	// 메세지로 채팅방 조회
+	List<RoomSearchResultDTO> searchByMessage(Map<String, Object> params);
+
 	void deleteAll();
 }
 
