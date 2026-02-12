@@ -37,5 +37,11 @@
 
 
 
-<script src="${pageContext.request.contextPath}/resources/js/store/cart.js"></script>
+<script src="https://js.tosspayments.com/v2/standard"></script> <!-- 토스 페이먼츠 SDK -->
+<script>
+ const clientKey = "test_ck_eqRGgYO1r5MaN7APmaZprQnN2Eya"; // 테스트용 클라이언트 키
+ const tossPayments = TossPayments(clientKey); // 토스 페이먼츠 초기화
+</script>
+<script src="${pageContext.request.contextPath}/resources/js/store/StoreOrder.js"></script> <!-- 토스 페이먼츠 결제 및 주문 처리 로직 -->
+<script src="${pageContext.request.contextPath}/resources/js/store/cart.js"></script> <!-- 장바구니 로직 -->
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

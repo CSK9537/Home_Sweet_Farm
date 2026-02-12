@@ -29,6 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -139,7 +142,7 @@ public class OrderServiceImpl implements OrderService{
 			log.error("취소는 비즈니스 로직이 따로 존재");
 			return result;
 		}
-		result = oMapper.insertOrder(order);
+		result = oMapper.updateOrder(order);
 		return result;
 	}
 	
@@ -151,9 +154,10 @@ public class OrderServiceImpl implements OrderService{
 		// 주문 정보 저장
 		oMapper.addOrderBeforePay(order_id, user_id, use_point, order_amount, accumulate_point, delivery_addr);
 		// 상품 리스트 저장
+		for (OrderProductListVO product : products) {
+			product.setOrder_id(order_id);
+		}
 		oMapper.insertOrderProductList(products);
-		// 장바구니 지우기
-		wMapper.deleteShoppingCartByUserId(user_id);
 		// 포인트 차감
 		
 		return 1;
@@ -167,12 +171,15 @@ public class OrderServiceImpl implements OrderService{
 		OffsetDateTime odt = OffsetDateTime.parse(approveDat);
 		Timestamp sqlTimestamp = Timestamp.valueOf(odt.toLocalDateTime());
 		// 결제 방법에 따라 데이터 저장(카드, 계좌이체)
-		if(method.equals("카드")) {
+		if(method.equals("카드") || method.equals("간편결제")) {
 			OrderCardVO vo = (OrderCardVO)paymentInfo;
 			vo.setApproveno(sqlTimestamp);
+			vo.setOrder_id(order_id);
 			oMapper.insertOrderCard(vo);
 		} else if(method.equals("계좌이체")) {
-			oMapper.insertOrderTransper((OrderTransperVO)paymentInfo);
+			OrderTransperVO vo = (OrderTransperVO)paymentInfo;
+			vo.setOrder_id(order_id);
+			oMapper.insertOrderTransper(vo);
 		} else {
 			// 가상계좌, 휴대폰, 간편결제, 문화상품권, 도서문화상품권, 게임문화상품권
 			// 예외 발생을 시켜야 rollback이 진행
@@ -240,45 +247,71 @@ public class OrderServiceImpl implements OrderService{
 		return orderId;
 	}
 	@Override
-	public PaymentDTO confirmPayment(String paymentKey, String orderId, int amount) throws Exception {
+	public PaymentDTO confirmPayment(String paymentKey, String orderId, int amount, int user_id) throws Exception {
+		if (secretKey == null || secretKey.contains("${")) {
+			log.error("CRITICAL: secretKey가 정상적으로 로드되지 않았습니다! (값: " + secretKey + ")");
+			throw new Exception("결제 설정 오류: API 키를 불러올 수 없습니다.");
+		}
+		
+		String trimmedKey = secretKey.trim();
+		log.error("인증 시도 중 (Key 길이: " + trimmedKey.length() + ")");
+
+		ObjectMapper bodyMapper = new ObjectMapper();
+		Map<String, Object> bodyMap = new HashMap<>();
+		bodyMap.put("paymentKey", paymentKey);
+		bodyMap.put("orderId", orderId);
+		bodyMap.put("amount", amount);
+		String requestBody = bodyMapper.writeValueAsString(bodyMap);
+
+		log.error("토스 결제 승인 요청 시작 - URL: https://api.tosspayments.com/v1/payments/confirm");
+		log.error("토스 결제 승인 요청 바디: " + requestBody);
+
 		HttpRequest request = HttpRequest.newBuilder()
 			    .uri(URI.create("https://api.tosspayments.com/v1/payments/confirm"))
-	            .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((secretKey + ":").getBytes()))
+	            .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((trimmedKey + ":").getBytes()))
 			    .header("Content-Type", "application/json")
-			    .method("POST", HttpRequest.BodyPublishers.ofString("{\"paymentKey\":\""+ paymentKey 
-			    		+ "\",\"orderId\":\""+ orderId
-			    		+"\",\"amount\":" + amount + "}"))
+			    .method("POST", HttpRequest.BodyPublishers.ofString(requestBody))
 			    .build();
+		
 		HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-		System.out.println(response.body());
+		
+		log.error("토스 결제 승인 응답 상태 코드: " + response.statusCode());
+		log.error("토스 결제 승인 응답 바디: " + response.body());
 		// 결제 승인에 성공했는지, 실패했는지 판단
 		ObjectMapper objMapper = new ObjectMapper();
+		String responseBody = response.body();
+		
 		if(response.statusCode() == 200) {
-			//결제 성공
-			PaymentDTO payment = objMapper.readValue(response.body(), PaymentDTO.class);
+			// 결제 성공
+			PaymentDTO payment = objMapper.readValue(responseBody, PaymentDTO.class);
+			// 장바구니 지우기
+			wMapper.deleteShoppingCartByUserId(user_id);
 			return payment;
 		} else {
-			//결제 실패
+			// 결제 실패
+			log.error("토스 결제 승인 실패 - 상태 코드: " + response.statusCode());
+			log.error("토스 결제 승인 실패 - 응답 바디: " + responseBody);
+			
+			if (responseBody == null || responseBody.trim().isEmpty()) {
+				log.error("토스 서버에서 빈 응답을 반환했습니다.");
+				return null;
+			}
+
 			try {
-				PaymentV2 errorObj = objMapper.readValue(response.body(), PaymentV2.class);
+				PaymentV2 errorObj = objMapper.readValue(responseBody, PaymentV2.class);
 				log.error("에러 코드 : " + errorObj.getError().getCode());
 				log.error("에러 메세지 : " + errorObj.getError().getMessage());
-				// 커스텀 Exception을 만들면 에러 메세지를 Controller로 가져가는 것도 가능할 지도?
-				return null;
 			} catch (Exception e) {
 				try {
-					e.printStackTrace();
-					PaymentV1 erroobj = objMapper.readValue(response.body(), PaymentV1.class);
+					PaymentV1 erroobj = objMapper.readValue(responseBody, PaymentV1.class);
 					log.error("에러 코드 : "+ erroobj.getCode());
 					log.error("에러 메세지 : " + erroobj.getMessage());
-					return null;
 				} catch (Exception e2) {
-					e2.printStackTrace();
-					return null;
+					log.error("에러 JSON 파싱 실패: " + responseBody);
 				}
 			}
+			return null;
 		}
 		
 	}
-	
 }
