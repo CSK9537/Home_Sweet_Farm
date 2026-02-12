@@ -185,7 +185,7 @@ public class ChatController {
         msg.setCreated_at(new Date());
 
         // 4️ DB 저장
-        msgService.save(msg);
+//        msgService.save(msg);
 
         // 5️ WebSocket 전송
         messagingTemplate.convertAndSend("/topic/room." + room_id, msg);

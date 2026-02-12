@@ -442,20 +442,20 @@ function updateRoomListRealtime(msg) {
     chatListContainer.prepend(item);
 }
 
-// 검색 필터
-function updateChatList(filterKeyword = "") {
-    const keyword = filterKeyword.toLowerCase();
-    document.querySelectorAll(".chat-item").forEach(item => {
-        const name = item.querySelector(".name")?.innerText.toLowerCase() || "";
-        const lastMsg = item.querySelector(".last-msg")?.innerText.toLowerCase() || "";
-
-        if (!keyword || name.includes(keyword) || lastMsg.includes(keyword)) {
-            item.style.display = "flex";
-        } else {
-            item.style.display = "none";
-        }
-    });
-}
+//// 검색 필터
+//function updateChatList(filterKeyword = "") {
+//    const keyword = filterKeyword.toLowerCase();
+//    document.querySelectorAll(".chat-item").forEach(item => {
+//        const name = item.querySelector(".name")?.innerText.toLowerCase() || "";
+//        const lastMsg = item.querySelector(".last-msg")?.innerText.toLowerCase() || "";
+//
+//        if (!keyword || name.includes(keyword) || lastMsg.includes(keyword)) {
+//            item.style.display = "flex";
+//        } else {
+//            item.style.display = "none";
+//        }
+//    });
+//}
 
 function jumpToMessage(msgId, keyword) {
     // 이전 점프 하이라이트 제거

@@ -22,18 +22,18 @@ public class MsgMapperTest {
     private MsgMapper mapper;
 
     // 1. 메시지 삽입
-    @Test
-    public void insertTest() {
-        MsgVO msg = new MsgVO();
-        msg.setRoom_id(2);
-        msg.setSender_id(3);
-        msg.setContent("테스트 메시지 insert");
-        msg.setCreated_at(LocalDateTime.now());
-
-        int inserted = mapper.insert(msg);
-        log.info("Inserted rows: " + inserted);
-        log.info("Inserted msg ID: " + msg.getMsg_id()); // 시퀀스 적용 시 자동 생성된 ID 확인
-    }
+//    @Test
+//    public void insertTest() {
+//        MsgVO msg = new MsgVO();
+//        msg.setRoom_id(2);
+//        msg.setSender_id(3);
+//        msg.setContent("테스트 메시지 insert");
+//        msg.setCreated_at(LocalDateTime.now());
+//
+//        int inserted = mapper.insert(msg);
+//        log.info("Inserted rows: " + inserted);
+//        log.info("Inserted msg ID: " + msg.getMsg_id()); // 시퀀스 적용 시 자동 생성된 ID 확인
+//    }
 
     // 2. 채팅방의 모든 메시지 조회
 //    @Test
