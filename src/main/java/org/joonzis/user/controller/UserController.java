@@ -40,7 +40,7 @@ public class UserController {
 		return "user/JoinUser";
 	}
 	
-
+	//2)회원가입 처리
 	@PostMapping("/JoinUser") 
 	public String joinProcess(
 			UserVO vo, 
@@ -58,8 +58,6 @@ public class UserController {
 			return "user/JoinUser"; //회원가입 화면으로 다시 돌아감
 		}
 	}
-	
-	
 	
 	//3)로그인 화면
 	@GetMapping("/login")
@@ -100,29 +98,17 @@ public class UserController {
 		return "redirect:";
 	}
 	
-	
-//	//아이디 중복 체크
-//		@GetMapping(value="/checkId", produces = "application/json")
-//		@ResponseBody
-//		public Map<String, Boolean> 
-//		checkId(@RequestParam String username) 
-//		{
-//		    boolean isDuplicate = 
-//		    uservice.isIdDuplicate(username);
-//		    return Map.of("duplicate", isDuplicate);
-//		}
-	
-// ✅ 호출: /user/checkId?username=abc123
+	//7)아이디 중복 확인
 		 @GetMapping(value = "/checkId", produces = MediaType.APPLICATION_JSON_VALUE)
 		 @ResponseBody
 		 public Map<String, Boolean> checkId(@RequestParam("username") String username) {
 		       boolean isDuplicate = uservice.isIdDuplicate(username.trim());
 		       return Collections.singletonMap("duplicate", isDuplicate);
 		    }	
-	
-	
-	
-
+		 
+	/*
+	 * 아이디 찾기, 비밀번호 찾기
+	 * */
 	
 	//1)화면요청용 컨트롤러
 		@GetMapping("/findId")
@@ -172,19 +158,24 @@ public class UserController {
 	    return "/userTest/resetPw"; // resetPw.jsp
 	}
 
-	// 실제 비밀번호 변경 처리
+	//7)실제 비밀번호 변경 처리
 	@PostMapping("/find-pw/reset")
 	public String resetPw(UserVO vo) {
 		uservice.updatePw(vo);
 		return "redirect:/user/login";
 	}
-	//7)아이디 중복체크
+	//8)아이디 중복체크
 	@GetMapping("/id-check") //url예시: http://localhost:8081/user/id-check?username=linwee
 	@ResponseBody
 	public boolean idCheck(@RequestParam String username) {
 		return uservice.isIdDuplicate(username);
 	}
-	//8)공개형 프로필
+	
+	
+	/*
+	 * 프로필
+	 * */
+	//1)공개형 프로필
 	@GetMapping("/profile/{userId}") //url예시: http://localhost:8081/user/profile/65
 	public String publicProfile(@PathVariable int userId, Model model) {
 		// UserDTO profile =
