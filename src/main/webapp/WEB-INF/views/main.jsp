@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
-<%@ include file="/WEB-INF/views/layout/header.jsp" %>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/main.css">
+<%@ include file="/WEB-INF/views/layout/header.jsp" %>
 
 <div class="page-shell">
   
@@ -216,5 +216,5 @@
     </section>
   </div>
 </div>
-<script defer src="${pageContext.request.contextPath}/resources/js/main.js"></script>
 <%@ include file="/WEB-INF/views/layout/footer.jsp" %>
+<script src="${pageContext.request.contextPath}/resources/js/main.js"></script>
