@@ -27,14 +27,28 @@
                         <div class="tab" id="tab-search">검색하기</div>
                     </div>
                 </div>
-                
+
                 <!-- 채팅방 목록 -->
                 <div class="chat-items" id="items"></div>
 
                 <!-- 검색 박스 (초기에는 hidden) -->
                 <div class="chat-search-box" style="display:none;">
-                    <input type="text" placeholder="검색어를 입력하세요..." />
-                    <button class="btn-search">검색</button>
+                    <div class="search-top"> 
+                        <select id="searchType">
+                            <option value="message" selected>메시지</option>
+                            <option value="user">유저</option>
+                        </select>
+
+                        <input type="text" placeholder="검색어를 입력하세요..." />
+                    </div>
+
+                    <div class="search-bottom"> 
+                        <div class="search-nav">
+                            <button id="nextSearchBtn">다음</button>
+                        </div>
+                        <div class="search-counter">0 / 0</div>
+                    </div>
+
                 </div>
 
 
@@ -65,6 +79,7 @@
                             </div>
                         </div>
 
+
                         <div class="btn-menu-container">
                             <button class="btn-menu" id="menuBtn">
                                 <span></span>
@@ -79,8 +94,11 @@
                         </div>
                     </div>
 
-					<!-- 채팅방 메세지 목록 -->
+                    <!-- 채팅방 메세지 목록 -->
                     <div class="chat-messages" id="messages"></div>
+                    <button id="new-msg-btn" class="new-msg-btn">
+                        ⬇ 새 메시지 도착
+                    </button>
 
                     <!-- 채팅방 하단 -->
                     <div class="chat-input-container">
@@ -112,8 +130,8 @@
 
 
     </body>
-	    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-	    <script src="${pageContext.request.contextPath}/resources/js/chat/chat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/chat/chat.js"></script>
 
     </html>

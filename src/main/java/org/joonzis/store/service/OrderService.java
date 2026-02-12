@@ -43,5 +43,5 @@ public interface OrderService {
 	
 	public String createRandomOrderId();
 	
-	public PaymentDTO confirmPayment(String paymentKey, String orderId, int amount) throws Exception;
+	public PaymentDTO confirmPayment(String paymentKey, String orderId, int amount, int user_id) throws Exception;
 }

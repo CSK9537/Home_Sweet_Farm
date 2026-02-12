@@ -163,4 +163,53 @@ function removeAllCart(){
 
 function newOrder(){
   console.log("주문하기 버튼 클릭");
+
+  // 1. 현재 장바구니의 데이터 수집
+  const totalPriceEl = document.getElementById("totalPrice");
+  const totalPrice = totalPriceEl ? parseInt(totalPriceEl.textContent.replace(/[^0-9]/g, '')) : 0;
+  
+  const products = [];
+  document.querySelectorAll('.product-card').forEach(card => {
+    // btn-plus-cart 버튼에서 product_id를 가져옴
+    const plusBtn = card.querySelector('.btn-plus-cart');
+    if (plusBtn) {
+      const productId = plusBtn.dataset.id;
+      const countEl = document.querySelector(`#product_count_${productId}`);
+      const count = countEl ? parseInt(countEl.textContent) : 0;
+      
+      products.push({
+        product_id: parseInt(productId),
+        product_count: count
+      });
+    }
+  });
+
+  if(products.length === 0){
+    alert("장바구니가 비어있습니다.");
+    return;
+  }
+
+  // 2. 배송지 입력 (테스트용 알림/프롬프트)
+  const deliveryAddr = prompt("배송지를 입력해주세요.", "서울시 강남구 테헤란로...");
+  if (!deliveryAddr) {
+    alert("배송지 입력이 취소되었습니다.");
+    return;
+  }
+
+  const orderInfo = {
+   use_point: 0,
+   order_amount : totalPrice,
+   accumulate_point : Math.floor(totalPrice * 0.01), // 예: 1% 적립
+   delivery_addr : deliveryAddr,
+   products : products 
+  }
+
+  // 2. 주문 준비 요청 및 성공 시 결제창(카드 기준) 호출
+  requestOrderReady(orderInfo, function(orderId) {
+    startTossPayment('CARD', {
+        amount: orderInfo.order_amount,
+        orderId: orderId,
+        orderName: products.length > 1 ? `${products.length}건 상품 주문` : "상품 주문"
+    });
+  });
 }
