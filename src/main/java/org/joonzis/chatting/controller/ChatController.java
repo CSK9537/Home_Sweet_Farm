@@ -117,9 +117,20 @@ public class ChatController {
     }
     
     private int getUserId(HttpSession session, Integer testUser_id) {
-    	if(testUser_id != null) return testUser_id;
-    	UserVO login_user = (UserVO) session.getAttribute("login_user");
-    	return login_user != null ? login_user.getUser_id() : 1; // default user_id : 1
+        int resultId;
+        if(testUser_id != null) {
+            resultId = testUser_id;
+        } else {
+            UserVO login_user = (UserVO) session.getAttribute("login_user");
+            resultId = login_user != null ? login_user.getUser_id() : 1; // default user_id : 1
+        }
+
+        // 🔹 로그 추가
+        System.out.println("[DEBUG] 서버에서 사용하는 user_id: " + resultId
+                + ", testUser_id 파라미터: " + testUser_id
+                + ", 세션 login_user: " + session.getAttribute("login_user"));
+
+        return resultId;
     }
     
     /**

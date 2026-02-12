@@ -322,6 +322,7 @@ function loadChatRooms() {
     fetch(`/chat/rooms?testUser_id=${myUserId}`)
         .then(res => res.json())
         .then(rooms => {
+            console.log("채팅방 데이터:", rooms); 
             chatListContainer.innerHTML = ""; // 기존 내용 초기화
 
             rooms.forEach(room => {
