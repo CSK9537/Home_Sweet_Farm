@@ -257,10 +257,12 @@
       
   
 //===== step1 -> step2 (account -> verify) =====
-// 아이디 중복확인
+
+ // 아이디 중복확인
 var checkedOk = (typeof idCheckedOk !== "undefined") ? idCheckedOk : false;
 var checkedId = (typeof lastCheckedId !== "undefined") ? lastCheckedId : "";
-  
+ 
+
 document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 	
 	let val = document.querySelector('#userId').value;
@@ -275,17 +277,28 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 			return response.json();
 		})
 		.then(data => {
+			const idEl = document.querySelector('#userId');
 			const msgEl = document.querySelector('#idCheckMsg');
-			let result = data.duplicate;
-			// result -> 아이디가 중복되면 true
+			const val = (idEl.value || "").trim();
+			let result = data.duplicate; // result -> 아이디가 중복되면 true
+			
+			//1)아이디 미입력 시
+			if(val === ""){
+				msgEl.innerText ="아이디를 입력한 뒤 중복확인 해주세요.";
+				msgEl.style.color = "red";
+				checkedOk = false;
+				checkedId = "";
+				idEl.focus();
+				return;
+			}
 			
 			if(result){
-				//중복일때
+				//2)중복일때
 				msgEl.innerText = "아이디가 중복되었습니다.";
 				msgEl.style.color = "red";
 				checkedOk = false;
 			}else{
-				//사용 가능
+				//3)중복이 아닐 때(사용 가능)
 				msgEl.innerText = "사용 가능한 아이디입니다.";
 				msgEl.style.color = "green";
 				checkedOk = true;
@@ -295,6 +308,43 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 		})
 		.catch(err => console.log(err));
 });
+
+//비번 검증
+	const pwInput = document.querySelector('#userPw');
+	const pwMsg = document.querySelector('#pwMsg');
+	
+	pwInput.addEventListener("input",
+	function(){
+		const pw = pwInput.value;//현재 비번
+		
+		const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}$/;
+
+	    if (!regex.test(pw)) {
+	        pwMsg.innerText = "영문, 숫자, 특수문자 포함 8~20자";
+	        pwMsg.style.color = "red";
+	    } else {
+	        pwMsg.innerText = "사용 가능한 비밀번호입니다.";
+	        pwMsg.style.color = "green";
+	    }
+	});
+
+//비밀번호 확인 검증
+	const pwInput2 = document.querySelector('#userPw2');
+	const pwMsg2 = document.querySelector('#pwMsg2');
+	
+	pwInput2.addEventListener("input",
+	function(){
+		const pw = pwInput.value;//현재 비번
+		const pw2 = pwInput2.value;//확인 비번
+		
+		if(pw !== pw2){
+			pwMsg2.innerText = "비밀번호 확인이 일치하지 않습니다.";
+	        pwMsg2.style.color = "red";
+		}else{
+			pwMsg2.innerText = "비밀번호 확인이 일치합니다.";
+	        pwMsg2.style.color = "green";
+		}
+	});
 
 // 다음 버튼 클릭
   var toVerifyBtn = $("#toVerifyBtn");
@@ -325,7 +375,7 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 
       // 3) 비밀번호 검증
       if (pw.length < 8 || pw.length > 20) {
-        alert("비밀번호는 8~20자로 입력해주세요.");
+        alert("비밀번호는 영문, 숫자, 특수문자 포함 8~20자로 입력해주세요.");
         if (pwEl) pwEl.focus();
         return;
       }
