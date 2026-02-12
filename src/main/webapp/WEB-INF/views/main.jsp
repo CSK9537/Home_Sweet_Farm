@@ -1,7 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
-<%@ include file="/WEB-INF/views/layout/header.jsp" %>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+	<c:if test="${not empty msg}">
+			  <script>
+			    alert("${msg}");
+			  </script>
+			  <%
+			    session.removeAttribute("msg");
+			  %>
+			</c:if>
+	<%@ include file="/WEB-INF/views/layout/header.jsp" %>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/main.css">
 
 <div class="page-shell">

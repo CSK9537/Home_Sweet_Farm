@@ -124,7 +124,7 @@
               </div>
             </form>
           </section>
-
+		<body>
           <!-- STEP 2: 본인인증 -->
           <section class="step-panel" id="step-verify" data-step="verify" aria-label="본인인증">
             <div class="verify-card">
@@ -157,7 +157,7 @@
               </div>
             </div>
           </section>
-
+         
           <!-- STEP 3: 회원정보 입력 + 최종 가입 -->
           <section class="step-panel" id="step-profile" data-step="profile" aria-label="회원정보 입력">
             <!-- 최종 제출 폼 (서버 insert용) -->
