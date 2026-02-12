@@ -106,8 +106,8 @@ function confirmPayment(paymentKey, orderId, amount) {
 function processOrder(method) {
     // 1. 데이터 수집
     const orderInfo = {
-        use_point: parseInt(document.getElementById('use_point')?.value || 0),
-        order_amount: parseInt(document.getElementById('totalPrice')?.textContent.replace(/[^0-9]/g, '') || 0),
+//        use_point: parseInt(document.getElementById('use_point')?.value || 0),
+//        order_amount: parseInt(document.getElementById('totalPrice')?.textContent.replace(/[^0-9]/g, '') || 0),
         accumulate_point: 0, // 필요 시 계산 로직 추가
         delivery_addr: "기본 배송지", // 실제 배송지 입력 필드가 있다면 해당 값 사용
         products: getProductListData()
