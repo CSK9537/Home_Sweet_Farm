@@ -257,11 +257,12 @@
       
   
 //===== step1 -> step2 (account -> verify) =====
-// 아이디 중복확인
+
+ // 아이디 중복확인
 var checkedOk = (typeof idCheckedOk !== "undefined") ? idCheckedOk : false;
 var checkedId = (typeof lastCheckedId !== "undefined") ? lastCheckedId : "";
  
-//id 검증
+
 document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 	
 	let val = document.querySelector('#userId').value;
@@ -327,7 +328,7 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 	    }
 	});
 
-//비밀번호 확인
+//비밀번호 확인 검증
 	const pwInput2 = document.querySelector('#userPw2');
 	const pwMsg2 = document.querySelector('#pwMsg2');
 	
@@ -374,7 +375,7 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 
       // 3) 비밀번호 검증
       if (pw.length < 8 || pw.length > 20) {
-        alert("비밀번호는 8~20자로 입력해주세요.");
+        alert("비밀번호는 영문, 숫자, 특수문자 포함 8~20자로 입력해주세요.");
         if (pwEl) pwEl.focus();
         return;
       }
