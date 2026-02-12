@@ -55,7 +55,7 @@
 
 				  <span id="idCheckMsg"></span>
 				
-				  <!-- 결과 메시지 -->
+				  <!-- 결과 메시지-id -->
 				  <p id="idMsg" style="margin-top:6px; font-size:14px;"></p> 
               </div>
 
@@ -64,12 +64,16 @@
                 <input class="form-input" type="password" id="userPw" name="password"
                        placeholder="영문 대/소문자, 숫자, 특수문자 포함 8~20자"
                        minlength="8" maxlength="20" required />
+                   <!-- 결과 메시지-pw -->
+                   <p id="pwMsg" style="margin-top:6px; font-size:14px;"></p> 
               </div>
 
               <div class="form-col">
                 <label class="form-label" for="userPw2">비밀번호 확인</label>
                 <input class="form-input" type="password" id="userPw2" name="confirmPassword"
                        placeholder="비밀번호 확인" minlength="8" maxlength="20" required />
+                   <!-- 결과 메시지-pw2 -->
+                   <p id="pwMsg2" style="margin-top:6px; font-size:14px;"></p> 
               </div>
 
               <div class="terms-box">
