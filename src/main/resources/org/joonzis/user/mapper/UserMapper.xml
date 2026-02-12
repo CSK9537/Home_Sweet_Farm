@@ -23,14 +23,14 @@
 	
 	<!-- 관심사  -->
 	
-	<!-- 2)해시태그 id 조회  -->
+	<!-- 1)해시태그 id 조회  -->
 	<select id="findHashtagIdByName" resultType="int">
 		SELECT hashtag_id
 		FROM TBL_HASHTAG_LIST
 		WHERE hashtag_name = #{hashtag_name}
 	</select>
 	
-	<!-- 3)해시태그 테이블 insert -->
+	<!-- 2)해시태그 테이블 insert -->
 	<insert id="insertHashtag" >
 		INSERT INTO TBL_HASHTAG_LIST
 		(hashtag_id, hashtag_name)
@@ -38,7 +38,7 @@
 		#{hashtag_name})
 	</insert>
 	
-	<!-- 4) 관심사 중간 테이블 insert -->
+	<!-- 3) 관심사 중간 테이블 insert -->
 	<insert id="insertUserAspect" parameterType="map">
 		INSERT INTO TBL_USER_ASPECT
 		(user_id, hashtag_id)
@@ -46,13 +46,19 @@
 		(#{user_id}, #{hashtag_id})
 	</insert>
 	
-	<!-- 5)관심사  중간 테이블 delete  -->
+	<!-- 4)관심사  중간 테이블 delete  -->
 	<delete id="deleteUserAspect" >
 		DELETE FROM TBL_USER_ASPECT 
 		WHERE
 		user_id = #{user_id} 
 	</delete>
 	
+	<select id="selectAspectNamesByUserId" resultType="string">
+	  SELECT h.hashtag_name
+	  FROM TBL_USER_ASPECT ua
+	  JOIN TBL_HASHTAG_LIST h ON h.hashtag_id = ua.hashtag_id
+	  WHERE ua.user_id = #{user_id}
+	</select>
 	
 	<!-- 데이터 조회  -->
 	<select id="selectLogin" parameterType="org.joonzis.user.vo.UserVO"
@@ -130,14 +136,7 @@
 		WHERE email = #{email}
 	</select>
 	
-	<!-- 전화번호 중복 체크: 본인인증(전화번호)을 위해 미리 만들어둠  -->
-	<select id="countByPhone" resultType="int">
-		SELECT COUNT(*)
-		FROM TBL_USER
-		WHERE phone = #{phone}
-	</select>
-	
-	<!-- 마케팅수신동의 테스트용 조회 --> <!-- 시큐리티에서 유저 정보를 가져올 때도 사용 -->
+	<!-- 마케팅수신동의 테스트용 조회 -->
 	<select id="selectByUsername" parameterType="String" resultType="org.joonzis.user.vo.UserVO">
 		SELECT username, confirm_service, confirm_userinfo, confirm_event 
 		FROM TBL_USER

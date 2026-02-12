@@ -40,7 +40,9 @@
               	회원정보
             </button>
           </div>
-
+			<c:if test="${not empty error}">
+				  <div style="color:red; margin-bottom:10px;">${error}</div>
+			</c:if>
           <!-- STEP 1: 계정 정보 -->
           <section class="step-panel is-active" id="step-account" data-step="account" aria-label="계정 정보">
             <form id="accountForm" autocomplete="off">
@@ -48,6 +50,13 @@
                 <label class="form-label" for="userId">아이디</label>
                 <input class="form-input" type="text" id="userId" name="username"
                        placeholder="아이디 입력 (6~20자)" minlength="6" maxlength="20" required />
+                  <!-- 중복확인 버튼 -->
+				  <button type="button" id="checkIdBtn" class="form-btn">중복확인</button>
+
+				  <span id="idCheckMsg"></span>
+				
+				  <!-- 결과 메시지 -->
+				  <p id="idMsg" style="margin-top:6px; font-size:14px;"></p> 
               </div>
 
               <div class="form-col">
@@ -360,5 +369,4 @@
     </div>
   </div>
 </div>
-
 <script src="${pageContext.request.contextPath}/resources/js/user/JoinUser.js"></script>
