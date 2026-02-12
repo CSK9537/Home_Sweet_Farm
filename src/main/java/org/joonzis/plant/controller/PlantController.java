@@ -49,7 +49,7 @@ public class PlantController {
 	@GetMapping("/image/{plant_image:.+}")
 	public ResponseEntity<Resource> showImage(@PathVariable("plant_image") String plant_image) {
 		String[] paths = plant_image.split("_");
-		String path = "\\\\" + paths[0] + "\\" + paths[1] + "\\" + paths[2] + "." + paths[3];
+		String path = "\\\\" + paths[0] + "\\" + paths[1] + "\\" + paths[2] + "\\" + paths[3] + "\\" + paths[4] + "." + paths[5];
 		Resource resource = new FileSystemResource(path);
 		if (!resource.exists()) {
 			return ResponseEntity.notFound().build();
