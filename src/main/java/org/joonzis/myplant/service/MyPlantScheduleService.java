@@ -1,8 +1,8 @@
-package org.joonzis.iot.service;
+package org.joonzis.myplant.service;
 
 import java.util.List;
 
-import org.joonzis.iot.vo.ScheduleVO;
+import org.joonzis.myplant.vo.ScheduleVO;
 
 public interface MyPlantScheduleService {
 	List<ScheduleVO> getListByMyPlant(int myplantId);

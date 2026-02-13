@@ -7,9 +7,8 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Date;
 import java.util.List;
 
-import org.joonzis.iot.mapper.MyPlantScheduleMapper;
-import org.joonzis.iot.vo.ScheduleVO;
-
+import org.joonzis.myplant.mapper.MyPlantScheduleMapper;
+import org.joonzis.myplant.vo.ScheduleVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

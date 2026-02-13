@@ -1,7 +1,7 @@
-package org.joonzis.iot.controller;
+package org.joonzis.myplant.controller;
 
-import org.joonzis.iot.service.MyPlantScheduleService;
-import org.joonzis.iot.vo.ScheduleVO;
+import org.joonzis.myplant.service.MyPlantScheduleService;
+import org.joonzis.myplant.vo.ScheduleVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,18 +27,18 @@ public class MyPlantScheduleController {
     @PostMapping("/register")
     public String register(ScheduleVO vo) {
         service.register(vo);
-        return "redirect:/myplant/main";
+        return "redirect:/myplant";
     }
 
     @PostMapping("/modify")
     public String modify(ScheduleVO vo) {
         service.modify(vo);
-        return "redirect:/myplant/main";
+        return "redirect:/myplant";
     }
 
     @PostMapping("/remove")
     public String remove(int scheduleId) {
         service.remove(scheduleId);
-        return "redirect:/myplant/main";
+        return "redirect:/myplant";
     }
 }

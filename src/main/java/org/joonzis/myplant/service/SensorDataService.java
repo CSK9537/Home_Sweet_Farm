@@ -1,7 +1,7 @@
-package org.joonzis.iot.service;
+package org.joonzis.myplant.service;
 
-import org.joonzis.iot.dto.SensorDataDTO;
-import org.joonzis.iot.vo.PlantStatisticsVO;
+import org.joonzis.myplant.dto.SensorDataDTO;
+import org.joonzis.myplant.vo.PlantStatisticsVO;
 
 public interface SensorDataService {
 

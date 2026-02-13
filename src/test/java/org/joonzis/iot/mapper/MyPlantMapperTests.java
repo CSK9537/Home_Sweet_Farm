@@ -10,8 +10,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.joonzis.iot.mapper.MyPlantMapper;
-import org.joonzis.iot.vo.MyPlantVO;
+import org.joonzis.myplant.mapper.MyPlantMapper;
+import org.joonzis.myplant.vo.MyPlantVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

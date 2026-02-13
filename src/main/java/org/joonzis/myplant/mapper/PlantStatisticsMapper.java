@@ -1,13 +1,11 @@
-package org.joonzis.iot.mapper;
+package org.joonzis.myplant.mapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.joonzis.iot.vo.PlantStatisticsVO;
+import org.joonzis.myplant.vo.PlantStatisticsVO;
 
-@Mapper
 public interface PlantStatisticsMapper{
 	void insert(PlantStatisticsVO statistics);
 

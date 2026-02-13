@@ -1,4 +1,4 @@
-package org.joonzis.iot.dto;
+package org.joonzis.myplant.dto;
 
 import java.util.Date;
 

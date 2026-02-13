@@ -1,10 +1,9 @@
-package org.joonzis.iot.mapper;
+package org.joonzis.myplant.mapper;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
-import org.joonzis.iot.vo.ScheduleVO;
-
+import org.joonzis.myplant.vo.ScheduleVO;
 
 public interface MyPlantScheduleMapper {
 	 	List<ScheduleVO> getListByMyPlant(@Param("myplantId") int myplantId);

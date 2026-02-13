@@ -1,8 +1,8 @@
-package org.joonzis.iot.controller;
+package org.joonzis.myplant.controller;
 
-import org.joonzis.iot.dto.SensorDataDTO;
-import org.joonzis.iot.service.SensorDataService;
-import org.joonzis.iot.vo.PlantStatisticsVO;
+import org.joonzis.myplant.dto.SensorDataDTO;
+import org.joonzis.myplant.service.SensorDataService;
+import org.joonzis.myplant.vo.PlantStatisticsVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
