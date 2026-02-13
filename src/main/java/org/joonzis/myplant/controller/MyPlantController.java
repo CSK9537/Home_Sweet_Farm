@@ -23,7 +23,7 @@ public class MyPlantController {
     private final MyPlantService myPlantService;
 
     // 메인 화면
-    @GetMapping("/main")
+    @GetMapping("")
     public String main(Model model,
                        Principal principal) {
     	int userId = 50;
@@ -54,21 +54,21 @@ public class MyPlantController {
 
         vo.setUserId(Integer.parseInt(principal.getName()));
         myPlantService.register(vo);
-        return "redirect:/myplant/main";
+        return "redirect:/myplant";
     }
 
     // 수정
     @PostMapping("/modify")
     public String modify(MyPlantVO vo) {
         myPlantService.modify(vo);
-        return "redirect:/myplant/main";
+        return "redirect:/myplant";
     }
 
     // 삭제
     @PostMapping("/remove")
     public String remove(int myplantId) {
         myPlantService.remove(myplantId);
-        return "redirect:/myplant/main";
+        return "redirect:/myplant";
     }
 }
 

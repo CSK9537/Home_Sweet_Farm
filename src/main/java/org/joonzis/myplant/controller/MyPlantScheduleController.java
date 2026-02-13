@@ -27,18 +27,18 @@ public class MyPlantScheduleController {
     @PostMapping("/register")
     public String register(ScheduleVO vo) {
         service.register(vo);
-        return "redirect:/myplant/main";
+        return "redirect:/myplant";
     }
 
     @PostMapping("/modify")
     public String modify(ScheduleVO vo) {
         service.modify(vo);
-        return "redirect:/myplant/main";
+        return "redirect:/myplant";
     }
 
     @PostMapping("/remove")
     public String remove(int scheduleId) {
         service.remove(scheduleId);
-        return "redirect:/myplant/main";
+        return "redirect:/myplant";
     }
 }
