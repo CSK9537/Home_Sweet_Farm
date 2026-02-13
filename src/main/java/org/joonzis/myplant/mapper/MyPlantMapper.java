@@ -1,9 +1,9 @@
-package org.joonzis.iot.mapper;
+package org.joonzis.myplant.mapper;
 
 import java.util.List;
 
-import org.joonzis.iot.dto.MyPlantMainDTO;
-import org.joonzis.iot.vo.MyPlantVO;
+import org.joonzis.myplant.dto.MyPlantMainDTO;
+import org.joonzis.myplant.vo.MyPlantVO;
 
 public interface MyPlantMapper {
 	 // 메인

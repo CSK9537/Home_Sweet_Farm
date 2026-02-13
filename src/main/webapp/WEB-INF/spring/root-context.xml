@@ -21,7 +21,7 @@
 	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
 		<!-- log4jdbc -->
 		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
-		<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@192.168.0.153:1521:XE"></property>
+		<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:XE"></property>
 		<property name="username" value="scott"></property>
 		<property name="password" value="tiger"></property>
 	</bean>
@@ -34,8 +34,7 @@
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>
 
-	
-		<!-- 트랜잭션 및 AOP 관련항목 -->
+	<!-- 트랜잭션 및 AOP 관련항목 -->
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		   <property name="dataSource" ref="dataSource"/>
 	</bean>
@@ -46,30 +45,27 @@
 	
 	<!-- common -->
 	<mybatis-spring:scan base-package="org.joonzis.common.mapper"/>
-	<context:component-scan base-package="org.joonzis.common.service" />
+	<context:component-scan base-package="org.joonzis.common.service"/>
 	
 	<!-- chatting -->
 	<mybatis-spring:scan base-package="org.joonzis.chatting.mapper"/>
-	<context:component-scan base-package="org.joonzis.chatting.service" />
+	<context:component-scan base-package="org.joonzis.chatting.service"/>
 	
 	<!-- store -->
 	<mybatis-spring:scan base-package="org.joonzis.store.mapper"/>
-	<context:component-scan base-package="org.joonzis.store.service"></context:component-scan>
-	
+	<context:component-scan base-package="org.joonzis.store.service"/>
 	
 	<!-- user -->
 	<mybatis-spring:scan base-package="org.joonzis.user.mapper"/>
 	<context:component-scan base-package="org.joonzis.user.service"/>
-	
 	
 	<!-- plant -->
 	<mybatis-spring:scan base-package="org.joonzis.plant.mapper"/>
 	<context:component-scan base-package="org.joonzis.plant.service"/>
 	
 	<!-- myplant -->
-	<mybatis-spring:scan base-package="org.joonzis.iot.mapper"/>
-	<context:component-scan base-package="org.joonzis.iot.service"/>
-	
+	<mybatis-spring:scan base-package="org.joonzis.myplant.mapper"/>
+	<context:component-scan base-package="org.joonzis.myplant.service"/>
 	
 	<!-- 이메일 관련 -->
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">

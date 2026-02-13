@@ -1,10 +1,10 @@
-package org.joonzis.iot.controller;
+package org.joonzis.myplant.controller;
 
 
 import java.security.Principal;
 
-import org.joonzis.iot.service.MyPlantService;
-import org.joonzis.iot.vo.MyPlantVO;
+import org.joonzis.myplant.service.MyPlantService;
+import org.joonzis.myplant.vo.MyPlantVO;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;

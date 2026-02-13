@@ -1,12 +1,12 @@
-package org.joonzis.iot.service;
+package org.joonzis.myplant.service;
 
 import java.util.Date;
 
 import javax.inject.Inject;
 
-import org.joonzis.iot.dto.SensorDataDTO;
-import org.joonzis.iot.mapper.PlantStatisticsMapper;
-import org.joonzis.iot.vo.PlantStatisticsVO;
+import org.joonzis.myplant.dto.SensorDataDTO;
+import org.joonzis.myplant.mapper.PlantStatisticsMapper;
+import org.joonzis.myplant.vo.PlantStatisticsVO;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package org.joonzis.iot.vo;
+package org.joonzis.myplant.vo;
 
 import java.util.Date;
 
@@ -9,11 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MyPlantVO {
+public class ScheduleVO {
+	private int scheduleId;
 	private int myplantId;
-    private int userId;
-    private int plantId;
+	private Date scheduleDate;
+	private String scheduleDo;
 
-    private String myplantName;
-    private Date myplantRegdate;
 }

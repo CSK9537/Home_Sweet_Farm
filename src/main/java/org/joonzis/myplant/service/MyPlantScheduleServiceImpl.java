@@ -1,9 +1,9 @@
-package org.joonzis.iot.service;
+package org.joonzis.myplant.service;
 
 import java.util.List;
 
-import org.joonzis.iot.mapper.MyPlantScheduleMapper;
-import org.joonzis.iot.vo.ScheduleVO;
+import org.joonzis.myplant.mapper.MyPlantScheduleMapper;
+import org.joonzis.myplant.vo.ScheduleVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

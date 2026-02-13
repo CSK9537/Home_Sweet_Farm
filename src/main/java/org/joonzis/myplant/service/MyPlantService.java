@@ -1,9 +1,9 @@
-package org.joonzis.iot.service;
+package org.joonzis.myplant.service;
 
 import java.util.List;
 
-import org.joonzis.iot.dto.MyPlantMainDTO;
-import org.joonzis.iot.vo.MyPlantVO;
+import org.joonzis.myplant.dto.MyPlantMainDTO;
+import org.joonzis.myplant.vo.MyPlantVO;
 
 public interface MyPlantService {
 	
