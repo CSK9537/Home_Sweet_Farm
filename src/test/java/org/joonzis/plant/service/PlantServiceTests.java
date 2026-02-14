@@ -2,7 +2,7 @@ package org.joonzis.plant.service;
 
 import java.util.List;
 
-import org.joonzis.plant.vo.PlantVO;
+import org.joonzis.plant.dto.PlantDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +24,11 @@ public class PlantServiceTests {
 //	public void plantListByRankTest() {
 //		log.info("plant list by rank test...");
 //		try {
-//			List<PlantVO> plantlist = pservice.plantListByRank(50);
+//			List<PlantDTO> plantlist = pservice.plantListByRank(50);
 //			int i = 0;
-//			for(PlantVO pvo : plantlist) {
+//			for(PlantDTO pdto : plantlist) {
 //				log.info(++i);
-//				log.info(pvo);
+//				log.info(pdto);
 //			}
 //		} catch (Exception e) {
 //			log.error(e);
@@ -39,11 +39,11 @@ public class PlantServiceTests {
 //	public void plantListByRandomTest() {
 //		log.info("plant list by random test...");
 //		try {
-//			List<PlantVO> plantlist = pservice.plantListByRandom(3, 72, 12);
+//			List<PlantDTO> plantlist = pservice.plantListByRandom(3, 72, 12);
 //			int i = 0;
-//			for(PlantVO pvo : plantlist) {
+//			for(PlantDTO pdto : plantlist) {
 //				log.info(++i);
-//				log.info(pvo);
+//				log.info(pdto);
 //			}
 //		} catch (Exception e) {
 //			log.error(e);
@@ -54,11 +54,11 @@ public class PlantServiceTests {
 //	public void plantListByRandomPlusTest() {
 //		log.info("plant list by random plus test...");
 //		try {
-//			List<PlantVO> plantlistplus = pservice.plantListByRandomPlus(12);
+//			List<PlantDTO> plantlistplus = pservice.plantListByRandomPlus(12);
 //			int i = 0;
-//			for(PlantVO pvo : plantlistplus) {
+//			for(PlantDTO pdto : plantlistplus) {
 //				log.info(++i);
-//				log.info(pvo);
+//				log.info(pdto);
 //			}
 //		} catch (Exception e) {
 //			log.error(e);

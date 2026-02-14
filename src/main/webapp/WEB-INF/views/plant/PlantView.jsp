@@ -358,7 +358,7 @@
         </section>
 
 
-        <!-- ===== 추천/연관 식물(있을 때만) : similarPlants(List<PlantVO>) 가정 ===== -->
+        <!-- ===== 추천/연관 식물(있을 때만) : similarPlants(List<PlantDTO>) 가정 ===== -->
         <c:if test="${not empty similarPlants}">
           <section class="pv-box" data-section>
             <div class="pv-box__head">
