@@ -4,72 +4,37 @@
 
 <mapper namespace="org.joonzis.myplant.mapper.MyPlantMapper">
 
-    <!-- 메인 화면 -->
-    <select id="selectMyPlantMainList" parameterType="int" resultType="org.joonzis.myplant.dto.MyPlantMainDTO">
-       SELECT
-		    mp.myplant_id       AS myplantId,
-		    mp.myplant_name     AS myplantName,
-		    mp.plant_id         AS plantId,
-		    p.plant_name        AS plantName,
-		    ps.temperature,
-		    ps.humidity,
-		    ps.illumination,
-		    ps.soil_moisture    AS soilMoisture,
-		    ps.sensing_time     AS sensingTime
-		FROM tbl_myplant mp
-		JOIN tbl_plant p
-		  ON mp.plant_id = p.plant_id
-		
-		LEFT JOIN (
-		    SELECT s.*
-		    FROM tbl_myplant_statistics s
-		    JOIN (
-		        SELECT myplant_id, MAX(sensing_time) AS max_time
-		        FROM tbl_myplant_statistics
-		        GROUP BY myplant_id
-		    ) m
-		      ON s.myplant_id = m.myplant_id
-		     AND s.sensing_time = m.max_time
-		) ps
-		  ON ps.myplant_id = mp.myplant_id
-		
-		WHERE mp.user_id = #{userId}
-		ORDER BY mp.myplant_regdate DESC
+    <select id="myPlantMain" resultType="org.joonzis.myplant.dto.MyPlantDTO">
+        SELECT * FROM tbl_myplant
+        WHERE user_id = #{user_id}
+        ORDER BY myplant_regdate DESC
 	</select>
-
-    <!-- CRUD -->
-    <select id="getList" parameterType="int" resultType="org.joonzis.myplant.vo.MyPlantVO">
-        SELECT
-            myplant_id AS myplantId,
-            user_id AS userId,
-            plant_id AS plantId,
-            myplant_name AS myplantName,
-            myplant_regdate AS myplantRegdate
-        FROM tbl_myplant
-        WHERE user_id = #{userId}
-        ORDER BY myplant_id DESC
+	
+    <select id="get" resultType="org.joonzis.myplant.dto.MyPlantDTO">
+        SELECT * FROM tbl_myplant
+        WHERE myplant_id = #{myplant_id}
     </select>
 
     <insert id="insert">
-		<selectKey keyProperty="myplantId" resultType="int" order="BEFORE">
+		<selectKey keyProperty="myplant_id" resultType="int" order="BEFORE">
 		    SELECT myplant_seq.NEXTVAL FROM dual
 		</selectKey>
         INSERT INTO tbl_myplant
         (myplant_id, user_id, plant_id, myplant_name, myplant_regdate)
         VALUES
-        (myplant_seq.NEXTVAL, #{userId}, #{plantId}, #{myplantName}, SYSDATE)
+        (myplant_seq.NEXTVAL, #{user_id}, #{plant_id}, #{myplant_name}, SYSDATE)
     </insert>
 
     <update id="update">
         UPDATE tbl_myplant
-        SET myplant_name = #{myplantName},
-            plant_id = #{plantId}
-        WHERE myplant_id = #{myplantId}
+        SET myplant_name = #{myplant_name},
+            plant_id = #{plant_id}
+        WHERE myplant_id = #{myplant_id}
     </update>
 
     <delete id="delete">
         DELETE FROM tbl_myplant
-        WHERE myplant_id = #{myplantId}
+        WHERE myplant_id = #{myplant_id}
     </delete>
 
 </mapper>

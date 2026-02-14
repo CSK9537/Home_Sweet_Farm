@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class MyPlantStatisticsDTO {
-    private Long myplant_id;
+    private int myplant_id;
     private double temperature;
     private double humidity;
     private double illumination;
