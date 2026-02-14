@@ -149,7 +149,7 @@
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
-	          <a class="gnb__link" href="/store/mainPage">스토어</a>
+	          <a class="gnb__link" href="/store">스토어</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
 	              <a class="subbar__link" href="#">재배 &amp; 관리용품</a>
@@ -166,7 +166,7 @@
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
-	          <a class="gnb__link" href="/myplant/main">나의 식물</a>
+	          <a class="gnb__link" href="/myplant">나의 식물</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
 	              <a class="subbar__link" href="#">추천 가이드</a>

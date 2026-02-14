@@ -17,6 +17,6 @@
     <p>요청하신 페이지를 찾을 수 없습니다.</p>
 </c:if>
 
-<a href="${pageContext.request.contextPath}/store/main">메인 페이지로 이동</a>
+<a href="/">메인 페이지로 이동</a>
 </body>
 </html>

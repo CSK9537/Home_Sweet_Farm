@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (isSuccess) {
                     alert("결제가 최종 승인되었습니다!");
                     // 주문 완료 페이지로 이동하거나 UI 업데이트
-                    location.href = "/store/order/mainPage"; //일단은 메인페이지로 이동, 나중에 주문 내역 페이지가 생기면 그쪽으로 변경
+                    location.href = "/store"; //일단은 메인페이지로 이동, 나중에 주문 내역 페이지가 생기면 그쪽으로 변경
                 } else {
                     alert("결제 승인 중 오류가 발생했습니다.");
                     location.href = "/store/order/cart"; //결제 승인 실패 시 장바구니로 이동
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     } else {
         alert("비정상적인 접근입니다.");
-        location.href = "/store/order/mainPage"; //비정상적인 접근 시 메인페이지로 이동
+        location.href = "/store"; //비정상적인 접근 시 메인페이지로 이동
     }
 });
 </script><jsp:include page="/WEB-INF/views/layout/footer.jsp" />
