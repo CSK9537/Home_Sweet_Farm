@@ -1,8 +1,7 @@
 package org.joonzis.myplant.controller;
 
-import org.joonzis.myplant.dto.SensorDataDTO;
+import org.joonzis.myplant.dto.MyPlantStatisticsDTO;
 import org.joonzis.myplant.service.SensorDataService;
-import org.joonzis.myplant.vo.PlantStatisticsVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,16 +20,16 @@ public class ArduinoController {
 
 
 	 @PostMapping("/sensor-data")
-	    public ResponseEntity<String> receiveSensorData(@RequestBody SensorDataDTO dto) {
+	    public ResponseEntity<String> receiveSensorData(@RequestBody MyPlantStatisticsDTO stdto) {
 		 	
 		 	// DTO → VO 변환
-	        PlantStatisticsVO vo = new PlantStatisticsVO();
-	        vo.setMyplantId(dto.getMyplantId());
-	        vo.setTemperature(dto.getTemperature());
-	        vo.setHumidity(dto.getHumidity());
-	        vo.setIllumination(dto.getIllumination());
-	        vo.setSoilMoisture(dto.getSoilMoisture());
-	        vo.setSensingTime(dto.getSensingTime()); // null 가능
+	        MyPlantStatisticsDTO vo = new MyPlantStatisticsDTO();
+	        vo.setMyplant_id(stdto.getMyplant_id());
+	        vo.setTemperature(stdto.getTemperature());
+	        vo.setHumidity(stdto.getHumidity());
+	        vo.setIllumination(stdto.getIllumination());
+	        vo.setSoil_moisture(stdto.getSoil_moisture());
+	        vo.setSensing_time(stdto.getSensing_time()); // null 가능
 
 	        // Service 호출 (시간 자동 처리 포함)
 	        sensorDataService.register(vo);
@@ -39,8 +38,8 @@ public class ArduinoController {
 	    }
 
 	 @PostMapping("/iot/sensor")
-	 public ResponseEntity<String> receive(@RequestBody PlantStatisticsVO data){
-		 sensorDataService.svae(data);
+	 public ResponseEntity<String> receive(@RequestBody MyPlantStatisticsDTO stdto){
+		 sensorDataService.svae(stdto);
 		 return ResponseEntity.ok("ok");
 	 }
 }

@@ -1,12 +1,9 @@
 package org.joonzis.myplant.controller;
 
-
 import java.security.Principal;
 
+import org.joonzis.myplant.dto.MyPlantDTO;
 import org.joonzis.myplant.service.MyPlantService;
-import org.joonzis.myplant.vo.MyPlantVO;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,32 +39,32 @@ public class MyPlantController {
     public String list(Model model,
                        Principal principal) {
 
-        int userId = Integer.parseInt(principal.getName());
-        model.addAttribute("list", myPlantService.getList(userId));
+        int user_id = Integer.parseInt(principal.getName());
+        model.addAttribute("list", myPlantService.getMyPlantMainList(user_id));
         return "myplant/main";
     }
 
     // 등록
     @PostMapping("/register")
-    public String register(MyPlantVO vo,
+    public String register(MyPlantDTO mpdto,
     		Principal principal) {
 
-        vo.setUserId(Integer.parseInt(principal.getName()));
-        myPlantService.register(vo);
+    	mpdto.setUser_id(Integer.parseInt(principal.getName()));
+        myPlantService.register(mpdto);
         return "redirect:/myplant";
     }
 
     // 수정
     @PostMapping("/modify")
-    public String modify(MyPlantVO vo) {
-        myPlantService.modify(vo);
+    public String modify(MyPlantDTO mpdto) {
+        myPlantService.modify(mpdto);
         return "redirect:/myplant";
     }
 
     // 삭제
     @PostMapping("/remove")
-    public String remove(int myplantId) {
-        myPlantService.remove(myplantId);
+    public String remove(int myplant_id) {
+        myPlantService.remove(myplant_id);
         return "redirect:/myplant";
     }
 }

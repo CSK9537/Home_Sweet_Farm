@@ -1,12 +1,10 @@
 package org.joonzis.myplant.service;
 
-import org.joonzis.myplant.dto.SensorDataDTO;
-import org.joonzis.myplant.vo.PlantStatisticsVO;
+import org.joonzis.myplant.dto.MyPlantStatisticsDTO;
 
 public interface SensorDataService {
-
-	 void saveSensorData(SensorDataDTO request);
-	    PlantStatisticsVO getLatestData(Long myplantId);
-	 void svae(PlantStatisticsVO data);
-	 void register(PlantStatisticsVO vo);
+	public void saveSensorData(MyPlantStatisticsDTO stdto);
+	public MyPlantStatisticsDTO getLatestData(int myplant_id);
+	public void svae(MyPlantStatisticsDTO stdto);
+	public void register(MyPlantStatisticsDTO stdto);
 }

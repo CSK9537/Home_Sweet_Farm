@@ -2,26 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.joonzis.myplant.mapper.MyPlantScheduleMapper">
-	<resultMap id="ScheduleVO" type="org.joonzis.myplant.vo.ScheduleVO">
-	    <result column="schedule_id" property="scheduleId"/>
-	    <result column="myplant_id" property="myplantId"/>
-	    <result column="myplant_schedule_date" property="scheduleDate"/>
-	    <result column="myplant_schedule_do" property="scheduleDo"/>
-	</resultMap>
 
-	<select id="getListByMyPlant" parameterType="int" resultMap="ScheduleVO">
+	<select id="getListByMyPlant" resultType="org.joonzis.myplant.dto.MyPlantScheduleDTO">
 	
-	    SELECT
-	        schedule_id,
-	        myplant_id,
-	        myplant_schedule_date,
-	        myplant_schedule_do
-	    FROM tbl_myplant_schedule
-	    WHERE myplant_id = #{myplantId}
+	    SELECT * FROM tbl_myplant_schedule
+	    WHERE myplant_id = #{myplant_id}
 	    ORDER BY myplant_schedule_date
-	
+	    
 	</select>
-	<insert id="insert" parameterType="org.joonzis.myplant.vo.ScheduleVO">
+	
+	<insert id="insert">
 
 	    INSERT INTO tbl_myplant_schedule (
 	        schedule_id,
@@ -30,24 +20,29 @@
 	        myplant_schedule_do
 	    ) VALUES (
 	        schedule_seq.nextval,
-	        #{myplantId},
-	        #{scheduleDate},
-	        #{scheduleDo}
+	        #{myplant_id},
+	        #{myplant_schedule_date},
+	        #{myplant_schedule_do}
 	    )
 	
 	</insert>
-	<update id="update" parameterType="org.joonzis.myplant.vo.ScheduleVO">
+	
+	<update id="update">
 
 	    UPDATE tbl_myplant_schedule
 	    SET
-	        myplant_schedule_date = #{scheduleDate},
-	        myplant_schedule_do   = #{scheduleDo}
-	    WHERE schedule_id = #{scheduleId}
+	        myplant_schedule_date = #{myplant_schedule_date},
+	        myplant_schedule_do   = #{myplant_schedule_do}
+	    WHERE schedule_id = #{schedule_id}
+	    
 	</update>
-	<delete id="delete" parameterType="int">
+	
+	<delete id="delete">
+		
 		DELETE
 	    FROM tbl_myplant_schedule
-	    WHERE schedule_id = #{scheduleId}
+	    WHERE schedule_id = #{schedule_id}
+	    
 	</delete>
 	
 </mapper>

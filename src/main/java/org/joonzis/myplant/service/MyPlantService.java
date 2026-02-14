@@ -2,17 +2,12 @@ package org.joonzis.myplant.service;
 
 import java.util.List;
 
-import org.joonzis.myplant.dto.MyPlantMainDTO;
-import org.joonzis.myplant.vo.MyPlantVO;
+import org.joonzis.myplant.dto.MyPlantDTO;
 
 public interface MyPlantService {
-	
-	List<MyPlantMainDTO> getMyPlantMainList(int userId);
-	
-	  // CRUD
-    List<MyPlantVO> getList(int userId);
-    MyPlantVO get(int myplantId);
-    void register(MyPlantVO vo);
-    boolean modify(MyPlantVO vo);
-    boolean remove(int myplantId);
+	public List<MyPlantDTO> getMyPlantMainList(int user_id);
+	public MyPlantDTO get(int myplant_id);
+	public void register(MyPlantDTO mpdto);
+	public boolean modify(MyPlantDTO mpdto);
+	public boolean remove(int myplant_id);
 }
