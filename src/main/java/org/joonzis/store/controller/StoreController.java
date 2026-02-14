@@ -31,7 +31,7 @@ public class StoreController {
 	
 	
 	// 메인화면
-	@GetMapping("/mainPage")
+	@GetMapping("")
 	public String main(Model model) {
 		model.addAttribute("hotProducts",sService.getListOnHot());		// hot 리스트
 		model.addAttribute("saleProducts", sService.getListOnSale());	// 세일 중인 리스트
