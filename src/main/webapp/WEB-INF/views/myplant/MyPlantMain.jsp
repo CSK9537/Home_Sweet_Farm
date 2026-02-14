@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/myplant/MyPlantMain.css">
+<link rel="stylesheet" href="/resources/css/myplant/MyPlantMain.css">
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
@@ -12,7 +12,7 @@
       <!-- 상단 타이틀 + 버튼 -->
       <div class="myplants__header">
         <h2 class="myplants__title">나의 식물</h2>
-        <button class="mp-btn mp-btn--primary" type="button" id="openAddPlantModal">
+        <button class="mp-btn mp-btn--primary" type="button" id="openAddPlantModal"">
 		  	나의식물 추가
 		</button>
       </div>
@@ -165,5 +165,5 @@
   </div>
 </div>
 
-<script src="${pageContext.request.contextPath}/resources/js/myplant/MyPlantMainModal.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/myplant/MyPlantMain.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

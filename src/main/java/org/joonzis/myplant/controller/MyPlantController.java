@@ -21,34 +21,17 @@ public class MyPlantController {
 
     // 메인 화면
     @GetMapping("")
-    public String main(Model model,
-                       Principal principal) {
-    	int userId = 50;
+    public String main(Model model, Principal principal) {
+    	int user_id = 50;
         // int userId = Integer.parseInt(principal.getName());
-
-        model.addAttribute(
-            "myPlants",
-            myPlantService.getMyPlantMainList(userId)
-        );
-
-        return "myplant/main";
-    }
-
-    // 목록
-    @GetMapping("/list")
-    public String list(Model model,
-                       Principal principal) {
-
-        int user_id = Integer.parseInt(principal.getName());
-        model.addAttribute("list", myPlantService.getMyPlantMainList(user_id));
-        return "myplant/main";
+        model.addAttribute("myPlants", myPlantService.getMyPlantMainList(user_id));
+        return "myplant/MyPlantMain";
     }
 
     // 등록
     @PostMapping("/register")
     public String register(MyPlantDTO mpdto,
     		Principal principal) {
-
     	mpdto.setUser_id(Integer.parseInt(principal.getName()));
         myPlantService.register(mpdto);
         return "redirect:/myplant";

@@ -3,7 +3,7 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/myplant/MyPlantView.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/modal/ScheduleModal.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/modal/PotoModal.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/modal/PhotoModal.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/modal/StatsModal.css">
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
@@ -357,6 +357,6 @@
 </div>
 
 <script src="${pageContext.request.contextPath}/resources/js/modal/ScheduleModal.js"></script>
-<script src="${pageContext.request.contextPath}/resources/js/modal/PotoModal.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/modal/PhotoModal.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/modal/StatsModal.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />
