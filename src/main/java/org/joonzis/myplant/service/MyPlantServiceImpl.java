@@ -2,9 +2,8 @@ package org.joonzis.myplant.service;
 
 import java.util.List;
 
-import org.joonzis.myplant.dto.MyPlantMainDTO;
+import org.joonzis.myplant.dto.MyPlantDTO;
 import org.joonzis.myplant.mapper.MyPlantMapper;
-import org.joonzis.myplant.vo.MyPlantVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,33 +14,28 @@ public class MyPlantServiceImpl implements MyPlantService {
 	    private MyPlantMapper mapper;
 
 	    @Override
-	    public List<MyPlantMainDTO> getMyPlantMainList(int userId) {
-	        return mapper.selectMyPlantMainList(userId);
+	    public List<MyPlantDTO> getMyPlantMainList(int user_id) {
+	        return mapper.myPlantMain(user_id);
 	    }
 
 	    @Override
-	    public List<MyPlantVO> getList(int userId) {
-	        return mapper.getList(userId);
+	    public MyPlantDTO get(int myplant_id) {
+	        return mapper.get(myplant_id);
 	    }
 
 	    @Override
-	    public MyPlantVO get(int myplantId) {
-	        return mapper.get(myplantId);
+	    public void register(MyPlantDTO mpdto) {
+	        mapper.insert(mpdto);
 	    }
 
 	    @Override
-	    public void register(MyPlantVO vo) {
-	        mapper.insert(vo);
+	    public boolean modify(MyPlantDTO mpdto) {
+	        return mapper.update(mpdto) == 1;
 	    }
 
 	    @Override
-	    public boolean modify(MyPlantVO vo) {
-	        return mapper.update(vo) == 1;
-	    }
-
-	    @Override
-	    public boolean remove(int myplantId) {
-	        return mapper.delete(myplantId) == 1;
+	    public boolean remove(int myplant_id) {
+	        return mapper.delete(myplant_id) == 1;
 	    }
 	
 

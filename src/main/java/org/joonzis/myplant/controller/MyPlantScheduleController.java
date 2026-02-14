@@ -1,7 +1,7 @@
 package org.joonzis.myplant.controller;
 
+import org.joonzis.myplant.dto.MyPlantScheduleDTO;
 import org.joonzis.myplant.service.MyPlantScheduleService;
-import org.joonzis.myplant.vo.ScheduleVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,26 +19,26 @@ public class MyPlantScheduleController {
 	
 	
 	@GetMapping("/list")
-    public String list(int myplantId, Model model) {
-        model.addAttribute("list", service.getListByMyPlant(myplantId));
+    public String list(int myplant_id, Model model) {
+        model.addAttribute("list", service.getListByMyPlant(myplant_id));
         return "myplant/schedule/list";
     }
 
     @PostMapping("/register")
-    public String register(ScheduleVO vo) {
-        service.register(vo);
+    public String register(MyPlantScheduleDTO scdto) {
+        service.register(scdto);
         return "redirect:/myplant";
     }
 
     @PostMapping("/modify")
-    public String modify(ScheduleVO vo) {
-        service.modify(vo);
+    public String modify(MyPlantScheduleDTO scdto) {
+        service.modify(scdto);
         return "redirect:/myplant";
     }
 
     @PostMapping("/remove")
-    public String remove(int scheduleId) {
-        service.remove(scheduleId);
+    public String remove(int schedule_id) {
+        service.remove(schedule_id);
         return "redirect:/myplant";
     }
 }

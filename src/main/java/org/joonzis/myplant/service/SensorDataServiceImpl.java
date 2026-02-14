@@ -4,58 +4,56 @@ import java.util.Date;
 
 import javax.inject.Inject;
 
-import org.joonzis.myplant.dto.SensorDataDTO;
-import org.joonzis.myplant.mapper.PlantStatisticsMapper;
-import org.joonzis.myplant.vo.PlantStatisticsVO;
+import org.joonzis.myplant.dto.MyPlantStatisticsDTO;
+import org.joonzis.myplant.mapper.MyPlantStatisticsMapper;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-
 
 @Service
 @RequiredArgsConstructor
 public class SensorDataServiceImpl implements SensorDataService {
 	
 	@Inject
-    private final PlantStatisticsMapper mapper;
+    private final MyPlantStatisticsMapper mapper;
 
     @Override
-    public void saveSensorData(SensorDataDTO request) {
+    public void saveSensorData(MyPlantStatisticsDTO request) {
 
         // IoT 기본 검증
         if (request.getTemperature() < -20 || request.getTemperature() > 80) {
             return;
         }
 
-        PlantStatisticsVO vo = new PlantStatisticsVO();
-        vo.setMyplantId(request.getMyplantId());
-        vo.setTemperature(request.getTemperature());
-        vo.setHumidity(request.getHumidity());
-        vo.setIllumination(request.getIllumination());
-        vo.setSoilMoisture(request.getSoilMoisture());
-        vo.setSensingTime(new Date());;
+        MyPlantStatisticsDTO stdto = new MyPlantStatisticsDTO();
+        stdto.setMyplant_id(request.getMyplant_id());
+        stdto.setTemperature(request.getTemperature());
+        stdto.setHumidity(request.getHumidity());
+        stdto.setIllumination(request.getIllumination());
+        stdto.setSoil_moisture(request.getSoil_moisture());
+        stdto.setSensing_time(new Date());;
 
-        mapper.insert(vo);
+        mapper.insert(stdto);
     }
 
     @Override
-    public PlantStatisticsVO getLatestData(Long myplantId) {
-        return mapper.findLatestByMyplantId(myplantId);
+    public MyPlantStatisticsDTO getLatestData(int myplant_id) {
+        return mapper.findLatestByMyplantId(myplant_id);
     }
 
 	@Override
-	public void svae(PlantStatisticsVO data) {
-		mapper.insert(data);
+	public void svae(MyPlantStatisticsDTO stdto) {
+		mapper.insert(stdto);
 	}
 
 	@Override
-	public void register(PlantStatisticsVO vo) {
+	public void register(MyPlantStatisticsDTO stdto) {
 		
 		// 센싱 데이터 시간 자동 처리 유지
-		if(vo.getSensingTime() == null) {
-			vo.setSensingTime(new Date());
+		if(stdto.getSensing_time() == null) {
+			stdto.setSensing_time(new Date());
 		}
-		mapper.insert(vo);
+		mapper.insert(stdto);
 	}
     
    

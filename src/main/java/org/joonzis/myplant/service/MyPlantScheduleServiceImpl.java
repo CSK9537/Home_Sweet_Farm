@@ -2,8 +2,8 @@ package org.joonzis.myplant.service;
 
 import java.util.List;
 
+import org.joonzis.myplant.dto.MyPlantScheduleDTO;
 import org.joonzis.myplant.mapper.MyPlantScheduleMapper;
-import org.joonzis.myplant.vo.ScheduleVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,23 +14,23 @@ public class MyPlantScheduleServiceImpl implements MyPlantScheduleService {
 	private MyPlantScheduleMapper mapper;
 	
 	@Override
-	public List<ScheduleVO> getListByMyPlant(int myplantId) {
-		return mapper.getListByMyPlant(myplantId);
+	public List<MyPlantScheduleDTO> getListByMyPlant(int myplant_id) {
+		return mapper.getListByMyPlant(myplant_id);
 	}
 
 	@Override
-	public void register(ScheduleVO vo) {
-		 mapper.insert(vo);
+	public void register(MyPlantScheduleDTO scdto) {
+		 mapper.insert(scdto);
 	}
 
 	@Override
-	public boolean modify(ScheduleVO vo) {
-		return mapper.update(vo) == 1;
+	public boolean modify(MyPlantScheduleDTO scdto) {
+		return mapper.update(scdto) == 1;
 	}
 
 	@Override
-	public boolean remove(int scheduleId) {
-		return mapper.delete(scheduleId) == 1;
+	public boolean remove(int schedule_id) {
+		return mapper.delete(schedule_id) == 1;
 	}
 	
 }
