@@ -85,14 +85,14 @@
 	</select>
 	
 	<!-- 식물 목록 가져오기(rank등수 이상) -->
-	<select id="getPlantListByRank" resultType="org.joonzis.plant.vo.PlantVO">
+	<select id="getPlantListByRank" resultType="org.joonzis.plant.dto.PlantDTO">
 		<![CDATA[
 			SELECT * FROM (SELECT * FROM tbl_plant ORDER BY plant_searchcount DESC) WHERE ROWNUM <= #{rank}
 		]]>
 	</select>
 	
 	<!-- rank등수 제외 식물 목록 num개 -->
-	<select id="getPlantListByRandom" resultType="org.joonzis.plant.vo.PlantVO">
+	<select id="getPlantListByRandom" resultType="org.joonzis.plant.dto.PlantDTO">
 		<![CDATA[
 			SELECT * FROM (
 				SELECT * FROM tbl_plant WHERE plant_id NOT IN (
@@ -114,7 +114,7 @@
 	</select>
 	
 	<!-- 식물 정보 출력(plant_id) -->
-	<select id="getPlantInfo" resultType="org.joonzis.plant.vo.PlantVO">
+	<select id="getPlantInfo" resultType="org.joonzis.plant.dto.PlantDTO">
 		SELECT * FROM tbl_plant WHERE plant_id = #{plant_id}
 	</select>
 </mapper>

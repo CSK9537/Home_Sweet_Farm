@@ -86,7 +86,7 @@
 			)
 	</insert>
 	<!-- 가이드 정보 출력(plant_id) -->
-	<select id="getGuideInfo" resultType="org.joonzis.plant.vo.GuideVO">
+	<select id="getGuideInfo" resultType="org.joonzis.plant.dto.GuideDTO">
 		SELECT * FROM tbl_guide WHERE plant_id = #{plant_id}
 	</select>
 </mapper>

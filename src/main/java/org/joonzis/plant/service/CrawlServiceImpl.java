@@ -9,11 +9,11 @@ import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.List;
 
+import org.joonzis.plant.dto.GuideDTO;
+import org.joonzis.plant.dto.PlantDTO;
 import org.joonzis.plant.mapper.CrawlMapper;
 import org.joonzis.plant.mapper.GuideMapper;
 import org.joonzis.plant.mapper.PlantMapper;
-import org.joonzis.plant.vo.GuideVO;
-import org.joonzis.plant.vo.PlantVO;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -135,22 +135,22 @@ public class CrawlServiceImpl implements CrawlService{
 					String middleUrl = plant_name.replace(" ", "_").replace("'", "_");
 					driver.get("https://www.picturethisai.com/ko/wiki/" + middleUrl + ".html");
 					
-					PlantVO pvo = new PlantVO();
+					PlantDTO pdto = new PlantDTO();
 					
 					// 식물 영어 이름 set
-					pvo.setPlant_name(plant_name);
+					pdto.setPlant_name(plant_name);
 					
 					// 식물 한글 이름 set
 					WebElement plant_name_kor = wait.until(ExpectedConditions.visibilityOfElementLocated(
 							By.cssSelector(".description-main-left-title")
 							));
-					pvo.setPlant_name_kor(plant_name_kor.getText());
+					pdto.setPlant_name_kor(plant_name_kor.getText());
 					
 					// 설명 set
 					WebElement plant_description = wait.until(ExpectedConditions.visibilityOfElementLocated(
 							By.cssSelector(".des-content")
 							));
-					pvo.setPlant_description(plant_description.getText());
+					pdto.setPlant_description(plant_description.getText());
 					
 					// 학명 그룹
 					WebElement plant_scientific_names = wait.until(ExpectedConditions.visibilityOfElementLocated(
@@ -161,22 +161,22 @@ public class CrawlServiceImpl implements CrawlService{
 					for(WebElement category : plant_scientific_name) {
 						String[] categories = category.getText().split("\\n");		
 						if(categories[0].contains("종")) {
-							pvo.setPlant_species(categories[1]);
+							pdto.setPlant_species(categories[1]);
 						}
 						if(categories[0].contains("속")) {
-							pvo.setPlant_genus(categories[1]);
+							pdto.setPlant_genus(categories[1]);
 						}
 						if(categories[0].contains("과")) {
-							pvo.setPlant_family(categories[1]);
+							pdto.setPlant_family(categories[1]);
 						}
 						if(categories[0].contains("목")) {
-							pvo.setPlant_order(categories[1]);
+							pdto.setPlant_order(categories[1]);
 						}
 						if(categories[0].contains("강")) {
-							pvo.setPlant_class(categories[1]);
+							pdto.setPlant_class(categories[1]);
 						}
 						if(categories[0].contains("문")) {
-							pvo.setPlant_phylum(categories[1]);
+							pdto.setPlant_phylum(categories[1]);
 						}
 					}
 					
@@ -189,57 +189,57 @@ public class CrawlServiceImpl implements CrawlService{
 					for(WebElement category : key_facts_contents) {
 						String[] categories = category.getText().split("\\n");
 						if(categories[1].equals("독성")) {
-							pvo.setPlant_toxicity(categories[0]);
+							pdto.setPlant_toxicity(categories[0]);
 						}
 						if(categories[1].equals("수명")) {
-							pvo.setPlant_lifespan(categories[0]);
+							pdto.setPlant_lifespan(categories[0]);
 						}
 						if(categories[1].equals("종류")) {
-							pvo.setPlant_type(categories[0]);
+							pdto.setPlant_type(categories[0]);
 						}
 						if(categories[1].equals("식물 높이")) {
-							pvo.setPlant_height(categories[0]);
+							pdto.setPlant_height(categories[0]);
 						}
 						if(categories[1].equals("꼭대기 지름")) {
-							pvo.setPlant_spread(categories[0]);
+							pdto.setPlant_spread(categories[0]);
 						}
 						if(categories[1].equals("줄기 색상")) {
-							pvo.setPlant_stemcolor(categories[0]);
+							pdto.setPlant_stemcolor(categories[0]);
 						}
 						if(categories[1].equals("잎 색깔")) {
-							pvo.setPlant_leafcolor(categories[0]);
+							pdto.setPlant_leafcolor(categories[0]);
 						}
 						if(categories[1].equals("잎 종류")) {
-							pvo.setPlant_leaftype(categories[0]);
+							pdto.setPlant_leaftype(categories[0]);
 						}
 						if(categories[1].equals("꽃 색깔")) {
-							pvo.setPlant_flowercolor(categories[0]);
+							pdto.setPlant_flowercolor(categories[0]);
 						}
 						if(categories[1].equals("꽃 지름")) {
-							pvo.setPlant_flowersize(categories[0]);
+							pdto.setPlant_flowersize(categories[0]);
 						}
 						if(categories[1].equals("개화 시기")) {
-							pvo.setPlant_bloomtime(categories[0]);
+							pdto.setPlant_bloomtime(categories[0]);
 						}
 						if(categories[1].equals("과일 색")) {
-							pvo.setPlant_fruitcolor(categories[0]);
+							pdto.setPlant_fruitcolor(categories[0]);
 						}
 						if(categories[1].equals("수확 시기")) {
-							pvo.setPlant_harvesttime(categories[0]);
+							pdto.setPlant_harvesttime(categories[0]);
 						}
 						if(categories[1].equals("이상적인 온도")) {
 							String[] temperature = categories[0].split(" ");
-							pvo.setPlant_temperature_imin(Integer.parseInt(temperature[0]));
-							pvo.setPlant_temperature_imax(Integer.parseInt(temperature[2]));
+							pdto.setPlant_temperature_imin(Integer.parseInt(temperature[0]));
+							pdto.setPlant_temperature_imax(Integer.parseInt(temperature[2]));
 						}
 						if(categories[1].equals("휴면")) {
-							pvo.setPlant_dormancy(categories[0]);
+							pdto.setPlant_dormancy(categories[0]);
 						}
 						if(categories[1].equals("성장기")) {
-							pvo.setPlant_growthseason(categories[0]);
+							pdto.setPlant_growthseason(categories[0]);
 						}
 						if(categories[1].equals("성장률")) {
-							pvo.setPlant_growthrate(categories[0]);
+							pdto.setPlant_growthrate(categories[0]);
 						}
 					}
 					
@@ -253,29 +253,29 @@ public class CrawlServiceImpl implements CrawlService{
 							for(WebElement category : cultureitems) {
 								String[] categories = category.getText().split("\\n");
 								if(categories[0].contains("환경")) {
-									pvo.setPlant_culture_epv(categories[1]);
+									pdto.setPlant_culture_epv(categories[1]);
 								}
 								if(categories[0].contains("경제")) {
-									pvo.setPlant_culture_ev(categories[1]);
+									pdto.setPlant_culture_ev(categories[1]);
 								}
 								if(categories[0].contains("미용")) {
-									pvo.setPlant_culture_biv(categories[1]);
+									pdto.setPlant_culture_biv(categories[1]);
 								}
 								if(categories[0].contains("정원")) {
-									pvo.setPlant_culture_gu(categories[1]);
+									pdto.setPlant_culture_gu(categories[1]);
 								}
 								if(categories[0].contains("상징")) {
-									pvo.setPlant_culture_symbolism(categories[1]);
+									pdto.setPlant_culture_symbolism(categories[1]);
 								}
 								if(categories[0].contains("사실")) {
-									pvo.setPlant_culture_if(categories[1]);
+									pdto.setPlant_culture_if(categories[1]);
 								}
 							}
 						}
 					}
 					
 					// DB 저장
-					pmapper.insertPlantInfo(pvo);
+					pmapper.insertPlantInfo(pdto);
 					
 					// try문 종료
 				} catch (org.openqa.selenium.TimeoutException e) {
@@ -314,16 +314,16 @@ public class CrawlServiceImpl implements CrawlService{
 					JavascriptExecutor js = (JavascriptExecutor) driver;
 					js.executeScript("window.scrollBy(0, 100);");
 					
-					GuideVO gvo = new GuideVO();
+					GuideDTO gdto = new GuideDTO();
 					
 					// 식별 번호 set
-					gvo.setPlant_id(plant_id);
+					gdto.setPlant_id(plant_id);
 					
 					// 관리 팁 set
 					WebElement guide_caretip = wait.until(ExpectedConditions.visibilityOfElementLocated(
 							By.cssSelector(".description")
 							));
-					gvo.setGuide_caretip(guide_caretip.getText());
+					gdto.setGuide_caretip(guide_caretip.getText());
 					
 					// 관리 표
 					WebElement guide_table = wait.until(ExpectedConditions.visibilityOfElementLocated(
@@ -335,37 +335,37 @@ public class CrawlServiceImpl implements CrawlService{
 						String title = category.findElement(By.cssSelector(".text-wrapper-11")).getText();
 						String content = category.findElement(By.cssSelector(".text-wrapper-12")).getText();
 						if(title.equals("강도")) {
-							gvo.setGuide_toughness(content);
+							gdto.setGuide_toughness(content);
 						}
 						if(title.equals("관리 수준")) {
-							gvo.setGuide_carelevel(content);
+							gdto.setGuide_carelevel(content);
 						}
 						if(title.equals("관리 난이도")) {
-							gvo.setGuide_caredifficulty(content);
+							gdto.setGuide_caredifficulty(content);
 						}
 						if(title.equals("수명")) {
-							gvo.setGuide_lifespan(content);
+							gdto.setGuide_lifespan(content);
 						}
 						if(title.equals("급수 일정")) {
-							gvo.setGuide_watering_schedule(content);
+							gdto.setGuide_watering_schedule(content);
 						}
 						if(title.equals("햇빛 요건")) {
-							gvo.setGuide_sunlight_requirements(content);
+							gdto.setGuide_sunlight_requirements(content);
 						}
 						if(title.equals("토양 종류")) {
-							gvo.setGuide_soil_type(content);
+							gdto.setGuide_soil_type(content);
 						}
 						if(title.equals("토양 pH")) {
-							gvo.setGuide_soil_ph(content);
+							gdto.setGuide_soil_ph(content);
 						}
 						if(title.equals("심는 시기")) {
-							gvo.setGuide_planting_time(content);
+							gdto.setGuide_planting_time(content);
 						}
 						if(title.equals("내한성 구역")) {
-							gvo.setGuide_hardinesszone(content);
+							gdto.setGuide_hardinesszone(content);
 						}
 						if(title.equals("독성")) {
-							gvo.setGuide_toxicity(content);
+							gdto.setGuide_toxicity(content);
 						}
 					}
 					
@@ -383,20 +383,20 @@ public class CrawlServiceImpl implements CrawlService{
 								String tag_content = tag.getText();
 								if(tag_content.contains("습도")) {
 									int index = tag_content.indexOf(":") + 1;
-									gvo.setGuide_watering_humiditylevel(tag_content.substring(index).trim());
+									gdto.setGuide_watering_humiditylevel(tag_content.substring(index).trim());
 								}
 							}
-							gvo.setGuide_watering_content(content);
+							gdto.setGuide_watering_content(content);
 						}
 						if(title.contains("일조량")) {
 							for(WebElement tag : tags) {
 								String tag_content = tag.getText();
 								if(tag_content.contains("허용")) {
 									int index = tag_content.indexOf(":") + 1;
-									gvo.setGuide_sunlight_tolerance(tag_content.substring(index).trim());
+									gdto.setGuide_sunlight_tolerance(tag_content.substring(index).trim());
 								}
 							}
-							gvo.setGuide_sunlight_content(content);
+							gdto.setGuide_sunlight_content(content);
 						}
 						if(title.contains("온도")) {
 							for(WebElement tag : tags) {
@@ -405,99 +405,99 @@ public class CrawlServiceImpl implements CrawlService{
 									int index = tag_content.indexOf(":") + 1;
 									String temps = tag_content.substring(index).trim();
 									String[] temperature = temps.split(" ");
-									gvo.setGuide_temperature_imin(Integer.parseInt(temperature[0]));
-									gvo.setGuide_temperature_imax(Integer.parseInt(temperature[2]));
+									gdto.setGuide_temperature_imin(Integer.parseInt(temperature[0]));
+									gdto.setGuide_temperature_imax(Integer.parseInt(temperature[2]));
 								}
 								if(tag_content.contains("허용")) {
 									int index = tag_content.indexOf(":") + 1;
 									String temps = tag_content.substring(index).trim();
 									String[] temperature = temps.split(" ");
 									if(temperature.length > 2) {
-										gvo.setGuide_temperature_tmin(Integer.parseInt(temperature[0]));
-										gvo.setGuide_temperature_tmax(Integer.parseInt(temperature[2]));
+										gdto.setGuide_temperature_tmin(Integer.parseInt(temperature[0]));
+										gdto.setGuide_temperature_tmax(Integer.parseInt(temperature[2]));
 									} else {
-										gvo.setGuide_temperature_tmin(Integer.parseInt(temperature[0]));
+										gdto.setGuide_temperature_tmin(Integer.parseInt(temperature[0]));
 									}
 								}
 							}
-							gvo.setGuide_temperature_content(content);
+							gdto.setGuide_temperature_content(content);
 						}
 						if(title.contains("토양")) {
 							for(WebElement tag : tags) {
 								String tag_content = tag.getText();
 								if(tag_content.contains("구성")) {
 									int index = tag_content.indexOf(":") + 1;
-									gvo.setGuide_soil_composition(tag_content.substring(index).trim());
+									gdto.setGuide_soil_composition(tag_content.substring(index).trim());
 								}
 							}
-							gvo.setGuide_soil_content(content);
+							gdto.setGuide_soil_content(content);
 						}
 						if(title.contains("비료")) {
-							gvo.setGuide_fertilizing_content(content);
+							gdto.setGuide_fertilizing_content(content);
 						}
 						if(title.contains("가지치기")) {
 							for(WebElement tag : tags) {
 								String tag_content = tag.getText();
 								if(tag_content.contains("시기")) {
 									int index = tag_content.indexOf(":") + 1;
-									gvo.setGuide_pruning_time(tag_content.substring(index).trim());
+									gdto.setGuide_pruning_time(tag_content.substring(index).trim());
 								}
 								if(tag_content.contains("장점")) {
 									int index = tag_content.indexOf(":") + 1;
-									gvo.setGuide_pruning_benefits(tag_content.substring(index).trim());
+									gdto.setGuide_pruning_benefits(tag_content.substring(index).trim());
 								}
 							}
-							gvo.setGuide_pruning_content(content);
+							gdto.setGuide_pruning_content(content);
 						}
 						if(title.contains("번식")) {
 							for(WebElement tag : tags) {
 								String tag_content = tag.getText();
 								if(tag_content.contains("시기")) {
 									int index = tag_content.indexOf(":") + 1;
-									gvo.setGuide_propagation_time(tag_content.substring(index).trim());
+									gdto.setGuide_propagation_time(tag_content.substring(index).trim());
 								}
 								if(tag_content.contains("유형")) {
 									int index = tag_content.indexOf(":") + 1;
-									gvo.setGuide_propagation_type(tag_content.substring(index).trim());
+									gdto.setGuide_propagation_type(tag_content.substring(index).trim());
 								}
 							}
-							gvo.setGuide_propagation_content(content);
+							gdto.setGuide_propagation_content(content);
 						}
 						if(title.contains("옮겨심는")) {
 							for(WebElement tag : tags) {
 								String tag_content = tag.getText();
 								if(tag_content.contains("시기")) {
 									int index = tag_content.indexOf(":") + 1;
-									gvo.setGuide_transplanting_time(tag_content.substring(index).trim());
+									gdto.setGuide_transplanting_time(tag_content.substring(index).trim());
 								}
 							}
-							gvo.setGuide_transplanting_content(content);
+							gdto.setGuide_transplanting_content(content);
 						}
 						if(title.contains("심는") && !title.contains("옮겨심는")) {
-							gvo.setGuide_planting_content(content);
+							gdto.setGuide_planting_content(content);
 						}
 						if(title.contains("분갈이")) {
 							for(WebElement tag : tags) {
 								String tag_content = tag.getText();
 								if(tag_content.contains("일정")) {
 									int index = tag_content.indexOf(":") + 1;
-									gvo.setGuide_repotting_schedule(tag_content.substring(index).trim());
+									gdto.setGuide_repotting_schedule(tag_content.substring(index).trim());
 								}
 							}
-							gvo.setGuide_repotting_content(content);
+							gdto.setGuide_repotting_content(content);
 						}
 						if(title.contains("수확")) {
 							for(WebElement tag : tags) {
 								String tag_content = tag.getText();
 								if(tag_content.contains("시기")) {
 									int index = tag_content.indexOf(":") + 1;
-									gvo.setGuide_harvest_time(tag_content.substring(index).trim());
+									gdto.setGuide_harvest_time(tag_content.substring(index).trim());
 								}
 							}
-							gvo.setGuide_harvest_content(content);
+							gdto.setGuide_harvest_content(content);
 						}
 					}
-					gmapper.insertGuideInfo(gvo);
+					gmapper.insertGuideInfo(gdto);
 					// try문 종료
 				} catch (org.openqa.selenium.TimeoutException e) {
 					continue;

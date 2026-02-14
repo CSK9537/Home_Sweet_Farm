@@ -1,4 +1,4 @@
-package org.joonzis.plant.vo;
+package org.joonzis.plant.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PlantVO {
+public class PlantDTO {
 	// 식물 식별번호
 	private int plant_id;
 	// 식물 영어 이름

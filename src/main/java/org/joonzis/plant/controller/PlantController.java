@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 
+import org.joonzis.plant.dto.PlantDTO;
 import org.joonzis.plant.service.PlantService;
-import org.joonzis.plant.vo.PlantVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -43,7 +43,7 @@ public class PlantController {
 	// 식물 메인 페이지 추가 목록
 	@ResponseBody
 	@GetMapping("/more")
-	public List<PlantVO> randomPlants() {
+	public List<PlantDTO> randomPlants() {
 		//(호출 1회 가져올 갯수 : num)
 		return pservice.plantListByRandomPlus(12);
 	}
