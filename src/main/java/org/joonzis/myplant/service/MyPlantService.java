@@ -5,9 +5,14 @@ import java.util.List;
 import org.joonzis.myplant.dto.MyPlantDTO;
 
 public interface MyPlantService {
+	// 나의 식물 전체 목록
 	public List<MyPlantDTO> getMyPlantMainList(int user_id);
+	// 나의 식물 정보
 	public MyPlantDTO get(int myplant_id);
-	public void register(MyPlantDTO mpdto);
-	public boolean modify(MyPlantDTO mpdto);
-	public boolean remove(int myplant_id);
+	// 나의 식물 추가
+	public String register(MyPlantDTO mpdto);
+	// 나의 식물 수정
+	public String modify(MyPlantDTO mpdto);
+	// 나의 식물 삭제
+	public String remove(int myplant_id);
 }
