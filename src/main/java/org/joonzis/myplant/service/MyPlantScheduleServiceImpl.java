@@ -11,26 +11,26 @@ import org.springframework.stereotype.Service;
 public class MyPlantScheduleServiceImpl implements MyPlantScheduleService {
 	
 	@Autowired
-	private MyPlantScheduleMapper mapper;
+	private MyPlantScheduleMapper scmapper;
 	
 	@Override
 	public List<MyPlantScheduleDTO> getListByMyPlant(int myplant_id) {
-		return mapper.getListByMyPlant(myplant_id);
+		return scmapper.getListByMyPlant(myplant_id);
 	}
 
 	@Override
 	public void register(MyPlantScheduleDTO scdto) {
-		 mapper.insert(scdto);
+		scmapper.insert(scdto);
 	}
 
 	@Override
 	public boolean modify(MyPlantScheduleDTO scdto) {
-		return mapper.update(scdto) == 1;
+		return scmapper.update(scdto) == 1;
 	}
-
+	
 	@Override
 	public boolean remove(int schedule_id) {
-		return mapper.delete(schedule_id) == 1;
+		return scmapper.delete(schedule_id) == 1;
 	}
 	
 }

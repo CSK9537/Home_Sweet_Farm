@@ -15,31 +15,31 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/arduino")
 @RequiredArgsConstructor
 public class ArduinoController {
+	
 	@Autowired
 	private SensorDataService sensorDataService;
-
-
-	 @PostMapping("/sensor-data")
-	    public ResponseEntity<String> receiveSensorData(@RequestBody MyPlantStatisticsDTO stdto) {
-		 	
-		 	// DTO → VO 변환
-	        MyPlantStatisticsDTO vo = new MyPlantStatisticsDTO();
-	        vo.setMyplant_id(stdto.getMyplant_id());
-	        vo.setTemperature(stdto.getTemperature());
-	        vo.setHumidity(stdto.getHumidity());
-	        vo.setIllumination(stdto.getIllumination());
-	        vo.setSoil_moisture(stdto.getSoil_moisture());
-	        vo.setSensing_time(stdto.getSensing_time()); // null 가능
-
-	        // Service 호출 (시간 자동 처리 포함)
-	        sensorDataService.register(vo);
-
-	        return ResponseEntity.ok("SUCCESS");
-	    }
-
-	 @PostMapping("/iot/sensor")
-	 public ResponseEntity<String> receive(@RequestBody MyPlantStatisticsDTO stdto){
-		 sensorDataService.svae(stdto);
-		 return ResponseEntity.ok("ok");
-	 }
+	
+	@PostMapping("/sensor-data")
+	public ResponseEntity<String> receiveSensorData(@RequestBody MyPlantStatisticsDTO stdto) {
+		
+		// DTO → VO 변환
+		MyPlantStatisticsDTO vo = new MyPlantStatisticsDTO();
+		vo.setMyplant_id(stdto.getMyplant_id());
+		vo.setTemperature(stdto.getTemperature());
+		vo.setHumidity(stdto.getHumidity());
+		vo.setIllumination(stdto.getIllumination());
+		vo.setSoil_moisture(stdto.getSoil_moisture());
+		vo.setSensing_time(stdto.getSensing_time()); // null 가능
+		
+		// Service 호출 (시간 자동 처리 포함)
+		sensorDataService.register(vo);
+		
+		return ResponseEntity.ok("SUCCESS");
+	}
+	
+	@PostMapping("/iot/sensor")
+	public ResponseEntity<String> receive(@RequestBody MyPlantStatisticsDTO stdto){
+		sensorDataService.save(stdto);
+		return ResponseEntity.ok("ok");
+	}
 }

@@ -14,5 +14,4 @@ public class MyPlantScheduleDTO {
 	private int myplant_id;
 	private Date myplant_schedule_date;
 	private String myplant_schedule_do;
-
 }

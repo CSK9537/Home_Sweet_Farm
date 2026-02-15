@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class MyPlantDTO {
 	private int myplant_id;
-    private int user_id;
-    private int plant_id;
-    private String myplant_name;
-    private Date myplant_regdate;
+	private int user_id;
+	private int plant_id;
+	private String myplant_name;
+	private Date myplant_regdate;
 }
