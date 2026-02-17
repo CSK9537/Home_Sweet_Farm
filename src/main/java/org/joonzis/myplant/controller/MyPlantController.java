@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
 
 @Controller
+@Log4j
 @RequestMapping("/myplant")
-@RequiredArgsConstructor
 public class MyPlantController {
 	
 	@Autowired
-	MyPlantService mpservice;
+	private MyPlantService mpservice;
 	
 	// 메인 화면
 	@GetMapping("")
@@ -29,6 +29,12 @@ public class MyPlantController {
 		// int userId = Integer.parseInt(principal.getName());
 		model.addAttribute("myPlants", mpservice.getMyPlantMainList(user_id));
 		return "myplant/MyPlantMain";
+	}
+	
+	// 추천 가이드 이동
+	@GetMapping("/recommend")
+	public String recommend() {
+		return "myplant/MyPlantRecommend";
 	}
 	
 	// 나의 식물 추가
