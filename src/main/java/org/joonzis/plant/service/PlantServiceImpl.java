@@ -43,7 +43,12 @@ public class PlantServiceImpl implements PlantService{
 		this.total = total;
 		this.index = index;
 		plbr = pmapper.getPlantListByRandom(rank, total);
-		List<PlantDTO> firstList = plbr.subList(0, index);
+		List<PlantDTO> firstList = new ArrayList<PlantDTO>();
+		if(plbr.size() > index) {
+			firstList = plbr.subList(0, index);
+		}else {
+			firstList = plbr;
+		}
 		return firstList;
 	}
 	
