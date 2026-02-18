@@ -36,7 +36,7 @@
           </article>
 
           <!-- 우: 추천 가이드 이동 -->
-          <a class="hero-cta" href="#" role="button">
+          <a class="hero-cta" href="/myplant/recommend" role="button">
 		            아직 반려식물이 없으신가요?<br/>
 		            추천 받으시고 키워보세요.<br/><br/>
             <span class="hero-cta__link">추천가이드로 이동</span>

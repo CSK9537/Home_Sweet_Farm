@@ -169,7 +169,7 @@
 	          <a class="gnb__link" href="/myplant">나의 식물</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
-	              <a class="subbar__link" href="#">추천 가이드</a>
+	              <a class="subbar__link" href="/myplant/recommend">추천 가이드</a>
 	              <span class="subbar__sep">||</span>
 	              <a class="subbar__link" href="#">나의 식물 관리</a>
 	            </div>
@@ -209,9 +209,6 @@
 	            <a href="#">자유게시판</a>
 	            <a href="#">벼룩시장</a>
 	          </details>
-	
-	          <a class="mnav__link" href="#">백과사전</a>
-	          <a class="mnav__link" href="#">관리가이드</a>
 	
 	          <details class="mnav__item">
 	            <summary>스토어</summary>
