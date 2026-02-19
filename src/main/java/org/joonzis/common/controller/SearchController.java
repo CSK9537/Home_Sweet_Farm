@@ -2,7 +2,7 @@ package org.joonzis.common.controller;
 
 import java.util.List;
 
-import org.joonzis.plant.dto.PlantDTO;
+import org.joonzis.plant.dto.SimplePlantDTO;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +21,7 @@ public class SearchController {
 	
 	@GetMapping(value = "/plant",
 				produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<PlantDTO>> searchPlant(@RequestParam(value = "q", required = false) String q) {
+	public ResponseEntity<List<SimplePlantDTO>> searchPlant(@RequestParam(value = "q", required = false) String q) {
 		
 		return null;
 	}

@@ -19,7 +19,7 @@
 	
 	    <!-- 데스크탑/태블릿: 로고 / 필터검색 / 로그인 유지 -->
 	    <div class="header__top">
-	      <a class="logo" href="#" aria-label="Home Sweet Farm">
+	      <a class="logo" href="/" aria-label="Home Sweet Farm">
 	        <span class="logo__text">Home Sweet Farm</span>
 	      </a>
 	
@@ -47,9 +47,8 @@
 	                    <button type="button" class="fsub__item" data-sub="벼룩시장">벼룩시장</button>
 	                  </div>
 	                </details>
-	
-	                <button type="button" class="fcat__solo" data-main="백과사전">백과사전</button>
-	                <button type="button" class="fcat__solo" data-main="관리가이드">관리가이드</button>
+	               
+	                <button type="button" class="fcat__solo" data-main="식물">식물</button>
 	
 	                <details class="fcat__item" data-main="스토어">
 	                  <summary class="fcat__summary">스토어</summary>
@@ -144,7 +143,7 @@
 	    <nav class="gnb gnb--desktop" aria-label="주요 메뉴">
 	      <ul class="gnb__list">
 	        <li class="gnb__item has-sub">
-	          <a class="gnb__link" href="#">커뮤니티</a>
+	          <a class="gnb__link" href="/community">커뮤니티</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
 	              <a class="subbar__link" href="#">자유게시판</a>
@@ -155,13 +154,11 @@
 	        </li>
 	
 	        <li class="gnb__sep">||</li>
-	        <li class="gnb__item"><a class="gnb__link" href="#">백과사전</a></li>
-	        <li class="gnb__sep">||</li>
-	        <li class="gnb__item"><a class="gnb__link" href="#">관리가이드</a></li>
+	        <li class="gnb__item"><a class="gnb__link" href="/plant">식물</a></li>
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
-	          <a class="gnb__link" href="#">스토어</a>
+	          <a class="gnb__link" href="/store">스토어</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
 	              <a class="subbar__link" href="#">재배 &amp; 관리용품</a>
@@ -178,10 +175,10 @@
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
-	          <a class="gnb__link" href="#">나의 식물</a>
+	          <a class="gnb__link" href="/myplant">나의 식물</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
-	              <a class="subbar__link" href="#">추천 가이드</a>
+	              <a class="subbar__link" href="/myplant/recommend">추천 가이드</a>
 	              <span class="subbar__sep">||</span>
 	              <a class="subbar__link" href="#">나의 식물 관리</a>
 	            </div>
@@ -222,8 +219,7 @@
 	            <a href="#">벼룩시장</a>
 	          </details>
 	
-	          <a class="mnav__link" href="#">백과사전</a>
-	          <a class="mnav__link" href="#">관리가이드</a>
+	          <a class="mnav__link" href="#">식물</a>
 	
 	          <details class="mnav__item">
 	            <summary>스토어</summary>
