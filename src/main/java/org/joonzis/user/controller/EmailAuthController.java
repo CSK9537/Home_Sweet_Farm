@@ -19,8 +19,8 @@ import lombok.extern.log4j.Log4j;
 
 @Log4j
 @RestController
-@RequestMapping("/eamil")
-public class EmailAuthControler {
+@RequestMapping("/email")
+public class EmailAuthController {
 	@Autowired
 	EmailService emailer;
 	
