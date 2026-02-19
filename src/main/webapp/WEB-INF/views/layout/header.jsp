@@ -120,9 +120,17 @@
 	      </button>
 	
 	      <div class="auth auth--mobile">
-	        <a class="auth__link" href="/user/login">로그인</a>
-	        <span class="auth__sep" aria-hidden="true">||</span>
-	        <a class="auth__link" href="/user/JoinUser">회원가입</a>
+	        <c:choose>
+				<c:when test="${empty sessionScope.loginUser}">
+					 <a class="auth__link" href="/user/login">로그인</a>
+					 <span class="auth__sep" aria-hidden="true">||</span>
+					 <a class="auth__link" href="/user/JoinUser">회원가입</a>
+				</c:when>
+					
+				<c:otherwise>
+					<a class="auth__link" href="/user/logout">로그아웃</a>
+				</c:otherwise>
+			</c:choose>
 	      </div>
 	    </div>
 	

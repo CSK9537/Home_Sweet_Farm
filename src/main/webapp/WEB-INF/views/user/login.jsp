@@ -37,10 +37,17 @@
                 <label class="input-label" for="loginId">아이디</label>
                 <input id="loginId" name="username" class="text-input" type="text" maxlength="20"
                        placeholder="아이디" autocomplete="username" />
+                       
+                   <div id="idMsg"></div> 
+
 
                 <label class="input-label" for="loginPw">비밀번호</label>
                 <input id="loginPw" name="password" class="text-input" type="password" maxlength="20"
                        placeholder="비밀번호" autocomplete="current-password" />
+                   
+                   <div id="pwMsg"></div>    
+                   
+
 
                 <div class="row-between">
                   <label class="check-wrap">
@@ -49,7 +56,7 @@
                   </label>
                 </div>
 
-                <button type="submit" class="btn-primary">로그인</button>
+                <button type="submit" class="btn-primary" id="loginBtn">로그인</button>
 
                 <div class="social-block" aria-label="소셜 로그인">
                   <button type="button" class="btn-social kakao">카카오톡 계정으로 로그인</button>

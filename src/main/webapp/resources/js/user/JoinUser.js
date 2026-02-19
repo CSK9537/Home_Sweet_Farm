@@ -326,6 +326,8 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 	        pwMsg.innerText = "사용 가능한 비밀번호입니다.";
 	        pwMsg.style.color = "green";
 	    }
+		
+	    
 	});
 
 //비밀번호 확인 검증
