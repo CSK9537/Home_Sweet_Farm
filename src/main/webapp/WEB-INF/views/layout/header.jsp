@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -89,12 +90,23 @@
 	          </div>
 	        </div>
 	      </div>
-	
+
 	      <div class="auth auth--desktop">
-	        <a class="auth__link" href="/user/login">로그인</a>
-	        <span class="auth__sep" aria-hidden="true">||</span>
-	        <a class="auth__link" href="/user/JoinUser">회원가입</a>
-	      </div>
+			<c:choose>
+			
+			  <!-- 로그인 안 된 상태 -->
+			  <c:when test="${empty sessionScope.loginUser}">
+			    <a class="auth__link" href="/user/login">로그인</a>
+			    <span class="auth__sep" aria-hidden="true">|</span>
+			    <a class="auth__link" href="/user/JoinUser">회원가입</a>
+			  </c:when>
+			
+			  <!-- 로그인 된 상태 -->
+			  <c:otherwise>
+			    <a class="auth__link" href="/user/logout">로그아웃</a>
+			  </c:otherwise>
+			</c:choose>
+		</div>
 	    </div>
 	
 	    <!-- 모바일 1줄: 햄버거 / 로그인 / 회원가입 -->
@@ -110,12 +122,26 @@
 	        <span class="mnav__icon" aria-hidden="true"><span></span></span>
 	      </button>
 	
-	      <div class="auth auth--mobile">
-	        <a class="auth__link" href="/user/login">로그인</a>
-	        <span class="auth__sep" aria-hidden="true">||</span>
-	        <a class="auth__link" href="/user/JoinUser">회원가입</a>
-	      </div>
-	    </div>
+		      <div class="auth auth--desktop">
+	
+				<c:choose>
+				
+				  <!-- 로그인 안 된 상태 -->
+				  <c:when test="${empty sessionScope.loginUser}">
+				    <a class="auth__link" href="/user/login">로그인</a>
+				    <span class="auth__sep" aria-hidden="true">|</span>
+				    <a class="auth__link" href="/user/JoinUser">회원가입</a>
+				  </c:when>
+				
+				  <!-- 로그인 된 상태 -->
+				  <c:otherwise>
+				    <a class="auth__link" href="/user/logout">로그아웃</a>
+				  </c:otherwise>
+				
+				</c:choose>
+	
+			</div>
+	   	</div>
 	
 	    <!-- 모바일 2줄: 로고 -->
 	    <div class="mrow mrow--logo">
