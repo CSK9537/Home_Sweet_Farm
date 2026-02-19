@@ -19,8 +19,9 @@ public class MsgServiceImpl implements MsgService{
     private MsgMapper msgMapper;
 
     // 1. 메세지 저장
-    public void sendMessage(MsgVO msgVO) {
+    public MsgVO sendMessage(MsgVO msgVO) {
         msgMapper.insert(msgVO);
+        return msgVO;
     }
 
     // 2. 채팅방 전체 메세지 조회
@@ -35,10 +36,12 @@ public class MsgServiceImpl implements MsgService{
         return msgMapper.findAfterMsgId(roomId, msgId);
     }
     
-  // 5. 특정 메세지 조회 
+  // 4. 특정 메세지 조회 
   public MsgVO findById(Long msgId) {
       return msgMapper.findById(msgId);
   }
+  
+
 
 //    // 4. 메세지 삭제
 //    public void deleltMessage(Long msgId) {
