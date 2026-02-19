@@ -135,19 +135,14 @@
               <h3 class="verify-title">본인인증</h3>
               <p class="verify-desc">
                	 회원님의 개인정보 보호를 위해 <strong>본인인증</strong>이 필요합니다.<br/>
-                	원하시는 인증 방식을 선택해 진행해주세요.
+                	본인인증을 진행해주세요.
               </p>
 
               <div class="verify-actions">
-                <button type="button" class="btn btn-outline" data-modal-open="modal-sms">문자인증</button>
                 <button type="button" class="btn btn-outline" data-modal-open="modal-email">이메일 인증</button>
               </div>
 
               <div class="verify-status">
-                <div class="status-line">
-                  <span>문자 인증</span>
-                  <span class="badge" id="smsBadge">미완료</span>
-                </div>
                 <div class="status-line">
                   <span>이메일 인증</span>
                   <span class="badge" id="emailBadge">미완료</span>
