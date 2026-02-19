@@ -100,3 +100,25 @@
     init();
   }
 })();
+
+//로그인 버튼 클릭
+const loginBtn = document.querySelector("#loginBtn");
+
+if (loginBtn) {
+	loginBtn.addEventListener("click", 
+function (e) {
+
+    const loginIdEl = document.querySelector("#loginId");
+    const pwEl = document.querySelector("#loginPw");
+
+    const loginId = loginIdEl ? (loginIdEl.value || "").trim() : "";
+    const loginPw = pwEl ? (pwEl.value || "") : "";
+    
+	    if(loginId === "" || loginPw === ""){
+	    	e.preventDefault();//입력 없으면 제출 막기
+	    	alert("아이디 또는 비밀번호를 입력해주세요.");
+	    }else{
+	    	alert("로그인 완료!");
+	    }
+    });
+}
