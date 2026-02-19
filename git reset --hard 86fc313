@@ -1,0 +1,144 @@
+[33m756ce0b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/register[m[33m, [m[1;31morigin/feature/register[m[33m)[m HEAD@{0}: commit: [feat]로그인 후 로그아웃 구현2
+[33m7fbe6a0[m HEAD@{1}: commit: [feat] 로그인후 로그아웃 구현
+[33mdb7d5b0[m HEAD@{2}: checkout: moving from dev to feature/register
+[33m51bb2a6[m HEAD@{3}: checkout: moving from feature/register to dev
+[33mdb7d5b0[m HEAD@{4}: pull origin feature/register: Merge made by the 'ort' strategy.
+[33m86fc313[m HEAD@{5}: commit: [feat] 회원가입 인증번호 발송2
+[33ma6ca984[m HEAD@{6}: rebase (finish): returning to refs/heads/feature/register
+[33ma6ca984[m HEAD@{7}: rebase (pick): 이메일 인증1
+[33mdeb0244[m HEAD@{8}: rebase (start): checkout dev
+[33m164e408[m HEAD@{9}: checkout: moving from dev to feature/register
+[33m51bb2a6[m HEAD@{10}: checkout: moving from feature/register to dev
+[33m164e408[m HEAD@{11}: pull origin feature/register: Merge made by the 'ort' strategy.
+[33mdeb0244[m HEAD@{12}: commit: 회원가입-이메일 인증 완료(js)
+[33m4eddb0f[m HEAD@{13}: rebase (finish): returning to refs/heads/feature/register
+[33m4eddb0f[m HEAD@{14}: rebase (pick): 이메일 인증1
+[33m51bb2a6[m HEAD@{15}: rebase (start): checkout dev
+[33m2e8a1f2[m HEAD@{16}: checkout: moving from dev to feature/register
+[33m51bb2a6[m HEAD@{17}: checkout: moving from feature/register to dev
+[33m2e8a1f2[m HEAD@{18}: commit: 이메일 인증1
+[33me280e63[m HEAD@{19}: rebase (finish): returning to refs/heads/feature/register
+[33me280e63[m HEAD@{20}: rebase (continue): main.jsp 수정
+[33mbfc6698[m HEAD@{21}: rebase (start): checkout dev
+[33m7f18ef3[m HEAD@{22}: checkout: moving from dev to feature/register
+[33mbfc6698[m HEAD@{23}: pull origin dev: Fast-forward
+[33mfe21fa5[m HEAD@{24}: checkout: moving from feature/register to dev
+[33m7f18ef3[m HEAD@{25}: commit: main.jsp 수정
+[33m6e240ab[m HEAD@{26}: rebase (abort): returning to refs/heads/feature/register
+[33mfe21fa5[m HEAD@{27}: rebase (start): checkout dev
+[33m6e240ab[m HEAD@{28}: checkout: moving from dev to feature/register
+[33mfe21fa5[m HEAD@{29}: checkout: moving from feature/register to dev
+[33m6e240ab[m HEAD@{30}: commit: [feat]비밀번호&비번 확인 검증2
+[33md142d0f[m HEAD@{31}: commit: [feat]비밀번호&비번 확인 검증
+[33m20e9e15[m HEAD@{32}: commit: [feat]회원가입 후 회원가입 성공알림창
+[33mdda1480[m HEAD@{33}: rebase (finish): returning to refs/heads/feature/register
+[33mdda1480[m HEAD@{34}: rebase (start): checkout dev
+[33ma16b22e[m HEAD@{35}: checkout: moving from dev to feature/register
+[33mdda1480[m HEAD@{36}: pull origin dev: Fast-forward
+[33m9dc2417[m HEAD@{37}: checkout: moving from feature/register to dev
+[33ma16b22e[m HEAD@{38}: commit: 회원가입 수정
+[33m1843744[m HEAD@{39}: commit (merge): [feat] 회원가입 아이디 중복
+[33mf14252f[m HEAD@{40}: commit: [feat]회원가입 시, 아이디 비번 확인
+[33mf1f151f[m HEAD@{41}: rebase (finish): returning to refs/heads/feature/register
+[33mf1f151f[m HEAD@{42}: rebase (pick): [feat]아이디중복확인 최종
+[33m36187e1[m HEAD@{43}: rebase (pick): [feat]아이디중복 확인
+[33m1b2ffdf[m HEAD@{44}: rebase (pick): [feat]컨트롤러 수정
+[33m9ae1903[m HEAD@{45}: rebase (pick): [feat] 매퍼삭제(본인인증-전화번호)
+[33m851d8cc[m HEAD@{46}: rebase (continue): [feat]회원가입 오류해결
+[33m442dd49[m HEAD@{47}: rebase (pick): [feat]아이디&비밀번호 검증, 비번 확인(js)
+[33mef5f7e3[m HEAD@{48}: rebase (continue): [feat] 매퍼삭제(본인인증-전화번호)
+[33m9dc2417[m HEAD@{49}: rebase (start): checkout dev
+[33m1092dad[m HEAD@{50}: checkout: moving from dev to feature/register
+[33m9dc2417[m HEAD@{51}: pull: Merge made by the 'ort' strategy.
+[33mc5db41c[m HEAD@{52}: checkout: moving from feature/register to dev
+[33m1092dad[m HEAD@{53}: commit: [feat]아이디중복확인 최종
+[33mae0285a[m HEAD@{54}: commit: [feat]아이디중복 확인
+[33mab83871[m HEAD@{55}: rebase (abort): returning to refs/heads/feature/register
+[33mf72e2ae[m HEAD@{56}: rebase (pick): [feat]아이디&비밀번호 검증, 비번 확인(js)
+[33m54aa2d9[m HEAD@{57}: rebase (pick): [feat] 매퍼삭제(본인인증-전화번호)
+[33mc5db41c[m HEAD@{58}: rebase (start): checkout dev
+[33mab83871[m HEAD@{59}: checkout: moving from dev to feature/register
+[33mc5db41c[m HEAD@{60}: pull origin dev: Merge made by the 'ort' strategy.
+[33m73e3cfa[m HEAD@{61}: checkout: moving from feature/register to dev
+[33mab83871[m HEAD@{62}: rebase (abort): returning to refs/heads/feature/register
+[33m4140c68[m HEAD@{63}: rebase (pick): [feat]아이디&비밀번호 검증, 비번 확인(js)
+[33m402bc5d[m HEAD@{64}: rebase (pick): [feat] 매퍼삭제(본인인증-전화번호)
+[33m73e3cfa[m HEAD@{65}: rebase (start): checkout dev
+[33mab83871[m HEAD@{66}: checkout: moving from dev to feature/register
+[33m73e3cfa[m HEAD@{67}: pull origin dev: Merge made by the 'ort' strategy.
+[33mf7e5052[m HEAD@{68}: checkout: moving from feature/register to dev
+[33mab83871[m HEAD@{69}: commit: [feat]컨트롤러 수정
+[33md3af738[m HEAD@{70}: commit (merge): [feat]merge conflict 해결
+[33m264aa9a[m HEAD@{71}: commit: [feat]아이디&비밀번호 검증, 비번 확인(js)
+[33mc08d6df[m HEAD@{72}: rebase (finish): returning to refs/heads/feature/register
+[33mc08d6df[m HEAD@{73}: rebase (pick): [feat] 매퍼삭제(본인인증-전화번호)
+[33mf7e5052[m HEAD@{74}: rebase (start): checkout dev
+[33m6749198[m HEAD@{75}: checkout: moving from dev to feature/register
+[33mf7e5052[m HEAD@{76}: pull origin dev: Merge made by the 'ort' strategy.
+[33mb9b0f7d[m HEAD@{77}: checkout: moving from feature/register to dev
+[33m6749198[m HEAD@{78}: commit: [feat] 매퍼삭제(본인인증-전화번호)
+[33m0546abf[m HEAD@{79}: checkout: moving from feature/register to feature/register
+[33m0546abf[m HEAD@{80}: rebase (finish): returning to refs/heads/feature/register
+[33m0546abf[m HEAD@{81}: rebase (pick): [feat]회원가입sql 오류 해결
+[33me80afb6[m HEAD@{82}: rebase (pick): [feat]회원가입 오류해결
+[33mb9b0f7d[m HEAD@{83}: rebase (start): checkout dev
+[33m3405078[m HEAD@{84}: checkout: moving from dev to feature/register
+[33mb9b0f7d[m HEAD@{85}: pull origin dev: Merge made by the 'ort' strategy.
+[33m18d8ead[m HEAD@{86}: checkout: moving from feature/register to dev
+[33m3405078[m HEAD@{87}: commit: [feat]회원가입sql 오류 해결
+[33m44f74f8[m HEAD@{88}: commit: [feat]회원가입 오류해결
+[33m18d8ead[m HEAD@{89}: rebase (finish): returning to refs/heads/feature/register
+[33m18d8ead[m HEAD@{90}: rebase (start): checkout dev
+[33mb094c1c[m HEAD@{91}: checkout: moving from dev to feature/register
+[33m18d8ead[m HEAD@{92}: pull origin dev: Merge made by the 'ort' strategy.
+[33m1dfb496[m HEAD@{93}: checkout: moving from feature/register to dev
+[33mb094c1c[m HEAD@{94}: rebase (finish): returning to refs/heads/feature/register
+[33mb094c1c[m HEAD@{95}: rebase (pick): [feat]해시태그&관심사
+[33me272636[m HEAD@{96}: rebase (pick): [feat]회원가입 처리
+[33m21e5ccf[m HEAD@{97}: rebase (pick): [feat]회원가입: 컨트롤러&jsp, js 수정1
+[33m1dfb496[m HEAD@{98}: rebase (start): checkout dev
+[33mcff39bc[m HEAD@{99}: checkout: moving from dev to feature/register
+[33m1dfb496[m HEAD@{100}: pull origin dev: Merge made by the 'ort' strategy.
+[33m94a282a[m HEAD@{101}: checkout: moving from feature/register to dev
+[33mcff39bc[m HEAD@{102}: commit: [feat]해시태그&관심사
+[33mc41b9c2[m HEAD@{103}: commit: [feat]회원가입 처리
+[33m4724df8[m HEAD@{104}: commit: [feat]회원가입: 컨트롤러&jsp, js 수정1
+[33m94a282a[m HEAD@{105}: rebase (finish): returning to refs/heads/feature/register
+[33m94a282a[m HEAD@{106}: rebase (start): checkout dev
+[33m433e366[m HEAD@{107}: checkout: moving from dev to feature/register
+[33m94a282a[m HEAD@{108}: pull origin dev: Merge made by the 'ort' strategy.
+[33mfdb7c84[m HEAD@{109}: checkout: moving from feature/register to dev
+[33m433e366[m HEAD@{110}: pull origin feature/register --rebase (finish): returning to refs/heads/feature/register
+[33m433e366[m HEAD@{111}: pull origin feature/register --rebase (start): checkout 433e3660ebbf366f6358786d5ca1d376bad4ec49
+[33m7146047[m HEAD@{112}: checkout: moving from dev to feature/register
+[33mfdb7c84[m HEAD@{113}: pull origin feature/register --rebase (finish): returning to refs/heads/dev
+[33mfdb7c84[m HEAD@{114}: pull origin feature/register --rebase (pick): [feat]컨트롤러, jsp 일부 수정
+[33mf497d18[m HEAD@{115}: pull origin feature/register --rebase (pick): [feat] 컨트롤러 수정
+[33m433e366[m HEAD@{116}: pull origin feature/register --rebase (start): checkout 433e3660ebbf366f6358786d5ca1d376bad4ec49
+[33m3014290[m HEAD@{117}: commit: [feat]컨트롤러, jsp 일부 수정
+[33m3e79535[m HEAD@{118}: checkout: moving from feature/register to dev
+[33m7146047[m HEAD@{119}: rebase (finish): returning to refs/heads/feature/register
+[33m7146047[m HEAD@{120}: rebase (pick): [feat] UserController 로그인, 회원가입2
+[33mac6d329[m HEAD@{121}: rebase (pick): [feat] UserController 로그인, 회원가입
+[33m5cfebf8[m HEAD@{122}: rebase (pick): [feat]user컨트롤러및 서비스, 매퍼 수정(로그인, 로그아웃 추가)
+[33mfb882b8[m HEAD@{123}: rebase (start): checkout dev
+[33m9c5f46e[m HEAD@{124}: checkout: moving from dev to feature/register
+[33mfb882b8[m HEAD@{125}: pull origin dev: Fast-forward
+[33m4b8aeda[m HEAD@{126}: checkout: moving from feature/register to dev
+[33m9c5f46e[m HEAD@{127}: commit: [feat] UserController 로그인, 회원가입2
+[33m740eba7[m HEAD@{128}: commit: [feat] UserController 로그인, 회원가입
+[33me8537b0[m HEAD@{129}: rebase (finish): returning to refs/heads/feature/register
+[33me8537b0[m HEAD@{130}: rebase (pick): [style]frontall
+[33ma846e66[m HEAD@{131}: rebase (start): checkout dev
+[33m1303a07[m HEAD@{132}: commit (merge): Merge branch 'dev' of https://github.com/CSK9537/Home_Sweet_Farm into feature/register
+[33ma846e66[m HEAD@{133}: commit: [feat]user컨트롤러및 서비스, 매퍼 수정(로그인, 로그아웃 추가)
+[33mccf4b92[m HEAD@{134}: rebase (finish): returning to refs/heads/feature/register
+[33mccf4b92[m HEAD@{135}: rebase (start): checkout dev
+[33m7798a4e[m HEAD@{136}: checkout: moving from dev to feature/register
+[33mccf4b92[m HEAD@{137}: pull origin dev: Fast-forward
+[33m7798a4e[m HEAD@{138}: checkout: moving from dev to dev
+[33m7798a4e[m HEAD@{139}: checkout: moving from feature/register to dev
+[33m7798a4e[m HEAD@{140}: checkout: moving from feature/register to feature/register
+[33m7798a4e[m HEAD@{141}: checkout: moving from dev to feature/register
+[33m7798a4e[m HEAD@{142}: checkout: moving from dev to dev
+[33m7798a4e[m HEAD@{143}: clone: from https://github.com/CSK9537/Home_Sweet_Farm.git
