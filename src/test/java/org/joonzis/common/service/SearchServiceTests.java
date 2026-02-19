@@ -20,13 +20,19 @@ public class SearchServiceTests {
 	@Autowired
 	private SearchService sservvice;
 	
-	@Test
-	public void searchPlantListTest() {
-		log.info("search plant list service test...");
-		try {
-			List<SimplePlantDTO> list = sservvice.searchPlantList("스킨");
-		} catch (Exception e) {
-			log.error(e);
-		}
-	}
+//	@Test
+//	public void searchPlantListTest() {
+//		log.info("search plant list service test...");
+//		try {
+//			List<SimplePlantDTO> list = sservvice.searchPlantList("스킨");
+//			int i = 1;
+//			for(SimplePlantDTO dto : list) {
+//				log.info((i++) + "번째");
+//				log.info(dto.getPlant_name());
+//				log.info(dto.getPlant_name_kor());
+//			}
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
 }

@@ -26,6 +26,6 @@ public class CommonController {
 		model.addAttribute("q", q);
 		model.addAttribute("main", main);
 		model.addAttribute("sub", sub);
-		return "common/searchResult";
+		return "common/SearchResult";
 	}
 }

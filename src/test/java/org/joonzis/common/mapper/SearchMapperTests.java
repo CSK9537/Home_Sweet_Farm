@@ -27,7 +27,7 @@ public class SearchMapperTests {
 //		try {
 //			List<SimplePlantDTO> list = new ArrayList<SimplePlantDTO>();
 //			list = smapper.searchPlants("mons");
-//			int i = 0;
+//			int i = 1;
 //			for(SimplePlantDTO dto : list) {
 //				log.info((i++) + "번째");
 //				log.info(dto.getPlant_name());
