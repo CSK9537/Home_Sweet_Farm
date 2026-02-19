@@ -51,7 +51,7 @@
 	        <section class="section">
 	          <header class="section__header">
 	            <h3 class="section__title">인기 식물(많이 키우는 식물)</h3>
-	            <a class="section__more" href="#">전체보기</a>
+	            <a class="section__more" href="/plant">전체보기</a>
 	          </header>
 	
 	          <div class="card-grid card-grid--3">
