@@ -5,20 +5,39 @@
 <%@ include file="/WEB-INF/views/layout/header.jsp" %>
 <div class="page-shell">
 	<div class="content-wrap">
-		<c:choose>
-			<c:when test="${not empty q}">
-				${q}
-				<c:if test="${not empty main}">
-					${main}
-				</c:if>
-				<c:if test="${not empty sub}">
-					${sub}
-				</c:if>
-			</c:when>
-			<c:otherwise>
-				검색 결과 없음
-			</c:otherwise>
-		</c:choose>
+		<section class="hero">
+			<c:choose>
+				<c:when test="${not empty q}">
+					<p id="q">${q}</p>
+					<c:if test="${main == '커뮤니티'}">
+						${main}
+					</c:if>
+					<c:if test="${main == '식물'}">
+						<ul class="slist">
+						</ul>
+					</c:if>
+					<c:if test="${main == '스토어'}">
+						${main}
+					</c:if>
+					<c:if test="${main == '나의 식물'}">
+						${main}
+					</c:if>
+					<c:if test="${main == '채팅'}">
+						${main}
+					</c:if>
+					<c:if test="${main == 'Q&A'}">
+						${main}
+					</c:if>
+					<c:if test="${not empty sub}">
+						${sub}
+					</c:if>
+				</c:when>
+				<c:otherwise>
+					검색 결과 없음SearchResult
+				</c:otherwise>
+			</c:choose>
+		</section>
 	</div>
 </div>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />
+<script src="${pageContext.request.contextPath}/resources/js/common/SearchResult.js"></script>
