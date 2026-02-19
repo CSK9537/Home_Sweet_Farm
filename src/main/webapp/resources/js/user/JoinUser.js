@@ -421,33 +421,32 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
     });
   }
 
-  // ===== step2: verify (UI only) =====
-  var smsSendBtn = $("#smsSendBtn");
-  if (smsSendBtn) {
-    smsSendBtn.addEventListener("click", function () {
-      alert("(UI 예시) 인증번호를 발송했다고 가정합니다. 서버 연동 시 실제로 발송 처리하세요.");
-    });
-  }
+  // ===== step2: verify =====
 
-  var smsVerifyBtn = $("#smsVerifyBtn");
-  if (smsVerifyBtn) {
-    smsVerifyBtn.addEventListener("click", function () {
-      var codeEl = $("#smsCode");
-      var code = codeEl ? (codeEl.value || "").replace(/^\s+|\s+$/g, "") : "";
-      if (code.length < 4) {
-        alert("인증번호를 입력해주세요.");
-        return;
-      }
-      state.verifiedSms = true;
-      updateVerifyBadges();
-      closeModal($("#modal-sms"));
-    });
-  }
-
+  //이메일 인증코드 발송
   var emailSendBtn = $("#emailSendBtn");
   if (emailSendBtn) {
     emailSendBtn.addEventListener("click", function () {
-      alert("(UI 예시) 인증메일을 발송했다고 가정합니다. 서버 연동 시 실제로 발송 처리하세요.");
+      var emailEl = $("#emailAddr");
+      var email = emailEl ?
+    (emailEl.value || "").trim() : "";
+    
+    	if(!email){
+    		alart("이메일을 입력해주세요.");
+    		return;
+    	}
+    	fetch("/email/send", {
+    		method: "POST",
+    		headers: {"Content-Type":"text/plain; charset=UTF-8"},
+    		body: email
+    	})
+    	.then(response =>{
+    		if(!response.ok) throw new Error();
+    		alert("인증코드를 이메일로 발송했습니다.");
+    	})
+    	.catch(()=>{
+    		alert("이메일 발송에 실패했습니다.")
+    	});
     });
   }
 
@@ -455,21 +454,39 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
   if (emailVerifyBtn) {
     emailVerifyBtn.addEventListener("click", function () {
       var codeEl = $("#emailCode");
-      var code = codeEl ? (codeEl.value || "").replace(/^\s+|\s+$/g, "") : "";
+      var code = codeEl ? (codeEl.value || "").trim() : "";
+      
       if (!code) {
         alert("인증코드를 입력해주세요.");
         return;
       }
-      state.verifiedEmail = true;
-      updateVerifyBadges();
-      closeModal($("#modal-email"));
+      fetch("/email/check/" + encodeURIComponent(code), {
+          method: "PUT"
+        })
+        .then(response => response.text().then(text => ({ status: response.status, text })))
+        .then(({ status, text }) => {
+          if (status === 202 && text === "verified") {
+            state.verifiedEmail = true;
+            updateVerifyBadges();
+            alert("이메일 인증 완료!");
+            closeModal($("#modal-email"));
+          } else {
+            state.verifiedEmail = false;
+            updateVerifyBadges();
+            alert("인증코드가 올바르지 않습니다.");
+          }
+        })
+        .catch(() => {
+          alert("인증 확인 중 오류가 발생했습니다.");
+        });
     });
   }
 
+  //다음 단계 이동 버튼
   var toProfileBtn = $("#toProfileBtn");
   if (toProfileBtn) {
     toProfileBtn.addEventListener("click", function () {
-      if (!state.verifiedSms && !state.verifiedEmail) {
+      if (!state.verifiedEmail) {
         var ok = confirm("본인인증이 미완료입니다. 그래도 다음 단계로 진행할까요?");
         if (!ok) return;
       }

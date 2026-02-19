@@ -135,19 +135,14 @@
               <h3 class="verify-title">본인인증</h3>
               <p class="verify-desc">
                	 회원님의 개인정보 보호를 위해 <strong>본인인증</strong>이 필요합니다.<br/>
-                	원하시는 인증 방식을 선택해 진행해주세요.
+                	본인인증을 진행해주세요.
               </p>
 
               <div class="verify-actions">
-                <button type="button" class="btn btn-outline" data-modal-open="modal-sms">문자인증</button>
                 <button type="button" class="btn btn-outline" data-modal-open="modal-email">이메일 인증</button>
               </div>
 
               <div class="verify-status">
-                <div class="status-line">
-                  <span>문자 인증</span>
-                  <span class="badge" id="smsBadge">미완료</span>
-                </div>
                 <div class="status-line">
                   <span>이메일 인증</span>
                   <span class="badge" id="emailBadge">미완료</span>
@@ -291,34 +286,6 @@
         </div>
       </div>
 
-      <div class="modal" id="modal-sms" aria-hidden="true" role="dialog" aria-label="문자인증">
-        <div class="modal__dim" data-modal-close></div>
-        <div class="modal__card">
-          <div class="modal__head">
-            <h4>문자인증</h4>
-            <button type="button" class="modal__x" data-modal-close aria-label="닫기">×</button>
-          </div>
-          <div class="modal__body">
-            <div class="modal-form">
-              <label class="form-label" for="smsPhone">휴대전화번호</label>
-              <input class="form-input light" type="text" id="smsPhone" placeholder="010-0000-0000" />
-              <div class="modal-mini-row">
-                <button type="button" class="btn btn-outline" id="smsSendBtn">인증번호 발송</button>
-              </div>
-
-              <label class="form-label" for="smsCode">인증번호</label>
-              <input class="form-input light" type="text" id="smsCode" placeholder="6자리 입력" maxlength="6" />
-              <div class="modal-mini-row">
-                <button type="button" class="btn btn-primary" id="smsVerifyBtn">인증 완료</button>
-              </div>
-
-              <p class="hint">
-                	실제 발송/검증은 서버(API)에서 처리하세요. 여기서는 UI 흐름만 제공합니다.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div class="modal" id="modal-email" aria-hidden="true" role="dialog" aria-label="이메일 인증">
         <div class="modal__dim" data-modal-close></div>
