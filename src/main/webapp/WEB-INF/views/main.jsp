@@ -10,7 +10,7 @@
 			    session.removeAttribute("msg");
 			  %>
 			</c:if>
-	<link rel="include file="/WEB-INF/views/layout/header.jsp">
+	<%@ include file="/WEB-INF/views/layout/header.jsp" %>
 
 	<div class="page-shell">
 	  
