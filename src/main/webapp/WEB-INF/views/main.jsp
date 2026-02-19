@@ -20,7 +20,7 @@
           <!-- 좌: 이미지 슬라이드 자리 -->
           <article class="hero-slide" aria-label="식물 사진 슬라이드">
             <div class="hero-slide__media">
-              <img class="hero-slide__img" src="${pageContext.request.contextPath}/resources/image/default_plant.jpg" alt="default plant" />
+              <img class="hero-slide__img" src="${pageContext.request.contextPath}/resources/image/Default_Plant.jpg" alt="default plant" />
             </div>
             <button class="hero-slide__arrow hero-slide__arrow--prev" aria-label="이전 사진">
 			  &#10094;
