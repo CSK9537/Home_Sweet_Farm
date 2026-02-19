@@ -2,11 +2,13 @@ package org.joonzis.chatting.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.chatting.dto.ChatRoomDTO;
@@ -24,7 +26,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -133,7 +134,7 @@ public class ChatController {
             resultId = testUser_id;
         } else {
             UserVO login_user = (UserVO) session.getAttribute("login_user");
-            resultId = login_user != null ? login_user.getUser_id() : 1; // default user_id : 1
+            resultId = login_user != null ? login_user.getUser_id() : 2; // default user_id : 1
         }
 
         // 로그 추가
@@ -156,11 +157,15 @@ public class ChatController {
             return chatService.searchRooms(user_id, keyword, type);
     }
 
-    @PostMapping("/rooms/upload")
+    @PostMapping(
+    	    value = "/rooms/upload",
+    	    produces = "application/json; charset=UTF-8"
+    )
     public ResponseEntity<MsgVO> uploadFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam int room_id,
             @RequestParam(required = false) Integer testUser_id,
+            @RequestParam String msg_type,
             HttpSession session
     ) throws IOException {
 
@@ -169,30 +174,37 @@ public class ChatController {
 
         // 2️ 파일 저장
         String savedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        String path = "/upload/files/" + savedName; // DB에 저장할 상대 경로
-        File dest = new File("/서버/절대경로" + path); // 실제 서버 절대경로
-        dest.getParentFile().mkdirs(); // 폴더 없으면 생성
+        String dbPath = "/upload/files/" + savedName; // DB에 저장할 상대 경로
+        String uploadDir = "C:\\upload\\files";
+        File destDir = new File(uploadDir);
+        if (!destDir.exists()) destDir.mkdirs();
+        
+        System.out.println("dbPath : " + dbPath);
+        
+        File dest = new File(destDir, savedName);
+        
         file.transferTo(dest);
 
         // 3️ MsgVO 생성
         MsgVO msg = new MsgVO();
         msg.setSender_id(sender_id);
         msg.setRoom_id(room_id);
-        msg.setMsg_type("FILE");
+        msg.setMsg_type(msg_type);
+        msg.setContent("");
         msg.setOriginal_name(file.getOriginalFilename());
         msg.setSaved_name(savedName);
-        msg.setFile_path(path);
+        msg.setFile_path(dbPath);
         msg.setCreated_at(new Date());
 
         // 4️ DB 저장
-//        msgService.save(msg);
+        msgService.sendMessage(msg);
 
         // 5️ WebSocket 전송
         messagingTemplate.convertAndSend("/topic/room." + room_id, msg);
 
         return ResponseEntity.ok(msg);
     }
-
+    
 
 }
 

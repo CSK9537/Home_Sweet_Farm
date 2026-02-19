@@ -462,6 +462,12 @@ body {
     box-sizing: border-box;
 }
 
+.chat-img {
+    max-width: 200px;
+    border-radius: 8px;
+    cursor: pointer; /* 클릭하면 확대 등 기능 추가 가능 */
+}
+
 .chat-date {
     text-align: center;
     margin: 10px 0;
