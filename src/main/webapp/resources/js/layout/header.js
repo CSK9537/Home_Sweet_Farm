@@ -298,8 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (q) params.set("q", q);
         if (state.main) params.set("main", state.main);
         if (state.sub) params.set("sub", state.sub);
-
-        window.location.href = "/search?" + params.toString();
+        if (!(q == "" || q == null)) window.location.href = "/search?" + params.toString();
       });
     }
 
