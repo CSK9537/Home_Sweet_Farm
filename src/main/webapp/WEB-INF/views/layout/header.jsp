@@ -19,7 +19,7 @@
 	
 	    <!-- 데스크탑/태블릿: 로고 / 필터검색 / 로그인 유지 -->
 	    <div class="header__top">
-	      <a class="logo" href="/" aria-label="Home Sweet Farm">
+	      <a class="logo" href="#" aria-label="Home Sweet Farm">
 	        <span class="logo__text">Home Sweet Farm</span>
 	      </a>
 	
@@ -48,7 +48,8 @@
 	                  </div>
 	                </details>
 	
-	                <button type="button" class="fcat__solo" data-main="백과사전">식물</button>
+	                <button type="button" class="fcat__solo" data-main="백과사전">백과사전</button>
+	                <button type="button" class="fcat__solo" data-main="관리가이드">관리가이드</button>
 	
 	                <details class="fcat__item" data-main="스토어">
 	                  <summary class="fcat__summary">스토어</summary>
@@ -90,24 +91,21 @@
 	          </div>
 	        </div>
 	      </div>
-
-	      <div class="auth auth--desktop">
-			<c:choose>
-			
-			  <!-- 로그인 안 된 상태 -->
-			  <c:when test="${empty sessionScope.loginUser}">
-			    <a class="auth__link" href="/user/login">로그인</a>
-			    <span class="auth__sep" aria-hidden="true">|</span>
-			    <a class="auth__link" href="/user/JoinUser">회원가입</a>
-			  </c:when>
-			
-			  <!-- 로그인 된 상태 -->
-			  <c:otherwise>
-			    <a class="auth__link" href="/user/logout">로그아웃</a>
-			  </c:otherwise>
-			</c:choose>
-		</div>
-	    </div>
+			      <div class="auth auth--desktop">
+					
+					<c:choose>
+					  <c:when test="${empty sessionScope.loginUser}">
+					    <a class="auth__link" href="/user/login">로그인</a>
+					    <span class="auth__sep" aria-hidden="true">||</span>
+					    <a class="auth__link" href="/user/JoinUser">회원가입</a>
+					  </c:when>
+					
+					  <c:otherwise>
+					    <a class="auth__link" href="/user/logout">로그아웃</a>
+					  </c:otherwise>
+					</c:choose>
+				</div>
+	    	</div>
 	
 	    <!-- 모바일 1줄: 햄버거 / 로그인 / 회원가입 -->
 	    <div class="mrow mrow--top">
@@ -122,30 +120,16 @@
 	        <span class="mnav__icon" aria-hidden="true"><span></span></span>
 	      </button>
 	
-		      <div class="auth auth--desktop">
-	
-				<c:choose>
-				
-				  <!-- 로그인 안 된 상태 -->
-				  <c:when test="${empty sessionScope.loginUser}">
-				    <a class="auth__link" href="/user/login">로그인</a>
-				    <span class="auth__sep" aria-hidden="true">|</span>
-				    <a class="auth__link" href="/user/JoinUser">회원가입</a>
-				  </c:when>
-				
-				  <!-- 로그인 된 상태 -->
-				  <c:otherwise>
-				    <a class="auth__link" href="/user/logout">로그아웃</a>
-				  </c:otherwise>
-				
-				</c:choose>
-	
-			</div>
-	   	</div>
+	      <div class="auth auth--mobile">
+	        <a class="auth__link" href="/user/login">로그인</a>
+	        <span class="auth__sep" aria-hidden="true">||</span>
+	        <a class="auth__link" href="/user/JoinUser">회원가입</a>
+	      </div>
+	    </div>
 	
 	    <!-- 모바일 2줄: 로고 -->
 	    <div class="mrow mrow--logo">
-	      <a class="mlogo" href="/main" aria-label="Home Sweet Farm">Home Sweet Farm</a>
+	      <a class="mlogo" href="#" aria-label="Home Sweet Farm">Home Sweet Farm</a>
 	    </div>
 	
 	    <!-- 모바일 3줄: 필터 없는 검색창 -->
@@ -160,7 +144,7 @@
 	    <nav class="gnb gnb--desktop" aria-label="주요 메뉴">
 	      <ul class="gnb__list">
 	        <li class="gnb__item has-sub">
-	          <a class="gnb__link" href="/community">커뮤니티</a>
+	          <a class="gnb__link" href="#">커뮤니티</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
 	              <a class="subbar__link" href="#">자유게시판</a>
@@ -171,11 +155,13 @@
 	        </li>
 	
 	        <li class="gnb__sep">||</li>
-	        <li class="gnb__item"><a class="gnb__link" href="/plant">식물</a></li>
+	        <li class="gnb__item"><a class="gnb__link" href="#">백과사전</a></li>
+	        <li class="gnb__sep">||</li>
+	        <li class="gnb__item"><a class="gnb__link" href="#">관리가이드</a></li>
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
-	          <a class="gnb__link" href="/store">스토어</a>
+	          <a class="gnb__link" href="#">스토어</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
 	              <a class="subbar__link" href="#">재배 &amp; 관리용품</a>
@@ -192,10 +178,10 @@
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
-	          <a class="gnb__link" href="/myplant">나의 식물</a>
+	          <a class="gnb__link" href="#">나의 식물</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
-	              <a class="subbar__link" href="/myplant/recommend">추천 가이드</a>
+	              <a class="subbar__link" href="#">추천 가이드</a>
 	              <span class="subbar__sep">||</span>
 	              <a class="subbar__link" href="#">나의 식물 관리</a>
 	            </div>
@@ -235,6 +221,9 @@
 	            <a href="#">자유게시판</a>
 	            <a href="#">벼룩시장</a>
 	          </details>
+	
+	          <a class="mnav__link" href="#">백과사전</a>
+	          <a class="mnav__link" href="#">관리가이드</a>
 	
 	          <details class="mnav__item">
 	            <summary>스토어</summary>
