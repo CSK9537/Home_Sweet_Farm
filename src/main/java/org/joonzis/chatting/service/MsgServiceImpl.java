@@ -20,6 +20,18 @@ public class MsgServiceImpl implements MsgService{
 
     // 1. 메세지 저장
     public MsgVO sendMessage(MsgVO msgVO) {
+        if ("TEXT".equals(msgVO.getMsg_type())) {
+
+            msgVO.setFile_path("");
+            msgVO.setOriginal_name("");
+            msgVO.setSaved_name("");
+//            msgVO.setFile_size(0L);
+        }
+
+        if (msgVO.getIs_active() == null) {
+            msgVO.setIs_active("Y");
+        }
+
         msgMapper.insert(msgVO);
         return msgVO;
     }

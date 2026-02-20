@@ -91,26 +91,44 @@ export function loadChatRooms() {
 export function updateRoomListRealtime(msg) {
 
     const chatListContainer = document.querySelector('.chat-items');
-    const isCurrentRoom = (msg.room_id === chatState.session.currentRoomId);
-    const item = chatListContainer.querySelector(
-        `[data-room_id="${msg.room_id}"]`
+
+    // ⭐⭐⭐ 핵심
+    const roomId = String(msg.room_id);
+
+    const isCurrentRoom =
+        roomId === String(chatState.session.currentRoomId);
+
+    let item = chatListContainer.querySelector(
+        `[data-room_id="${roomId}"]`
     );
 
-
+    // ===== 채팅방 없으면 새로 생성 =====
     if (!item) {
-        // 새 방이면 그냥 목록 다시 로드
-        loadChatRooms();
-        return;
+
+        item = document.createElement("div");
+        item.classList.add("chat-item");
+        item.dataset.room_id = roomId;
+
+        item.innerHTML = `
+            <img src="https://via.placeholder.com/40">
+            <div class="info">
+                <div class="name">${msg.sender_name || "유저"}</div>
+                <div class="last-msg">${msg.content || ""}</div>
+            </div>
+        `;
+
+        chatListContainer.prepend(item);
     }
 
-    // 마지막 메시지 업데이트
+    // ===== 마지막 메시지 갱신 =====
     const lastMsg = item.querySelector(".last-msg");
     if (lastMsg) {
-        lastMsg.innerText = msg.content;
+        lastMsg.innerText = msg.content || "";
     }
 
-    // unread 증가
+    // ===== unread 카운트 =====
     if (!isCurrentRoom && msg.sender_id !== chatState.session.myUserId) {
+
         let badge = item.querySelector(".badge");
 
         if (!badge) {
@@ -119,18 +137,24 @@ export function updateRoomListRealtime(msg) {
             badge.innerText = "1";
             item.appendChild(badge);
         } else {
-            badge.innerText = parseInt(badge.innerText) + 1;
+            badge.innerText =
+                String(parseInt(badge.innerText || "0") + 1);
         }
     }
 
+    // ===== unread-only 필터 =====
     const unreadCheckbox = document.getElementById("unread-only");
-    if (unreadCheckbox.checked) {
+
+    if (unreadCheckbox && unreadCheckbox.checked) {
+        const badge = item.querySelector(".badge");
+        item.style.display = badge ? "flex" : "none";
+    } else {
         item.style.display = "flex";
     }
-    //  채팅방 맨 위로 이동
+
+    // ⭐⭐⭐ 최신 채팅방 위로
     chatListContainer.prepend(item);
 }
-
 export function initTabs() {
     const tabAll = document.getElementById('tab-all');
     const tabSearch = document.getElementById('tab-search');

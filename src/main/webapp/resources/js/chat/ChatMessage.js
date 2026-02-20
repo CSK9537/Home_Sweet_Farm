@@ -12,7 +12,7 @@ export function loadMessages(room_id) {
     fetch(`/chat/rooms/${room_id}/messages?testUser_id=${chatState.session.myUserId}`)
         .then(res => res.json())
         .then(list => {
-
+            console.log("🔥 서버에서 받은 메시지 목록", list);
             const container = document.getElementById("messages");
             container.innerHTML = ""; // 기존 내용 초기화
             chatState.message.lastDateKey = null;
@@ -170,7 +170,15 @@ export function appendMessage(data) {
     if (data.msg_type === "TEXT") {
         box.innerText = data.content;
     } else if (data.msg_type === "FILE") {
-        box.innerHTML = `<a href="${data.file_path}" target="_blank">${data.original_name}</a>`;
+
+        const fileUrl = `/chat/files/${data.saved_name}`;
+
+        box.innerHTML = `
+            <a href="${fileUrl}" download="${data.original_name}" class="file-link">
+                <span class="file-icon">📎</span>
+                <span class="file-name">${data.original_name}</span>
+            </a>
+        `;
     } else if (data.msg_type === "IMAGE") {
         box.innerHTML = `<img src="/chat/files/${encodeURIComponent(data.saved_name)}" class="chat-img" />`;
     }
@@ -192,86 +200,48 @@ export function appendMessage(data) {
 
 // function markAsReadSafe() {
 
-//     if (!chatState.session.currentRoomId) return;
+// if (!chatState.session.currentRoomId) return;
 
-//     // 이미 예약된 read 있으면 무시
-//     if (chatState.read.readTimer) return;
+// // 이미 예약된 read 있으면 무시
+// if (chatState.read.readTimer) return;
 
-//     chatState.read.readTimer = setTimeout(() => {
+// chatState.read.readTimer = setTimeout(() => {
 
-//         fetch(`/chat/rooms/${chatState.session.currentRoomId}/read?user_id=${chatState.session.myUserId}`, {
-//             method: "POST"
-//         });
+// fetch(`/chat/rooms/${chatState.session.currentRoomId}/read?user_id=${chatState.session.myUserId}`,
+// {
+// method: "POST"
+// });
 
-//         chatState.read.readTimer = null;
+// chatState.read.readTimer = null;
 
-//     }, 500); // 0.5초동안 메시지 모아서 한번만 호출
+// }, 500); // 0.5초동안 메시지 모아서 한번만 호출
 // }
 
 export function sendMessage() {
-    document.querySelector(".btn-send").addEventListener("click", () => {
+
+    document.querySelector(".btn-send").addEventListener("click", async () => {
 
         const textarea = document.getElementById("chat-textarea");
-        const content = textarea.value;
+        const content = textarea.value.trim();
 
-        if (!content.trim()) return;
-        if (!chatState.session.currentRoomId) return;
-        if (!chatState.socket.stompClient || !chatState.socket.stompClient.connected) return;
+        if (!content) return;
+        if (!chatState.session.receiverId) return;
 
-        const payload = {
-            roomId: chatState.session.currentRoomId,
-            senderId: chatState.session.myUserId,
-            receiverId: chatState.session.receiverId,
+        const params = new URLSearchParams({
+            receiver_id: chatState.session.receiverId,
+            testUser_id: chatState.session.myUserId,
             content: content
-        };
+        });
 
-        console.log("SENDING PAYLOAD:", payload);
-        chatState.socket.stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(payload));
+        const res = await fetch("/chat/messages", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: params
+        });
 
         textarea.value = "";
     });
 }
 
-export function uploadImage() {
-    // 기존 sendMessage() 끝나고 아래쪽
-    // ----------------------
-    // 이미지 첨부 버튼 클릭 → 파일 선택 창 열기
-    document.querySelector(".btn-image").addEventListener("click", () => {
-        document.getElementById("imageInput").click();
-    });
-
-    // 파일 선택 후 업로드
-    document.getElementById("imageInput").addEventListener("change", async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("room_id", chatState.session.currentRoomId);
-        formData.append("msg_type", "IMAGE");
-
-        try {
-            const res = await fetch("/chat/rooms/upload", {
-                method: "POST",
-                body: formData
-            });
-            console.log(res.status, res.headers.get("content-type"));
-            if (!res.ok) {
-                // HTTP 에러 또는 HTML 페이지 반환 시
-                const text = await res.text();
-                console.error("서버 에러:", text); // HTML 내용 확인 가능
-                return;
-            }
-            const msg = await res.json();
-            console.log("msg" + msg);
-
-            appendMessage(msg); // 메시지 DOM에 바로 추가
-            // WebSocket으로 전송도 필요하면 stompClient.send(...)
-        } catch (err) {
-            console.error("이미지 업로드 실패", err);
-        }
-
-        event.target.value = "";
-    });
-
-}

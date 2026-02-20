@@ -3,7 +3,7 @@ import { connectWS } from "./ChatWebSocket.js";
 import { loadChatRooms, initTabs, initUnreadFilter, initDropdownMenu, initUploadFile } from "./ChatUI.js";
 import { initSearchInput, initSearchKeydown, initNextSearchButton } from "./ChatSearch.js";
 import { handleNewMessageButton } from "./ChatScroll.js";
-import { sendMessage, uploadImage } from "./ChatMessage.js"
+import { sendMessage } from "./ChatMessage.js"
 // import { handleFileUpload } from "./ChatFile.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initNextSearchButton();
 
     sendMessage();
-    uploadImage();
 
     handleNewMessageButton();
 

@@ -46,7 +46,7 @@ public class ChatController {
      * 메세지 전송 (텍스트만)
      */
     @PostMapping("/messages")
-    public ResponseEntity<MsgVO> send_message(
+    public ResponseEntity<MsgVO> sendMessage(
             @RequestParam int receiver_id,
             @RequestParam String content,
             @RequestParam(required = false)Integer testUser_id,
@@ -61,7 +61,10 @@ public class ChatController {
         msgVO.setMsg_type("TEXT");
         
         MsgVO savedMsg = chatService.sendMessage(sender_id, receiver_id, msgVO);
-        
+        messagingTemplate.convertAndSend(
+                "/topic/room." + savedMsg.getRoom_id(),
+                savedMsg
+        );
         return ResponseEntity.ok(savedMsg);
     }
 
@@ -157,49 +160,59 @@ public class ChatController {
             return chatService.searchRooms(user_id, keyword, type);
     }
 
+    /**
+     * 이미지/파일 업로드
+     */
     @PostMapping(
-    	    value = "/rooms/upload",
-    	    produces = "application/json; charset=UTF-8"
+            value = "/rooms/upload",
+            produces = "application/json; charset=UTF-8"
     )
     public ResponseEntity<MsgVO> uploadFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam int room_id,
             @RequestParam(required = false) Integer testUser_id,
-            @RequestParam String msg_type,
             HttpSession session
     ) throws IOException {
 
-        // 1️ 업로드 유저
+        // 1. 업로드 유저
         int sender_id = getUserId(session, testUser_id);
 
-        // 2️ 파일 저장
+        // 2. 파일 저장
         String savedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        String dbPath = "/upload/files/" + savedName; // DB에 저장할 상대 경로
-        String uploadDir = "C:\\upload\\files";
-        File destDir = new File(uploadDir);
+        String dbPath = "/upload/files/" + savedName;
+
+        File destDir = new File("C:\\upload\\files");
         if (!destDir.exists()) destDir.mkdirs();
-        
-        System.out.println("dbPath : " + dbPath);
-        
+
         File dest = new File(destDir, savedName);
-        
         file.transferTo(dest);
 
-        // 3️ MsgVO 생성
+        String contentType = file.getContentType();
+        String msgType;
+
+        if (contentType != null && contentType.startsWith("image")) {
+            msgType = "IMAGE";
+        } else {
+            msgType = "FILE";
+        }
+
+        // 3. MsgVO 생성
         MsgVO msg = new MsgVO();
         msg.setSender_id(sender_id);
         msg.setRoom_id(room_id);
-        msg.setMsg_type(msg_type);
+        msg.setMsg_type(msgType); // ⭐ 여기!!
         msg.setContent("");
         msg.setOriginal_name(file.getOriginalFilename());
         msg.setSaved_name(savedName);
         msg.setFile_path(dbPath);
+//        msg.setFile_size(file.getSize());
+        msg.setIs_active("Y");
         msg.setCreated_at(new Date());
 
-        // 4️ DB 저장
+        // 4. DB 저장
         msgService.sendMessage(msg);
 
-        // 5️ WebSocket 전송
+        // 5. WebSocket 전송
         messagingTemplate.convertAndSend("/topic/room." + room_id, msg);
 
         return ResponseEntity.ok(msg);
