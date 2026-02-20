@@ -102,7 +102,7 @@ public class UserController {
 		
 		UserVO vo = uservice.login(username, password);
 		if (vo == null) {
-			model.addAttribute("msg", "로그인 실패");
+			model.addAttribute("loginErrorMsg", "아이디 또는 비밀번호가 올바르지 않습니다.");
 		return "user/login";
 		}
 		session.setAttribute("loginUser", vo);

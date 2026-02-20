@@ -108,17 +108,20 @@ const loginId = document.querySelector("#loginId");
 const loginPw = document.querySelector("#loginPw");
 const idMsg = document.querySelector("#idMsg");
 const pwMsg = document.querySelector("#pwMsg");
+const loginErrorMsg = document.querySelector("#loginErrorMsg");
 
 //1. input 이벤트(항상 작동)
 //1)아이디
 loginId.addEventListener("input",
 function(){
 	idMsg.innerText = "";
+	loginErrorMsg.innerText = "";//로그인 실패 메시지
 });
 //2)비번
 loginPw.addEventListener("input",
 function(){
 	pwMsg.innerText = "";
+	loginErrorMsg.innerText = "";//로그인 실패 메시지
 });
 
 //2.submit 검증
@@ -157,3 +160,4 @@ function(){
 	rememberHidden.value =
 	rememberMe.checked ? "Y" : "N";
 });
+

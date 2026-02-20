@@ -48,6 +48,12 @@
 				
 				<!-- 결과 메시지 pw -->
 				<div id="pwMsg" style="margin-top:6px; font-size:14px;"></div>
+				
+				<!-- 로그인 실패 메시지 -->
+				<div id="loginErrorMsg" style="margin-top:6px; font-size:14px; color:red;">
+					${loginErrorMsg}
+				</div>
+
 
 				<!-- 자동로그인-rememberMe -->
                 <div class="row-between">
