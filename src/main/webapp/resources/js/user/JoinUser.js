@@ -390,18 +390,18 @@
 	});
 
 // 다음 버튼 클릭
-  var toVerifyBtn = $("#toVerifyBtn");
+  const toVerifyBtn = document.querySelector("#toVerifyBtn");
   if (toVerifyBtn) {
     toVerifyBtn.addEventListener("click", function (e) {
-      if (e && e.preventDefault) e.preventDefault(); // submit 방지
+    	e.preventDefault(); // submit 방지
 
-      var userIdEl = $("#userId");
-      var pwEl = $("#userPw");
-      var pw2El = $("#userPw2");
+      const userIdEl = document.querySelector("#userId");
+      const pwEl = document.querySelector("#userPw");
+      const pw2El = document.querySelector("#userPw2");
 
-      var userId = userIdEl ? (userIdEl.value || "").trim() : "";
-      var pw = pwEl ? (pwEl.value || "") : "";
-      var pw2 = pw2El ? (pw2El.value || "") : "";
+      const userId = userIdEl ? (userIdEl.value || "").trim() : "";
+      const pw = pwEl ? (pwEl.value || "") : "";
+      const pw2 = pw2El ? (pw2El.value || "") : "";
 
       // 1) 아이디 기본 검증
       if (!userId || userId.length < 6 || userId.length > 20) {
@@ -410,14 +410,15 @@
         return;
       }
 
-      if (!checkedOk || checkedId !== userId) {
-        alert("아이디 중복확인을 먼저 완료해주세요.");
+      if (!idCheckedOk || lastCheckedId !== userId) {
+        alert("아이디 중복확인을 완료해주세요.");
         if (userIdEl) userIdEl.focus();
         return;
       }
 
-      // 3) 비밀번호 검증
-      if (pw.length < 8 || pw.length > 20) {
+      // 3) 비밀번호 검증(길이만 말고 regex랑 맞추는 게 더 정확)
+      const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}$/;
+      if (!pwRegex.test(pw)) {
         alert("비밀번호는 영문, 숫자, 특수문자 포함 8~20자로 입력해주세요.");
         if (pwEl) pwEl.focus();
         return;
