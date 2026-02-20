@@ -33,7 +33,7 @@
 					</c:if>
 				</c:when>
 				<c:otherwise>
-					검색 결과 없음SearchResult
+					검색 결과 없음
 				</c:otherwise>
 			</c:choose>
 		</section>
