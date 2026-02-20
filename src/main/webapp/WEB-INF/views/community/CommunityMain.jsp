@@ -16,15 +16,17 @@
 
         <div class="community-top__center">
           <ul class="community-tabs" id="communityTabs">
-            <li class="tab-item active" data-tab="free" data-move="<c:url value='/community/main'/>">자유게시판</li>
+            <!-- data-move 임시 방지 -->
+            <li class="tab-item active" data-tab="free" data-move="<c:url value='#'/>">자유게시판</li>
             <li class="tab-sep">||</li>
-            <li class="tab-item" data-tab="market" data-move="<c:url value='/community/market'/>">벼륙시장</li>
+            <li class="tab-item" data-tab="market" data-move="<c:url value='#'/>">벼룩시장</li>
           </ul>
         </div>
 
         <div class="community-top__right">
+          <!-- data-move 임시 방지 -->
           <button type="button" class="btn-write" id="btnWrite"
-                  data-move="<c:url value='/community/insert'/>">글쓰기</button>
+                  data-move="<c:url value='#'/>">글쓰기</button>
         </div>
       </div>
 
@@ -160,7 +162,8 @@
         <section class="block">
           <div class="block-head">
             <div class="block-title">많이 물어보는 질문(카테고리가 많은 Q&amp;A)</div>
-            <a href="<c:url value='/qna/main'/>" class="block-more" id="btnQaMore">전체보기</a>
+            <!-- href 임시 방지 -->
+            <a href="<c:url value='#'/>" class="block-more" id="btnQaMore">전체보기</a>
           </div>
 
           <div class="carousel">
