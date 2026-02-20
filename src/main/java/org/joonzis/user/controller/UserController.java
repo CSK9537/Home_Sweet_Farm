@@ -95,7 +95,7 @@ public class UserController {
 	@PostMapping("/login")
 	public String loginProcess(@RequestParam String username,
 								@RequestParam String password,
-								@RequestParam(required = false) String rememberMe,//체크 안 해도 에러 나지 않게 처리
+								@RequestParam(defaultValue = "N") String rememberMe,//체크 안 해도 에러 나지 않게 처리
 								HttpSession session, 
 								HttpServletResponse response,//서버-> 브라우저로 보냄(쿠키 등)
 								Model model) {
