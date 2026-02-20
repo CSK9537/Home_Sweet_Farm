@@ -1,8 +1,3 @@
-// 임시 클릭 방지
-document.querySelector('.btn-primary').addEventListener('submit', (e) => {
-  e.preventDefault();
-});
-
 (function () {
   function qs(sel, root) {
     return (root || document).querySelector(sel);
