@@ -12,14 +12,43 @@
 		<result property="content" column="content" />
 		<result property="created_at" column="created_at"
 			javaType="java.util.Date" />
+		<result property="msg_type" column="msg_type" />
+		<result property="file_path" column="file_path" />
+		<result property="original_name" column="original_name" />
+		<result property="saved_name" column="saved_name" />
+		<result property="file_size" column="file_size" />
+		<result property="is_active" column="is_active" />
 	</resultMap>
 
 	<!-- 1. 메시지 삽입 -->
 	<insert id="insert"
 		parameterType="org.joonzis.chatting.vo.MsgVO" keyProperty="msg_id">
-		INSERT INTO tbl_msg (msg_id, room_id, sender_id, content, created_at)
-		VALUES (msg_seq.NEXTVAL, #{room_id}, #{sender_id}, #{content},
-		SYSTIMESTAMP)
+		INSERT INTO tbl_msg (
+			msg_id,
+			room_id,
+			sender_id,
+			content,
+			msg_type,
+			file_path,
+			original_name,
+			saved_name,
+			file_size,
+			is_active,
+			created_at
+		)
+		VALUES (
+			msg_seq.NEXTVAL,
+			#{room_id},
+			#{sender_id},
+			#{content},
+			#{msg_type},
+			#{file_path},
+			#{original_name},
+			#{saved_name},
+			#{file_size},
+			#{is_active},
+			SYSTIMESTAMP
+		)
 		<selectKey keyProperty="msg_id" resultType="long"
 			order="AFTER">
 			SELECT msg_seq.CURRVAL FROM dual
@@ -28,7 +57,7 @@
 
 	<!-- 2. 채팅방의 모든 메시지 조회 -->
 	<select id="findByRoomId" parameterType="int"
-		resultType="org.joonzis.chatting.vo.MsgVO">
+		resultMap="MsgResultMap">
 		SELECT *
 		FROM tbl_msg
 		WHERE room_id = #{room_id}
@@ -37,8 +66,7 @@
 	</select>
 
 	<!-- 3. 마지막 읽은 메시지 이후 메시지 조회 -->
-	<select id="findAfterMsgId"
-		resultType="org.joonzis.chatting.vo.MsgVO">
+	<select id="findAfterMsgId" resultMap="MsgResultMap">
 		SELECT *
 		FROM tbl_msg
 		WHERE room_id = #{room_id}
@@ -65,14 +93,20 @@
 	<select id="searchByMessage" parameterType="map"
 		resultType="org.joonzis.chatting.dto.RoomSearchResultDTO">
 		SELECT
-			m.room_id,
-			m.msg_id AS search_msg_id,
-			u.nickname AS otherUserName,
-			u.user_id AS otherUserId
+		m.room_id,
+		m.msg_id AS search_msg_id,
+		u.nickname AS
+		otherUserName,
+		u.user_id AS otherUserId
 		FROM tbl_msg m
-		JOIN tbl_chat_room_user cru ON cru.room_id = m.room_id
-		JOIN tbl_user u ON u.user_id = cru.user_id AND u.user_id != #{user_id}
-		WHERE m.content LIKE '%' || #{keyword}|| '%'
+		JOIN
+		tbl_chat_room_user cru ON
+		cru.room_id = m.room_id
+		JOIN tbl_user u ON
+		u.user_id = cru.user_id AND
+		u.user_id != #{user_id}
+		WHERE m.content LIKE
+		'%' || #{keyword}|| '%'
 		ORDER BY m.msg_id DESC
 	</select>
 

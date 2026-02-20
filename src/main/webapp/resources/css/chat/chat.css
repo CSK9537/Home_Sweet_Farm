@@ -479,6 +479,54 @@ body {
     align-self: center;
 }
 
+/* ===============================
+   FILE LINK - 상대 메시지
+================================= */
+.message-row.received .file-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 12px;
+    border-radius: 10px;
+
+    background-color: #ffffff;
+    color: #333;
+
+    border: 2px solid #6B715D;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.message-row.received .file-link:hover {
+    background-color: #f5f5f5;
+}
+
+
+/* ===============================
+   FILE LINK - 내 메시지
+================================= */
+.message-row.sent .file-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 12px;
+    border-radius: 10px;
+
+    background-color: #6B715D;
+    color: #ffffff;
+
+    border: 2px solid #ccc;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.message-row.sent .file-link:hover {
+    background-color: #505545;
+}
+
+
 
 
 /* 메시지 행 공통 */
