@@ -46,7 +46,7 @@
 
                 <div class="row-between">
                   <label class="check-wrap">
-                    <input type="checkbox" name="rememberMe" />
+                    <input type="checkbox" id="rememberMe" name="rememberMe" />
                     <span>로그인 상태 유지</span>
                   </label>
                 </div>

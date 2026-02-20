@@ -108,7 +108,7 @@ public class UserController {
 		session.setAttribute("loginUser", vo);
 		
 		//체크하면 쿠키 저장(30일):자동 로그인
-		if("on".equals(rememberMe)) {
+		if(rememberMe != null) {
 			Cookie c = new Cookie("rememberId", username);//rememberId:쿠키이름, username:쿠키 값
 			c.setMaxAge(60*60*24*30); //유효기간 30일
 			c.setPath("/"); //경로
@@ -121,13 +121,14 @@ public class UserController {
 	@GetMapping("/logout")
 	public String logout(HttpSession session,
 			HttpServletResponse response) {
-		session.invalidate();
 		
 		//로그아웃 후 쿠키 삭제
 		Cookie c = new Cookie("rememberId", "");
 		c.setMaxAge(0);
 		c.setPath("/");
 		response.addCookie(c);
+		
+		session.invalidate();//세션 종료
 		
 		return "redirect:/";
 	}
