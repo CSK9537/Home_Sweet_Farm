@@ -186,9 +186,9 @@
 	          <a class="gnb__link" href="/myplant">나의 식물</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
-	              <a class="subbar__link" href="/myplant/recommend">추천 가이드</a>
+	              <a class="subbar__link" href="/myplant">나의 식물 관리</a>
 	              <span class="subbar__sep">||</span>
-	              <a class="subbar__link" href="#">나의 식물 관리</a>
+	              <a class="subbar__link" href="/myplant/recommend">추천 가이드</a>
 	            </div>
 	          </div>
 	        </li>
@@ -198,7 +198,7 @@
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
-	          <a class="gnb__link" href="#">Q&amp;A</a>
+	          <a class="gnb__link" href="/qna">Q&amp;A</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
 	              <a class="subbar__link" href="#">질문들</a>

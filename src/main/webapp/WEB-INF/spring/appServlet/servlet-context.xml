@@ -32,24 +32,23 @@
 	<context:component-scan
 		base-package="org.joonzis.common.controller" />
 	<context:component-scan
+		base-package="org.joonzis.common.error" />
+	<context:component-scan
+		base-package="org.joonzis.user.controller" />
+	<context:component-scan
 		base-package="org.joonzis.community.controller" />
 	<context:component-scan
 		base-package="org.joonzis.chatting.controller" />
 	<context:component-scan
 		base-package="org.joonzis.chatting.config" />
-
 	<context:component-scan
 		base-package="org.joonzis.myplant.controller" />
 	<context:component-scan
 		base-package="org.joonzis.store.controller" />
 	<context:component-scan
-		base-package="org.joonzis.user.controller" />
-	<context:component-scan
 		base-package="org.joonzis.plant.controller" />
 	<context:component-scan
 		base-package="org.joonzis.myplant.controller" />
 	<context:component-scan
-		base-package="org.joonzis.common.error" />
-
-
+		base-package="org.joonzis.qna.controller" />
 </beans:beans>

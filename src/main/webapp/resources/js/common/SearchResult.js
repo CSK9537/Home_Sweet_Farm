@@ -1,7 +1,7 @@
 let q = document.getElementById('q').innerHTML;
 let slist = document.querySelector('.slist');
 
-(function getList(q){
+(function getPlants(q){
 	fetch('/search/plant?q=' + q)
 		.then(response => response.json())
 		.then(data => {

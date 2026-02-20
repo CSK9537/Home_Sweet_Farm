@@ -67,6 +67,10 @@
 	<mybatis-spring:scan base-package="org.joonzis.myplant.mapper"/>
 	<context:component-scan base-package="org.joonzis.myplant.service"/>
 	
+	<!-- qna -->
+	<mybatis-spring:scan base-package="org.joonzis.qna.mapper"/>
+	<context:component-scan base-package="org.joonzis.qna.service"/>
+	
 	<!-- 이메일 관련 -->
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 	    <property name="host" value="smtp.gmail.com" />
