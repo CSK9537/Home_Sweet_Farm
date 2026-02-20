@@ -258,27 +258,56 @@
   
 //===== step1 -> step2 (account -> verify) =====
 
- // 아이디 중복확인
-var checkedOk = (typeof idCheckedOk !== "undefined") ? idCheckedOk : false;
-var checkedId = (typeof lastCheckedId !== "undefined") ? lastCheckedId : "";
- 
-
-document.querySelector('#checkIdBtn').addEventListener('click', e=>{
+  
+//아이디 검증
+	const idInput = document.querySelector('#userId');
+	const idMsg = document.querySelector('#idMsg');
+	const checkIdBtn = document.querySelector('#checkIdBtn')
 	
-	let val = document.querySelector('#userId').value;
+	let idCheckedOk = false;
+	let lastCheckedId = "";
 	
-	fetch(getCpath() + "/checkId?username=" + val)
+	const idRegex = /^[a-z0-9]{6,20}$/;
+	
+	idInput.addEventListener("input",
+	function(){
+		const id = idInput.value.trim();
+		
+		//아이디를 바꾸면 중복확인 무조건 무효
+		idCheckedOk = false;
+		lastCheckedId = "";
+		
+	    if (!idRegex.test(id)) {
+	    	idMsg.innerText = "영문 소문자/숫자 6~20자로 입력해 주세요.";
+	    	idMsg.style.color = "red";
+	    	if (checkIdBtn) checkIdBtn.disabled = true;
+	        return;
+	    } 
+		 // 형식 OK인데 아직 중복확인 안 함
+		    idMsg.innerText = "중복확인을 진행해 주세요.";
+		    idMsg.style.color = "#666";
+		    if (checkIdBtn) checkIdBtn.disabled = false;
+		 });
+	
+	// 아이디 중복확인
+	var checkedOk = (typeof idCheckedOk !== "undefined") ? idCheckedOk : false;
+	var checkedId = (typeof lastCheckedId !== "undefined") ? lastCheckedId : "";
+	 
+	document.querySelector('#checkIdBtn').addEventListener('click', e=>{
+	
+	let val = document.querySelector('#userId').value.trim();
+	
+	fetch(getCpath() + "/checkId?username=" + encodeURIComponent(val))
 		.then(response => {
 			
 			if(!response.ok || response.status != 200){
-				return new Error("에러발생");
+				throw new Error("에러발생");
 			}
-			
 			return response.json();
 		})
 		.then(data => {
 			const idEl = document.querySelector('#userId');
-			const msgEl = document.querySelector('#idCheckMsg');
+			const msgEl = document.querySelector('#idMsg');
 			const val = (idEl.value || "").trim();
 			let result = data.duplicate; // result -> 아이디가 중복되면 true
 			
@@ -286,8 +315,13 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 			if(val === ""){
 				msgEl.innerText ="아이디를 입력한 뒤 중복확인 해주세요.";
 				msgEl.style.color = "red";
+				
 				checkedOk = false;
 				checkedId = "";
+				
+				idCheckedOk = false;
+				lastCheckedId = "";
+				
 				idEl.focus();
 				return;
 			}
@@ -297,12 +331,19 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 				msgEl.innerText = "아이디가 중복되었습니다.";
 				msgEl.style.color = "red";
 				checkedOk = false;
+				checkedId = "";
+				
+				idCheckedOk = false;
+				lastCheckedId = "";
 			}else{
 				//3)중복이 아닐 때(사용 가능)
 				msgEl.innerText = "사용 가능한 아이디입니다.";
 				msgEl.style.color = "green";
 				checkedOk = true;
 				checkedId = val;
+				
+				idCheckedOk = true;
+				lastCheckedId = val;
 			}
 			
 		})
@@ -317,9 +358,9 @@ document.querySelector('#checkIdBtn').addEventListener('click', e=>{
 	function(){
 		const pw = pwInput.value;//현재 비번
 		
-		const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}$/;
-
-	    if (!regex.test(pw)) {
+		const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}$/;
+		
+	    if (!pwRegex.test(pw)) {
 	        pwMsg.innerText = "영문, 숫자, 특수문자 포함 8~20자";
 	        pwMsg.style.color = "red";
 	    } else {
