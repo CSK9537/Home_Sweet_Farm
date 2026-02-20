@@ -232,7 +232,7 @@ export function sendMessage() {
     });
 }
 
-export function uploadImage() {
+/*export function uploadImage() {
     // 기존 sendMessage() 끝나고 아래쪽
     // ----------------------
     // 이미지 첨부 버튼 클릭 → 파일 선택 창 열기
@@ -274,4 +274,4 @@ export function uploadImage() {
         event.target.value = "";
     });
 
-}
+}*/
