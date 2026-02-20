@@ -56,6 +56,10 @@ public interface UserMapper {
 	//마케팅수신동의 테스트용 조회
 	public UserVO selectByUsername(String username);
 	
+	//자동로그인-아이디로 찾기(쿠키)
+	public UserVO findByUsername(String username);
+		
+		
 	//공개형 프로필
 	//1) 닉네임, 프로필, 회원등급, 자기소개
 	public UserDTO selectPublicProfile(int user_id);

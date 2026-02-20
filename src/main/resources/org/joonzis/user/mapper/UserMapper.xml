@@ -143,6 +143,14 @@
 		WHERE username = #{username}
 	</select>
 	
+	<!-- 자동로그인-아이디로 찾기(쿠키) -->
+	<select id="findByUsername" parameterType="String" resultType="org.joonzis.user.vo.UserVO">
+		SELECT * 
+		FROM TBL_USER
+		WHERE username = #{username}
+	</select>
+	
+	
 	<!-- 공개 프로필 조회: 닉네임, 프로필, 회원등급, 자기소개   -->
 	<select id="selectPublicProfile" parameterType="int" resultType="org.joonzis.user.dto.UserDTO">
 		SELECT user_id, grade_id, nickname, profile_filename, intro
