@@ -81,7 +81,7 @@
             <!-- PANEL: 아이디 찾기 -->
             <section id="panel-find-id" class="tab-panel" role="tabpanel" aria-label="아이디 찾기">
               <h2 class="panel-title">아이디 찾기</h2>
-
+			  
               <form class="form-block" method="post" action="${pageContext.request.contextPath}/user/findId" autocomplete="off">
                 <label class="input-label" for="findIdName">가입자 이름</label>
                 <input id="findIdName" name="name" class="text-input" type="text" placeholder="이름" />
@@ -107,7 +107,8 @@
                   <button type="button" class="btn-ghost">재전송</button>
                 </div>
 
-                <button type="submit" class="btn-primary">다음</button>
+				<!-- 버튼 타입 임시 변경, 이동 경로 완성시 다음 버튼 submit으로 -->
+                <button type="button" class="btn-primary">다음</button>
 
                 <div class="helper-links">
                   <button type="button" class="helper-link js-go" data-target="panel-login">로그인하러 가기</button>
@@ -118,7 +119,7 @@
             <!-- PANEL: 비밀번호 찾기 -->
             <section id="panel-find-pw" class="tab-panel" role="tabpanel" aria-label="비밀번호 찾기">
               <h2 class="panel-title">비밀번호 찾기</h2>
-
+              
               <form class="form-block" method="post" action="${pageContext.request.contextPath}/user/findPw" autocomplete="off">
                 <label class="input-label" for="findPwId">아이디</label>
                 <input id="findPwId" name="username" class="text-input" type="text" placeholder="아이디" />
@@ -145,7 +146,8 @@
                 </div>
 
                 <div class="row-between">
-                  <button type="submit" class="btn-primary">다음</button>
+                  <!-- 버튼 타입 임시 변경, 이동 경로 완성시 다음 버튼 submit으로 -->
+                  <button type="button" class="btn-primary">다음</button>
                   <button type="button" class="btn-secondary js-go" data-target="panel-login">로그인하러 가기</button>
                 </div>
 

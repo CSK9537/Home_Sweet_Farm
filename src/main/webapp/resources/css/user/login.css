@@ -16,7 +16,7 @@
   border-right: 3px solid #6b7b61;
   background:
     linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.25)),
-    url("../img/login_left.jpg");
+    url("/resources/image/Default_Plant.jpg");
   background-size: cover;
   background-position: center;
 }

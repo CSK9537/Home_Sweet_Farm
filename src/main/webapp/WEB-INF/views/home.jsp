@@ -1,461 +1,192 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<link rel="stylesheet" href="${ctx}/resources/css/user/MyPage.css" />
+<%
+  if (request.getAttribute("tagTop15") == null) {
+    java.util.List<java.util.Map<String,Object>> tagTop15 = new java.util.ArrayList<java.util.Map<String,Object>>();
+    for (int i=1; i<=15; i++) {
+      java.util.Map<String,Object> t = new java.util.HashMap<String,Object>();
+      t.put("tagName", "해시태그"+i);
+      t.put("tagCount", 1000 - (i*31));
+      tagTop15.add(t);
+    }
+    request.setAttribute("tagTop15", tagTop15);
+  }
+
+  if (request.getAttribute("qnaList") == null) {
+    long now = System.currentTimeMillis();
+    java.util.List<java.util.Map<String,Object>> qnaList = new java.util.ArrayList<java.util.Map<String,Object>>();
+    for (int i=1; i<=20; i++) {
+      java.util.Map<String,Object> q = new java.util.HashMap<String,Object>();
+      q.put("qna_id", i);
+      q.put("title", "질문 제목 예시 " + i + " 입니다. (카드/앨범에서는 짧게 보이게)");
+      q.put("tagName", "해시태그"+((i%5)+1));
+      q.put("likeCount", (i*3)%17);
+      q.put("answerCount", (i*2)%9);
+      q.put("createdAtLabel", "1분 전");
+      q.put("createdEpoch", (now - (i * 60000L))); // 1분 간격
+      q.put("preview", "질문 본문 미리보기 예시 텍스트 " + i + " — 카드/앨범 뷰에서만 노출됩니다. 길면 자동 줄임 처리.");
+      qnaList.add(q);
+    }
+    request.setAttribute("qnaList", qnaList);
+  }
+
+  if (request.getAttribute("pageInfo") == null) {
+    java.util.Map<String,Object> pageInfo = new java.util.HashMap<String,Object>();
+    pageInfo.put("page", 1);
+    pageInfo.put("totalPages", 5);
+    request.setAttribute("pageInfo", pageInfo);
+  }
+%>
+
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/qna/QnaList.css">
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
-
 <div class="page-shell">
-  <div class="content-wrap">
-    <div class="content-card mypage-card"
-         data-ctx="${ctx}"
-         data-profile-user-id="${profileUser.user_id}"
-         data-is-owner="${isOwner}">
+  <section class="content-wrap">
+    <div class="content-card qna-card">
 
-      <div class="mypage-layout">
-        <!-- LEFT -->
-        <aside class="mypage-left">
-          <div class="left-profile">
-            <button type="button"
-                    class="avatar-btn"
-                    id="btnAvatar"
-                    aria-label="프로필 이미지 크게 보기"
-                    <c:if test="${!isOwner}">disabled="disabled"</c:if>>
-              <img class="avatar"
-                   src="<c:out value='${empty profileUser.profile ? (ctx.concat("/resources/img/default_profile.png")) : profileUser.profile}'/>"
-                   alt="프로필 이미지"/>
+      <div class="qna-top">
+        <!-- 1줄: Q&A / 질문하기 -->
+        <div class="qna-top__row1">
+          <div class="qna-title">Q&amp;A</div>
+          <div class="qna-top__right">
+            <a class="qna-btn qna-btn--solid" href="<c:url value='/qna/ask'/>">질문하기</a>
+          </div>
+        </div>
+
+        <!-- 2줄: 질문들||사람들 -->
+        <div class="qna-top__row2">
+          <ul class="qna-tabs" id="qnaTabs">
+            <li class="qna-tab"><a href="<c:url value='/qna/QnaList'/>">질문들</a></li>
+            <li class="qna-tab sep">||</li>
+            <li class="qna-tab"><a href="<c:url value='/qna/people'/>">사람들</a></li>
+          </ul>
+        </div>
+
+        <div class="qna-tabline"></div>
+      </div>
+
+      <!-- 분야(해시태그 Top15) -->
+      <section class="qna-section qna-section--category">
+        <div class="qna-cat__header">
+          <div class="qna-cat__title">분야</div>
+          <div class="qna-cat__today">
+            <span>오늘의 새 질문 <strong>10,025</strong></span>
+            <span class="dot">|</span>
+            <span>오늘의 답변 <strong>29,905</strong></span>
+          </div>
+        </div>
+
+        <div class="qna-cat__grid" id="qnaCategoryGrid">
+          <c:set var="selectedTag" value="${param.category}" />
+          <c:forEach var="t" items="${tagTop15}" varStatus="st">
+            <c:if test="${st.index % 5 == 0}"><div class="qna-cat__col"></c:if>
+
+            <a class="qna-cat__item <c:if test='${selectedTag eq t.tagName}'>is-active</c:if>"
+               href="#"
+               data-category="${t.tagName}">
+              <span class="name"><c:out value="${t.tagName}"/></span>
+              <span class="count"><fmt:formatNumber value="${t.tagCount}"/></span>
+            </a>
+
+            <c:if test="${st.index % 5 == 4 || st.last}"></div></c:if>
+          </c:forEach>
+        </div>
+      </section>
+
+      <!-- 질문 리스트 -->
+      <section class="qna-section qna-section--list">
+        <!-- ✅ (요청 1,2,3) 리스트 제목 라인: 리스트 박스 안 + 보기 버튼 이동 + 제목 크기=분야 크기 -->
+        <div class="qna-listHead">
+          <div class="qna-listTitle">
+            <span class="qna-listTitle__value" id="qnaListTitleValue">전체보기</span>
+          </div>
+
+          <div class="qna-viewBtns" id="qnaViewBtns" aria-label="보기 방식">
+            <button type="button" class="viewBtn active" data-view="list">리스트</button>
+            <button type="button" class="viewBtn" data-view="album">앨범</button>
+            <button type="button" class="viewBtn" data-view="card">카드</button>
+          </div>
+        </div>
+
+        <div class="qna-table view-list" id="qnaTable">
+          <!-- ✅ (요청 4) 정렬: 좋아요/답변/작성 -->
+          <div class="qna-row qna-row--head" id="qnaHeadRow">
+            <div class="cell">제목</div>
+            <div class="cell">분야</div>
+
+            <div class="cell">
+              <button type="button" class="sort-btn" data-key="like" aria-label="좋아요 정렬">좋아요</button>
+            </div>
+            <div class="cell">
+              <button type="button" class="sort-btn" data-key="answer" aria-label="답변 정렬">답변</button>
+            </div>
+            <div class="cell">
+              <button type="button" class="sort-btn" data-key="created" aria-label="작성일 정렬">작성</button>
+            </div>
+          </div>
+
+          <c:forEach var="q" items="${qnaList}">
+            <a class="qna-row qna-row--body"
+               data-tag="${q.tagName}"
+               data-like="${q.likeCount}"
+               data-answer="${q.answerCount}"
+               data-created="${q.createdEpoch}"
+               href="<c:url value='/qna/detail'><c:param name='qna_id' value='${q.qna_id}'/></c:url>">
+
+              <div class="cell cell-title">
+                <span class="title-text"><c:out value="${q.title}"/></span>
+                <span class="preview-text"><c:out value="${q.preview}"/></span>
+                <span class="meta-line">
+                  <span class="meta-tag">#<c:out value="${q.tagName}"/></span>
+                  <span class="meta-like">좋아요 <c:out value="${q.likeCount}"/></span>
+                  <span class="meta-ans">답변 <c:out value="${q.answerCount}"/></span>
+                  <span class="meta-date"><c:out value="${q.createdAtLabel}"/></span>
+                </span>
+              </div>
+
+              <div class="cell cell-cat"><c:out value="${q.tagName}"/></div>
+              <div class="cell cell-like"><c:out value="${q.likeCount}"/></div>
+              <div class="cell cell-ans"><c:out value="${q.answerCount}"/></div>
+              <div class="cell cell-date"><c:out value="${q.createdAtLabel}"/></div>
+            </a>
+          </c:forEach>
+        </div>
+      </section>
+
+      <!-- 하단 -->
+      <div class="qna-bottom">
+        <c:set var="curPage" value="${pageInfo.page}" />
+        <c:set var="totalPages" value="${pageInfo.totalPages}" />
+
+        <div class="qna-pagination" id="qnaPagination"
+             data-page="${curPage}" data-total="${totalPages}">
+          <button type="button" class="pbtn pbtn--nav" data-move="prev">&lt;</button>
+          <c:forEach var="p" begin="1" end="${totalPages}">
+            <button type="button" class="pbtn <c:if test='${p eq curPage}'>active</c:if>" data-page="${p}">
+              ${p}
             </button>
+          </c:forEach>
+          <button type="button" class="pbtn pbtn--nav" data-move="next">&gt;</button>
+        </div>
 
-            <div class="left-profile-meta">
-              <div class="nickname"><c:out value="${profileUser.nickname}" /></div>
-              <div class="grade"><c:out value="${profileUser.gradeName}" /></div>
-              <a class="chat-link" href="${ctx}/chat/room?targetUserId=${profileUser.user_id}">채팅하기</a>
-            </div>
-          </div>
-
-          <nav class="left-menu" aria-label="마이페이지 메뉴">
-            <!-- 채팅하기는 페이지 이동 -->
-            <a class="menu-item" href="${ctx}/chat/room?targetUserId=${profileUser.user_id}">채팅하기</a>
-
-            <!-- 아래는 우측 영역 변경 -->
-            <c:if test="${isOwner}">
-              <button type="button" class="menu-item js-nav" data-target="secAccount">마이페이지</button>
-            </c:if>
-
-            <button type="button" class="menu-item js-nav is-active" data-target="secProfile">프로필</button>
-            <button type="button" class="menu-item js-nav" data-target="secPosts">작성글</button>
-            <button type="button" class="menu-item js-nav" data-target="secComments">작성댓글</button>
-
-            <c:if test="${isOwner}">
-              <button type="button" class="menu-item js-nav" data-target="secMyQuestions">나의 질문</button>
-            </c:if>
-
-            <button type="button" class="menu-item js-nav" data-target="secMyAnswers">나의 답변</button>
-          </nav>
-        </aside>
-
-        <!-- RIGHT -->
-        <section class="mypage-right">
-          <!-- =======================
-               1) 프로필 (공개)
-          ======================== -->
-          <section id="secProfile" class="right-section is-show">
-            <header class="section-head">
-              <h2 class="section-title">프로필</h2>
-              <div class="section-actions">
-                <c:if test="${isOwner}">
-                  <a class="btn btn-ghost" href="${ctx}/mypage/profile/edit">수정</a>
-                </c:if>
-              </div>
-            </header>
-
-            <div class="profile-grid">
-              <!-- LEFT COLUMN -->
-              <div class="profile-col">
-                <!-- 자기소개 -->
-                <c:if test="${not empty profile.intro}">
-                  <div class="box">
-                    <div class="box-title">자기소개</div>
-                    <div class="box-body scroll-box">
-                      <pre class="pre-text"><c:out value="${profile.intro}" /></pre>
-                    </div>
-                  </div>
-                </c:if>
-
-                <!-- 활동내역 -->
-                <c:if test="${not empty profile.activities}">
-                  <div class="box">
-                    <div class="box-title">활동내역</div>
-                    <div class="box-body scroll-box">
-                      <!-- activities가 List<String> 이라고 가정 -->
-                      <ul class="bullet">
-                        <c:forEach var="a" items="${profile.activities}">
-                          <li><c:out value="${a}" /></li>
-                        </c:forEach>
-                      </ul>
-                    </div>
-                  </div>
-                </c:if>
-
-                <!-- 주요 활동 분야 -->
-                <c:if test="${not empty profile.fields}">
-                  <div class="box">
-                    <div class="box-title">주요 활동 분야</div>
-                    <div class="box-body scroll-box">
-                      <!-- fields가 List<String> 이라고 가정 -->
-                      <ul class="bullet">
-                        <c:forEach var="f" items="${profile.fields}">
-                          <li><c:out value="${f}" /></li>
-                        </c:forEach>
-                      </ul>
-                    </div>
-                  </div>
-                </c:if>
-
-                <!-- 답변수 요약 (없으면 숨김) -->
-                <c:if test="${profileStats.totalAnswers gt 0 or profileStats.totalViews gt 0 or profileStats.acceptedAnswers gt 0}">
-                  <div class="box">
-                    <div class="box-title">답변수</div>
-                    <div class="stats">
-                      <div class="stat">
-                        <div class="num"><c:out value="${profileStats.totalAnswers}" /></div>
-                        <div class="label">전체 답변</div>
-                      </div>
-                      <div class="stat">
-                        <div class="num"><c:out value="${profileStats.totalViews}" /></div>
-                        <div class="label">조회수</div>
-                      </div>
-                      <div class="stat">
-                        <div class="num"><c:out value="${profileStats.acceptedAnswers}" /></div>
-                        <div class="label">채택 답변</div>
-                      </div>
-                    </div>
-                  </div>
-                </c:if>
-              </div>
-
-              <!-- RIGHT COLUMN -->
-              <div class="profile-col">
-                <!-- 나의 등급 -->
-                <div class="box">
-                  <div class="box-title">나의 등급</div>
-                  <div class="grade-area">
-                    <div class="grade-current">
-                      현재 <b><c:out value="${profileUser.gradeName}" /></b> 등급입니다
-                    </div>
-
-                    <div class="grade-actions">
-                      <button type="button" class="link-btn" id="btnGradeGuide">등급 안내</button>
-                      <c:if test="${isOwner}">
-                        <a class="link-btn" href="${ctx}/mypage/verify/expert">전문가 인증하러가기</a>
-                      </c:if>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 나의 Q&A 등급 -->
-                <div class="box">
-                  <div class="box-title">나의 Q&amp;A 등급</div>
-                  <div class="qna-area">
-                    <div class="qna-level">LV <c:out value="${profileStats.qnaLevel}" /></div>
-                    <div class="qna-actions">
-                      <c:if test="${isOwner}">
-                        <button type="button" class="link-btn" id="btnQnaLevelUp">Q&amp;A 등급 올리기</button>
-                      </c:if>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- =======================
-               2) 작성글 (공개)
-          ======================== -->
-          <section id="secPosts" class="right-section">
-            <header class="section-head">
-              <h2 class="section-title">작성글</h2>
-              <div class="section-actions">
-                <div class="tabbar" data-section="posts">
-                  <button type="button" class="tab is-active" data-tab="all">전체</button>
-                  <button type="button" class="tab" data-tab="community">커뮤니티</button>
-                  <button type="button" class="tab" data-tab="qna">Q&amp;A</button>
-                </div>
-              </div>
-            </header>
-
-            <div class="list-wrap"
-                 data-api="${ctx}/mypage/api/posts"
-                 data-default-tab="all">
-              <div class="list-head">
-                <div class="list-count">
-                  <span class="muted">총</span> <b class="js-total">0</b><span class="muted">건</span>
-                </div>
-              </div>
-
-              <ul class="list js-list" aria-label="작성글 목록"></ul>
-
-              <div class="pager js-pager" aria-label="페이지네이션"></div>
-              <div class="empty js-empty">표시할 데이터가 없습니다.</div>
-            </div>
-          </section>
-
-          <!-- =======================
-               3) 작성댓글 (공개)
-          ======================== -->
-          <section id="secComments" class="right-section">
-            <header class="section-head">
-              <h2 class="section-title">작성댓글</h2>
-              <div class="section-actions">
-                <div class="tabbar" data-section="comments">
-                  <button type="button" class="tab is-active" data-tab="all">전체</button>
-                  <button type="button" class="tab" data-tab="community">커뮤니티</button>
-                  <button type="button" class="tab" data-tab="qna">Q&amp;A</button>
-                </div>
-              </div>
-            </header>
-
-            <div class="list-wrap"
-                 data-api="${ctx}/mypage/api/comments"
-                 data-default-tab="all">
-              <div class="list-head">
-                <div class="list-count">
-                  <span class="muted">총</span> <b class="js-total">0</b><span class="muted">건</span>
-                </div>
-              </div>
-
-              <ul class="list js-list" aria-label="작성댓글 목록"></ul>
-
-              <div class="pager js-pager" aria-label="페이지네이션"></div>
-              <div class="empty js-empty">표시할 데이터가 없습니다.</div>
-            </div>
-          </section>
-
-          <!-- =======================
-               4) 나의 질문 (주인만)
-          ======================== -->
-          <c:if test="${isOwner}">
-            <section id="secMyQuestions" class="right-section">
-              <header class="section-head">
-                <h2 class="section-title">나의 질문</h2>
-                <div class="section-actions">
-                  <div class="tabbar" data-section="myQuestions">
-                    <button type="button" class="tab is-active" data-tab="all">전체</button>
-                    <button type="button" class="tab" data-tab="open">미해결</button>
-                    <button type="button" class="tab" data-tab="solved">해결</button>
-                  </div>
-                </div>
-              </header>
-
-              <div class="list-wrap"
-                   data-api="${ctx}/mypage/api/questions"
-                   data-default-tab="all">
-                <div class="list-head">
-                  <div class="list-count">
-                    <span class="muted">총</span> <b class="js-total">0</b><span class="muted">건</span>
-                  </div>
-                </div>
-
-                <ul class="list js-list" aria-label="나의 질문 목록"></ul>
-
-                <div class="pager js-pager" aria-label="페이지네이션"></div>
-                <div class="empty js-empty">표시할 데이터가 없습니다.</div>
-              </div>
-            </section>
+        <form class="qna-search" id="qnaSearchForm" method="get" action="<c:url value='/qna/QnaList'/>">
+          <span class="qna-search__icon" aria-hidden="true"></span>
+          <c:if test="${not empty param.category}">
+            <input type="hidden" name="category" value="${param.category}">
           </c:if>
-
-          <!-- =======================
-               5) 나의 답변 (공개)
-          ======================== -->
-          <section id="secMyAnswers" class="right-section">
-            <header class="section-head">
-              <h2 class="section-title">나의 답변</h2>
-              <div class="section-actions">
-                <div class="tabbar" data-section="myAnswers">
-                  <button type="button" class="tab is-active" data-tab="all">전체</button>
-                  <button type="button" class="tab" data-tab="accepted">채택</button>
-                </div>
-              </div>
-            </header>
-
-            <div class="list-wrap"
-                 data-api="${ctx}/mypage/api/answers"
-                 data-default-tab="all">
-              <div class="list-head">
-                <div class="list-count">
-                  <span class="muted">총</span> <b class="js-total">0</b><span class="muted">건</span>
-                </div>
-              </div>
-
-              <ul class="list js-list" aria-label="나의 답변 목록"></ul>
-
-              <div class="pager js-pager" aria-label="페이지네이션"></div>
-              <div class="empty js-empty">표시할 데이터가 없습니다.</div>
-            </div>
-          </section>
-
-          <!-- =======================
-               6) 마이페이지(계정 주인만)
-          ======================== -->
-          <c:if test="${isOwner}">
-            <section id="secAccount" class="right-section">
-              <header class="section-head">
-                <h2 class="section-title">마이페이지</h2>
-              </header>
-
-              <form id="accountForm" class="account-form" method="post" action="${ctx}/mypage/account/update">
-                <div class="form-row">
-                  <label class="label">이름</label>
-                  <input type="text" value="<c:out value='${profileUser.name}'/>" disabled />
-                </div>
-                <div class="form-row">
-                  <label class="label">생년월일</label>
-                  <input type="text" value="<c:out value='${profileUser.birth_date}'/>" disabled />
-                </div>
-
-                <div class="form-row">
-                  <label class="label">닉네임</label>
-                  <div class="input-actions">
-                    <input type="text" name="nickname" value="<c:out value='${profileUser.nickname}'/>" />
-                    <button type="submit" class="btn">수정</button>
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <label class="label">관심식물</label>
-                  <div class="input-actions">
-                    <input type="text" value="<c:out value='${profileUser.aspect}'/>" readonly />
-                    <button type="button" class="btn" id="btnInterestPlant">+</button>
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <label class="label">휴대전화</label>
-                  <div class="input-actions">
-                    <input type="text" value="<c:out value='${profileUser.phone}'/>" readonly id="inpPhone" />
-                    <button type="button" class="btn btn-ghost" id="btnPhoneVerify">인증</button>
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <label class="label">이메일</label>
-                  <div class="input-actions">
-                    <input type="text" value="<c:out value='${profileUser.email}'/>" readonly id="inpEmail" />
-                    <button type="button" class="btn btn-ghost" id="btnEmailVerify">인증</button>
-                  </div>
-                </div>
-              </form>
-            </section>
-          </c:if>
-
-        </section>
-      </div>
-
-      <!-- =======================
-           MODALS
-      ======================== -->
-      <div class="modal-backdrop" id="modalBackdrop" hidden></div>
-
-      <!-- 등급 안내 모달 -->
-      <div class="modal" id="modalGrade" role="dialog" aria-modal="true" aria-labelledby="modalGradeTitle" hidden>
-        <div class="modal-card">
-          <div class="modal-head">
-            <h3 id="modalGradeTitle">등급 안내</h3>
-            <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
-          </div>
-          <div class="modal-body">
-            <!-- DB/정책 문구를 서버에서 내려주고 싶으면 여기 바인딩 -->
-            <p class="muted">등급 기준/혜택 안내 내용을 표시합니다.</p>
-          </div>
-          <div class="modal-foot">
-            <button type="button" class="btn" data-modal-close>닫기</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Q&A 등급 올리기 모달 -->
-      <div class="modal" id="modalQna" role="dialog" aria-modal="true" aria-labelledby="modalQnaTitle" hidden>
-        <div class="modal-card">
-          <div class="modal-head">
-            <h3 id="modalQnaTitle">Q&amp;A 등급 올리기</h3>
-            <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
-          </div>
-          <div class="modal-body">
-            <p class="muted">등급 업 조건/미션 등을 표시하고, 수행 버튼을 제공할 수 있습니다.</p>
-            <button type="button" class="btn">미션 확인</button>
-          </div>
-          <div class="modal-foot">
-            <button type="button" class="btn" data-modal-close>닫기</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 관심식물 추가 모달 -->
-      <div class="modal" id="modalPlant" role="dialog" aria-modal="true" aria-labelledby="modalPlantTitle" hidden>
-        <div class="modal-card">
-          <div class="modal-head">
-            <h3 id="modalPlantTitle">관심식물 선택</h3>
-            <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
-          </div>
-          <div class="modal-body">
-            <div class="plant-search">
-              <input type="text" id="plantKeyword" placeholder="식물명 검색" />
-              <button type="button" class="btn" id="btnPlantSearch">검색</button>
-            </div>
-            <ul class="list" id="plantResult" aria-label="관심식물 검색 결과"></ul>
-            <div class="empty" id="plantEmpty">검색 결과가 없습니다.</div>
-          </div>
-          <div class="modal-foot">
-            <button type="button" class="btn" data-modal-close>닫기</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 인증(휴대폰/이메일) 모달 -->
-      <div class="modal" id="modalVerify" role="dialog" aria-modal="true" aria-labelledby="modalVerifyTitle" hidden>
-        <div class="modal-card">
-          <div class="modal-head">
-            <h3 id="modalVerifyTitle">인증</h3>
-            <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
-          </div>
-          <div class="modal-body">
-            <p class="muted" id="verifyDesc">인증 절차를 진행합니다.</p>
-            <div class="verify-grid">
-              <input type="text" id="verifyTarget" readonly />
-              <button type="button" class="btn" id="btnSendCode">인증번호 발송</button>
-              <input type="text" id="verifyCode" placeholder="인증번호 입력" />
-              <button type="button" class="btn" id="btnConfirmCode">확인</button>
-            </div>
-          </div>
-          <div class="modal-foot">
-            <button type="button" class="btn" data-modal-close>닫기</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 프로필 이미지 크게보기 모달(주인만) -->
-      <div class="modal" id="modalAvatar" role="dialog" aria-modal="true" aria-labelledby="modalAvatarTitle" hidden>
-        <div class="modal-card">
-          <div class="modal-head">
-            <h3 id="modalAvatarTitle">프로필 이미지</h3>
-            <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
-          </div>
-          <div class="modal-body center">
-            <img id="avatarLarge"
-                 src="<c:out value='${empty profileUser.profile ? (ctx.concat("/resources/img/default_profile.png")) : profileUser.profile}'/>"
-                 alt="프로필 이미지 크게 보기" />
-          </div>
-          <div class="modal-foot">
-            <button type="button" class="btn" data-modal-close>닫기</button>
-          </div>
-        </div>
+          <input class="qna-search__input" type="text" name="q"
+                 placeholder="검색어를 입력하세요"
+                 value="<c:out value='${param.q}'/>" />
+        </form>
       </div>
 
     </div>
-  </div>
+  </section>
 </div>
 
-<script src="${ctx}/resources/js/user/MyPage.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/qna/QnaList.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

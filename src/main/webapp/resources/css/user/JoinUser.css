@@ -1,3 +1,41 @@
+body{
+	margin: 0;
+	padding: 0;
+}
+
+/* 페이지 배경 */
+.page-shell {
+  background-color: #6b7b61;
+  margin: 0 auto;
+  /* position: relative; */
+}
+
+/* 컨텐츠 래퍼 */
+.content-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 80px 120px;   /* PC 기본값 수정 */
+}
+
+/* 실제 컨텐츠 박스 */
+.content-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+
+  width: 100%;
+  max-width: 1260px;   /* 고정 width 제거 */
+  padding: 50px 60px;
+
+  background-color: #f4f2ed;
+  border-radius: 10px;
+  border: 3px solid #6b7b61;
+}
+
+
 /* 공용 레이아웃(ContentLayout.css)의 .content-card 내부에 들어가는 전용 스타일 */
 
 .join-shell{
@@ -13,7 +51,7 @@
   border: 2px solid #6b7b61;
   border-radius: 12px;
   overflow: hidden;
-  background: url("/resources/img/join_forest.jpg") center/cover no-repeat; /* 프로젝트에 맞게 경로 수정 */
+  background: url("/resources/image/Default_Plant.jpg") center/cover no-repeat; /* 프로젝트에 맞게 경로 수정 */
   position: relative;
 }
 

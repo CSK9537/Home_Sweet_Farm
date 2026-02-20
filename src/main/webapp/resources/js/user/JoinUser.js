@@ -243,7 +243,7 @@
   var goHomeBtn = $("#goHomeBtn");
   if (goHomeBtn) {
     goHomeBtn.addEventListener("click", function () {
-      window.location.href = getCpath() + "/";
+      window.location.href = "/";
     });
   }
 
