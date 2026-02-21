@@ -43,7 +43,7 @@
 	                <details class="fcat__item" data-main="커뮤니티">
 	                  <summary class="fcat__summary">커뮤니티</summary>
 	                  <div class="fsub">
-	                    <button type="button" class="fsub__item" data-sub="자유게시판">자유게시판</button>
+	                    <button type="button" class="fsub__item" data-sub="자유게시판" href="/WEB-INF/views/community/CommunityList">자유게시판</button>
 	                    <button type="button" class="fsub__item" data-sub="벼룩시장">벼룩시장</button>
 	                  </div>
 	                </details>
@@ -63,8 +63,8 @@
 	                <details class="fcat__item" data-main="나의 식물">
 	                  <summary class="fcat__summary">나의 식물</summary>
 	                  <div class="fsub">
-	                    <button type="button" class="fsub__item" data-sub="추천 가이드">추천 가이드</button>
 	                    <button type="button" class="fsub__item" data-sub="나의 식물 관리">나의 식물 관리</button>
+	                    <button type="button" class="fsub__item" data-sub="추천 가이드">추천 가이드</button>
 	                  </div>
 	                </details>
 	
