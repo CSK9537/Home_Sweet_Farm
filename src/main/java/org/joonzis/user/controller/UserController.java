@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.user.dto.UserDTO;
@@ -64,7 +67,27 @@ public class UserController {
 		
 	//3)로그인 화면
 	@GetMapping("/login")
-	public String loginForm() {
+	public String loginForm(HttpServletRequest request,
+					HttpSession session) {
+		
+		//이미 로그인 상태면 홈으로 이동
+		if(session.getAttribute("loginUser") != null) {
+			return "redirect:/";
+		}
+		//*자동 로그인 시, 쿠키 필요함
+		Cookie[] cookies = request.getCookies();//쿠키들 배열 처리
+		if(cookies != null) {
+			for (Cookie c : cookies) { //쿠키 목록 확인
+				if("rememberId".equals(c.getName())) {//rememberId: 자동 로그인용 쿠키 이름
+					String username = c.getValue();//쿠키 값 가져옴
+					UserVO vo = uservice.findByUsername(username);//DB에서 사용자 조회
+					if(vo != null) {//vo에 유저 있음 자동 로그인
+						session.setAttribute("loginUser", vo);
+						return "redirect:/";//로그인 완료 시 홈으로 이동
+					}
+				}
+			}
+		}
 		return "user/login";
 	}
 	
@@ -72,21 +95,41 @@ public class UserController {
 	@PostMapping("/login")
 	public String loginProcess(@RequestParam String username,
 								@RequestParam String password,
-								HttpSession session, Model model) {
+								@RequestParam(defaultValue = "N") String rememberMe,//체크 안 해도 에러 나지 않게 처리
+								HttpSession session, 
+								HttpServletResponse response,//서버-> 브라우저로 보냄(쿠키 등)
+								Model model) {
+		
 		UserVO vo = uservice.login(username, password);
 		if (vo == null) {
-			model.addAttribute("msg", "로그인 실패");
-			return "user/login";
+			model.addAttribute("loginErrorMsg", "아이디 또는 비밀번호가 올바르지 않습니다.");
+		return "user/login";
 		}
 		session.setAttribute("loginUser", vo);
-		log.error("로그인 성공 - 세션 저장 유저: " + session.getAttribute("loginUser"));
+		
+		//체크하면 쿠키 저장(30일):자동 로그인
+		if(rememberMe != null) {
+			Cookie c = new Cookie("rememberId", username);//rememberId:쿠키이름, username:쿠키 값
+			c.setMaxAge(60*60*24*30); //유효기간 30일
+			c.setPath("/"); //경로
+			response.addCookie(c);
+		}
 		return "redirect:/";
 	}
 	
 	//5)로그아웃
 	@GetMapping("/logout")
-	public String logout(HttpSession session) {
-		session.invalidate();
+	public String logout(HttpSession session,
+			HttpServletResponse response) {
+		
+		//로그아웃 후 쿠키 삭제
+		Cookie c = new Cookie("rememberId", "");
+		c.setMaxAge(0);
+		c.setPath("/");
+		response.addCookie(c);
+		
+		session.invalidate();//세션 종료
+		
 		return "redirect:/";
 	}
 	

@@ -36,22 +36,30 @@
               <form class="form-block" method="post" action="${pageContext.request.contextPath}/user/login" autocomplete="off">
                 <label class="input-label" for="loginId">아이디</label>
                 <input id="loginId" name="username" class="text-input" type="text" maxlength="20"
-                       placeholder="아이디" autocomplete="username" />
-                       
-                   <div id="idMsg"></div> 
+                       placeholder="아이디" autocomplete="username" />                       
+				
+				<!-- 결과 메시지 id -->
+				<div id="idMsg" style="margin-top:6px; font-size:14px;"></div>
 
 
                 <label class="input-label" for="loginPw">비밀번호</label>
                 <input id="loginPw" name="password" class="text-input" type="password" maxlength="20"
                        placeholder="비밀번호" autocomplete="current-password" />
-                   
-                   <div id="pwMsg"></div>    
-                   
+				
+				<!-- 결과 메시지 pw -->
+				<div id="pwMsg" style="margin-top:6px; font-size:14px;"></div>
+				
+				<!-- 로그인 실패 메시지 -->
+				<div id="loginErrorMsg" style="margin-top:6px; font-size:14px; color:red;">
+					${loginErrorMsg}
+				</div>
 
 
+				<!-- 자동로그인-rememberMe -->
                 <div class="row-between">
+                  <input type="hidden" id="rememberHidden" name="rememberMe" value="N"/>
                   <label class="check-wrap">
-                    <input type="checkbox" name="rememberMe" />
+                    <input type="checkbox" id="rememberMe" name="rememberMe" value="Y"/>
                     <span>로그인 상태 유지</span>
                   </label>
                 </div>

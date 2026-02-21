@@ -101,24 +101,63 @@
   }
 })();
 
-//로그인 버튼 클릭
+
+//아이디, 비번 검증
 const loginBtn = document.querySelector("#loginBtn");
+const loginId = document.querySelector("#loginId");
+const loginPw = document.querySelector("#loginPw");
+const idMsg = document.querySelector("#idMsg");
+const pwMsg = document.querySelector("#pwMsg");
+const loginErrorMsg = document.querySelector("#loginErrorMsg");
 
-if (loginBtn) {
-	loginBtn.addEventListener("click", 
-function (e) {
+//1. input 이벤트(항상 작동)
+//1)아이디
+loginId.addEventListener("input",
+function(){
+	idMsg.innerText = "";
+	loginErrorMsg.innerText = "";//로그인 실패 메시지
+});
+//2)비번
+loginPw.addEventListener("input",
+function(){
+	pwMsg.innerText = "";
+	loginErrorMsg.innerText = "";//로그인 실패 메시지
+});
 
-    const loginIdEl = document.querySelector("#loginId");
-    const pwEl = document.querySelector("#loginPw");
+//2.submit 검증
+loginBtn.addEventListener("click",
+function(e){
+	//1)아이디 비어있으면
+	if(loginId.value.trim()===""){
+		e.preventDefault();
+		
+		idMsg.innerText = "아이디를 입력해주세요.";
+		idMsg.style.color = "red";
+		
+		loginId.focus();
+		return;
+	}
+	//2)비밀번호 비어있으면
+	if(loginPw.value.trim()===""){
+		e.preventDefault();
+		
+		pwMsg.innerText = "비밀번호를 입력해주세요.";
+		pwMsg.style.color = "red";
+		
+		loginPw.focus();
+		return;
+	}
+});
 
-    const loginId = loginIdEl ? (loginIdEl.value || "").trim() : "";
-    const loginPw = pwEl ? (pwEl.value || "") : "";
-    
-	    if(loginId === "" || loginPw === ""){
-	    	e.preventDefault();//입력 없으면 제출 막기
-	    	alert("아이디 또는 비밀번호를 입력해주세요.");
-	    }else{
-	    	alert("로그인 완료!");
-	    }
-    });
-}
+//자동로그인: rememberMe
+const rememberMe =
+	document.querySelector("#rememberMe");
+const rememberHidden =
+	document.querySelector("#rememberHidden");
+
+rememberMe.addEventListener("change",
+function(){
+	rememberHidden.value =
+	rememberMe.checked ? "Y" : "N";
+});
+

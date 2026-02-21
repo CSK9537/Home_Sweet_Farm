@@ -105,6 +105,10 @@ public class UserServiceImpl implements UserService{
 		return usermapper.countByUsername(username);
 	}
 	@Override
+	public UserVO findByUsername(String username) {
+		return usermapper.findByUsername(username);
+	}
+	@Override
 	public UserDTO selectPublicProfile(int user_id) {
 		UserDTO dto =
 		usermapper.selectPublicProfile(user_id);
