@@ -1,0 +1,148 @@
+/* CommunityInsert.css */
+
+.insert-head{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+.insert-title{ font-size:22px; font-weight:800; }
+
+.insert-actions{ display:flex; gap:8px; }
+
+.btn{
+  border:0;
+  border-radius:10px;
+  padding:10px 14px;
+  font-weight:800;
+  cursor:pointer;
+}
+.btn--primary{ background:#2d6a4f; color:#fff; }
+.btn--ghost{ background:#f3f5f7; color:#222; }
+
+.form-row{ margin:14px 0; }
+.form-row--grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.form-field{ width:100%; }
+.label{
+  display:block;
+  font-weight:900;
+  margin-bottom:8px;
+}
+.input, .select{
+  width:100%;
+  border:1px solid #e6e8ea;
+  border-radius:10px;
+  padding:10px 12px;
+  outline:none;
+  background:#fff;
+}
+.input:focus, .select:focus{ border-color:#2d6a4f; }
+
+.hint{
+  font-size:12px;
+  color:#777;
+  margin-top:6px;
+  line-height:1.4;
+}
+
+.editor-box{
+  border:1px solid #e6e8ea;
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.file-list{
+  margin-top:10px;
+  border:1px solid #eef0f2;
+  border-radius:10px;
+  padding:10px;
+  background:#fafafa;
+}
+.file-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:6px 0;
+  border-bottom:1px dashed #e6e8ea;
+}
+.file-item:last-child{ border-bottom:0; }
+.file-item__name{ font-weight:700; }
+.file-item__tag{
+  font-size:12px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#eaf4ef;
+  color:#2d6a4f;
+  font-weight:800;
+}
+
+.tag-input-wrap{ position:relative; }
+
+.tag-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:10px;
+}
+.tag-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#f1f6f3;
+  border:1px solid #dfeae4;
+  font-weight:800;
+}
+.tag-del{
+  border:0;
+  background:transparent;
+  font-weight:900;
+  cursor:pointer;
+  line-height:1;
+}
+
+.tag-suggest{
+  position:absolute;
+  left:0;
+  right:0;
+  top:100%;
+  margin-top:6px;
+  background:#fff;
+  border:1px solid #e6e8ea;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  overflow:hidden;
+  z-index:10;
+}
+.tag-suggest-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 12px;
+  cursor:pointer;
+}
+.tag-suggest-item:hover{ background:#f5f7f8; }
+.tag-suggest-empty{
+  padding:12px;
+  color:#777;
+}
+.muted{ color:#999; font-size:12px; }
+
+/* ===== edit 권한 안내(추가) ===== */
+.warn-box{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid #e2c9c9;
+  background:#fff6f6;
+  border-radius:10px;
+  color:#a33;
+  font-weight:800;
+  margin:10px 0 14px;
+}
