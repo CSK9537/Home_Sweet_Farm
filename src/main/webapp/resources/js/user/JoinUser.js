@@ -142,6 +142,31 @@
     var hidEmail = $("#hidVerifiedEmail");
     if (hidEmail) hidEmail.value = String(state.verifiedEmail);
   }
+  //인증번호 재전송
+  let resendTimer = null;
+
+  function startResendCooldown(seconds) {
+    const btn = document.querySelector("#emailSendBtn");
+    if (!btn) return;
+
+    let remain = seconds;
+    btn.disabled = true;
+    btn.textContent = `재전송 (${remain}s)`;
+
+    if (resendTimer) clearInterval(resendTimer);
+
+    resendTimer = setInterval(() => {
+      remain--;
+      if (remain <= 0) {
+        clearInterval(resendTimer);
+        btn.disabled = false;
+        btn.textContent = "인증메일 재전송";
+        return;
+      }
+      btn.textContent = `재전송 (${remain}s)`;
+    }, 1000);
+  }
+  
 
   
   
@@ -496,6 +521,7 @@
     	.then(response =>{
     		if(!response.ok) throw new Error();
     		alert("인증코드를 이메일로 발송했습니다.");
+    		startResendCooldown(60);//인증번호 재전송
     	})
     	.catch(()=>{
     		alert("이메일 발송에 실패했습니다.")
