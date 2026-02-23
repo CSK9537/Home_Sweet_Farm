@@ -296,6 +296,14 @@ body{
 .social-btn.naver{ background: #4de66e; }
 .social-btn.google{ background: #fff; }
 
+/* login */
+.login-guide{
+  margin-top: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #2f3b2a;
+}
+
 /* verify */
 .verify-card{
   padding-top: 8px;
@@ -333,6 +341,12 @@ body{
   color: #6b7b61;
   font-weight: 800;
   margin-top: 8px;
+}
+#sendCode-btn:disabled {
+  background: #e2e2e2 !important;
+  border-color: #ccc !important;
+  color: #999 !important;
+  cursor: not-allowed;
 }
 .badge{
   display: inline-flex;

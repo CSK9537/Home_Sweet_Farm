@@ -115,7 +115,7 @@
               </div>
 
               <div class="btn-row">
-                <button type="button" class="btn btn-ghost" id="goLoginBtn">로그인</button>
+              <!--<button type="button" class="btn btn-ghost" id="goLoginBtn">로그인</button>  -->
                 <button type="button" class="btn btn-primary" id="toVerifyBtn">다음</button>
               </div>
 
@@ -126,7 +126,11 @@
                   <button type="button" class="social-btn naver">네이버</button>
                   <button type="button" class="social-btn google">구글</button>
                 </div>
+                <p class="login-guide">
+             	 회원가입 하셨다면<a class="login-link" href="${pageContext.request.contextPath}/user/login">로그인</a>
+             	 </p>
               </div>
+              
             </form>
           </section>
 		<body>
@@ -140,7 +144,7 @@
               </p>
 
               <div class="verify-actions">
-                <button type="button" class="btn btn-outline" data-modal-open="modal-email">이메일 인증</button>
+                <button type="button" class="btn btn-outline" id="sendCode-btn" data-modal-open="modal-email">이메일 인증</button>
               </div>
 
               <div class="verify-status">
@@ -148,7 +152,6 @@
                   <span>이메일 인증</span>
                   <span class="badge" id="emailBadge">미완료</span>
                 </div>
-                <p class="hint">둘 중 하나 이상 완료 권장(정책에 맞게 서버에서 최종 검증하세요).</p>
               </div>
 
               <div class="btn-row">
