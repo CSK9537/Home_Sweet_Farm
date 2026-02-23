@@ -19,12 +19,6 @@
 					<c:if test="${main == '스토어'}">
 						${main}
 					</c:if>
-					<c:if test="${main == '나의 식물'}">
-						${main}
-					</c:if>
-					<c:if test="${main == '채팅'}">
-						${main}
-					</c:if>
 					<c:if test="${main == 'Q&A'}">
 						${main}
 					</c:if>

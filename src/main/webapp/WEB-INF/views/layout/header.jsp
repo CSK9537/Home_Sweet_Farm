@@ -43,33 +43,15 @@
 	                <details class="fcat__item" data-main="커뮤니티">
 	                  <summary class="fcat__summary">커뮤니티</summary>
 	                  <div class="fsub">
-	                    <button type="button" class="fsub__item" data-sub="자유게시판" href="/WEB-INF/views/community/CommunityList">자유게시판</button>
+	                    <button type="button" class="fsub__item" data-sub="자유게시판">자유게시판</button>
 	                    <button type="button" class="fsub__item" data-sub="벼룩시장">벼룩시장</button>
 	                  </div>
 	                </details>
 	               
 	                <button type="button" class="fcat__solo" data-main="식물">식물</button>
-	
-	                <details class="fcat__item" data-main="스토어">
-	                  <summary class="fcat__summary">스토어</summary>
-	                  <div class="fsub">
-	                    <button type="button" class="fsub__item" data-sub="재배 & 관리용품">재배 &amp; 관리용품</button>
-	                    <button type="button" class="fsub__item" data-sub="비료 & 영양제">비료 &amp; 영양제</button>
-	                    <button type="button" class="fsub__item" data-sub="병해충 & 보호">병해충 &amp; 보호</button>
-	                    <button type="button" class="fsub__item" data-sub="씨앗 & 번식">씨앗 &amp; 번식</button>
-	                  </div>
-	                </details>
-	
-	                <details class="fcat__item" data-main="나의 식물">
-	                  <summary class="fcat__summary">나의 식물</summary>
-	                  <div class="fsub">
-	                    <button type="button" class="fsub__item" data-sub="나의 식물 관리">나의 식물 관리</button>
-	                    <button type="button" class="fsub__item" data-sub="추천 가이드">추천 가이드</button>
-	                  </div>
-	                </details>
-	
-	                <button type="button" class="fcat__solo" data-main="채팅">채팅</button>
-	
+	                
+	                <button type="button" class="fcat__solo" data-main="스토어">스토어</button>
+	                
 	                <details class="fcat__item" data-main="Q&A">
 	                  <summary class="fcat__summary">Q&amp;A</summary>
 	                  <div class="fsub">
