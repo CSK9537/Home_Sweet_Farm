@@ -79,10 +79,37 @@ export function subscribeRoom(room_id) {
 
 // 유저 구독 함수
 export function subscribeUserChannel() {
+    chatState.socket.stompClient.subscribe(
+        "/topic/user." + chatState.session.myUserId,
+        (msg) => {
+            let data;
+            try {
+                data = JSON.parse(msg.body);
 
-  chatState.socket.stompClient.subscribe("/topic/user." + chatState.session.myUserId, (msg) => {
-    console.log("WS received:", msg.body);
-    const data = JSON.parse(msg.body);
-    updateRoomListRealtime(data);
-  });
+                // 필수 필드 확인
+                if (!data.room_id || !data.sender_id || !data.content) {
+                    console.warn("⚠️ 잘못된 payload:", data);
+                    return; // 필수 값 없으면 처리 중단
+                }
+
+                // sender_name 없으면 fallback
+                if (!data.sender_name) {
+                    data.sender_name = "유저";
+                }
+
+            } catch (err) {
+                console.error("⚠️ 실시간 메시지 JSON 파싱 실패:", err, msg.body);
+                return;
+            }
+
+            console.log("✅ 실시간 메시지 payload 확인:", data);
+
+            // 안전하게 채팅방 UI 갱신
+            try {
+                updateRoomListRealtime(data);
+            } catch (err) {
+                console.error("⚠️ 채팅방 UI 갱신 중 에러:", err, data);
+            }
+        }
+    );
 }
