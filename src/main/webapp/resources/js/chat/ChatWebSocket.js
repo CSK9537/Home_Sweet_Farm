@@ -88,7 +88,7 @@ export function subscribeUserChannel() {
 
                 // 필수 필드 확인
                 if (!data.room_id || !data.sender_id || !data.content) {
-                    console.warn("⚠️ 잘못된 payload:", data);
+                    console.warn(" 잘못된 payload:", data);
                     return; // 필수 값 없으면 처리 중단
                 }
 
@@ -98,17 +98,17 @@ export function subscribeUserChannel() {
                 }
 
             } catch (err) {
-                console.error("⚠️ 실시간 메시지 JSON 파싱 실패:", err, msg.body);
+                console.error(" 실시간 메시지 JSON 파싱 실패:", err, msg.body);
                 return;
             }
 
-            console.log("✅ 실시간 메시지 payload 확인:", data);
+            console.log(" 실시간 메시지 payload 확인:", data);
 
             // 안전하게 채팅방 UI 갱신
             try {
                 updateRoomListRealtime(data);
             } catch (err) {
-                console.error("⚠️ 채팅방 UI 갱신 중 에러:", err, data);
+                console.error(" 채팅방 UI 갱신 중 에러:", err, data);
             }
         }
     );

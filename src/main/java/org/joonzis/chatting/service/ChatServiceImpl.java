@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.joonzis.chatting.dto.ChatRoomDTO;
 import org.joonzis.chatting.dto.RoomSearchResultDTO;
+import org.joonzis.chatting.mapper.ChatRoomMapper;
 import org.joonzis.chatting.mapper.ChatRoomUserMapper;
 import org.joonzis.chatting.mapper.MsgMapper;
 import org.joonzis.chatting.vo.MsgVO;
@@ -33,6 +34,8 @@ public class ChatServiceImpl implements ChatService{
 	private MsgMapper msgMapper;
 	@Autowired
 	private UserMapper userMapper;
+	@Autowired
+	private ChatRoomMapper chatRoomMapper;
 
     // 1. 메세지 전송
 	@Transactional
@@ -66,31 +69,7 @@ public class ChatServiceImpl implements ChatService{
     // 3. 유저가 참여 중인 채팅방 목록
     @Transactional(readOnly = true)
     public List<ChatRoomDTO> getUserRooms(int user_id) {
-        List<RoomVO> rooms = roomService.findRoomByUser(user_id);
-
-        List<ChatRoomDTO> dtoList = new ArrayList<>();
-        for (RoomVO room : rooms) {
-            int otherUserId = (room.getUser1_id() == user_id) ? room.getUser2_id() : room.getUser1_id();
-            String otherUserName = userMapper.findNicknameById(otherUserId);
-            // 마지막 메시지 ID 가져오기
-            Long lastMsgId = msgMapper.findLastMsgIdByRoom(room.getRoom_id());
-            MsgVO lastMsg = null;
-            if (lastMsgId != null) {
-                lastMsg = msgMapper.findById(lastMsgId); // findById는 없으면 만들어야 함
-            }
-            // 읽지 않은 메시지 수
-            int unreadCount = chatRoomUserMapper.countUnread(user_id,room.getRoom_id());
-            System.out.println("room_id=" + room.getRoom_id() + ", user_id=" + user_id + ", unread=" + unreadCount);
-            dtoList.add(new ChatRoomDTO(
-                room.getRoom_id(),
-                otherUserId,
-                otherUserName,
-                lastMsg != null ? lastMsg.getContent() : "",
-                unreadCount
-            ));
-        }
-
-        return dtoList;
+    	return chatRoomMapper.findUserChatRooms(user_id);
     }
 
     // 4. 읽음 처리
