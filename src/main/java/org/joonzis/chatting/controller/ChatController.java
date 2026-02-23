@@ -65,8 +65,21 @@ public class ChatController {
                 "/topic/room." + savedMsg.getRoom_id(),
                 savedMsg
         );
+        
+        messagingTemplate.convertAndSend(
+        		"/topic/user." + receiver_id,
+        		savedMsg
+        );
+
+        	messagingTemplate.convertAndSend(
+        		"/topic/user." + sender_id,
+        		savedMsg
+        );
+        	
         return ResponseEntity.ok(savedMsg);
     }
+    
+    
 
     /**
      * 채팅방 메세지 조회
