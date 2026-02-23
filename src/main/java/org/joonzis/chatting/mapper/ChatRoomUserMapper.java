@@ -3,6 +3,7 @@ package org.joonzis.chatting.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+import org.joonzis.chatting.dto.ChatRoomDTO;
 import org.joonzis.chatting.dto.RoomSearchResultDTO;
 import org.joonzis.chatting.vo.ChatRoomUserVO;
 
@@ -22,6 +23,6 @@ public interface ChatRoomUserMapper {
 
 	// 유저로 채팅방 조회
 	List<RoomSearchResultDTO> searchByUser(@Param("user_id") int user_id, @Param("keyword") String keyword);
-
+	
 	void deleteAll();
 }
