@@ -30,7 +30,17 @@ public class WebSocketController {
     
 
     @GetMapping("/chat")
-    public String chatPage() {
+    public String chatPage(
+            Integer testUser_id,
+            javax.servlet.http.HttpSession session
+    ) {
+
+        // 테스트용 로그인 강제 세션 세팅
+        if (testUser_id != null) {
+            session.setAttribute("user_id", testUser_id);
+            log.info("TEST LOGIN user_id = " + testUser_id);
+        }
+
         return "chat/chat";
     }
     

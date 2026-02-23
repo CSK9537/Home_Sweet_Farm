@@ -4,8 +4,8 @@
 
 <mapper
 	namespace="org.joonzis.chatting.mapper.ChatRoomUserMapper">
+	
 	<!-- 1. 채팅방 유저 정보 추가 -->
-
 	<insert id="insert"
 		parameterType="org.joonzis.chatting.vo.ChatRoomUserVO">
 		INSERT INTO tbl_chat_room_user (
@@ -69,7 +69,6 @@
 		WHERE cru.user_id != #{user_id}
 			AND u.nickname LIKE '%' || #{keyword}|| '%'
 	</select>
-
 
 
 </mapper>

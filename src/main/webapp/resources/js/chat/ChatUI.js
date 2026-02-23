@@ -3,6 +3,36 @@ import { loadMessages } from "./ChatMessage.js";
 import { subscribeRoom } from "./ChatWebSocket.js";
 import { updateSearchCounter } from "./ChatSearch.js";
 
+// 채팅방 최근 메세지 날짜 계산
+function formatChatTime(dateString) {
+
+    if (!dateString) return "";
+
+    const msgDate = new Date(dateString);
+    const now = new Date();
+
+    const isToday =
+        msgDate.getFullYear() === now.getFullYear() &&
+        msgDate.getMonth() === now.getMonth() &&
+        msgDate.getDate() === now.getDate();
+
+    //오늘 → 시간
+    if (isToday) {
+        return msgDate.toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    //올해 → MM.DD
+    if (msgDate.getFullYear() === now.getFullYear()) {
+        return `${String(msgDate.getMonth() + 1).padStart(2, '0')}.${String(msgDate.getDate()).padStart(2, '0')}`;
+    }
+
+    //다른 해 -> YYYY.MM.DD
+    return `${msgDate.getFullYear()}.${String(msgDate.getMonth() + 1).padStart(2, '0')}.${String(msgDate.getDate()).padStart(2, '0')}`;
+}
+
 //좌측 채팅 목록 불러오기
 export function loadChatRooms() {
     const chatListContainer = document.querySelector('.chat-items');
@@ -20,13 +50,18 @@ export function loadChatRooms() {
                 item.dataset.user_id = room.other_user_id;
 
                 item.innerHTML = `
-                    <img src="https://via.placeholder.com/40" alt="유저">
-                    <div class="info">
-                        <div class="name">${room.other_user_name}</div>
-                        <div class="last-msg">${room.last_msg || ''}</div>
-                    </div>
-                    ${room.unread_count > 0 ? `<div class="badge">${room.unread_count}</div>` : ``}
-                `;
+            <img src="https://via.placeholder.com/40" alt="유저">
+            <div class="info">
+            <div class="name">${room.other_user_name}</div>
+            <div class="last-msg">${room.last_msg || ''}</div>
+            </div>
+            <div class="right">
+                <div class="time">
+                    ${formatChatTime(room.created_at)}
+                </div>
+                ${room.unread_count > 0 ? `<div class="badge">${room.unread_count}</div>` : ``}
+            </div>
+            `;
 
                 chatListContainer.appendChild(item);
 
@@ -92,7 +127,7 @@ export function updateRoomListRealtime(msg) {
 
     const chatListContainer = document.querySelector('.chat-items');
 
-    // ⭐⭐⭐ 핵심
+    // 핵심
     const roomId = String(msg.room_id);
 
     const isCurrentRoom =
@@ -120,29 +155,41 @@ export function updateRoomListRealtime(msg) {
         chatListContainer.prepend(item);
     }
 
-    // ===== 마지막 메시지 갱신 =====
+    // 마지막 메시지 갱신 
     const lastMsg = item.querySelector(".last-msg");
     if (lastMsg) {
         lastMsg.innerText = msg.content || "";
     }
 
-    // ===== unread 카운트 =====
-    if (!isCurrentRoom && msg.sender_id !== chatState.session.myUserId) {
+    // 시간 갱신
+    const timeEl = item.querySelector(".time");
+    if (timeEl) {
+        timeEl.innerText = formatChatTime(msg.created_at);
+    }
 
-        let badge = item.querySelector(".badge");
+    // unread 카운트
+    if (!isCurrentRoom && msg.sender_id !== chatState.session.myUserId) {
+        const right = item.querySelector(".right")
+        let badge = right.querySelector(".badge");
 
         if (!badge) {
             badge = document.createElement("div");
             badge.classList.add("badge");
             badge.innerText = "1";
-            item.appendChild(badge);
+            right.appendChild(badge);
         } else {
             badge.innerText =
                 String(parseInt(badge.innerText || "0") + 1);
         }
     }
 
-    // ===== unread-only 필터 =====
+    // 재정렬 안정화
+    if (!isCurrentRoom &&
+        chatListContainer.firstElementChild !== item) {
+        chatListContainer.prepend(item);
+    }
+
+    // unread-only 필터
     const unreadCheckbox = document.getElementById("unread-only");
 
     if (unreadCheckbox && unreadCheckbox.checked) {
@@ -152,7 +199,7 @@ export function updateRoomListRealtime(msg) {
         item.style.display = "flex";
     }
 
-    // ⭐⭐⭐ 최신 채팅방 위로
+    // 최신 채팅방 위로
     chatListContainer.prepend(item);
 }
 export function initTabs() {
@@ -247,6 +294,8 @@ export function initUploadFile() {
     const btnFile = document.querySelector(".btn-file");
 
     const imageInput = document.getElementById("imageInput");
+    if (imageInput.dataset.bound) return;
+    imageInput.dataset.bound = "true";
     const fileInput = document.getElementById("fileInput");
 
     // 이미지 버튼
@@ -259,20 +308,108 @@ export function initUploadFile() {
         fileInput.click();
     });
 
-    imageInput.addEventListener("change", () => {
-        uploadFile(imageInput.files[0], "IMAGE");
-    });
-
-    fileInput.addEventListener("change", () => {
-        uploadFile(fileInput.files[0], "FILE");
-    });
-
 }
 
+
+// ==================== modal =======================
+// 모달 & 파일 대기 리스트
+// ChatModal.js
+
+export function initPendingFilesModal() {
+    const modal = document.getElementById("pendingFilesModal");
+    const container = document.getElementById("pendingFilesContainer");
+    const uploadBtn = document.getElementById("uploadAllBtn");
+    const closeBtn = document.getElementById("closeModalBtn");
+    const attachBtn = document.getElementById("attachBtn");
+    const imageInput = document.getElementById("imageInput");
+    const fileInput = document.getElementById("fileInput");
+    const btnImage = document.querySelector(".btn-image");
+    const btnFile = document.querySelector(".btn-file");
+    const modalTitle = document.getElementById("modalTitle");
+
+    let currentFiles = [];
+    let currentModalType = null; // IMAGE or FILE
+
+    function renderFileList() {
+        container.innerHTML = "";
+        currentFiles.forEach((file, idx) => {
+            const div = document.createElement("div");
+            div.innerText = file.name;
+
+            const removeBtn = document.createElement("button");
+            removeBtn.innerText = "삭제";
+            removeBtn.addEventListener("click", () => {
+                currentFiles.splice(idx, 1);
+                renderFileList();
+            });
+
+            div.appendChild(removeBtn);
+            container.appendChild(div);
+        });
+
+        uploadBtn.disabled = currentFiles.length === 0;
+        uploadBtn.style.background = currentFiles.length === 0 ? "gray" : "#4CAF50";
+    }
+
+    function handleFileSelect(files) {
+        currentFiles = [...currentFiles, ...Array.from(files)];
+        renderFileList();
+        modal.classList.add("show");
+        document.body.classList.add("modal-open");
+        imageInput.value = "";
+        fileInput.value = "";
+    }
+
+    function uploadSelectedFiles() {
+        currentFiles.forEach(file => {
+            const type = file.type.startsWith("image/") ? "IMAGE" : "FILE";
+            uploadFile(file, type);
+        });
+        currentFiles = [];
+        renderFileList();
+        modal.classList.remove("show");
+        document.body.classList.remove("modal-open");
+    }
+
+    // ---------------- 이벤트 바인딩 ----------------
+
+    // 모달 닫기
+    closeBtn.addEventListener("click", () => {
+        modal.classList.remove("show");
+        document.body.classList.remove("modal-open");
+        currentFiles = [];
+        renderFileList();
+    });
+
+    // 채팅 입력란 버튼 클릭 → 모달 열기 + 타입 설정
+    [btnImage, btnFile].forEach(btn => {
+        btn.addEventListener("click", () => {
+            currentModalType = btn.classList.contains("btn-image") ? "IMAGE" : "FILE";
+            modalTitle.innerText = currentModalType === "IMAGE"? "이미지 첨부" : "파일 첨부";
+            currentFiles = [];
+            renderFileList();
+
+            modal.classList.add("show");
+            document.body.classList.add("modal-open");
+        });
+    });
+
+    // 모달 내 첨부 버튼 클릭 → 분기
+    attachBtn.addEventListener("click", () => {
+        if (currentModalType === "IMAGE") imageInput.click();
+        else if (currentModalType === "FILE") fileInput.click();
+    });
+
+    // 파일 선택
+    imageInput.addEventListener("change", e => handleFileSelect(e.target.files));
+    fileInput.addEventListener("change", e => handleFileSelect(e.target.files));
+
+    // 업로드 버튼
+    uploadBtn.addEventListener("click", uploadSelectedFiles);
+}
+
+// 실제 업로드 함수
 function uploadFile(file, type) {
-
-    if (!file) return;
-
     const formData = new FormData();
     formData.append("file", file);
     formData.append("sender_id", chatState.session.myUserId);
@@ -284,11 +421,38 @@ function uploadFile(file, type) {
         method: "POST",
         body: formData
     })
-    .then(res => res.json())
-    .then(msg => {
-        console.log("업로드 성공", msg);
-    })
-    .catch(err => console.error(err));
+        .then(res => res.json())
+        .then(msg => console.log("업로드 성공", msg))
+        .catch(err => console.error(err));
 }
 
+export function initImagePreviewModal() {
+    const modal = document.getElementById("imagePreviewModal");
+    const previewImg = document.getElementById("previewImage");
+    const closeBtn = document.getElementById("closeImageModal");
 
+    // 이미지 클릭 시
+    document.addEventListener("click", (e) => {
+        if (e.target.tagName === "IMG" && e.target.classList.contains("chat-thumbnail")) {
+            previewImg.src = e.target.src;
+            modal.classList.add("show");
+            document.body.classList.add("modal-open");
+        }
+    });
+
+    // 모달 닫기
+    closeBtn.addEventListener("click", () => {
+        modal.classList.remove("show");
+        document.body.classList.remove("modal-open");
+        previewImg.src = "";
+    });
+
+    // 모달 바깥 클릭 시 닫기
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            modal.classList.remove("show");
+            document.body.classList.remove("modal-open");
+            previewImg.src = "";
+        }
+    });
+}

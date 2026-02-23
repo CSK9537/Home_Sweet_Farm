@@ -144,6 +144,7 @@ body {
 }
 
 .chat-item img {
+    align-self: center;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -152,6 +153,7 @@ body {
 
 .chat-item .info {
     flex: 1;
+    min-width: 0;
 }
 
 .chat-item .info .name {
@@ -167,11 +169,17 @@ body {
     text-overflow: ellipsis;
 }
 
+.chat-item .right {
+    position: relative;
+    width: 55px;
+    height: 42px;
+    flex-shrink: 0;
+}
+
 .chat-item .badge {
     position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+    bottom: 0;
+    right: 0;
     background-color: red;
     color: #fff;
     border-radius: 10px;
@@ -179,6 +187,15 @@ body {
     font-size: 13px;
     font-weight: bold;
     text-align: center;
+}
+
+.chat-item .time {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 12px;
+    color: #999;
+    white-space: nowrap;
 }
 
 /* 검색 박스 */
@@ -325,11 +342,31 @@ body {
     padding: 0;
 }
 
-/* 이미지 */
-.chat-img {
-    max-width: 200px;
-    max-height: 200px;
-    border-radius: 8px;
+/* 이미지 묶음 */
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+
+    width: 260px;
+}
+
+/* 썸네일 */
+.chat-thumbnail {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+
+    object-fit: cover;
+    flex-shrink: 0;
+    border-radius: 12px;
+    cursor: pointer;
+    display: block;
+    flex: none
+}
+
+.chat-thumbnail:hover {
+    transform: scale(1.03);
+    transition: .2s;
 }
 
 .chat-header .role {
@@ -462,11 +499,7 @@ body {
     box-sizing: border-box;
 }
 
-.chat-img {
-    max-width: 200px;
-    border-radius: 8px;
-    cursor: pointer; /* 클릭하면 확대 등 기능 추가 가능 */
-}
+
 
 .chat-date {
     text-align: center;
@@ -531,7 +564,6 @@ body {
 
 /* 메시지 행 공통 */
 .message-row {
-    display: flex;
     align-items: flex-start;
 }
 
@@ -570,11 +602,16 @@ body {
 
 /* 메시지 박스 */
 .message-row .message-box {
-    max-width: 60%;
+    max-width: 280px;
+    width: auto;
     padding: 10px;
     font-size: 0.9em;
     word-break: break-word;
     border-radius: 15px;
+}
+
+.message-box:has(.image-grid) {
+    padding: 6px;
 }
 
 /* 상대 메시지 박스 스타일 */
@@ -737,6 +774,206 @@ body {
 .empty-text {
     font-size: 16px;
     color: #888;
+}
+
+
+/* 모달 내용 박스 */
+/* ================= MODAL OVERLAY ================= */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal.show {
+    display: flex;
+}
+
+/* 파일 모달*/
+.modal-files {
+    z-index: 1000;
+}
+
+.modal-header {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+/* 이미지/파일 첨부 모달 내용 박스 */
+.files-modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+
+    max-width: 500px;
+    width: 90%;
+
+    max-height: 80vh;
+    overflow-y: auto;
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: .25s;
+}
+
+
+/* 모달 애니메이션 */
+.modal-files.show .files-modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* 블러 처리: 모달이 켜지면 body에 blur 클래스 추가 */
+body.modal-open .chat-container,
+body.modal-open .top-bar {
+    filter: blur(4px);
+    pointer-events: none;
+}
+
+body.modal-open .modal {
+    filter: none;
+    pointer-events: auto;
+}
+
+/* 파일 리스트 */
+#pendingFilesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#pendingFilesContainer div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+#pendingFilesContainer button {
+    background-color: #ff4d4f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+#pendingFilesContainer button:hover {
+    background-color: #d9363e;
+}
+
+/* 하단 버튼 그룹 */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#uploadAllBtn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#uploadAllBtn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    color: #666;
+}
+
+#uploadAllBtn:hover:enabled {
+    background-color: #3e8e41;
+}
+
+#closeModalBtn {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#closeModalBtn:hover {
+    background-color: #d9d9d9;
+}
+
+/* 이미지 전용 모달 */
+.modal-image {
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.image-modal-content {
+    position: relative;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+
+    max-width: 90vw;
+    max-height: 90vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-modal-content img {
+    display: block;
+
+    max-width: 90vw;
+    max-height: 90vh;
+    
+    width: auto;
+    height: auto;
+
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+/* 닫기 버튼 */
+.image-modal-content .close-btn {
+    position: absolute;
+
+    top: 5px;
+    /* 이미지 경계에서 5px */
+    right: 5px;
+
+    font-size: 28px;
+    color: white;
+    cursor: pointer;
+
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    line-height: 1;
+    opacity: 0;
+    transition: .2s;
+}
+
+.image-modal-content:hover .close-btn {
+    opacity: 1;
 }
 
 /* ===== RIGHT PANE ONLY ===== */

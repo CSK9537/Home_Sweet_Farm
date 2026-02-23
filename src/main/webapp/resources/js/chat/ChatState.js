@@ -20,9 +20,11 @@ export const chatState = {
     message: {
         lastSenderId: null,
         lastTimeStr: null,
-		    lastTimeElement: null,
+		lastTimeElement: null,
         lastDateKey: null,
-        appendedMsgSet: new Set()
+        appendedMsgSet: new Set(),
+        lastMessageTime: null ,
+        imageGroupBox: null
     },
 
     // 검색

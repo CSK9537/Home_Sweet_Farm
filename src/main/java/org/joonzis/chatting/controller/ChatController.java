@@ -145,20 +145,21 @@ public class ChatController {
     }
     
     private int getUserId(HttpSession session, Integer testUser_id) {
-        int resultId;
-        if(testUser_id != null) {
-            resultId = testUser_id;
-        } else {
-            UserVO login_user = (UserVO) session.getAttribute("login_user");
-            resultId = login_user != null ? login_user.getUser_id() : 2; // default user_id : 1
+
+        if (testUser_id != null) {
+            System.out.println("[DEBUG] testUser_id 사용: " + testUser_id);
+            return testUser_id;
         }
 
-        // 로그 추가
-        System.out.println("[DEBUG] 서버에서 사용하는 user_id: " + resultId
-                + ", testUser_id 파라미터: " + testUser_id
-                + ", 세션 login_user: " + session.getAttribute("login_user"));
+        Integer userId = (Integer) session.getAttribute("user_id");
 
-        return resultId;
+        if (userId == null) {
+            throw new RuntimeException("로그인 세션 없음");
+        }
+
+        System.out.println("[DEBUG] session user_id 사용: " + userId);
+
+        return userId;
     }
     
     /**
@@ -199,6 +200,7 @@ public class ChatController {
 
         File dest = new File(destDir, savedName);
         file.transferTo(dest);
+        
 
         String contentType = file.getContentType();
         String msgType;
