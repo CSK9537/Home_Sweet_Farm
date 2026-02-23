@@ -112,32 +112,34 @@
     }
   }
 
+
+  
   // ===== state =====
   var state = {
-    verifiedSms: false,
     verifiedEmail: false,
     interests: []
   };
 
   function updateVerifyBadges() {
-    var smsBadge = $("#smsBadge");
     var emailBadge = $("#emailBadge");
 
-    if (smsBadge) {
-      smsBadge.innerHTML = state.verifiedSms ? "완료" : "미완료";
-      toggleClass(smsBadge, "done", state.verifiedSms);
-    }
     if (emailBadge) {
       emailBadge.innerHTML = state.verifiedEmail ? "완료" : "미완료";
       toggleClass(emailBadge, "done", state.verifiedEmail);
     }
+    
+    const sendCodeBtn = document.querySelector("#sendCode-btn");
+    
+    
 
-    var hidSms = $("#hidVerifiedSms");
     var hidEmail = $("#hidVerifiedEmail");
-    if (hidSms) hidSms.value = String(state.verifiedSms);
     if (hidEmail) hidEmail.value = String(state.verifiedEmail);
   }
 
+  
+  
+  
+  
   function renderChips() {
     var wrap = $("#interestChips");
     if (!wrap) return;

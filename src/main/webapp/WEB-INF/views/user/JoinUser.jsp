@@ -144,7 +144,7 @@
               </p>
 
               <div class="verify-actions">
-                <button type="button" class="btn btn-outline" data-modal-open="modal-email">이메일 인증</button>
+                <button type="button" class="btn btn-outline" id="sendCode-btn" data-modal-open="modal-email">이메일 인증</button>
               </div>
 
               <div class="verify-status">
@@ -152,7 +152,6 @@
                   <span>이메일 인증</span>
                   <span class="badge" id="emailBadge">미완료</span>
                 </div>
-                <p class="hint">둘 중 하나 이상 완료 권장(정책에 맞게 서버에서 최종 검증하세요).</p>
               </div>
 
               <div class="btn-row">
