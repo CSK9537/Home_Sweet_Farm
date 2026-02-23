@@ -127,8 +127,8 @@
                   <button type="button" class="social-btn google">구글</button>
                 </div>
                 <p class="login-guide">
-             	 회원가입 하셨다면 <a href="/user/login" class="login-link">로그인</a>
-             	</p>
+             	 회원가입 하셨다면<a class="login-link" href="${pageContext.request.contextPath}/user/login">로그인</a>
+             	 </p>
               </div>
               
             </form>
