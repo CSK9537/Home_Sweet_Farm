@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// 웹소켓 입력용 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatSendDTO {
+public class ChatSendDTO {// 웹소켓 입력용 
     private Integer roomId;
     private int senderId;
     private int receiverId;
