@@ -127,11 +127,18 @@
       emailBadge.innerHTML = state.verifiedEmail ? "완료" : "미완료";
       toggleClass(emailBadge, "done", state.verifiedEmail);
     }
+    const sendCodeBtn = document.querySelector("#sendCode-btn"); // 이메일 인증(모달 열기)
+    const sendBtn     = document.querySelector("#emailSendBtn"); // 인증메일 발송
+    const verifyBtn   = document.querySelector("#emailVerifyBtn"); // 인증 완료
+    const emailInput  = document.querySelector("#emailAddr"); // 이메일 입력
+    const codeInput   = document.querySelector("#emailCode"); // 인증코드 입력
     
-    const sendCodeBtn = document.querySelector("#sendCode-btn");
+    if (sendCodeBtn) sendCodeBtn.disabled = state.verifiedEmail;
+    if (sendBtn) sendBtn.disabled = state.verifiedEmail;
+    if (verifyBtn) verifyBtn.disabled = state.verifiedEmail;
+    if (emailInput) emailInput.disabled = state.verifiedEmail;
+    if (codeInput) codeInput.disabled = state.verifiedEmail;
     
-    
-
     var hidEmail = $("#hidVerifiedEmail");
     if (hidEmail) hidEmail.value = String(state.verifiedEmail);
   }
@@ -478,7 +485,7 @@
     (emailEl.value || "").trim() : "";
     
     	if(!email){
-    		alart("이메일을 입력해주세요.");
+    		alert("이메일을 입력해주세요.");
     		return;
     	}
     	fetch("/email/send", {
