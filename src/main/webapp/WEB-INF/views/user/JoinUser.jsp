@@ -115,7 +115,7 @@
               </div>
 
               <div class="btn-row">
-                <button type="button" class="btn btn-ghost" id="goLoginBtn">로그인</button>
+              <!--<button type="button" class="btn btn-ghost" id="goLoginBtn">로그인</button>  -->
                 <button type="button" class="btn btn-primary" id="toVerifyBtn">다음</button>
               </div>
 
@@ -126,7 +126,11 @@
                   <button type="button" class="social-btn naver">네이버</button>
                   <button type="button" class="social-btn google">구글</button>
                 </div>
+                <p class="login-guide">
+             	 회원가입 하셨다면 <a href="/user/login" class="login-link">로그인</a>
+             	</p>
               </div>
+              
             </form>
           </section>
 		<body>
