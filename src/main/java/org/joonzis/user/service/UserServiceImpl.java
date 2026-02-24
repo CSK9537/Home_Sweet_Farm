@@ -84,8 +84,8 @@ public class UserServiceImpl implements UserService{
 		return usermapper.existUserByEmail(username, email);
 	}
 	@Override
-	public void updatePw(UserVO vo) {
-		usermapper.updatePw(vo);
+	public void resetPw(UserVO vo) {
+		usermapper.resetPw(vo);
 	}
 	@Override
 	public boolean isIdDuplicate(String username) {

@@ -90,12 +90,6 @@
 		WHERE email = #{email}
 	</select>
 	
-	<!-- 아이디 찾기(전화번호) -->
-	<select id="findIdByPhone" parameterType="String" resultType="String">
-		SELECT username 
-		FROM TBL_USER 
-		WHERE phone = #{phone}
-	</select>
 	<!-- 비밀번호 찾기 대상 확인(이메일) -->
 	<select id="existUserByEmail" resultType="int">
 		SELECT COUNT(*)
@@ -105,20 +99,13 @@
 		email = #{email}
 	</select>
 	
-	<!-- 비밀번호 찾기 대상 확인(전화번호) -->
-	<select id="existUserByPhone" resultType="int">
-		SELECT COUNT(*)
-		FROM TBL_USER
-		WHERE username = #{username}
-		AND
-		phone = #{phone}
-	</select>
-	
 	<!-- 비밀번호 재설정  -->
-	<update id="updatePw" parameterType="org.joonzis.user.vo.UserVO">
+	<update id="resetPw" parameterType="org.joonzis.user.vo.UserVO">
 		UPDATE TBL_USER
     	SET password = #{password}
-    	WHERE username = #{username}
+    	WHERE username = #{username},
+    	AND
+		email = #{email}
 	</update>
 	
 

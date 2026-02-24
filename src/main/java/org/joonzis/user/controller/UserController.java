@@ -182,17 +182,17 @@ public class UserController {
 		int exists = uservice.existUserByEmail(vo.getUsername(), vo.getEmail());
 		if(exists != 1)
 	    return "NOT_FOUND";
-	    uservice.updatePw(vo);
+	    uservice.resetPw(vo);
 		return "OK";
 	}
 
-	
 	//7)아이디 중복체크
 	@GetMapping("/id-check") //url예시: http://localhost:8081/user/id-check?username=linwee
 	@ResponseBody
 	public boolean idCheck(@RequestParam String username) {
 		return uservice.isIdDuplicate(username);
 	}
+	
 	@GetMapping("/me")
 	@ResponseBody
 	public UserVO getCurrentUser(HttpSession session) {
