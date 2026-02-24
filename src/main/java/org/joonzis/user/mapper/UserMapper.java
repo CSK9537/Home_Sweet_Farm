@@ -38,7 +38,7 @@ public interface UserMapper {
 						@Param("email")String email);
 	
 	//비밀번호 재설정
-	public void updatePw(UserVO vo);
+	public void resetPw(UserVO vo);
 
 	//아이디 중복 체크
 	public int countByUsername(@Param("username")String username);
