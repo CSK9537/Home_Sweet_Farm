@@ -13,17 +13,14 @@
 						${main}
 					</c:if>
 					<c:if test="${main == '식물'}">
-						<ul class="slist">
-						</ul>
+						${main}
+						
 					</c:if>
 					<c:if test="${main == '스토어'}">
 						${main}
 					</c:if>
 					<c:if test="${main == 'Q&A'}">
 						${main}
-					</c:if>
-					<c:if test="${not empty sub}">
-						${sub}
 					</c:if>
 				</c:when>
 				<c:otherwise>
@@ -35,3 +32,4 @@
 </div>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />
 <script src="${pageContext.request.contextPath}/resources/js/common/SearchResult.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/common/SearchService.js"></script>
