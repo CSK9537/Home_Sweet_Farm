@@ -168,10 +168,29 @@
   }
   
 
+  function startResendCooldown(seconds) {
+    const btn = document.querySelector("#emailSendBtn");
+    if (!btn) return;
+
+    let remain = seconds;
+    btn.disabled = true;
+    btn.textContent = `재전송 (${remain}s)`;
+
+    if (resendTimer) clearInterval(resendTimer);
+
+    resendTimer = setInterval(() => {
+      remain--;
+      if (remain <= 0) {
+        clearInterval(resendTimer);
+        btn.disabled = false;
+        btn.textContent = "인증메일 재전송";
+        return;
+      }
+      btn.textContent = `재전송 (${remain}s)`;
+    }, 1000);
+  }
   
-  
-  
-  
+//renderChips
   function renderChips() {
     var wrap = $("#interestChips");
     if (!wrap) return;
@@ -547,11 +566,13 @@
           if (status === 202 && text === "verified") {
             state.verifiedEmail = true;
             updateVerifyBadges();
+            updateNextBtn();
             alert("이메일 인증 완료!");
             closeModal($("#modal-email"));
           } else {
             state.verifiedEmail = false;
             updateVerifyBadges();
+            updateNextBtn();
             alert("인증코드가 올바르지 않습니다.");
           }
         })
@@ -566,12 +587,16 @@
   if (toProfileBtn) {
     toProfileBtn.addEventListener("click", function () {
       if (!state.verifiedEmail) {
-        var ok = confirm("본인인증이 미완료입니다. 그래도 다음 단계로 진행할까요?");
-        if (!ok) return;
+    	  return;
       }
       updateVerifyBadges();
       setActiveStep("profile");
     });
+    updateNextBtn();
+  }
+  function updateNextBtn(){
+	  if(!toProfileBtn) return;
+	  toProfileBtn.disabled = !state.verifiedEmail;
   }
 
   // ===== interests =====
