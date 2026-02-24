@@ -159,6 +159,7 @@
                 <button type="button" class="btn btn-ghost" data-step-back="account">이전</button>
                 <button type="button" class="btn btn-primary" id="toProfileBtn">다음</button>
               </div>
+              <p class="verify-msg">※ 이메일 인증 완료 후 다음 단계로 이동할 수 있습니다.</p>
             </div>
           </section>
          
