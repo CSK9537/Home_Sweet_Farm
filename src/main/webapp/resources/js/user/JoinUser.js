@@ -112,31 +112,61 @@
     }
   }
 
+
+  
   // ===== state =====
   var state = {
-    verifiedSms: false,
     verifiedEmail: false,
     interests: []
   };
 
   function updateVerifyBadges() {
-    var smsBadge = $("#smsBadge");
     var emailBadge = $("#emailBadge");
 
-    if (smsBadge) {
-      smsBadge.innerHTML = state.verifiedSms ? "완료" : "미완료";
-      toggleClass(smsBadge, "done", state.verifiedSms);
-    }
     if (emailBadge) {
       emailBadge.innerHTML = state.verifiedEmail ? "완료" : "미완료";
       toggleClass(emailBadge, "done", state.verifiedEmail);
     }
-
-    var hidSms = $("#hidVerifiedSms");
+    const sendCodeBtn = document.querySelector("#sendCode-btn"); // 이메일 인증(모달 열기)
+    const sendBtn     = document.querySelector("#emailSendBtn"); // 인증메일 발송
+    const verifyBtn   = document.querySelector("#emailVerifyBtn"); // 인증 완료
+    const emailInput  = document.querySelector("#emailAddr"); // 이메일 입력
+    const codeInput   = document.querySelector("#emailCode"); // 인증코드 입력
+    
+    if (sendCodeBtn) sendCodeBtn.disabled = state.verifiedEmail;
+    if (sendBtn) sendBtn.disabled = state.verifiedEmail;
+    if (verifyBtn) verifyBtn.disabled = state.verifiedEmail;
+    if (emailInput) emailInput.disabled = state.verifiedEmail;
+    if (codeInput) codeInput.disabled = state.verifiedEmail;
+    
     var hidEmail = $("#hidVerifiedEmail");
-    if (hidSms) hidSms.value = String(state.verifiedSms);
     if (hidEmail) hidEmail.value = String(state.verifiedEmail);
   }
+  //인증번호 재전송
+  let resendTimer = null;
+
+  function startResendCooldown(seconds) {
+    const btn = document.querySelector("#emailSendBtn");
+    if (!btn) return;
+
+    let remain = seconds;
+    btn.disabled = true;
+    btn.textContent = `재전송 (${remain}s)`;
+
+    if (resendTimer) clearInterval(resendTimer);
+
+    resendTimer = setInterval(() => {
+      remain--;
+      if (remain <= 0) {
+        clearInterval(resendTimer);
+        btn.disabled = false;
+        btn.textContent = "인증메일 재전송";
+        return;
+      }
+      btn.textContent = `재전송 (${remain}s)`;
+    }, 1000);
+  }
+  
 
   function startResendCooldown(seconds) {
     const btn = document.querySelector("#emailSendBtn");
@@ -499,7 +529,7 @@
     (emailEl.value || "").trim() : "";
     
     	if(!email){
-    		alart("이메일을 입력해주세요.");
+    		alert("이메일을 입력해주세요.");
     		return;
     	}
     	fetch("/email/send", {
@@ -510,6 +540,7 @@
     	.then(response =>{
     		if(!response.ok) throw new Error();
     		alert("인증코드를 이메일로 발송했습니다.");
+    		startResendCooldown(60);//인증번호 재전송
     	})
     	.catch(()=>{
     		alert("이메일 발송에 실패했습니다.")

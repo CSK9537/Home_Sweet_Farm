@@ -96,106 +96,46 @@ export function loadMessages(room_id) {
 }
 
 export function appendMessage(data) {
-
     if (!data.msg_id) return;
 
-    const msgIdNum = Number(data.msg_id); // 🔹 숫자로 통일
-    if (chatState.message.appendedMsgSet.has(msgIdNum)) return;
-    chatState.message.appendedMsgSet.add(msgIdNum);
-
-
     const container = document.getElementById("messages");
-    const date = new Date(data.created_at);
+    const { dateStr, timeStr, currentTime, sameGroup } = prepareMessageMeta(data);
 
-
-    if (isNaN(date.getTime())) {
-        return;
-    }
-
-
-    const days = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
-    const dayOfWeek = days[date.getDay()];
-
-    const dateStr =
-        `${date.getFullYear()}년 ${(date.getMonth() + 1).toString().padStart(2, '0')}월 ${date.getDate().toString().padStart(2, '0')}일 ${dayOfWeek}`;
-
-    const timeStr =
-        `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-
-    if (data.showDate === undefined) {
-        data.showDate = (dateStr !== chatState.message.lastDateKey);
-        data.dateStr = dateStr;
-    }
-
-    // 시간이 같은 메세지들끼리 그룹으로 묶기
-    const sameGroup =
-        (data.sender_id === chatState.message.lastSenderId && timeStr === chatState.message.lastTimeStr);
-
-    // 같은 그룹이면 이전 메시지 시간 제거
-    if (sameGroup && chatState.message.lastTimeElement) {
-        chatState.message.lastTimeElement.innerText = "";
-    }
-
-    if (data.showTime === undefined) {
-        data.showTime = !(data.sender_id === chatState.message.lastSenderId && timeStr === chatState.message.lastTimeStr);
-    }
-
-    // 날짜 표시
-    if (data.showDate) {
-        const dateDiv = document.createElement("div");
-        dateDiv.classList.add("chat-date");
-        dateDiv.innerText = data.dateStr;
-        container.appendChild(dateDiv);
-    }
-
-    const row = document.createElement("div");
-    row.dataset.msg_id = data.msg_id;
-    row.classList.add("message-row");
-    row.classList.add(data.sender_id === chatState.session.myUserId ? "sent" : "received");
-
-    // 상대 프로필
-    if (data.sender_id !== chatState.session.myUserId && data.sender_id !== chatState.message.lastSenderId) {
-        const profile = document.createElement("div");
-        profile.classList.add("profile");
-        const img = document.createElement("img");
-        img.src = "https://via.placeholder.com/40";
-        profile.appendChild(img);
-        row.appendChild(profile);
-    }
-
-    // 메시지 박스
     const box = document.createElement("div");
     box.classList.add("message-box");
 
-    if (data.msg_type === "TEXT") {
-        box.innerText = data.content;
-    } else if (data.msg_type === "FILE") {
+    let shouldAppendRow = true;
 
-        const fileUrl = `/chat/files/${data.saved_name}`;
+    // 메시지 타입별 렌더링
+    if (data.msg_type === "TEXT") renderText(box, data);
+    else if (data.msg_type === "FILE") renderFile(box, data);
+    else if (data.msg_type === "IMAGE") shouldAppendRow = renderImage(box, data, sameGroup);
 
-        box.innerHTML = `
-            <a href="${fileUrl}" download="${data.original_name}" class="file-link">
-                <span class="file-icon">📎</span>
-                <span class="file-name">${data.original_name}</span>
-            </a>
-        `;
-    } else if (data.msg_type === "IMAGE") {
-        box.innerHTML = `<img src="/chat/files/${encodeURIComponent(data.saved_name)}" class="chat-img" />`;
+    // 메시지를 새 row로 붙일지 결정
+    let row = null;
+    if (shouldAppendRow) {
+        row = createMessageRow(data);
+        row.appendChild(box);
+
+        const timeEl = document.createElement("div");
+        timeEl.classList.add("time");
+        timeEl.innerText = timeStr;
+        row.appendChild(timeEl);
+
+        container.appendChild(row);
+    } else {
+        // 같은 그룹 이미지라면 기존 imageGroupBox에 append만
+        chatState.message.lastMessageTime = currentTime;
     }
-    row.appendChild(box);
 
-    // 시간 표시
-    const time = document.createElement("div");
-    time.classList.add("time");
-    time.innerText = timeStr;
-    row.appendChild(time);
-
-    container.appendChild(row);
-
+    // 메시지 상태 항상 갱신
     chatState.message.lastSenderId = data.sender_id;
     chatState.message.lastTimeStr = timeStr;
-    chatState.message.lastTimeElement = time;
     chatState.message.lastDateKey = dateStr;
+    chatState.message.lastMessageTime = currentTime;
+
+    // appendedMsgSet에 등록
+    chatState.message.appendedMsgSet.add(Number(data.msg_id));
 }
 
 // function markAsReadSafe() {
@@ -245,3 +185,99 @@ export function sendMessage() {
     });
 }
 
+function prepareMessageMeta(data) {
+
+    const date = new Date(data.created_at);
+
+    const days = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+    const dayOfWeek = days[date.getDay()];
+
+    const dateStr =
+        `${date.getFullYear()}년 ${(date.getMonth() + 1).toString().padStart(2, '0')}월 ${date.getDate().toString().padStart(2, '0')}일 ${dayOfWeek}`;
+
+    const timeStr =
+        `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+
+    const currentTime = date.getTime();
+
+    let sameGroup = false;
+
+    if (
+        chatState.message.lastSenderId === data.sender_id &&
+        chatState.message.lastMessageTime
+    ) {
+        const diff = currentTime - chatState.message.lastMessageTime;
+
+        sameGroup =
+            diff < 10000 &&
+            timeStr === chatState.message.lastTimeStr;
+    }
+
+    return { dateStr, timeStr, currentTime, sameGroup };
+}
+
+function createMessageRow(data) {
+
+    const row = document.createElement("div");
+    row.dataset.msg_id = data.msg_id;
+
+    row.classList.add(
+        "message-row",
+        data.sender_id === chatState.session.myUserId
+            ? "sent"
+            : "received"
+    );
+
+    return row;
+}
+
+function renderText(box, data) {
+    box.innerText = data.content;
+    chatState.message.imageGroupBox = null;
+}
+
+function renderFile(box, data) {
+
+    const fileUrl = `/chat/files/${data.saved_name}`;
+
+    box.innerHTML = `
+        <a href="${fileUrl}" download="${data.original_name}" class="file-link">
+            📎 ${data.original_name}
+        </a>
+    `;
+
+    chatState.message.imageGroupBox = null;
+}
+
+function renderImage(box, data, sameGroup) {
+    const img = document.createElement("img");
+    img.src = `/chat/files/${encodeURIComponent(data.saved_name)}`;
+    img.classList.add("chat-thumbnail");
+
+    img.onclick = () => openImageModal(img.src);
+
+    const currentTime = new Date(data.created_at).getTime();
+
+    if (sameGroup && chatState.message.imageGroupBox) {
+        chatState.message.imageGroupBox.appendChild(img);
+        chatState.message.lastMessageTime = currentTime;
+        return false;
+    }
+
+    let imageContainer = document.createElement("div");
+    imageContainer.classList.add("image-container");
+    imageContainer.appendChild(img);
+    box.appendChild(imageContainer);
+
+    // ✅ 이미지 하나일 때 말풍선 너비 줄이기
+    if (box.querySelectorAll(".chat-thumbnail").length === 1) {
+        box.style.maxWidth = "180px"; // 원하는 너비
+    } else {
+        box.style.maxWidth = "280px"; // 기본 최대 너비
+    }
+
+    chatState.message.imageGroupBox = imageContainer;
+    chatState.message.lastMessageTime = currentTime;
+
+    return true;
+}

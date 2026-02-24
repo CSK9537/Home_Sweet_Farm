@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoomSearchResultDTO {
+public class RoomSearchResultDTO {//방 검색을 위한 DTO
 	private int room_id;
 	private Long search_msg_id;
     private String otherUserName;

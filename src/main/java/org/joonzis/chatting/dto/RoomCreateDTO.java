@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoomCreateDTO {
+public class RoomCreateDTO {//방생성을 위한 DTO
     private int user1_id;
     private int user2_id;
 }

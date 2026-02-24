@@ -71,7 +71,7 @@
                         <c:otherwise>${param.type}</c:otherwise>
                       </c:choose>">
 
-        <input type="hidden" name="parent_id" id="parentId" value="${param.parentId}">
+        <input type="hidden" name="parent_id" id="parentId" value="<c:out value='${mode eq "edit" ? post.parent_id : param.parentId}'/>">
         <input type="hidden" name="content" id="contentHtml">
         <input type="hidden" name="tags" id="tagsHidden" value="<c:out value='${mode eq "edit" ? post.tags : ""}'/>">
 
@@ -148,8 +148,8 @@
             <label class="label">첨부파일(선택)</label>
             <input class="input" type="file" name="attachFiles" id="attachFiles" multiple>
             <div class="hint">
-              이미지 파일은 자동 업로드되어 본문에 삽입되며, submit 시에는 첨부에서 제외됩니다(중복 저장 방지).<br/>
-              문서/압축 등 비이미지 파일만 “첨부”로 제출됩니다.
+              	이미지 파일은 자동 업로드되어 본문에 삽입되며, submit 시에는 첨부에서 제외됩니다(중복 저장 방지).<br/>
+              	문서/압축 등 비이미지 파일만 “첨부”로 제출됩니다.
             </div>
             <div id="fileList" class="file-list" style="display:none;"></div>
           </div>
