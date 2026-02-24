@@ -156,61 +156,38 @@ public class UserController {
 	 * 아이디 찾기, 비밀번호 찾기
 	 * */
 	
-	//1)화면요청용 컨트롤러
-		@GetMapping("/login")
-		public String findIdForm() {
-			return "/user/login";
-		}
-		
-		@GetMapping("/findPw")
-		public String findPwForm() {
-			return "/user/findPw";
-		}
-
-	//2)아이디 찾기(이메일)-비동기 방식
-	@GetMapping("/findId/email")//url예시: http://localhost:8081/user/find-id/email?email=test@test.com
+	//1)아이디 찾기(이메일)-비동기 방식
+	@GetMapping(value="/findId/email", 
+	produces = "text/plain; charset= UTF-8")
 	@ResponseBody
 	public String findIdByEmail(@RequestParam String email) {
-		return uservice.findIdByEmail(email);
+		String id = uservice.findIdByEmail(email);
+		return(id == null || id.isBlank()) ? "NOT_FOUND" : id;
 	}
 	
-	//3)아이디 찾기(전화번호)
-	@GetMapping("/findId/phone") //url예시: http://localhost:8081/user/find-id/phone?phone=13571357
+	//2)비밀번호 찾기 대상 확인(아이디+이메일)
+	@GetMapping(value="/findPw/email", 
+	produces = "text/plain; charset= UTF-8") 
 	@ResponseBody
-	public String findIdByPhone(@RequestParam String phone) {
-		return uservice.findIdByPhone(phone);
-	}
-	
-	//4)비밀번호 찾기 대상 확인(이메일)
-	@GetMapping("/findPw/email") //url예시: http://localhost:8081/user/find-pw/email?username=linwee&email=test@test.com
-	@ResponseBody
-	public int existByEmail(@RequestParam String username, 
+	public String checkPwTarget(@RequestParam String username, 
 									@RequestParam String email) {
-		return uservice.existUserByEmail(username, email);
-	}
-	
-	//5)비밀번호 찾기 대상 확인(전화번호)
-	@GetMapping("/findPw/phone") //url예시: http://localhost:8081/user/find-pw/phone?username=linwee&phone=12345678
-	@ResponseBody
-	public int existByPhone(@RequestParam String username,
-							@RequestParam String phone) {
-		return uservice.existUserByPhone(username, phone);
+		int exists = uservice.existUserByEmail(username, email);
+		return exists == 1 ? "OK" : "NOT_FOUND";
 	}
 
-	//6)비밀번호 재설정
-	// 비밀번호 재설정 화면 보여주기
-	@GetMapping("/find-pw/reset")
-	public String resetPwPage() {
-	    return "/userTest/resetPw"; // resetPw.jsp
-	}
-
-	//7)실제 비밀번호 변경 처리
-	@PostMapping("/find-pw/reset")
+	//6)비밀번호 재설정(아이디 + 이메일 + 새 비번)
+	@GetMapping(value="/find-pw/reset", 
+	produces = "text/plain; charset= UTF-8")
 	public String resetPw(UserVO vo) {
-		uservice.updatePw(vo);
-		return "redirect:/user/login";
+		int exists = uservice.existUserByEmail(vo.getUsername(), vo.getEmail());
+		if(exists != 1)
+	    return "NOT_FOUND";
+	    uservice.updatePw(vo);
+		return "OK";
 	}
-	//8)아이디 중복체크
+
+	
+	//7)아이디 중복체크
 	@GetMapping("/id-check") //url예시: http://localhost:8081/user/id-check?username=linwee
 	@ResponseBody
 	public boolean idCheck(@RequestParam String username) {

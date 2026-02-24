@@ -80,21 +80,12 @@ public class UserServiceImpl implements UserService{
 		return usermapper.findIdByEmail(email);
 	}
 	@Override
-	public String findIdByPhone(String phone) {
-		return usermapper.findIdByPhone(phone);
-	}
-	@Override
 	public int existUserByEmail(String username, String email) {
 		return usermapper.existUserByEmail(username, email);
 	}
 	@Override
-	public int existUserByPhone(String username, String phone) {
-		return usermapper.existUserByPhone(username, phone);
-	}
-	@Override
 	public void updatePw(UserVO vo) {
 		usermapper.updatePw(vo);
-
 	}
 	@Override
 	public boolean isIdDuplicate(String username) {
