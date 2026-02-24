@@ -143,6 +143,7 @@
                 <button type="button" class="btn btn-outline" data-modal-open="modal-email">이메일 인증</button>
               </div>
 
+
               <div class="verify-status">
                 <div class="status-line">
                   <span>이메일 인증</span>
