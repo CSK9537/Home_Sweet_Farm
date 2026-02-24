@@ -22,7 +22,7 @@
 		SELECT * FROM tmp_board WHERE user_id =
 			(SELECT user_id FROM tbl_user
 			WHERE LOWER(username) LIKE LOWER('%' || #{q} || '%')
-			OR LOWER(nickname) LIKE LOWER('%' || #{q} || '%'))
+			OR LOWER(nickname) LIKE LOWER('%' || #{q} || '%')
 			OR LOWER(name) LIKE LOWER('%' || #{q} || '%'))
 	</select>
 	
