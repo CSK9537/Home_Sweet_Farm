@@ -6,6 +6,7 @@ import java.util.List;
 import org.joonzis.community.vo.BoardVO;
 import org.joonzis.plant.dto.SimplePlantDTO;
 import org.joonzis.store.vo.ProductVO;
+import org.joonzis.user.vo.UserVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,19 @@ public class SearchMapperTests {
 	
 	@Autowired
 	private SearchMapper smapper;
+	
+//	@Test
+//	public void findUserbyIdTest() {
+//		log.info("find user by id test");
+//		try {
+//			UserVO vo = smapper.findUserbyId(105);
+//			log.info(vo.getUsername());
+//			log.info(vo.getNickname());
+//			log.info(vo.getName());
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
 	
 //	@Test
 //	public void searchBoardsByTitleTest() {

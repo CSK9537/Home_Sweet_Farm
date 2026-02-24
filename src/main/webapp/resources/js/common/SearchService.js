@@ -3,9 +3,7 @@ const SearchService = (function(){
 		fetch('/search/community/title?q=' + q)
 			.then(response => response.json())
 			.then(data => {
-				data.forEach(element => {
-					callback(element);
-				});
+				callback(data);
 			})
 			.catch(err => console.log(err));
 	}
@@ -14,9 +12,7 @@ const SearchService = (function(){
 		fetch('/search/community/content?q=' + q)
 			.then(response => response.json())
 			.then(data => {
-				data.forEach(element => {
-					callback(element);
-				});
+				callback(data);
 			})
 			.catch(err => console.log(err));
 	}
@@ -25,9 +21,7 @@ const SearchService = (function(){
 		fetch('/search/community/writer?q=' + q)
 			.then(response => response.json())
 			.then(data => {
-				data.forEach(element => {
-					callback(element);
-				});
+				callback(data);
 			})
 			.catch(err => console.log(err));
 	}
@@ -36,9 +30,7 @@ const SearchService = (function(){
 		fetch('/search/plant?q=' + q)
 			.then(response => response.json())
 			.then(data => {
-				data.forEach(element => {
-					callback(element);
-				});
+				callback(data);
 			})
 			.catch(err => console.log(err));
 	}
@@ -47,10 +39,16 @@ const SearchService = (function(){
 		fetch('/search/store?q=' + q)
 			.then(response => response.json())
 			.then(data => {
-				data.forEach(element => {
-					callback(element);
-				});
+				callback(data);
 			})
 			.catch(err => console.log(err));
 	}
+	
+	return {
+		getBoardsByTitle,
+		getBoardsByContent,
+		getBoardsByWriter,
+		getPlants,
+		getProducts,
+	};
 })();
