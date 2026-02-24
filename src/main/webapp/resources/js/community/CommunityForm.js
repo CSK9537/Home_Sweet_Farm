@@ -1,4 +1,3 @@
-/* CommunityInsert.js (ES5) */
 (function () {
   var ctx = window.__CTX__ || "";
   var suggestUrl = window.__HASHTAG_SUGGEST_URL__ || (ctx + "/community/hashtag/suggest");
@@ -17,13 +16,29 @@
   var typeSelect = document.getElementById("typeSelect");
   if (typeSelect) typeSelect.value = boardType;
 
-  // ===== 거래 UI 토글 =====
+//===== 거래 UI 토글 =====
   var tradeBox = document.getElementById("tradeBox");
   var priceInput = document.getElementById("price");
+  var tradeStatusEl = document.getElementById("tradeStatus");
+
   function toggleTradeUI() {
     var isTrade = (boardType === "T" || boardType === "S");
+
+    // UI 표시/숨김
     if (tradeBox) tradeBox.style.display = isTrade ? "" : "none";
-    if (priceInput) priceInput.required = (boardType === "T");
+
+    // price: T면 필수, T/S 아니면 전송 자체를 막고 값도 제거
+    if (priceInput) {
+      priceInput.required = (boardType === "T");
+      priceInput.disabled = !isTrade;     // (추가) 전송 방지
+      if (!isTrade) priceInput.value = ""; // (추가) 값 초기화
+    }
+
+    // trade_status: T/S 아니면 전송 방지 + 값 초기화
+    if (tradeStatusEl) {
+      tradeStatusEl.disabled = !isTrade;   // (추가) 전송 방지
+      if (!isTrade) tradeStatusEl.value = ""; // (추가) 값 초기화(= DB에 NULL 의도)
+    }
   }
   toggleTradeUI();
 
