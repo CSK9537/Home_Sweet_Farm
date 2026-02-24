@@ -5,8 +5,13 @@ import java.util.List;
 import org.joonzis.community.vo.BoardVO;
 import org.joonzis.plant.dto.SimplePlantDTO;
 import org.joonzis.store.vo.ProductVO;
+import org.joonzis.user.vo.UserVO;
 
 public interface SearchService {
+	
+	// user_id로 유저 찾기
+	public UserVO findUserbyId(int user_id);
+	
 	// 커뮤니티 검색 리스트
 	// 제목
 	public List<BoardVO> searchBoardListByTitle(String q);
