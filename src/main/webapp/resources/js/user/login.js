@@ -161,3 +161,55 @@ function(){
 	rememberMe.checked ? "Y" : "N";
 });
 
+//아이디 검증
+	const nameInput = document.querySelector("#findIdName");
+	const nameMsg = document.querySelector("#nameMsg");
+	const verifyBtn = document.querySelector("#verifyBtn");
+	
+	verifyBtn.addeventListner("click", (e)=>{
+		const name = nameInput.value.trim();
+		//빈 값 체크
+		if(!name){
+			nameMsg.innerText = "이름을 입력해주세요.";
+			nameMsg.style.color = "red";
+			return;
+		}
+		nameMsg.innerText ="";
+		return true;
+	});
+//		
+//		if(name.length < 2){
+//			nameMsg.innerText = "이름은 2자 이상 입력해주세요.";
+//			nameMsg.style.color = "red";
+//			return false;
+//		}
+		
+//	
+//	// 2) 입력 시작하면 메시지 사라지게
+//	  nameInput.addEventListener("input", () => {
+//	    nameMsg.innerText = "";
+//	  });
+//
+//	  // 3) 인증 버튼 클릭 시 검증
+//	  verifyBtn.addEventListener("click", (e) => {
+//	    if (!validateName()) {
+//	      e.preventDefault();  // form submit 막기(버튼이 submit이면 중요)
+//	      return;
+//	    }
+//
+//	    // ✅ 여기 아래에 "인증" fetch/로직이 실행되게 넣기
+//	    // send email / check code 등...
+//	  });
+//	});
+
+
+
+
+
+
+
+
+const findIdEmail = document.querySelector("#findIdEmail");
+const verifyCode = document.querySelector("#verifyCode");
+//const verifyBtn = document.querySelector("#verifyBtn");
+
