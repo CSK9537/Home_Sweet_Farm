@@ -151,16 +151,15 @@ public class UserController {
 		     boolean isDuplicate = uservice.isIdDuplicate(username.trim());
 		     return Collections.singletonMap("duplicate", isDuplicate);
 		    }	
-
 		 
 	/*
 	 * 아이디 찾기, 비밀번호 찾기
 	 * */
 	
 	//1)화면요청용 컨트롤러
-		@GetMapping("/findId")
+		@GetMapping("/login")
 		public String findIdForm() {
-			return "/user/findId";
+			return "/user/login";
 		}
 		
 		@GetMapping("/findPw")
@@ -217,6 +216,15 @@ public class UserController {
 	public boolean idCheck(@RequestParam String username) {
 		return uservice.isIdDuplicate(username);
 	}
+	@GetMapping("/me")
+	@ResponseBody
+	public UserVO getCurrentUser(HttpSession session) {
+	    UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+	    if (loginUser == null) {
+	        throw new RuntimeException("로그인 필요");
+	    }
+	    return loginUser;
+	}
 	
 	
 	/*
@@ -228,5 +236,5 @@ public class UserController {
 		// UserDTO profile =
 		uservice.selectPublicProfile(userId);
 		return "userTest/publicProfile";
-	}
+		}
 	}
