@@ -31,13 +31,13 @@ public class SearchController {
 	}
 	// 내용
 	@GetMapping(value = "/community/content",
-			produces = MediaType.APPLICATION_JSON_VALUE)
+				produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<BoardVO>> communityContentSearchResult(@RequestParam(value = "q", required = false) String q) {
 		return new ResponseEntity<List<BoardVO>>(sservice.searchBoardListByContent(q), HttpStatus.OK);
 	}
 	// 작성자
 	@GetMapping(value = "/community/writer",
-			produces = MediaType.APPLICATION_JSON_VALUE)
+				produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<BoardVO>> communityWriterSearchResult(@RequestParam(value = "q", required = false) String q) {
 		return new ResponseEntity<List<BoardVO>>(sservice.searchBoardListByWriter(q), HttpStatus.OK);
 	}
