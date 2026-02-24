@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryVO {
-	private int category_id;
-	private String category_name, is_active;
+public class BoardAspectVO {
+	private Integer board_id, board_hashtag_list;
 }
