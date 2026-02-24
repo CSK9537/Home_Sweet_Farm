@@ -167,29 +167,6 @@
     }, 1000);
   }
   
-
-  function startResendCooldown(seconds) {
-    const btn = document.querySelector("#emailSendBtn");
-    if (!btn) return;
-
-    let remain = seconds;
-    btn.disabled = true;
-    btn.textContent = `재전송 (${remain}s)`;
-
-    if (resendTimer) clearInterval(resendTimer);
-
-    resendTimer = setInterval(() => {
-      remain--;
-      if (remain <= 0) {
-        clearInterval(resendTimer);
-        btn.disabled = false;
-        btn.textContent = "인증메일 재전송";
-        return;
-      }
-      btn.textContent = `재전송 (${remain}s)`;
-    }, 1000);
-  }
-  
 //renderChips
   function renderChips() {
     var wrap = $("#interestChips");
