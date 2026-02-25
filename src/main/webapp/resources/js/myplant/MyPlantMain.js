@@ -43,19 +43,29 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- 2. 실시간 검색 기능 ---
 
   searchInput.addEventListener('input', (e) => {
-    const keyword = e.target.value.toLowerCase().trim();
+	  const keyword = e.target.value.trim();
 
-    plantItems.forEach(item => {
-      const koreanName = item.querySelector('.mpm-item__korean').textContent.toLowerCase();
-      const latinName = item.querySelector('.mpm-item__latin').textContent.toLowerCase();
+	  fetch('/search/plant?q=' + keyword)
+	    .then(res => res.json())
+	    .then(data => {
+	      plantPickList.innerHTML = '';
 
-      if (koreanName.includes(keyword) || latinName.includes(keyword)) {
-        item.style.display = 'block';
-      } else {
-        item.style.display = 'none';
-      }
-    });
-  });
+	      data.forEach(p => {
+	        plantPickList.innerHTML += `
+	          <li class="mpm-item">
+	            <label class="mpm-item__row">
+	              <input class="mpm-item__radio" type="radio" name="pick"
+	                value="${p.plant_id}" />
+	              <span class="mpm-item__text">
+	                <span class="mpm-item__korean">${p.plant_name_kor}</span>
+	                <span class="mpm-item__latin">${p.plant_name}</span>
+	              </span>
+	            </label>
+	          </li>
+	        `;
+	      });
+	    });
+	});
 
   // --- 3. 식물 선택 및 추가 버튼 활성화 ---
 
