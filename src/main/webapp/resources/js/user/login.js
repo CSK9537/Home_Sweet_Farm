@@ -224,7 +224,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
 		}	
 	
 //인증번호 검증 버튼 클릭
-	verifyBtn.addEventListener("click",(e)=>{
+	sendBtn.addEventListener("click",(e)=>{
 		e.preventDefault();
 		if(!validateName()) return;
 		if(!validateEmail()) return;
@@ -273,9 +273,9 @@ function sendVerifyCode(){
   	});
 }
 
-  const verifyBtn = document.querySelector("#verifyBtn");
-  if (verifyBtn) {
-	  verifyBtn.addEventListener("click", function () {
+  const sendBtn = document.querySelector("#sendBtn");
+  if (sendBtn) {
+	  sendBtn.addEventListener("click", function () {
       const codeEl = document.querySelector("#verifyCode");
       const code = codeEl ? (codeEl.value || "").trim() : "";
       

@@ -95,14 +95,21 @@
                 <input id="findIdName" name="name" class="text-input" type="text" placeholder="이름" />
                 <div id="nameMsg" class="error-msg" style="margin-top:6px; font-size:14px;"></div>
 
+                
                 <label class="input-label" for="findIdEmail">본인확인용 이메일</label>
-                <input id="findIdEmail" name="contact" class="text-input" type="text" placeholder="본인확인용 이메일" />
-                 <div id="emailMsg" class="error-msg" style="margin-top:6px; font-size:14px;"></div>
+                
+                <div class="input-with-btn">
+                	<input id="findIdEmail" name="contact" class="text-input" type="text" placeholder="본인확인용 이메일" />
+                	<button type="button" id="sendBtn" class="btn-ghost">발송</button>
+                </div>
+                <div id="emailMsg" class="error-msg" style="margin-top:6px; font-size:14px;"></div>
+                
 
                 <div class="row-between">
                   <span class="mini-hint">인증번호를 입력해 주세요</span>
                 </div>
-
+                
+				<!-- 인증번호 입력 + 인증 버튼 -->
                 <div class="code-boxes" aria-label="인증번호 입력">
                    <input id="verifyCode" name="code" class="text-input" type="text"
          			placeholder="인증번호 입력" autocomplete="one-time-code" />
