@@ -97,6 +97,7 @@
 
                 <label class="input-label" for="findIdEmail">본인확인용 이메일</label>
                 <input id="findIdEmail" name="contact" class="text-input" type="text" placeholder="본인확인용 이메일" />
+                 <div id="emailMsg" class="error-msg" style="margin-top:6px; font-size:14px;"></div>
 
                 <div class="row-between">
                   <span class="mini-hint">인증번호를 입력해 주세요</span>

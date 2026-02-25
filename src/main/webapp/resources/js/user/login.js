@@ -174,33 +174,38 @@ function(){
 			nameMsg.style.color = "red";
 			return;
 		}
-		nameMsg.innerText ="";
-		return true;
+		//길이 검사
+		if(name.length < 2){
+			nameMsg.innerText = "이름은 2자 이상 입력해주세요.";
+			nameMsg.style.color = "red";
+			return;
+		}
+			nameMsg.innerText ="";
+			return true;
 	});
-//		
-//		if(name.length < 2){
-//			nameMsg.innerText = "이름은 2자 이상 입력해주세요.";
-//			nameMsg.style.color = "red";
-//			return false;
-//		}
-		
-//	
-//	// 2) 입력 시작하면 메시지 사라지게
-//	  nameInput.addEventListener("input", () => {
-//	    nameMsg.innerText = "";
-//	  });
-//
-//	  // 3) 인증 버튼 클릭 시 검증
-//	  verifyBtn.addEventListener("click", (e) => {
-//	    if (!validateName()) {
-//	      e.preventDefault();  // form submit 막기(버튼이 submit이면 중요)
-//	      return;
-//	    }
-//
-//	    // ✅ 여기 아래에 "인증" fetch/로직이 실행되게 넣기
-//	    // send email / check code 등...
-//	  });
-//	});
+//이메일 검증	
+	const EmailInput = document.querySelector("#findIdEmail");
+	const emailMsg = document.querySelector("#emailMsg");
+	
+	verifyBtn.addEventListener("click", (e)=>{
+		const email = EmailInput.value.trim();
+		//빈 값 체크
+		if(!email){
+			emailMsg.innerText = "이메일을 입력해주세요.";
+			emailMsg.style.color = "red";
+			return;
+		}
+		//정규식 검사
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if(!emailRegex.test(email)){
+			emailMsg.innerText = "올바른 이메일 형식으로 입력해주세요.";
+			emailMsg.style.color = "red";
+			return;
+		}
+		emailMsg.innerText ="";
+			return true;
+	
+	});	
 
 
 
@@ -208,8 +213,6 @@ function(){
 
 
 
-
-const findIdEmail = document.querySelector("#findIdEmail");
 const verifyCode = document.querySelector("#verifyCode");
 //const verifyBtn = document.querySelector("#verifyBtn");
 
