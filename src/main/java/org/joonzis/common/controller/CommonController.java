@@ -18,6 +18,14 @@ public class CommonController {
 	public String main() {
 		return "main";
 	}
+	@RequestMapping("/rules/use")
+	public String use() {
+		return "law/TermsOfUse";
+	}
+	@RequestMapping("/rules/privacy")
+	public String privacy() {
+		return "law/Personal";
+	}
 	@RequestMapping("/search")
 	public String search(@RequestParam(value = "q", required = false) String q,
 						@RequestParam(value = "main", required = false) String main,

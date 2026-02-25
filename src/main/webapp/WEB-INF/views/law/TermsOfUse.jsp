@@ -2,8 +2,8 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/law/TermsOfUse.css">
 
+<%@ include file="/WEB-INF/views/layout/header.jsp" %>
 <div class="page-shell">
-  <%@ include file="/WEB-INF/views/layout/header.jsp" %>
 
   <main class="content-wrap">
     <section class="content-card">

@@ -2,8 +2,8 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/law/Personal.css">
 
+<%@ include file="/WEB-INF/views/layout/header.jsp" %>
 <div class="page-shell">
-  <%@ include file="/WEB-INF/views/layout/header.jsp" %>
 
   <div class="content-wrap">
     <section class="content-card policy" aria-labelledby="policy-title">
@@ -185,7 +185,7 @@
       </section>
 
       <div class="policy__actions">
-        <a class="policy__home-btn" href="#">홈으로 돌아가기</a>
+        <a class="policy__home-btn" href="/">홈으로 돌아가기</a>
       </div>
     </section>
   </div>
