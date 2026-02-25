@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<jsp:include page="/WEB-INF/views/layout/header.jsp" />
-
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/ContentLayout.css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/user/login.css">
 
 <div class="page-shell">
@@ -175,5 +174,3 @@
 </div><!-- /page-shell -->
 
 <script src="${pageContext.request.contextPath}/resources/js/user/login.js"></script>
-
-<jsp:include page="/WEB-INF/views/layout/footer.jsp" />
