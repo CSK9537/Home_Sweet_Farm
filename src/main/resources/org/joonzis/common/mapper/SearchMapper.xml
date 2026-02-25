@@ -3,6 +3,11 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.joonzis.common.mapper.SearchMapper">
+	<!-- user_id로 유저 찾기 -->
+	<select id="findUserbyId" resultType="org.joonzis.user.vo.UserVO">
+		SELECT username, nickname, name FROM tbl_user WHERE user_id = #{user_id}
+	</select>
+	
 	<!-- 커뮤니티 검색 결과 출력 -->
 	<!-- 제목 검색 -->
 	<select id="searchBoardsByTitle" resultType="org.joonzis.community.vo.BoardVO">
@@ -17,7 +22,8 @@
 		SELECT * FROM tmp_board WHERE user_id =
 			(SELECT user_id FROM tbl_user
 			WHERE LOWER(username) LIKE LOWER('%' || #{q} || '%')
-			OR LOWER(nickname) LIKE LOWER('%' || #{q} || '%'))
+			OR LOWER(nickname) LIKE LOWER('%' || #{q} || '%')
+			OR LOWER(name) LIKE LOWER('%' || #{q} || '%'))
 	</select>
 	
 	<!-- 식물 검색(이름) 결과 출력 -->

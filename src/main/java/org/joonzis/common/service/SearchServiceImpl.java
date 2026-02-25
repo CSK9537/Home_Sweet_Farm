@@ -6,6 +6,7 @@ import org.joonzis.common.mapper.SearchMapper;
 import org.joonzis.community.vo.BoardVO;
 import org.joonzis.plant.dto.SimplePlantDTO;
 import org.joonzis.store.vo.ProductVO;
+import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,13 @@ public class SearchServiceImpl implements SearchService{
 	
 	@Autowired
 	private SearchMapper smapper;
+	
+	@Override
+	// user_id로 유저 찾기
+	public UserVO findUserbyId(int user_id) {
+		UserVO uvo = smapper.findUserbyId(user_id);
+		return uvo;
+	}
 	
 	// 커뮤니티 검색 리스트
 	// 제목

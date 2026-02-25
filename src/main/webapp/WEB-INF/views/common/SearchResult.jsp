@@ -9,21 +9,18 @@
 			<c:choose>
 				<c:when test="${not empty q}">
 					<p id="q">${q}</p>
+					<div class="tmp"></div>
 					<c:if test="${main == '커뮤니티'}">
 						${main}
 					</c:if>
 					<c:if test="${main == '식물'}">
-						<ul class="slist">
-						</ul>
+						${main}
 					</c:if>
 					<c:if test="${main == '스토어'}">
 						${main}
 					</c:if>
 					<c:if test="${main == 'Q&A'}">
 						${main}
-					</c:if>
-					<c:if test="${not empty sub}">
-						${sub}
 					</c:if>
 				</c:when>
 				<c:otherwise>
@@ -34,4 +31,5 @@
 	</div>
 </div>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />
+<script src="${pageContext.request.contextPath}/resources/js/common/SearchService.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/common/SearchResult.js"></script>
