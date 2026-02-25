@@ -9,7 +9,6 @@ service.getBoardsByTitle(q, jsonArray => {
     makechild += `${board.content}\n`;
     makechild += `${board.user_id}`;
     makechild += `</div>`;
-
     tmp.innerHTML += makechild;
   });
 });
@@ -21,7 +20,6 @@ service.getBoardsByContent(q, jsonArray => {
     makechild += `${board.content}\n`;
     makechild += `${board.user_id}`;
     makechild += `</div>`;
-
     tmp.innerHTML += makechild;
   });
 });
@@ -33,7 +31,6 @@ service.getBoardsByWriter(q, jsonArray => {
     makechild += `${board.content}\n`;
     makechild += `${board.user_id}`;
     makechild += `</div>`;
-
     tmp.innerHTML += makechild;
   });
 });
@@ -44,7 +41,6 @@ service.getPlants(q, jsonArray => {
     makechild += `${plant.plant_name}\n`;
     makechild += `${plant.plant_name_kor}`;
     makechild += `</div>`;
-
     tmp.innerHTML += makechild;
   });
 });
@@ -55,7 +51,6 @@ service.getProducts(q, jsonArray => {
     makechild += `${product.product_name}\n`;
     makechild += `${product.product_price}`;
     makechild += `</div>`;
-
     tmp.innerHTML += makechild;
   });
 });
