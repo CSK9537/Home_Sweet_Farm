@@ -166,7 +166,7 @@ function(){
 	const nameMsg = document.querySelector("#nameMsg");
 	const verifyBtn = document.querySelector("#verifyBtn");
 	
-	verifyBtn.addeventListner("click", (e)=>{
+	verifyBtn.addEventListener("click", (e)=>{
 		const name = nameInput.value.trim();
 		//빈 값 체크
 		if(!name){
