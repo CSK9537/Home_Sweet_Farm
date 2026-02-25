@@ -34,7 +34,7 @@
               	계정
             </button>
             <button type="button" class="step-nav__btn" data-step-link="verify" role="tab" aria-selected="false">
-              	본인인증
+              	이메일 인증
             </button>
             <button type="button" class="step-nav__btn" data-step-link="profile" role="tab" aria-selected="false">
               	회원정보
@@ -137,10 +137,10 @@
           <!-- STEP 2: 본인인증 -->
           <section class="step-panel" id="step-verify" data-step="verify" aria-label="본인인증">
             <div class="verify-card">
-              <h3 class="verify-title">본인인증</h3>
+              <h3 class="verify-title">이메일 인증</h3>
               <p class="verify-desc">
-               	 회원님의 개인정보 보호를 위해 <strong>본인인증</strong>이 필요합니다.<br/>
-                	본인인증을 진행해주세요.
+               	 회원님의 개인정보 보호를 위해 <strong>이메일 인증</strong>이 필요합니다.<br/>
+                	인증을 진행해주세요.
               </p>
 
               <div class="verify-actions">

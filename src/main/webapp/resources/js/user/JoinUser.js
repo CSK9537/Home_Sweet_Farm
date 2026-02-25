@@ -107,7 +107,7 @@
     var subtitle = $("#stepSubtitle");
     if (subtitle) {
       if (step === "account") subtitle.innerHTML = "계정 정보 입력";
-      else if (step === "verify") subtitle.innerHTML = "본인인증";
+      else if (step === "verify") subtitle.innerHTML = "이메일인증";
       else subtitle.innerHTML = "회원 정보 입력";
     }
   }
@@ -617,6 +617,12 @@
         alert("계정 정보가 누락되었습니다. 처음 단계부터 다시 진행해주세요.");
         setActiveStep("account");
         return false;
+      }
+      if (!state.verifiedEmail) {
+    	if (e && e.preventDefault) e.preventDefault();
+    	alert("이메일 인증을 진행해주세요.");
+    	setActiveStep("verify");
+    	return false;
       }
       return true;
     });
