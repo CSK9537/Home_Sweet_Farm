@@ -119,7 +119,7 @@
 
                 <div class="row-between">
                   <span class="timer" aria-label="남은 시간"><span class="time">03:00</span></span>
-                  <button type="button" class="btn-ghost">재전송</button>
+                  <button id="resetBtn" type="button" class="btn-ghost">재전송</button>
                 </div>
 
 				<!-- 버튼 타입 임시 변경, 이동 경로 완성시 다음 버튼 submit으로 -->
