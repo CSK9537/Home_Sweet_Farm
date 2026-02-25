@@ -116,7 +116,7 @@
                 </div>
 
 				<!-- 버튼 타입 임시 변경, 이동 경로 완성시 다음 버튼 submit으로 -->
-                <button id="codeNextBtn" type="button" class="btn-primary">다음</button>
+                <button id="nextBtn" type="button" class="btn-primary">다음</button>
 
                 <div class="helper-links">
                   <button type="button" class="helper-link js-go" data-target="panel-login">로그인하러 가기</button>
