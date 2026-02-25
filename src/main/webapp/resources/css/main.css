@@ -276,6 +276,14 @@
   background: #d9d9d9; /* 더미 */
 }
 
+.plant-card__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  z-index: 0;
+}
+
 .plant-card__body {
   padding: 12px;
   display: flex;

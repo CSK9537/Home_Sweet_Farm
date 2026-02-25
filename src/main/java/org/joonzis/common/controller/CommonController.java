@@ -1,5 +1,7 @@
 package org.joonzis.common.controller;
 
+import org.joonzis.plant.service.PlantService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,12 +12,17 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 @Controller
 public class CommonController {
+	
+	@Autowired
+	private PlantService pservice;
+	
 	@RequestMapping("/home")
 	public String home() {
 		return "home";
 	}
 	@RequestMapping("/")
-	public String main() {
+	public String main(Model model) {
+		model.addAttribute("popularPlants", pservice.plantListByRank(3));
 		return "main";
 	}
 	@RequestMapping("/rules/use")
