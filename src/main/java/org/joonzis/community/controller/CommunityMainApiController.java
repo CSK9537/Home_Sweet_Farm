@@ -1,6 +1,7 @@
 package org.joonzis.community.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,13 +12,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class CommunityMainApiController {
 
     private final CommunityMainService communityMainService;
 
+    @GetMapping("/community/db-check")
+    public Map<String, Object> dbCheck() {
+        Map<String, Object> info = communityMainService.dbCheck();
+        log.info("[DB_CHECK] {}", info);
+        return info;
+    }
+    
     // ✅ 허용 kind (요구사항: popular/hot/latest/qa)
     private boolean isAllowedKind(String kind) {
         return "popular".equals(kind) || "hot".equals(kind) || "latest".equals(kind) || "qa".equals(kind);

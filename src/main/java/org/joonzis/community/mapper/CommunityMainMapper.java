@@ -7,6 +7,9 @@ import org.joonzis.community.dto.CommunityPostCardDTO;
 
 public interface CommunityMainMapper {
 
+	Map<String, Object> selectSessionInfo();
+	Integer selectBoardIdSmoke();
+	
 	List<CommunityPostCardDTO> selectPopularPosts(int limit);
     List<CommunityPostCardDTO> selectHotPosts(int limit);
     List<CommunityPostCardDTO> selectLatestPosts(int limit);
