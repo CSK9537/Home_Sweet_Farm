@@ -1,4 +1,5 @@
 const SearchService = (function(){
+	
 	function getBoardsByTitle(q, callback){
 		fetch('/search/community/title?q=' + q)
 			.then(response => response.json())
@@ -51,4 +52,5 @@ const SearchService = (function(){
 		getPlants,
 		getProducts,
 	};
+	
 })();
