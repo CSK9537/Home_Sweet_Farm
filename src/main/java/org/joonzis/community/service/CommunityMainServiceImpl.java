@@ -16,6 +16,12 @@ public class CommunityMainServiceImpl implements CommunityMainService {
 
     private final CommunityMainMapper communityMainMapper;
 
+@Override
+    public Map<String, Object> dbCheck() {
+    	// TODO Auto-generated method stub
+    	return null;
+    }
+    
     @Override
     public Map<String, List<CommunityPostCardDTO>> getRails(int railLimit) {
         Map<String, List<CommunityPostCardDTO>> result = new HashMap<String, List<CommunityPostCardDTO>>();

@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardFileVO {
-	private int file_id, board_id, file_size;
-	private String original_name, saved_name, content_type;
-	private Date reg_date;
-	private char is_thumbnail;
+	private int file_id;
+	private Integer board_id;
+	private long file_size;
+	private String original_name, saved_name, content_type, temp_key, sub_dir, file_kind, is_active, is_thumbnail;
+	private Date reg_date, updated_at;
 }
