@@ -43,6 +43,10 @@
 	<context:annotation-config></context:annotation-config>
 	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
 	
+	<!-- community -->
+	<mybatis-spring:scan base-package="org.joonzis.community.mapper"/>
+	<context:component-scan base-package="org.joonzis.community.service"/>
+	
 	<!-- common -->
 	<mybatis-spring:scan base-package="org.joonzis.common.mapper"/>
 	<context:component-scan base-package="org.joonzis.common.service"/>

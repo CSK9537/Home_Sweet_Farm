@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.joonzis.community.mapper.CommunityFormMapper">
+
+  <!-- ===== Board ===== -->
+  <insert id="insertBoard" parameterType="org.joonzis.community.vo.BoardVO" useGeneratedKeys="false">
+    INSERT INTO TBL_BOARD (
+      BOARD_ID, USER_ID, CATEGORY_ID, PARENT_ID,
+      TITLE, CONTENT, BOARD_TYPE, PRICE, TRADE_STATUS,
+      VIEW_COUNT, REPLY_CNT, LIKE_COUNT,
+      IS_ACTIVE, IS_SELECTED,
+      REG_DATE, UPDATE_DATE
+    ) VALUES (
+      SEQ_TBL_BOARD.NEXTVAL,
+      #{user_id},
+      #{category_id},
+      #{parent_id},
+      #{title},
+      #{content},
+      #{board_type},
+      #{price},
+      #{trade_status},
+      0, 0, 0,
+      'Y', 'N',
+      SYSDATE, SYSDATE
+    )
+  </insert>
+
+  <update id="updateBoard" parameterType="org.joonzis.community.vo.BoardVO">
+    UPDATE TBL_BOARD
+       SET CATEGORY_ID = #{category_id},
+           TITLE      = #{title},
+           CONTENT    = #{content},
+           PRICE      = #{price},
+           TRADE_STATUS = #{trade_status},
+           UPDATE_DATE = SYSDATE
+     WHERE BOARD_ID = #{board_id}
+       AND IS_ACTIVE = 'Y'
+  </update>
+
+  <select id="selectBoardById" parameterType="int" resultType="org.joonzis.community.vo.BoardVO">
+    SELECT *
+      FROM TBL_BOARD
+     WHERE BOARD_ID = #{board_id}
+  </select>
+
+  <select id="selectBoardOwnerUserId" parameterType="int" resultType="int">
+    SELECT USER_ID
+      FROM TBL_BOARD
+     WHERE BOARD_ID = #{board_id}
+  </select>
+
+  <!-- ===== File ===== -->
+  <insert id="insertBoardFile" parameterType="org.joonzis.community.vo.BoardFileVO">
+    INSERT INTO TBL_BOARD_FILE (
+      FILE_ID, BOARD_ID,
+      ORIGINAL_NAME, SAVED_NAME,
+      FILE_SIZE, CONTENT_TYPE,
+      REG_DATE, IS_THUMBNAIL,
+      TEMP_KEY, SUB_DIR, FILE_KIND,
+      IS_ACTIVE, UPDATED_AT
+    ) VALUES (
+      SEQ_TBL_BOARD_FILE.NEXTVAL,
+      #{board_id},
+      #{original_name},
+      #{saved_name},
+      #{file_size},
+      #{content_type},
+      SYSDATE,
+      #{is_thumbnail},
+      #{temp_key},
+      #{sub_dir},
+      #{file_kind},
+      #{is_active},
+      SYSDATE
+    )
+  </insert>
+
+  <select id="selectFilesByTempKey" resultType="org.joonzis.community.vo.BoardFileVO">
+    SELECT *
+      FROM TBL_BOARD_FILE
+     WHERE TEMP_KEY = #{temp_key}
+       AND IS_ACTIVE = 'Y'
+     ORDER BY FILE_ID ASC
+  </select>
+
+  <update id="attachTempFilesToBoard">
+    UPDATE TBL_BOARD_FILE
+       SET BOARD_ID   = #{board_id},
+           UPDATED_AT = SYSDATE
+     WHERE TEMP_KEY   = #{temp_key}
+       AND IS_ACTIVE  = 'Y'
+  </update>
+
+  <update id="deactivateFilesByBoardId">
+    UPDATE TBL_BOARD_FILE
+       SET IS_ACTIVE  = 'N',
+           UPDATED_AT = SYSDATE
+     WHERE BOARD_ID   = #{board_id}
+       AND IS_ACTIVE  = 'Y'
+  </update>
+
+  <!-- ===== Hashtag Suggest (마스터 테이블: TBL_BOARD_HASHTAG_LIST) ===== -->
+  <select id="selectHashtagSuggest" resultType="string">
+    SELECT BOARD_HASHTAG_NAME
+      FROM TBL_BOARD_HASHTAG_LIST
+     WHERE IS_ACTIVE = 'Y'
+       AND LOWER(BOARD_HASHTAG_NAME) LIKE LOWER(#{q}) || '%'
+     ORDER BY BOARD_HASHTAG_NAME
+     FETCH FIRST #{limit} ROWS ONLY
+  </select>
+
+</mapper>
