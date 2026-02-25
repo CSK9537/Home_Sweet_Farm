@@ -93,30 +93,37 @@
               <form class="form-block" method="post" action="${pageContext.request.contextPath}/user/findId" autocomplete="off">
                 <label class="input-label" for="findIdName">가입자 이름</label>
                 <input id="findIdName" name="name" class="text-input" type="text" placeholder="이름" />
+                <div id="nameMsg" class="error-msg" style="margin-top:6px; font-size:14px;"></div>
 
-                <label class="input-label" for="findIdPhone">전화번호 또는 본인확인용 이메일</label>
-                <input id="findIdPhone" name="contact" class="text-input" type="text" placeholder="전화번호 또는 본인확인용 이메일" />
+                
+                <label class="input-label" for="findIdEmail">본인확인용 이메일</label>
+                
+                <div class="input-with-btn">
+                	<input id="findIdEmail" name="contact" class="text-input" type="text" placeholder="본인확인용 이메일" />
+                	<button type="button" id="sendBtn" class="btn-ghost">발송</button>
+                </div>
+                <div id="emailMsg" class="error-msg" style="margin-top:6px; font-size:14px;"></div>
+                
 
                 <div class="row-between">
                   <span class="mini-hint">인증번호를 입력해 주세요</span>
                 </div>
-
+                
+				<!-- 인증번호 입력 + 인증 버튼 -->
                 <div class="code-boxes" aria-label="인증번호 입력">
-                  <input class="code-input" type="text" maxlength="1" inputmode="numeric" />
-                  <input class="code-input" type="text" maxlength="1" inputmode="numeric" />
-                  <input class="code-input" type="text" maxlength="1" inputmode="numeric" />
-                  <input class="code-input" type="text" maxlength="1" inputmode="numeric" />
-                  <input class="code-input" type="text" maxlength="1" inputmode="numeric" />
-                  <input class="code-input" type="text" maxlength="1" inputmode="numeric" />
+                   <input id="verifyCode" name="code" class="text-input" type="text"
+         			placeholder="인증번호 입력" autocomplete="one-time-code" />
+  					<button type="button" id="verifyBtn" class="btn-ghost">인증</button>
                 </div>
+                <div id="codeMsg" class="error-msg" style="margin-top:6px; font-size:14px;"></div>
 
                 <div class="row-between">
                   <span class="timer" aria-label="남은 시간"><span class="time">03:00</span></span>
-                  <button type="button" class="btn-ghost">재전송</button>
+                  <button id="resetBtn" type="button" class="btn-ghost">재전송</button>
                 </div>
 
 				<!-- 버튼 타입 임시 변경, 이동 경로 완성시 다음 버튼 submit으로 -->
-                <button type="button" class="btn-primary">다음</button>
+                <button id="nextBtn" type="button" class="btn-primary">다음</button>
 
                 <div class="helper-links">
                   <button type="button" class="helper-link js-go" data-target="panel-login">로그인하러 가기</button>
@@ -132,7 +139,7 @@
                 <label class="input-label" for="findPwId">아이디</label>
                 <input id="findPwId" name="username" class="text-input" type="text" placeholder="아이디" />
 
-                <label class="input-label" for="findPwContact">전화번호 또는 본인확인용 이메일</label>
+                <label class="input-label" for="findPwContact">이메일</label>
                 <input id="findPwContact" name="contact" class="text-input" type="text" placeholder="전화번호 또는 본인확인용 이메일" />
 
                 <div class="row-between">
