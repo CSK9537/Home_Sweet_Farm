@@ -161,18 +161,26 @@ function(){
 	rememberMe.checked ? "Y" : "N";
 });
 
+function setMsg(msgEl, text, color){
+	if(!msgEl) return;
+	msgEl.innerText = text || "";
+	msgEl.style.color = color || (text ? "red" : "");
+}
 //아이디 검증
 document.addEventListener("DOMContentLoaded", ()=>{
-	const nameInput = document.querySelector("#findIdName");
+	const nameInput = document.querySelector("#findIdName");//이름 입력
 	const nameMsg = document.querySelector("#nameMsg");
-	const emailInput = document.querySelector("#findIdEmail");
+	const emailInput = document.querySelector("#findIdEmail");//이메일 입력
 	const emailMsg = document.querySelector("#emailMsg");
-	const verifyBtn = document.querySelector("#verifyBtn");
+	const codeInput = document.querySelector("#verifyCode");//인증번호 
+	const codeMsg = document.querySelector("#codeMsg");
+	const sendBtn = document.querySelector("#sendBtn");//발송 버튼
+	const verifyBtn = document.querySelector("#verifyBtn");//인증 버튼
+	const nextBtn = document.querySelector("#nextBtn");//다음 버튼
 	
-	function setMsg(msgEl, text){
-		msgEl.innerText = text || "";
-		msgEl.style.color = text ? "red" : "";
-	}
+//	if(!nameInput || !nameMsg || 
+//		!emailInput || !emailMsg ||
+//		!codeInput || !codeMsg || !verifyBtn) return;
 	
 	function validateName(){
 		const name = nameInput.value.trim();
@@ -214,13 +222,98 @@ document.addEventListener("DOMContentLoaded", ()=>{
 		setMsg(emailMsg, "");
 			return true;
 		}	
+	
 //인증번호 검증 버튼 클릭
 	verifyBtn.addEventListener("click",(e)=>{
 		e.preventDefault();
 		if(!validateName()) return;
 		if(!validateEmail()) return;
+		
+		sendVerifyCode();
 	})
 })
-	
 
+//다음버튼에서 인증번호 빈 값 체크
+	nextBtn.addEventListener("click", (e)=>{
+		e.preventDefault();
+		
+		const verifyCode = codeInput.value.trim();
+		//빈 값 체크   
+		   if(!verifyCode){
+			   setMsg(codeMsg, "인증번호를 입력해주세요.");
+			    codeMsg.style.color = "red";
+			    codeInput.focus();
+				return;
+			}
+		   	setMsg(codeMsg, "");
+			
+		})
+		
+//이메일 인증코드 발송
+function sendVerifyCode(){
+	const emailEl = document.querySelector("#findIdEmail");
+    const email = emailEl ?
+  (emailEl.value || "").trim() : "";
+  
+  	fetch("/email/send", {
+  		method: "POST",
+  		headers: {"Content-Type":"text/plain; charset=UTF-8"},
+  		body: email
+  	})
+  	.then(response =>{
+  		if(!response.ok) throw new Error();
+  		setMsg(codeMsg, "인증코드를 이메일로 발송했습니다.");
+  		codeMsg.style.color = "green";
+  		codeInput.focus();
+  		startResendCooldown(60);//인증번호 재전송
+  	})
+  	.catch(()=>{
+  		setMsg(codeMsg, "이메일 발송에 실패했습니다.")
+  		codeMsg.style.color = "red";
+  	});
+}
 
+  const verifyBtn = document.querySelector("#verifyBtn");
+  if (verifyBtn) {
+	  verifyBtn.addEventListener("click", function () {
+      const codeEl = document.querySelector("#verifyCode");
+      const code = codeEl ? (codeEl.value || "").trim() : "";
+      
+      if (!code) {
+    	  setMsg(codeMsg, "인증코드를 입력해주세요.");
+    	  codeMsg.style.color = "red";
+        return;
+      }
+      fetch("/email/check/" + encodeURIComponent(code), {
+          method: "PUT"
+        })
+        .then(response => response.text().then(text => ({ status: response.status, text })))
+        .then(({ status, text }) => {
+          if (status === 202 && text === "verified") {
+            nextBtn();
+            alert("이메일 인증 완료!");
+          } else {
+            nextBtn();
+            alert("인증코드가 올바르지 않습니다.");
+          }
+        })
+        .catch(() => {
+          alert("인증 확인 중 오류가 발생했습니다.");
+        });
+    });
+  }
+////다음 단계 이동 버튼
+//  var nextBtn = $("#nextBtn");
+//  if (nextBtn) {
+//	  nextBtn.addEventListener("click", function () {
+//      if (!state.verifiedEmail) {
+//    	  return;
+//      }
+//      setActiveStep("profile");
+//    });
+//	  nextBtn();
+//  }
+//  function nextBtn(){
+//	  if(!nextBtn) return;
+//	  nextBtn.disabled = !state.verifiedEmail;
+//}
