@@ -162,57 +162,65 @@ function(){
 });
 
 //아이디 검증
+document.addEventListener("DOMContentLoaded", ()=>{
 	const nameInput = document.querySelector("#findIdName");
 	const nameMsg = document.querySelector("#nameMsg");
+	const emailInput = document.querySelector("#findIdEmail");
+	const emailMsg = document.querySelector("#emailMsg");
 	const verifyBtn = document.querySelector("#verifyBtn");
 	
-	verifyBtn.addEventListener("click", (e)=>{
+	function setMsg(msgEl, text){
+		msgEl.innerText = text || "";
+		msgEl.style.color = text ? "red" : "";
+	}
+	
+	function validateName(){
 		const name = nameInput.value.trim();
+		
 		//빈 값 체크
 		if(!name){
-			nameMsg.innerText = "이름을 입력해주세요.";
+			setMsg(nameMsg, "이름을 입력해주세요.");
 			nameMsg.style.color = "red";
-			return;
+			nameInput.focus();
+			return false;
 		}
 		//길이 검사
 		if(name.length < 2){
-			nameMsg.innerText = "이름은 2자 이상 입력해주세요.";
+			setMsg(nameMsg, "이름은 2자 이상 입력해주세요.");
 			nameMsg.style.color = "red";
-			return;
+			nameInput.focus();
+			return false;
 		}
-			nameMsg.innerText ="";
-			return true;
-	});
-//이메일 검증	
-	const EmailInput = document.querySelector("#findIdEmail");
-	const emailMsg = document.querySelector("#emailMsg");
-	
-	verifyBtn.addEventListener("click", (e)=>{
-		const email = EmailInput.value.trim();
+		setMsg(nameMsg, "");
+		return true;
+	}
+	function validateEmail(){
+		const email = emailInput.value.trim();
 		//빈 값 체크
 		if(!email){
-			emailMsg.innerText = "이메일을 입력해주세요.";
+			setMsg(emailMsg, "이메일을 입력해주세요.");
 			emailMsg.style.color = "red";
-			return;
+			emailInput.focus();
+			return false;
 		}
 		//정규식 검사
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		if(!emailRegex.test(email)){
-			emailMsg.innerText = "올바른 이메일 형식으로 입력해주세요.";
+			setMsg(emailMsg, "올바른 이메일 형식으로 입력해주세요.");
 			emailMsg.style.color = "red";
-			return;
+			emailInput.focus();
+			return false;
 		}
-		emailMsg.innerText ="";
+		setMsg(emailMsg, "");
 			return true;
+		}	
+//인증번호 검증 버튼 클릭
+	verifyBtn.addEventListener("click",(e)=>{
+		e.preventDefault();
+		if(!validateName()) return;
+		if(!validateEmail()) return;
+	})
+})
 	
-	});	
 
-
-
-
-
-
-
-const verifyCode = document.querySelector("#verifyCode");
-//const verifyBtn = document.querySelector("#verifyBtn");
 

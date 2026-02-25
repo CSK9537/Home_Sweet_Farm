@@ -108,6 +108,7 @@
          			placeholder="인증번호 입력" autocomplete="one-time-code" />
   					<button type="button" id="verifyBtn" class="btn-ghost">인증</button>
                 </div>
+                <div id="codeMsg" class="error-msg" style="margin-top:6px; font-size:14px;"></div>
 
                 <div class="row-between">
                   <span class="timer" aria-label="남은 시간"><span class="time">03:00</span></span>
@@ -115,7 +116,7 @@
                 </div>
 
 				<!-- 버튼 타입 임시 변경, 이동 경로 완성시 다음 버튼 submit으로 -->
-                <button type="button" class="btn-primary">다음</button>
+                <button id="codeNextBtn" type="button" class="btn-primary">다음</button>
 
                 <div class="helper-links">
                   <button type="button" class="helper-link js-go" data-target="panel-login">로그인하러 가기</button>
