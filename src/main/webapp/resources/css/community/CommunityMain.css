@@ -4,19 +4,22 @@
   --cm-bg: #6B7B61;
 
   --cm-gap: 14px;
+  --cm-thumbH: 135px; /* 썸네일 높이 */
+}
 
-  /* ✅ 이미지1 느낌: 너무 크지 않게 */
-  --cm-thumbH: 135px;  /* 썸네일 높이 */
+/* ✅ 레이아웃 안정화 */
+*,
+*::before,
+*::after{
+  box-sizing: border-box;
 }
 
 /* =========================
    컨텐츠 영역 벗어남 방지
-   - 가로는 숨김(삐져나옴 방지)
-   - 세로는 보임(호버 위로 뜨는 부분 잘림 방지)
 ========================= */
 .content-card.community-card{
   overflow-x: hidden;
-  overflow-y: visible;
+  overflow-y: visible; /* 호버 위로 뜨는 부분 잘림 방지 */
 }
 
 .block{
@@ -24,15 +27,16 @@
   overflow-y: visible;
 }
 
-/* 캐러셀도 세로는 보여주고, 가로만 숨김 */
+/* 캐러셀: 가로는 컨테이너 내, 세로는 보이게 */
 .carousel{
   position: relative;
-  overflow-x: hidden;
-  overflow-y: visible;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* =========================
-   상단 UI (깨짐 해결)
+   상단 영역
 ========================= */
 .community-top{
   width: 100%;
@@ -96,7 +100,6 @@
   text-underline-offset: 3px;
 }
 
-/* 구분선 */
 .top-divider{
   width: 100%;
   height: 2px;
@@ -114,7 +117,6 @@
   border-radius: 10px;
   padding: 16px 16px 12px;
   margin-bottom: 18px;
-  box-sizing: border-box;
 }
 
 .block-head{
@@ -129,10 +131,17 @@
   font-size:13px;
 }
 .block-more{
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-align: inherit;
+
   color: var(--cm-line);
   font-size:12px;
   text-decoration:none;
   border-bottom:2px solid transparent;
+  cursor: pointer;
 }
 .block-more:hover{
   font-weight:900;
@@ -141,24 +150,31 @@
 
 /* =========================
    rail / track
-   - 호버시 위로 뜨는 공간 확보: padding-top
-   - nav 버튼 공간: padding 좌우
+   ✅ rail을 스크롤 컨테이너로 통합 (JS scrollBy 대응)
 ========================= */
 .rail{
   position: relative;
+  width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
+  padding: 10px 0 6px;
 
-  padding: 10px 44px 6px;   /* ✅ 위(호버 공간) */
-  overflow-x: hidden;
-  overflow-y: visible;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
 }
+.rail::-webkit-scrollbar{ display:none; }
 
-/* 데이터 있을 때만 track이 존재 */
+/* track: 좌우 nav 버튼 공간 확보 */
 .rail-track{
-  display:flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0 44px;
+  box-sizing: border-box;
+  display: flex;
   flex-wrap: nowrap;
   gap: var(--cm-gap);
-  transition: transform .25s ease;
 }
 
 /* =========================
@@ -185,8 +201,8 @@
   justify-content:center;
 }
 
-.nav-left{ left: 8px; }
-.nav-right{ right: 8px; }
+.nav-left{ left: 0px; }
+.nav-right{ right: 0px; }
 
 .nav-btn:hover{
   background: var(--cm-bg);
@@ -201,10 +217,10 @@
 }
 
 /* =========================
-   카드: 4개 고정
-   - 이미지1 느낌으로 "너무 커지지 않게"
+   카드(.card) + JS카드(.post-card) 공통
 ========================= */
-.card{
+.card,
+.post-card{
   flex: 0 0 calc((100% - (var(--cm-gap) * 3)) / 4);
   width: calc((100% - (var(--cm-gap) * 3)) / 4);
   min-width: 0;
@@ -219,16 +235,19 @@
   flex-direction:column;
 
   transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+
+  text-decoration: none;
+  color: inherit;
 }
 
-/* ✅ 호버 강조 + 잘림 방지(위 공간은 rail padding-top으로 확보됨) */
-.card:hover{
+.card:hover,
+.post-card:hover{
   transform: translateY(-8px);
   box-shadow: 0 16px 28px rgba(0,0,0,0.16);
   border-color: rgba(0,0,0,0.22);
 }
 
-/* 썸네일: 꽉 채움(가로세로 맞춤) */
+/* 썸네일 */
 .card-thumb{
   width: 100%;
   height: var(--cm-thumbH);
@@ -239,18 +258,30 @@
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover;      /* ✅ 비율 유지 + 꽉 채우기 */
+  object-fit: cover;
   object-position: center;
 }
 
-.card-body{
+img.post-thumb{
+  width: 100%;
+  height: var(--cm-thumbH);
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* 바디 */
+.card-body,
+.post-body{
   padding: 10px 12px 12px;
   display:flex;
   flex-direction:column;
   gap: 6px;
+  min-width: 0;
 }
 
-.card-title{
+.card-title,
+.post-title{
   font-weight: 900;
   font-size: 14px;
   color: #111;
@@ -260,7 +291,8 @@
   text-overflow: ellipsis;
 }
 
-.card-author{
+.card-author,
+.post-writer{
   font-size: 12px;
   font-weight: 800;
   color: rgba(0,0,0,0.55);
@@ -269,21 +301,23 @@
   text-overflow: ellipsis;
 }
 
-.card-meta{
+.card-meta,
+.post-meta{
   font-size: 12px;
   font-weight: 900;
   color: rgba(0,0,0,0.70);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 .meta-sep{
   margin: 0 6px;
   opacity: .6;
 }
 
-/* 해시태그: 3줄 */
-.card-tags{
+/* 해시태그 */
+.card-tags,
+.post-tags{
   margin-top: 2px;
   font-size: 12px;
   font-weight: 900;
@@ -299,14 +333,13 @@
 .card-tags .tag{ margin-right: 6px; }
 
 /* =========================
-   ✅ 데이터 없을 때 패널(이미지4 느낌)
+    데이터 없을 때 패널
 ========================= */
 .empty-panel{
   width: 100%;
   height: 140px;
-  border: 1px solid rgba(0,0,0,0.10);
   border-radius: 12px;
-  background: #fff;
+  background: #F4F2ED;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -315,23 +348,235 @@
 .empty-text{
   font-size: 16px;
   font-weight: 900;
-  color: rgba(0,0,0,0.45);
+  color: #6B7B61;
 }
 
 /* =========================
    반응형: 좁아지면 2개 -> 1개
 ========================= */
 @media (max-width: 1024px){
-  .card{
+  .card,
+  .post-card{
     flex-basis: calc((100% - var(--cm-gap)) / 2);
     width: calc((100% - var(--cm-gap)) / 2);
   }
 }
 @media (max-width: 767px){
-  .rail{ padding: 10px 40px 6px; }
   .community-card{ --cm-thumbH: 130px; }
-  .card{
+  .card,
+  .post-card{
     flex-basis: 100%;
     width: 100%;
+  }
+}
+
+/* =========================
+   폭 넘침 방지
+========================= */
+#communityMainSections{
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+#communityMainSections *{
+  min-width: 0;
+}
+
+/* =========================
+   뒤로 버튼 (전체보기 화면에서 사용)
+========================= */
+.community__backBtn{
+  margin-left: 10px;
+  cursor: pointer;
+  border: 1px solid #6B7B61;
+  background: #F4F2ED;
+  color: #6B7B61;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+}
+.community__backBtn:hover{
+  background: #6B7B61;
+  color: #F4F2ED;
+}
+
+/* =========================
+   ✅ content-card 통째로 바뀌는 "전체보기" 화면
+========================= */
+#communityMoreView .cm-more-pageHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+#communityMoreView .cm-more-pageTitle{
+  font-weight: 900;
+  color: var(--cm-line);
+  font-size: 13px;
+}
+#communityMoreView .cm-more-pageTools{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+
+.cm-more__divider{
+  width: 100%;
+  height: 2px;
+  background: var(--cm-line);
+  opacity: 0.9;
+  margin-bottom: 14px;
+}
+
+/* 보기 버튼 */
+.cm-viewBtns{
+  display:inline-flex;
+  gap: 6px;
+}
+.cm-viewBtn{
+  cursor:pointer;
+  border: 1px solid var(--cm-line);
+  background: var(--cm-paper);
+  color: var(--cm-line);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+}
+.cm-viewBtn.is-active{
+  background: var(--cm-line);
+  color: var(--cm-paper);
+}
+
+/* 로딩 */
+.cm-loading{
+  width: 100%;
+  height: 140px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 900;
+  color: #6B7B61;
+}
+
+/* 리스트 레이아웃 (card / album / list) */
+.cm-list{
+  width: 100%;
+  display: grid;
+  gap: 14px;
+}
+
+.cm-item{
+  display:block;
+  text-decoration:none;
+  color: inherit;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 12px;
+  overflow:hidden;
+  background: #fff;
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+.cm-item:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 16px 28px rgba(0,0,0,0.16);
+  border-color: rgba(0,0,0,0.22);
+}
+
+.cm-item__imgWrap{
+  width: 100%;
+  height: var(--cm-thumbH);
+  background:#eee;
+  overflow:hidden;
+}
+.cm-item__img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit: cover;
+  object-position:center;
+}
+
+.cm-item__body{
+  padding: 10px 12px 12px;
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+  min-width:0;
+}
+.cm-item__title{
+  font-weight: 900;
+  font-size: 14px;
+  color:#111;
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+.cm-item__writer{
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(0,0,0,0.55);
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+.cm-item__meta{
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(0,0,0,0.70);
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.cm-item__tags{
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(0,0,0,0.60);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+/* view-card: 4열 */
+.cm-list.view-card{
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* view-album: 2열 */
+.cm-list.view-album{
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.cm-list.view-album .cm-item__imgWrap{
+  height: 220px;
+}
+
+/* view-list: 1열 + 가로형 */
+.cm-list.view-list{
+  grid-template-columns: 1fr;
+}
+.cm-list.view-list .cm-item{
+  display:grid;
+  grid-template-columns: 240px 1fr;
+}
+.cm-list.view-list .cm-item__imgWrap{
+  height: 160px;
+}
+
+/* 전체보기 반응형 */
+@media (max-width: 1024px){
+  .cm-list.view-card{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px){
+  .cm-list.view-card,
+  .cm-list.view-album{ grid-template-columns: 1fr; }
+
+  .cm-list.view-list .cm-item{
+    grid-template-columns: 1fr;
+  }
+  .cm-list.view-list .cm-item__imgWrap{
+    height: var(--cm-thumbH);
   }
 }

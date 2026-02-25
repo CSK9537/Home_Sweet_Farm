@@ -51,7 +51,7 @@ body{
   border: 2px solid #6b7b61;
   border-radius: 12px;
   overflow: hidden;
-  background: url("/resources/image/Default_Plant.jpg") center/cover no-repeat; /* 프로젝트에 맞게 경로 수정 */
+  background: url("/resources/image/Main_Plant.jpg") center/cover no-repeat; /* 프로젝트에 맞게 경로 수정 */
   position: relative;
 }
 
