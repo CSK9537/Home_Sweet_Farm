@@ -15,4 +15,6 @@ public interface MyPlantService {
 	public String modify(MyPlantDTO mpdto);
 	// 나의 식물 삭제
 	public String remove(int myplant_id);
+	
+	public void insertMyPlant(String username, int plantId);
 }

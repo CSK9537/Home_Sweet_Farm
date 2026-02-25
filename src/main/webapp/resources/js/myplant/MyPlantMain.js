@@ -88,3 +88,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+	// 나의 식물 추가 버튼 관련
+
+confirmBtn.addEventListener('click', () => {
+
+	  const plantId = pickedPlantIdInput.value;
+	  const myPlantName = document.getElementById('myPlantName').value;
+
+	  fetch('/my-plants', {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/json'
+	    },
+	    body: JSON.stringify({
+	      plantId: plantId,
+	      myPlantName: myPlantName
+	    })
+	  })
+	  .then(res => {
+	    if (!res.ok) throw new Error("서버 오류");
+	    closeModal();
+	    location.reload();
+	  })
+	  .catch(err => console.error(err));
+	});
