@@ -28,7 +28,6 @@ public class CommunityMainServiceImpl implements CommunityMainService {
         result.put("popularPosts", communityMainMapper.selectPopularPosts(railLimit));
         result.put("hotPosts",     communityMainMapper.selectHotPosts(railLimit));
         result.put("latestPosts",  communityMainMapper.selectLatestPosts(railLimit));
-        result.put("qaPosts",      communityMainMapper.selectQaPosts(railLimit));
         return result;
     }
 
