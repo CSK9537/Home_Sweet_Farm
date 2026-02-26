@@ -419,7 +419,7 @@ function sendVerifyCode(){
       }
       //"다음" -> 결과메시지
       const email = findIdEmail.value.trim();
-      fetch("/user/findId/email?email=" + encodeURIComponent(email))
+      fetch("/user/findId/email?name=" + encodeURIComponent(name) + "&email=" + encodeURIComponent(email))
       .then(r => r.text())
       .then(id => {
 

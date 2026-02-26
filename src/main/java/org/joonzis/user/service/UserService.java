@@ -18,7 +18,7 @@ public interface UserService {
 	//데이터 삭제(회원 탈퇴)
 	public int delete(UserVO vo);
 	//아이디 찾기(이메일)
-	public String findIdByEmail(@Param("email")String email);
+	public String findIdByEmail(@Param("email")String email, @Param("name")String name);
 	//비밀번호 찾기 대상 확인(이메일)
 	public int existUserByEmail(@Param("username")String username,
 							@Param("email")String email);

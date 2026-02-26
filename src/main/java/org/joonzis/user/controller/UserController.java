@@ -162,8 +162,9 @@ public class UserController {
 	@GetMapping(value="/findId/email", 
 	produces = "text/plain; charset=UTF-8")
 	@ResponseBody
-	public String findIdByEmail(@RequestParam String email) {
-		String id = uservice.findIdByEmail(email);
+	public String findIdByEmail(@RequestParam String name,
+								@RequestParam String email) {
+		String id = uservice.findIdByEmail(name, email);
 		return(id == null || id.isBlank()) ? "NOT_FOUND" : id;
 	}
 	

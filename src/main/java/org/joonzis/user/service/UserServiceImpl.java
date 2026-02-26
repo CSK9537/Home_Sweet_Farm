@@ -76,8 +76,8 @@ public class UserServiceImpl implements UserService{
 		return usermapper.delete(vo);
 	}
 	@Override
-	public String findIdByEmail(String email) {
-		return usermapper.findIdByEmail(email);
+	public String findIdByEmail(String name, String email) {
+		return usermapper.findIdByEmail(name, email);
 	}
 	@Override
 	public int existUserByEmail(String username, String email) {
