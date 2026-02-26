@@ -1,26 +1,22 @@
 (function () {
   function qs(sel, parent) { return (parent || document).querySelector(sel); }
-  function qsa(sel, parent) { return (parent || document).querySelectorAll(sel); }
+  function qsa(sel, parent) { return Array.prototype.slice.call((parent || document).querySelectorAll(sel)); }
 
   var root = qs('#communityMainSections');
   if (!root) return;
 
-  var moreBtn = qs('#moreBtn', root);
-  var moreWrap = qs('#moreWrap', root);
-  var moreGrid = qs('#moreGrid', root);
-  var moreTitle = qs('#moreTitle', root);
-  var closeMoreBtn = qs('#closeMoreBtn', root);
+  // ====== API/기본 이미지 ======
+  var MORE_API = root.getAttribute('data-more-api') || '/community/main/more';
+  var DEFAULT_IMG = root.getAttribute('data-default-img') || '';
 
-  // 레일(기존 구조 유지)
-  var railPopular = qs('#popularRail', root);
-  var railHot = qs('#hotRail', root);
-  var railLatest = qs('#latestRail', root);
-  var railQa = qs('#qaRail', root);
+  // ====== content-card 내부 "홈뷰/전체보기뷰" ======
+  var homeView = qs('#communityHomeView', root);
+  var moreView = qs('#communityMoreView', root);
+  var moreTitle = qs('#cmMoreTitle', root);
+  var moreList = qs('#cmMoreList', root);
+  var backBtn = qs('#cmMoreBackBtn', root);
+  var viewBtnsWrap = qs('#cmMoreViewBtns', root);
 
-  // 현재 선택 kind 상태
-  var currentKind = 'latest';
-
-  // ---------- 카드 DOM 생성 ----------
   function escapeHtml(str) {
     if (str == null) return '';
     return String(str)
@@ -32,67 +28,44 @@
   }
 
   function formatHashtags(hashtags) {
-    // API는 "태그1,태그2" 형태로 줄 수 있으니 "#태그1 #태그2"로 표시
     if (!hashtags) return '';
-    var arr = String(hashtags).split(',');
-    var out = [];
-    for (var i = 0; i < arr.length; i++) {
-      var t = arr[i].trim();
-      if (t) out.push('#' + t);
-    }
-    return out.join(' ');
+    return String(hashtags)
+      .split(',')
+      .map(function (t) { return t.trim(); })
+      .filter(Boolean)
+      .map(function (t) { return '#' + t; })
+      .join(' ');
   }
 
-  function buildCard(post) {
-    // post: { title, moveUrl, thumbSrc, viewCount, likeCount, replyCount, hashtags, username/author... }
-    var a = document.createElement('a');
-    a.className = 'post-card';
-    a.href = post.moveUrl || '#';
+  // ====== 기존 캐러셀 네비/카드 이동 유지 ======
+  function initCarouselNav(scope) {
+    qsa('.js-nav', scope).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = btn.getAttribute('data-target');
+        var dir = parseInt(btn.getAttribute('data-dir') || '1', 10);
 
-    var img = document.createElement('img');
-    img.className = 'post-thumb';
-    img.alt = 'thumbnail';
-    img.src = post.thumbSrc || (window.DEFAULT_POST_IMG || '');
-    a.appendChild(img);
+        // 기존 코드 구조에 맞춰 rail id가 #rail-popular 같은 형태라면 아래를 유지
+        var rail = qs('#rail-' + target, root) || qs('#' + target + 'Rail', root);
+        if (!rail) return;
 
-    var body = document.createElement('div');
-    body.className = 'post-body';
-
-    var title = document.createElement('div');
-    title.className = 'post-title';
-    title.innerHTML = escapeHtml(post.title || '');
-    body.appendChild(title);
-
-    // 작성자(프로젝트 정책에 맞춰 필드명 선택)
-    // - DTO에 username을 넣었다면 username 사용
-    // - author를 쓰는 구조면 author 사용
-    var writer = document.createElement('div');
-    writer.className = 'post-writer';
-    writer.innerHTML = escapeHtml(post.username || post.author || '');
-    body.appendChild(writer);
-
-    var meta = document.createElement('div');
-    meta.className = 'post-meta';
-    meta.innerHTML =
-      '<span>조회 ' + (post.viewCount || 0) + '</span>' +
-      '<span>좋아요 ' + (post.likeCount || 0) + '</span>' +
-      '<span>댓글 ' + (post.replyCount || 0) + '</span>';
-    body.appendChild(meta);
-
-    var tags = document.createElement('div');
-    tags.className = 'post-tags';
-    tags.innerHTML = escapeHtml(formatHashtags(post.hashtags));
-    body.appendChild(tags);
-
-    a.appendChild(body);
-    return a;
+        var amount = Math.max(rail.clientWidth, 300) * dir;
+        rail.scrollBy({ left: amount, behavior: 'smooth' });
+      });
+    });
   }
 
-  // ---------- API 호출 ----------
+  function initCardMove(scope) {
+    qsa('.js-card', scope).forEach(function (card) {
+      card.addEventListener('click', function () {
+        var url = card.getAttribute('data-move');
+        if (url) location.href = url;
+      });
+    });
+  }
+
+  // ====== API 호출 ======
   function fetchMore(kind, limit, cb) {
-    // contextPath 안전 처리: moveUrl/thumbSrc는 서버에서 완성해 내려오므로 여기선 그대로 사용
-    var url = root.getAttribute('data-more-api') || (root.getAttribute('data-context') || '') + '/community/main/more';
-    url += '?kind=' + encodeURIComponent(kind) + '&limit=' + encodeURIComponent(limit);
+    var url = MORE_API + '?kind=' + encodeURIComponent(kind) + '&limit=' + encodeURIComponent(limit || 100);
 
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -101,8 +74,7 @@
       if (xhr.readyState !== 4) return;
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
-          var data = JSON.parse(xhr.responseText);
-          cb(null, data);
+          cb(null, JSON.parse(xhr.responseText));
         } catch (e) {
           cb(e);
         }
@@ -113,74 +85,134 @@
     xhr.send();
   }
 
-  function openMore(kind, titleText) {
-    currentKind = kind;
+  // ====== 전체보기 item ======
+  function buildItem(post) {
+    var a = document.createElement('a');
+    a.className = 'cm-item';
+    a.href = post.moveUrl || '#';
+
+    var imgSrc = post.thumbSrc || DEFAULT_IMG;
+
+    a.innerHTML =
+      '<div class="cm-item__imgWrap">' +
+        '<img class="cm-item__img" src="' + escapeHtml(imgSrc) + '" alt="" ' +
+          'onerror="this.onerror=null; this.src=\'' + escapeHtml(DEFAULT_IMG) + '\';" />' +
+        '<div class="cm-item__overlay">' +
+          '<div class="cm-item__overlayTitle">' + escapeHtml(post.title || '') + '</div>' +
+          '<div class="cm-item__overlayMeta"><span>' + escapeHtml(post.userId || post.author || '') + '</span></div>' +
+          '<div class="cm-item__overlayStats">' +
+            '<span>조회수 ' + (post.viewCount || 0) + '</span><span class="sep">|</span>' +
+            '<span>좋아요 ' + (post.likeCount || 0) + '</span><span class="sep">|</span>' +
+            '<span>댓글 ' + (post.replyCount || 0) + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="cm-item__body">' +
+        '<div class="cm-item__title">' + escapeHtml(post.title || '') + '</div>' +
+        '<div class="cm-item__writer">' + escapeHtml(post.userId || post.author || '') + '</div>' +
+        '<div class="cm-item__meta">' +
+          '<span class="value">조회수 ' + (post.viewCount || 0) + '</span>' +
+          '<span class="sep">|</span>' +
+          '<span class="value">좋아요 ' + (post.likeCount || 0) + '</span>' +
+          '<span class="sep">|</span>' +
+          '<span class="value">댓글 ' + (post.replyCount || 0) + '</span>' +
+        '</div>' +
+        '<div class="cm-item__tags">' + escapeHtml(formatHashtags(post.hashtags)) + '</div>' +
+      '</div>';
+
+    return a;
+  }
+
+  function setView(view) {
+    if (!moreList || !viewBtnsWrap) return;
+
+    moreList.className = moreList.className
+      .replace(/\bview-card\b/g, '')
+      .replace(/\bview-album\b/g, '')
+      .replace(/\bview-list\b/g, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+
+    moreList.className += ' view-' + view;
+
+    qsa('.cm-viewBtn', viewBtnsWrap).forEach(function (b) {
+      var v = b.getAttribute('data-view');
+      b.className = (v === view) ? 'cm-viewBtn is-active' : 'cm-viewBtn';
+    });
+  }
+
+  // ====== content-card 통째로 교체 (핵심) ======
+  function openMorePage(kind, titleText) {
+    if (!homeView || !moreView || !moreList) return;
+
     if (moreTitle) moreTitle.textContent = titleText || '전체보기';
 
-    if (moreGrid) moreGrid.innerHTML = '';
-    if (moreWrap) moreWrap.style.display = 'block';
+    // 홈 숨기고 전체보기 표시
+    homeView.style.display = 'none';
+    moreView.style.display = 'block';
 
-    // ✅ 서버에서 최대 100개 가져오기
-    fetchMore(kind, 100, function (err, list) {
+    // 기본 뷰
+    setView('card');
+
+    // 로딩
+    moreList.innerHTML = '<div class="cm-loading">불러오는 중...</div>';
+
+    // 데이터
+    fetchMore(kind, 100, function (err, data) {
       if (err) {
-        // 실패 시 폴백: 기존 레일 복제(최소한 동작 보장)
-        renderMoreFromRailFallback(kind);
+        moreList.innerHTML = '<div class="cm-loading">불러오기 실패</div>';
         return;
       }
-      if (!list || !list.length) return;
+      if (!data || data.length === 0) {
+        moreList.innerHTML = '<div class="empty-panel"><div class="empty-text">게시글 없음</div></div>';
+        return;
+      }
 
-      for (var i = 0; i < list.length; i++) {
-        moreGrid.appendChild(buildCard(list[i]));
+      moreList.innerHTML = '';
+      for (var i = 0; i < data.length; i++) {
+        moreList.appendChild(buildItem(data[i]));
       }
     });
+
+    // content-card 상단으로 스크롤(UX)
+    try { root.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
   }
 
-  // ---------- 폴백: 기존 레일 복제(에러 시 최소 동작) ----------
-  function renderMoreFromRailFallback(kind) {
-    var rail = null;
-    if (kind === 'popular') rail = railPopular;
-    else if (kind === 'hot') rail = railHot;
-    else if (kind === 'latest') rail = railLatest;
-    else if (kind === 'qa') rail = railQa;
-
-    if (!rail || !moreGrid) return;
-
-    moreGrid.innerHTML = '';
-    var items = qsa('.post-card', rail);
-    var max = items.length > 100 ? 100 : items.length;
-
-    for (var i = 0; i < max; i++) {
-      moreGrid.appendChild(items[i].cloneNode(true));
-    }
+  function closeMorePage() {
+    if (!homeView || !moreView) return;
+    moreView.style.display = 'none';
+    homeView.style.display = 'block';
+    if (moreList) moreList.innerHTML = '';
   }
 
-  function closeMore() {
-    if (moreWrap) moreWrap.style.display = 'none';
-    if (moreGrid) moreGrid.innerHTML = '';
-  }
+  // ====== 이벤트 바인딩 ======
+  function initMoreButtons() {
+    qsa('.js-more', root).forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
 
-  // ---------- 이벤트 바인딩 ----------
-  if (closeMoreBtn) closeMoreBtn.addEventListener('click', closeMore);
+        var kind = btn.getAttribute('data-more-kind') || 'latest';
+        var title = btn.getAttribute('data-more-title') || '전체보기';
 
-  // “전체보기” 버튼이 1개이고, 내부에서 현재 탭(kind)을 결정하는 구조라면
-  // 여기서는 data-kind를 버튼에 넣는 방식을 권장
-  if (moreBtn) {
-    moreBtn.addEventListener('click', function () {
-      // 버튼에 data-kind가 있으면 그걸 쓰고, 없으면 latest
-      var kind = moreBtn.getAttribute('data-kind') || currentKind || 'latest';
-      openMore(kind, '전체보기');
+        openMorePage(kind, title);
+      });
     });
   }
 
-  // 레일별 “전체보기”를 각각 두는 구조라면, 버튼들에 data-kind 걸어서 처리
-  var moreBtns = qsa('[data-more-kind]', root);
-  for (var i = 0; i < moreBtns.length; i++) {
-    (function (btn) {
+  // 뒤로 버튼
+  if (backBtn) backBtn.addEventListener('click', closeMorePage);
+
+  // 보기 버튼
+  if (viewBtnsWrap) {
+    qsa('.cm-viewBtn', viewBtnsWrap).forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var kind = btn.getAttribute('data-more-kind') || 'latest';
-        var titleText = btn.getAttribute('data-more-title') || '전체보기';
-        openMore(kind, titleText);
+        setView(btn.getAttribute('data-view'));
       });
-    })(moreBtns[i]);
+    });
   }
+
+  // 최초 바인딩
+  initCarouselNav(root);
+  initCardMove(root);
+  initMoreButtons();
 })();
