@@ -306,6 +306,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
 		
 //이메일 인증코드 발송
 function sendVerifyCode(){
+	const nameInput = document.querySelector("#findIdName");
 	const emailEl = document.querySelector("#findIdEmail");
     const email = emailEl ?
   (emailEl.value || "").trim() : "";
@@ -313,7 +314,7 @@ function sendVerifyCode(){
   	
   	fetch("/email/send", {
   		method: "POST",
-  		headers: {"Content-Type":"text/plain; charset=UTF-8"},
+  		headers: {"Content-Type":"text/plain;charset=UTF-8"},
   		body: email
   	})
   	.then((response) =>{
@@ -356,19 +357,18 @@ function sendVerifyCode(){
       fetch("/email/check/" + encodeURIComponent(code), {
           method: "PUT"
         })
-        .then(response => response.text().then(text => ({ status: response.status, text })))
+        .then(response => response.text().then(text => ({ status: response.status, text:t })))
         .then(({ status, text }) => {
           if (status === 202 && text === "verified") {
+        	  setMsg(codeMsg, "인증되었습니다.");  
+        	  codeMsg.style.color = "green";
             nextBtn();
-            alert("이메일 인증 완료!");
           } else {
-            nextBtn();
-            alert("인증코드가 올바르지 않습니다.");
+        	  setMsg(codeMsg, "인증코드가 올바르지 않습니다.");  
+        	  codeMsg.style.color = "red";
           }
         })
-        .catch(() => {
-          alert("인증 확인 중 오류가 발생했습니다.");
-        });
+        .catch(() => alert("인증 확인 중 오류가 발생했습니다."));
     });
   }
 ////다음 단계 이동 버튼

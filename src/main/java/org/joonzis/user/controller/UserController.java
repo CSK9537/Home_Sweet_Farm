@@ -20,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -158,7 +159,7 @@ public class UserController {
 	
 	//1)아이디 찾기(이메일)-비동기 방식
 	@GetMapping(value="/findId/email", 
-	produces = "text/plain; charset= UTF-8")
+	produces = "text/plain; charset=UTF-8")
 	@ResponseBody
 	public String findIdByEmail(@RequestParam String email) {
 		String id = uservice.findIdByEmail(email);
