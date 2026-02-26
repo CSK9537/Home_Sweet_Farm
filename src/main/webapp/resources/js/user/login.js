@@ -282,13 +282,25 @@ document.addEventListener("DOMContentLoaded", ()=>{
 	sendBtn.addEventListener("click",(e)=>{
 		e.preventDefault();
 		setMsg(codeMsg,"");
+		codeMsg.style.color = "";
 		if(!validateName()) return;
 		if(!validateEmail()) return;
 		sendVerifyCode();
 	})
-})
-
-//다음버튼에서 인증번호 빈 값 체크
+	
+	// 재전송 버튼
+	if (resetBtn) {
+	   resetBtn.addEventListener("click", (e)=>{
+	      e.preventDefault();
+	
+	      if(!validateName()) return;
+	      if(!validateEmail()) return;
+	
+	      sendVerifyCode();
+	   });
+	}
+	
+	//다음버튼에서 인증번호 빈 값 체크
 	nextBtn.addEventListener("click", (e)=>{
 		e.preventDefault();
 		
@@ -302,16 +314,23 @@ document.addEventListener("DOMContentLoaded", ()=>{
 			}
 		   	setMsg(codeMsg, "");
 			
-		})
+		});
+});
+
+
 		
 //이메일 인증코드 발송
 function sendVerifyCode(){
-	const nameInput = document.querySelector("#findIdName");
 	const emailEl = document.querySelector("#findIdEmail");
+	const codeInput = document.querySelector("#verifyCode");
+	const codeMsg = document.querySelector("#codeMsg");
+	
+	setMsg(codeMsg, "");
+	codeMsg.style.color ="";
+	
     const email = emailEl ?
   (emailEl.value || "").trim() : "";
-  	const codeInput = document.querySelector("#verifyCode");
-  	
+  
   	fetch("/email/send", {
   		method: "POST",
   		headers: {"Content-Type":"text/plain;charset=UTF-8"},
@@ -320,7 +339,7 @@ function sendVerifyCode(){
   	.then((response) =>{
   		if(!response.ok) throw new Error("HTTP"+ response.status);
   		setMsg(codeMsg, "인증코드를 이메일로 발송했습니다.");
-  		codeMsg.style.color = "green";
+  		if(codeMsg) codeMsg.style.color = "green";
   		if(codeInput)
   		codeInput.focus();
   		if(typeof startResendCooldown === "function"){
@@ -330,17 +349,18 @@ function sendVerifyCode(){
   	.catch((err)=>{
   		console.error("SEND ERROR:", err); // ✅ 이거 추가
   		setMsg(codeMsg, "이메일 발송에 실패했습니다.")
-  		codeMsg.style.color = "red";
+  		if(codeMsg) codeMsg.style.color = "red";
   	});
 }
 
-//발송 버튼(발송만)
-  const sendBtn = document.querySelector("#sendBtn");
-  if (sendBtn) {
-	  sendBtn.addEventListener("click", function () {
-		  sendVerifyCode();
-	  });
-  }
+////발송 버튼(발송만)
+//  const sendBtn = document.querySelector("#sendBtn");
+//  if (sendBtn) {
+//	  sendBtn.addEventListener("click", function () {
+//		  console.log("SEND BTN CLICK")
+//		  sendVerifyCode();
+//	  });
+//  }
 		  
 //인증버튼(코드 검증만)		  
   const verifyBtn = document.querySelector("#verifyBtn")
@@ -357,12 +377,12 @@ function sendVerifyCode(){
       fetch("/email/check/" + encodeURIComponent(code), {
           method: "PUT"
         })
-        .then(response => response.text().then(text => ({ status: response.status, text:t })))
+        .then(response => response.text().then(text => ({ status: response.status, text })))
         .then(({ status, text }) => {
           if (status === 202 && text === "verified") {
         	  setMsg(codeMsg, "인증되었습니다.");  
         	  codeMsg.style.color = "green";
-            nextBtn();
+            nextBtn.disabled = false;
           } else {
         	  setMsg(codeMsg, "인증코드가 올바르지 않습니다.");  
         	  codeMsg.style.color = "red";
