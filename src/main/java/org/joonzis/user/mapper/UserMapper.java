@@ -10,6 +10,7 @@ public interface UserMapper {
 	public int insert(UserVO vo);
 	
 	//관심사
+	//1)user-id 조회
 	public int findUserIdByUsername(@Param("username")String username);
 	//2)해시태그 id 조회
 	public Integer findHashtagIdByName(@Param("hashtag_name") String hashtag_name);
@@ -32,8 +33,6 @@ public interface UserMapper {
 	
 	//아이디 찾기(이메일)
 	public String findIdByEmail(@Param("email")String email);
-	//아이디- 결과메시지
-	public String findId(String name, String email);
 	//비밀번호 찾기 대상 확인(이메일)
 	public int existUserByEmail(@Param("username")String username,
 						@Param("email")String email);

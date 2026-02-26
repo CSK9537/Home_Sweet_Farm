@@ -19,8 +19,6 @@ public interface UserService {
 	public int delete(UserVO vo);
 	//아이디 찾기(이메일)
 	public String findIdByEmail(@Param("email")String email);
-	//아이디- 결과메시지
-	public String findId(String name, String email);
 	//비밀번호 찾기 대상 확인(이메일)
 	public int existUserByEmail(@Param("username")String username,
 							@Param("email")String email);

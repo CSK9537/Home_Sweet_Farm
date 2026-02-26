@@ -20,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -166,6 +167,27 @@ public class UserController {
 		return(id == null || id.isBlank()) ? "NOT_FOUND" : id;
 	}
 	
+	// 2) 이메일 인증코드 체크
+	@PutMapping("/email/check/{code}")
+	@ResponseBody
+	public String checkEmailCode(@PathVariable String code,
+	                             HttpSession session) {
+
+	    String savedCode = (String) session.getAttribute("emailCode");
+
+	    // 세션에 코드 없으면 실패
+	    if(savedCode == null) {
+	        return "fail";
+	    }
+
+	    // 코드 비교
+	    if(savedCode.equals(code)) {
+	        return "verified";
+	    }
+
+	    return "fail";
+	}
+	
 	//2)비밀번호 찾기 대상 확인(아이디+이메일)
 	@GetMapping(value="/findPw/email", 
 	produces = "text/plain; charset= UTF-8") 
@@ -186,29 +208,6 @@ public class UserController {
 	    uservice.resetPw(vo);
 		return "OK";
 	}
-	//아이디
-	@PostMapping("/user/findId-ajax")
-	@ResponseBody
-	public Map<String, Object> findIdAjax(@RequestBody Map<String, String> req){
-
-	    String name = req.get("name");
-	    String email = req.get("email");
-
-	    String userId = uservice.findId(name, email);
-
-	    Map<String,Object> res = new HashMap<>();
-
-	    if(userId == null){
-	        res.put("ok", false);
-	        res.put("message","일치하는 계정이 없습니다.");
-	        return res;
-	    }
-
-	    res.put("ok", true);
-	    res.put("maskedId", maskId(userId)); // ★ 아이디 ** 처리
-	    return res;
-	}
-	
 
 	//7)아이디 중복체크
 	@GetMapping("/id-check") //url예시: http://localhost:8081/user/id-check?username=linwee

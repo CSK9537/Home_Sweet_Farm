@@ -365,6 +365,7 @@ function sendVerifyCode(){
     	  codeMsg.style.color = "red";
         return;
       }
+      
       fetch("/email/check/" + encodeURIComponent(code), {
           method: "PUT"
         })
@@ -373,18 +374,27 @@ function sendVerifyCode(){
           if (status === 202 && text === "verified") {
         	  setMsg(codeMsg, "인증되었습니다.");  
         	  codeMsg.style.color = "green";
-            nextBtn.disabled = false;
+        	  nextBtnEl.dataset.verified = "true";
+        	  updateNextBtn();
+//            nextBtn.disabled = false;
           } else {
         	  setMsg(codeMsg, "인증코드가 올바르지 않습니다.");  
         	  codeMsg.style.color = "red";
           }
         })
         .catch(() => alert("인증 확인 중 오류가 발생했습니다."));
+      
+//	   // 👇 여기부터 새로
+//	      setMsg(codeMsg, "인증되었습니다.");
+//	      codeMsg.style.color = "green";
+//	      nextBtnEl.dataset.verified = true;
+//	      updateNextBtn();
     });
   }
   
 //다음 단계 이동 버튼
   const nextBtnEl = document.querySelector("#nextBtn");
+  const resultEl = document.querySelector("#findIdResultMsg");
   
   if(nextBtnEl){
 	  nextBtnEl.dataset.verified = "false";
@@ -404,32 +414,24 @@ function sendVerifyCode(){
     	  return;
       }
       //"다음" -> 결과메시지
-      const name = findIdName.value.trim();
       const email = findIdEmail.value.trim();
-      if(!name){
-    	  resultEl.innerText = "이메일을 입력해주세요.";
-    	  resultEl.style.color = "red";
-    	  return;
-      }
-      fetch("/user/findId-ajax", {
-          method: "POST",
-          headers: {"Content-Type":"application/json; charset=UTF-8"},
-          body: JSON.stringify({ name, email })
-        })
-        .then(r => r.json())
-        .then(data => {
-          if (data.ok) {
-            resultEl.innerText = `아이디는 ${data.maskedId} 입니다`;
-            resultEl.style.color = "green";
-          } else {
-            resultEl.innerText = data.message || "일치하는 계정이 없습니다.";
-            resultEl.style.color = "red";
-          }
-        })
-        .catch(() => {
-          resultEl.innerText = "요청 실패(서버 확인 필요)";
-          resultEl.style.color = "red";
-        });
+      fetch("/findId/email?email=" + encodeURIComponent(email))
+      .then(r => r.text())
+      .then(id => {
 
+        if(id === "NOT_FOUND"){
+          resultEl.innerText = "일치하는 계정이 없습니다.";
+          resultEl.style.color = "red";
+          return;
+        }
+
+        resultEl.innerText = `아이디는 ${id} 입니다`;
+        resultEl.style.color = "green";
+      })
+      .catch(() => {
+        resultEl.innerText = "요청 실패 (서버 확인 필요)";
+        resultEl.style.color = "red";
       });
-    }
+
+  });
+  }

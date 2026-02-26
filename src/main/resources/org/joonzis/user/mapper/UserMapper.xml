@@ -53,12 +53,13 @@
 		user_id = #{user_id} 
 	</delete>
 	
-	<select id="selectAspectNamesByUserId" resultType="string">
+	<!--<select id="selectAspectNamesByUserId" resultType="string">
 	  SELECT h.hashtag_name
 	  FROM TBL_USER_ASPECT ua
 	  JOIN TBL_HASHTAG_LIST h ON h.hashtag_id = ua.hashtag_id
 	  WHERE ua.user_id = #{user_id}
-	</select>
+	</select>  -->
+	
 	
 	<!-- 데이터 조회  -->
 	<select id="selectLogin" parameterType="org.joonzis.user.vo.UserVO"
@@ -82,7 +83,7 @@
 		FROM TBL_USER
 		WHERE user_id = #{user_id}
 	</delete>
-	
+	<!-- 아이디 찾기 쿼리 -->
 	<!-- 아이디 찾기(이메일) -->
 	<select id="findIdByEmail" parameterType="String" resultType="String">
 		SELECT username 
@@ -90,7 +91,9 @@
 		WHERE email = #{email}
 	</select>
 	
-	<!-- 비밀번호 찾기 대상 확인(이메일) -->
+	
+	<!-- 비밀번호 찾기 쿼리 -->
+	<!-- 1)비밀번호 찾기_계정 존재여부 확인 (이메일) -->
 	<select id="existUserByEmail" resultType="int">
 		SELECT COUNT(*)
 		FROM TBL_USER
@@ -99,24 +102,23 @@
 		email = #{email}
 	</select>
 	
-	<!-- 비밀번호 재설정  -->
+	<!-- 2)비밀번호 재설정  -->
 	<update id="resetPw" parameterType="org.joonzis.user.vo.UserVO">
 		UPDATE TBL_USER
     	SET password = #{password}
-    	WHERE username = #{username},
-    	AND
-		email = #{email}
+    	WHERE username = #{username}
+    	AND email = #{email}
 	</update>
 	
 
-	<!-- 아이디 중복 체크  -->
+	<!-- 아이디 중복 체크: 회원가입 시 필요  -->
 	<select id="countByUsername" resultType="int">
 		SELECT COUNT(*)
 		FROM TBL_USER
 		WHERE username = #{username}
 	</select>
 	
-	<!-- 이메일 중복 체크: 본인인증(이메일)을 위해 미리 만들어둠 -->
+	<!-- 이메일 중복 체크: 회원가입 시 필요  -->
 	<select id="countByEmail" resultType="int">
 		SELECT COUNT(*)
 		FROM TBL_USER

@@ -80,10 +80,6 @@ public class UserServiceImpl implements UserService{
 		return usermapper.findIdByEmail(email);
 	}
 	@Override
-	public String findId(String name, String email) {
-		return usermapper.findId(name, email);
-	}
-	@Override
 	public int existUserByEmail(String username, String email) {
 		return usermapper.existUserByEmail(username, email);
 	}
