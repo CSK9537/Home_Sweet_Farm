@@ -206,6 +206,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
 	const resetBtn = document.querySelector("#resetBtn");//재발송 버튼
 	const verifyBtn = document.querySelector("#verifyBtn");//인증 버튼
 	const nextBtn = document.querySelector("#nextBtn");//다음 버튼
+	const nextBtnEl = document.querySelector("#nextBtn");
 	const resultEl = document.querySelector("#findIdResultMsg");//결과메시지
 	
 	if(!nameInput || !nameMsg || 
@@ -352,6 +353,8 @@ function sendVerifyCode(){
   		if(codeMsg) codeMsg.style.color = "red";
   	});
 }
+
+
 	  
 //인증버튼	  
   const verifyBtn = document.querySelector("#verifyBtn")
@@ -391,6 +394,7 @@ function sendVerifyCode(){
 //	      updateNextBtn();
     });
   }
+
   
 //다음 단계 이동 버튼
   const nextBtnEl = document.querySelector("#nextBtn");
@@ -415,7 +419,7 @@ function sendVerifyCode(){
       }
       //"다음" -> 결과메시지
       const email = findIdEmail.value.trim();
-      fetch("/findId/email?email=" + encodeURIComponent(email))
+      fetch("/user/findId/email?email=" + encodeURIComponent(email))
       .then(r => r.text())
       .then(id => {
 
