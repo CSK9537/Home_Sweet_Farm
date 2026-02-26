@@ -4,7 +4,7 @@
 
 <mapper
 	namespace="org.joonzis.chatting.mapper.ChatRoomUserMapper">
-	
+
 	<!-- 1. 채팅방 유저 정보 추가 -->
 	<insert id="insert"
 		parameterType="org.joonzis.chatting.vo.ChatRoomUserVO">
@@ -42,32 +42,45 @@
 
 	<!-- 4. 읽지 않은 메세지 수 세기 -->
 	<select id="countUnread" resultType="int">
-		SELECT COUNT(*)
+		SELECT COUNT(DISTINCT
+			CASE
+				WHEN m.msg_type = 'TEXT'
+					THEN TO_CHAR(m.msg_id)
+				ELSE
+					m.sender_id
+					|| '_' ||
+					TO_CHAR(m.created_at,'YYYYMMDDHH24MISS')
+			END
+		)
 		FROM tbl_msg m
 		JOIN tbl_chat_room_user cru
-		ON m.room_id =
-		cru.room_id
+		ON m.room_id = cru.room_id
 		WHERE cru.user_id = #{user_id}
 		AND cru.room_id = #{room_id}
 		AND m.sender_id != #{user_id}
-	      <![CDATA[
-	          AND m.msg_id > NVL(cru.last_read_msg_id, 0)
-	      ]]>
+		<![CDATA[
+		    AND m.msg_id > NVL(cru.last_read_msg_id, 0)
+		]]>
 	</select>
 
 	<!-- 5. 검색으로 유저 조회 -->
 	<select id="searchByUser" parameterType="map"
 		resultType="org.joonzis.chatting.dto.RoomSearchResultDTO">
 		SELECT
-			r.room_id,
-			NULL AS search_msg_id,
-			u.nickname AS otherUserName,
-			u.user_id AS otherUserId
+		r.room_id,
+		NULL AS search_msg_id,
+		u.nickname AS
+		otherUserName,
+		u.user_id AS otherUserId
 		FROM tbl_room r
-		JOIN tbl_chat_room_user cru ON cru.room_id = r.room_id
-		JOIN tbl_user u ON u.user_id = cru.user_id
+		JOIN
+		tbl_chat_room_user cru ON
+		cru.room_id = r.room_id
+		JOIN tbl_user u ON
+		u.user_id = cru.user_id
 		WHERE cru.user_id != #{user_id}
-			AND u.nickname LIKE '%' || #{keyword}|| '%'
+		AND u.nickname
+		LIKE '%' || #{keyword}|| '%'
 	</select>
 
 

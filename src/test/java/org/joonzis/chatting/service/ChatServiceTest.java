@@ -112,45 +112,45 @@ public class ChatServiceTest {
      * 3. 읽음 처리 이후
      * - 마지막으로 읽은 메세지 이후만 조회
      */
-	@Test
-	public void getMessages_afterRead_returnsOnlyNewMessages() {
-	    int senderId = 2;
-	    int receiverId = 3;
-
-	    // 1️ 메시지 생성
-	    MsgVO msg1 = new MsgVO();
-	    msg1.setContent("msg1");
-	    msg1.setSender_id(senderId);
-
-	    MsgVO msg2 = new MsgVO();
-	    msg2.setContent("msg2");
-	    msg2.setSender_id(senderId);
-
-	    // 2️ 방 생성 및 msg1 전송
-	    chatService.sendMessage(senderId, receiverId, msg1);
-	    int roomId = roomService.getOrCreateRoom(senderId, receiverId);
-	    msg1.setRoom_id(roomId);
-
-	    // 3️ 읽음 처리 (receiver 기준)
-	    chatService.readMessage(receiverId, roomId);
-
-	    // 4️ msg2 전송 (새 메시지)
-	    msg2.setRoom_id(roomId);
-	    chatService.sendMessage(senderId, receiverId, msg2);
-
-	    // 5️ 읽지 않은 메시지 조회
-	    List<MsgVO> result = chatService.getMessages(receiverId, roomId);
-
-	    // 6️ 검증
-	    assertEquals(1, result.size());
-	    assertEquals("msg2", result.get(0).getContent());
-
-	    //  디버그
-	    System.out.println("Unread messages after read:");
-	    for (MsgVO msg : result) {
-	        System.out.println("msg_id=" + msg.getMsg_id() + ", content=" + msg.getContent());
-	    }
-	}
+//	@Test
+//	public void getMessages_afterRead_returnsOnlyNewMessages() {
+//	    int senderId = 2;
+//	    int receiverId = 3;
+//
+//	    // 1️ 메시지 생성
+//	    MsgVO msg1 = new MsgVO();
+//	    msg1.setContent("msg1");
+//	    msg1.setSender_id(senderId);
+//
+//	    MsgVO msg2 = new MsgVO();
+//	    msg2.setContent("msg2");
+//	    msg2.setSender_id(senderId);
+//
+//	    // 2️ 방 생성 및 msg1 전송
+//	    chatService.sendMessage(senderId, receiverId, msg1);
+//	    int roomId = roomService.getOrCreateRoom(senderId, receiverId);
+//	    msg1.setRoom_id(roomId);
+//
+//	    // 3️ 읽음 처리 (receiver 기준)
+//	    chatService.readMessage(receiverId, roomId);
+//
+//	    // 4️ msg2 전송 (새 메시지)
+//	    msg2.setRoom_id(roomId);
+//	    chatService.sendMessage(senderId, receiverId, msg2);
+//
+//	    // 5️ 읽지 않은 메시지 조회
+//	    List<MsgVO> result = chatService.getMessages(receiverId, roomId);
+//
+//	    // 6️ 검증
+//	    assertEquals(1, result.size());
+//	    assertEquals("msg2", result.get(0).getContent());
+//
+//	    //  디버그
+//	    System.out.println("Unread messages after read:");
+//	    for (MsgVO msg : result) {
+//	        System.out.println("msg_id=" + msg.getMsg_id() + ", content=" + msg.getContent());
+//	    }
+//	}
 
 //    /**
 //     * 4. 채팅방 목록 조회

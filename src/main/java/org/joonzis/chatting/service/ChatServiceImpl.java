@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import org.joonzis.chatting.dto.ChatMessageDTO;
 import org.joonzis.chatting.dto.ChatRoomDTO;
 import org.joonzis.chatting.dto.RoomSearchResultDTO;
 import org.joonzis.chatting.mapper.ChatRoomMapper;
@@ -13,6 +15,7 @@ import org.joonzis.chatting.mapper.MsgMapper;
 import org.joonzis.chatting.vo.MsgVO;
 import org.joonzis.chatting.vo.RoomVO;
 import org.joonzis.user.mapper.UserMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -53,17 +56,35 @@ public class ChatServiceImpl implements ChatService{
 	}
 
     // 2. 마지막으로 읽은 메세지 이후 메세지 조회
-    @Transactional(readOnly = true)
-    public List<MsgVO> getMessages(int user_id, int room_id) {
-//        Long lastReadMsgId =
-//            chatRoomUserMapper.findLastReadMsgId(user_id, room_id);
-//
-//        if (lastReadMsgId == null) {
-//            return msgService.findRoomId(room_id);
-//        }
-//        return msgService.findAfterMsgId(room_id, lastReadMsgId);
-    	return msgService.findRoomId(room_id);
-    }
+	@Transactional(readOnly = true)
+	public List<ChatMessageDTO> getMessages(int user_id, int room_id) {
+	    List<MsgVO> list = msgMapper.findByRoomId(room_id); // 무조건 전체
+
+	    List<ChatMessageDTO> result = new ArrayList<>();
+	    String currentGroupId = null;
+	    MsgVO prev = null;
+
+	    for (MsgVO msg : list) {
+	        ChatMessageDTO dto = new ChatMessageDTO();
+	        BeanUtils.copyProperties(msg, dto);
+
+	        boolean isFile = "IMAGE".equals(msg.getMsg_type()) || "FILE".equals(msg.getMsg_type());
+
+	        if (isFile && prev != null
+	                && prev.getSender_id() == msg.getSender_id()
+	                && msg.getCreated_at().getTime() - prev.getCreated_at().getTime() < 3000) {
+	            dto.setUpload_group_id(currentGroupId);
+	        } else if (isFile) {
+	            currentGroupId = UUID.randomUUID().toString();
+	            dto.setUpload_group_id(currentGroupId);
+	        }
+
+	        prev = msg;
+	        result.add(dto);
+	    }
+
+	    return result;
+	}
 
 
     // 3. 유저가 참여 중인 채팅방 목록
