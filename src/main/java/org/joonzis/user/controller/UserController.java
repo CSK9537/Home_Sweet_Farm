@@ -150,7 +150,15 @@ public class UserController {
 	public Map<String, Boolean> checkId(@RequestParam("username") String username) {
 		     boolean isDuplicate = uservice.isIdDuplicate(username.trim());
 		     return Collections.singletonMap("duplicate", isDuplicate);
-		    }	
+		    }
+	
+	//8)이메일 중복 확인
+	@GetMapping(value = "/checkEmail", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Map<String, Boolean> checkEmail(@RequestParam("email") String email) {
+		     boolean isDuplicate = uservice.isEmailDuplicate(email.trim());
+		     return Collections.singletonMap("duplicate", isDuplicate);
+		    }
 		 
 	/*
 	 * 아이디 찾기, 비밀번호 찾기

@@ -92,6 +92,10 @@ public class UserServiceImpl implements UserService{
 		return usermapper.countByUsername(username)>0;
 	}
 	@Override
+	public boolean isEmailDuplicate(String email) {
+		return usermapper.countByEmail(email)>0;
+	}
+	@Override
 	public int countByUsername(String username) {
 		return usermapper.countByUsername(username);
 	}
@@ -99,6 +103,7 @@ public class UserServiceImpl implements UserService{
 	public UserVO findByUsername(String username) {
 		return usermapper.findByUsername(username);
 	}
+	
 	@Override
 	public UserDTO selectPublicProfile(int user_id) {
 		UserDTO dto =

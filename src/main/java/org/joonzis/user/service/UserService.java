@@ -28,6 +28,9 @@ public interface UserService {
 	//아이디 중복 체크
 	public boolean isIdDuplicate(String username);
 	
+	//이메일 중복 체그
+	public boolean isEmailDuplicate(String email);
+	
 	public int countByUsername(String username);
 	
 	//자동로그인-아이디로 찾기(쿠키)

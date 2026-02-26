@@ -26,7 +26,6 @@
         <div class="join-right">
           <div class="join-right__head">
             <h2 class="join-title">회원가입</h2>
-            <p class="join-subtitle" id="stepSubtitle">계정 정보 입력</p>
           </div>
 
           <!-- STEP NAV (현재 상태 표시용) -->
@@ -34,10 +33,10 @@
             <button type="button" class="step-nav__btn is-active" data-step-link="account" role="tab" aria-selected="true">
               	계정
             </button>
-            <button type="button" class="step-nav__btn" data-step-link="verify" role="tab" aria-selected="false">
+            <button type="button" class="step-nav__btn" id="verifynav" data-step-link="verify" role="tab" aria-selected="false" disabled>
               	이메일 인증
             </button>
-            <button type="button" class="step-nav__btn" data-step-link="profile" role="tab" aria-selected="false">
+            <button type="button" class="step-nav__btn" id="profilenav" data-step-link="profile" role="tab" aria-selected="false" disabled>
               	회원정보
             </button>
           </div>
@@ -54,7 +53,7 @@
                          placeholder="아이디 입력 (6~20자)" minlength="6" maxlength="20" required />
                   
                   <!-- 중복확인 버튼 -->
-				  <button type="button" id="checkIdBtn" class="btn btn-primary">중복확인</button>
+				  <button type="button" id="checkIdBtn" class="btn btn-primary" disabled>중복확인</button>
 				</div>
 				  <!-- 결과 메시지-id -->
 				  <div class="errMsg">
@@ -121,8 +120,7 @@
               </div>
 
               <div class="btn-row">
-              <!--<button type="button" class="btn btn-ghost" id="goLoginBtn">로그인</button>  -->
-                <button type="button" class="btn btn-primary" id="toVerifyBtn">다음</button>
+                <button type="button" class="btn btn-primary" id="toVerifyBtn" disabled>다음</button>
               </div>
 
               <div class="social-box" aria-label="소셜 회원가입">
@@ -140,8 +138,8 @@
             </form>
           </section>
 		<body>
-          <!-- STEP 2: 본인인증 -->
-          <section class="step-panel" id="step-verify" data-step="verify" aria-label="본인인증">
+          <!-- STEP 2: 이메일 인증 -->
+          <section class="step-panel" id="step-verify" data-step="verify" aria-label="이메일 인증">
             <div class="verify-card">
               <h3 class="verify-title">이메일 인증</h3>
               <p class="verify-desc">
@@ -219,18 +217,19 @@
 
                 <div class="form-col">
                   <label class="form-label" for="userPhone">휴대전화번호</label>
-                  <input class="form-input" type="text" id="userPhone" name="phone" placeholder="휴대전화번호를 입력하세요(- 포함)" />
-                </div>
-
-                <div class="form-col">
-                  <label class="form-label" for="userEmail">이메일 주소</label>
-                  <input class="form-input" type="email" id="userEmail" name="email" placeholder="plant@gmail.com" />
+                  <input class="form-input" type="text" id="userPhone" name="phone" placeholder="휴대전화번호를 입력하세요.(- 포함)" />
                 </div>
 
                 <div class="form-col">
                   <label class="form-label" for="userAddr">주소</label>
                   <input class="form-input" type="text" id="userAddr" name="address" placeholder="주소 입력" />
                 </div>
+                
+                <div class="form-col">
+                  <label class="form-label" for="userEmail">이메일 주소</label>
+                  <input class="form-input no-click" type="email" id="userEmail" name="email" placeholder="이메일 인증 후 자동 입력됩니다."readonly/>
+                </div>
+
               </div>
 
               <div class="btn-row end">
@@ -303,7 +302,10 @@
               <label class="form-label" for="emailAddr">이메일</label>
               <input class="form-input" type="email" id="emailAddr" placeholder="plant@gmail.com" />
               <div class="modal-mini-row">
-                <button type="button" class="btn btn-outline" id="emailSendBtn">인증메일 발송</button>
+                <button type="button" class="btn btn-outline" id="emailSendBtn">
+                  <span class="spinner"></span>
+                  <span class="btn-text">인증메일 발송</span>
+                </button>
               </div>
 
               <label class="form-label" for="emailCode">인증코드</label>

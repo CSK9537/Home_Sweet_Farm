@@ -162,11 +162,19 @@ body{
 }
 
 .form-input::placeholder{
-  color: rgba(233,233,233,0.55);
+  color: #6b7b61;
 }
 
 .form-input:focus{
   border-color: #4e5c46;
+}
+
+.form-input:focus::placeholder{
+  color: transparent;
+}
+
+.no-click {
+  pointer-events: none;
 }
 
 .login-group {
@@ -231,6 +239,15 @@ body{
 }
 
 /* buttons */
+button:disabled{
+  color: #999;
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  box-shadow: none;
+}
+
 .btn-row{
   display: flex;
   justify-content: flex-end;
@@ -256,7 +273,7 @@ body{
   color: #f4f2ed;
 }
 
-.btn-primary:active{
+.btn-primary:not(:disabled):active{
   background: #f4f2ed;
   color: #6b7b61;
 }
@@ -267,6 +284,11 @@ body{
   color: #6b7b61;
 }
 
+.btn-ghost:not(:disabled):active{
+  background: #6b7b61;
+  color: #f4f2ed;
+}
+
 .btn-outline{
   background: #f4f2ed;
   border-color: #6b7b61;
@@ -275,9 +297,44 @@ body{
   height: 54px;
 }
 
-.btn-outline:active{
+.btn-outline:not(:disabled):active{
 	background: #6b7b61;
 	color: #f4f2ed;
+}
+#toVerifyBtn:disabled{
+  background: #e2e2e2;
+  border-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
+
+#emailSendBtn:disabled {
+  background: #e2e2e2;
+  border-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: none;
+  width: 7px;
+  height: 7px;
+  border: 2px solid #6b7b61;
+  border-top-color: #e2e2e2;
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+}
+
+/* 버튼에 'loading' 클래스가 붙었을 때 스피너 표시 */
+#emailSendBtn.loading .spinner {
+  display: inline-block;
+}
+
+/* 스피너 회전 애니메이션 */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* social */
@@ -379,8 +436,9 @@ body{
 }
 
 #toProfileBtn:disabled{
-	background-color: #ccc;
-	color: #888;
+	background-color: #e2e2e2;
+	border-color: #ccc;
+	color: #999;
 	cursor: not-allowed;
 	opacity: 0.7;
 }
