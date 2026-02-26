@@ -39,6 +39,7 @@
 		   <property name="dataSource" ref="dataSource"/>
 	</bean>
 	<tx:annotation-driven/>
+	<task:annotation-driven/><!-- 임시 업로드(_temp)한 파일 submit 없이 이탈한 경우의 고아 파일을 주기적으로 정리하기 위해 @Scheduled 기반 스케줄러를 활성화 -->
 	<context:component-scan base-package="org.joonzis.aop"></context:component-scan>
 	<context:annotation-config></context:annotation-config>
 	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
@@ -46,6 +47,9 @@
 	<!-- community -->
 	<mybatis-spring:scan base-package="org.joonzis.community.mapper"/>
 	<context:component-scan base-package="org.joonzis.community.service"/>
+	
+	<!-- temp cleanup scheduler 스캔 -->
+	<context:component-scan base-package="org.joonzis.community.scheduler"/>
 	
 	<!-- common -->
 	<mybatis-spring:scan base-package="org.joonzis.common.mapper"/>

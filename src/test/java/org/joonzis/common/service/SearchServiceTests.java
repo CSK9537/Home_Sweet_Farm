@@ -85,18 +85,18 @@ public class SearchServiceTests {
 //		}
 //	}
 	
-//	@Test
-//	public void searchProductListTest() {
-//		log.info("search product list service test...");
-//		try {
-//			List<ProductVO> list = sservvice.searchProductList("테스트");
-//			int i = 1;
-//			for(ProductVO vo : list) {
-//				log.info((i++) + "번째");
-//				log.info(vo.getProduct_name());
-//			}
-//		} catch (Exception e) {
-//			log.error(e);
-//		}
-//	}
+	@Test
+	public void searchProductListTest() {
+		log.info("search product list service test...");
+		try {
+			List<ProductVO> list = sservvice.searchProductList("테스트");
+			int i = 1;
+			for(ProductVO vo : list) {
+				log.info((i++) + "번째");
+				log.info(vo.getProduct_name());
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
 }

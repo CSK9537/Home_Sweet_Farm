@@ -2,21 +2,48 @@
   var ctx = window.__CTX__ || "";
   var suggestUrl = window.__HASHTAG_SUGGEST_URL__ || (ctx + "/community/hashtag/suggest");
 
-  // ===== mode / owner(수정 접근 제어는 서버가 1차, JS는 UX 보조) =====
+  // ===== mode / owner =====
   var modeEl = document.getElementById("mode");
   var mode = modeEl ? modeEl.value : "insert";
   var isOwner = (window.__IS_OWNER__ !== undefined) ? !!window.__IS_OWNER__ : true;
 
-  function qs(sel, parent){ return (parent || document).querySelector(sel); }
+  // ===== tempKey (업로드 필수) =====
+  var tempKeyEl = document.getElementById("tempKey");
+  function getTempKey() {
+    return tempKeyEl ? (tempKeyEl.value || "") : "";
+  }
 
-  // ===== type 자동 결정 =====
+  // ===== type =====
   var boardTypeEl = document.getElementById("boardType");
   var boardType = (boardTypeEl && boardTypeEl.value) ? boardTypeEl.value : "G";
 
   var typeSelect = document.getElementById("typeSelect");
   if (typeSelect) typeSelect.value = boardType;
 
-//===== 거래 UI 토글 =====
+  // ===== 게시판 선택 정책 =====
+  // - 커뮤니티(insert)에서만 G/T/S 변경 가능 + Q/A 노출 X
+  // - QnA(Q/A)에서는 변경 불가(기존 유지)
+  // - edit에서는 변경 불가
+  var isQnaContext = (boardType === "Q" || boardType === "A");
+  var canChangeType = (mode === "insert" && !isQnaContext);
+
+  if (typeSelect && canChangeType) {
+    // 커뮤니티 insert: Q/A 옵션 제거
+    for (var i = typeSelect.options.length - 1; i >= 0; i--) {
+      var v = typeSelect.options[i].value;
+      if (v === "Q" || v === "A") typeSelect.options[i].remove();
+    }
+    typeSelect.disabled = false;
+
+    typeSelect.addEventListener("change", function () {
+      boardType = typeSelect.value || "G";
+      if (boardTypeEl) boardTypeEl.value = boardType;
+      toggleTradeUI();
+      filterHeads();
+    });
+  }
+
+  //===== 거래 UI 토글 =====
   var tradeBox = document.getElementById("tradeBox");
   var priceInput = document.getElementById("price");
   var tradeStatusEl = document.getElementById("tradeStatus");
@@ -24,20 +51,17 @@
   function toggleTradeUI() {
     var isTrade = (boardType === "T" || boardType === "S");
 
-    // UI 표시/숨김
     if (tradeBox) tradeBox.style.display = isTrade ? "" : "none";
 
-    // price: T면 필수, T/S 아니면 전송 자체를 막고 값도 제거
     if (priceInput) {
       priceInput.required = (boardType === "T");
-      priceInput.disabled = !isTrade;     // (추가) 전송 방지
-      if (!isTrade) priceInput.value = ""; // (추가) 값 초기화
+      priceInput.disabled = !isTrade;
+      if (!isTrade) priceInput.value = "";
     }
 
-    // trade_status: T/S 아니면 전송 방지 + 값 초기화
     if (tradeStatusEl) {
-      tradeStatusEl.disabled = !isTrade;   // (추가) 전송 방지
-      if (!isTrade) tradeStatusEl.value = ""; // (추가) 값 초기화(= DB에 NULL 의도)
+      tradeStatusEl.disabled = !isTrade;
+      if (!isTrade) tradeStatusEl.value = "";
     }
   }
   toggleTradeUI();
@@ -46,13 +70,12 @@
   var headSelect = document.getElementById("headSelect");
   function filterHeads() {
     if (!headSelect) return;
-    var opts = headSelect.options;
-    var i, df, allow;
 
-    for (i = 0; i < opts.length; i++) {
-      df = opts[i].getAttribute("data-for");
+    var opts = headSelect.options;
+    for (var i = 0; i < opts.length; i++) {
+      var df = opts[i].getAttribute("data-for");
       if (!df) { opts[i].hidden = false; continue; }
-      allow = (("," + df + ",").indexOf("," + boardType + ",") !== -1);
+      var allow = (("," + df + ",").indexOf("," + boardType + ",") !== -1);
       opts[i].hidden = !allow;
     }
 
@@ -86,34 +109,42 @@
       addImageBlobHook: function (blob, callback) {
         uploadBlob(blob, function (res) {
           callback(res.url, "image");
+          setTimeout(function () {
+            wrapNewestInsertedImage(res.url);
+          }, 0);
         });
       }
     }
   });
 
-  // ===== edit 초기 본문/값 세팅 =====
+  // ===== edit 초기 본문/값 =====
   if (mode === "edit") {
     var initContentEl = document.getElementById("initContent");
     if (initContentEl) {
       var htmlInit = initContentEl.value || "";
       if (htmlInit) editor.setHTML(htmlInit);
     }
-    // 말머리/거래상태 초기값 (서버가 내려준 값)
     if (headSelect && window.__INIT_CATEGORY__) headSelect.value = String(window.__INIT_CATEGORY__);
-    var tradeStatusEl = document.getElementById("tradeStatus");
-    if (tradeStatusEl && window.__INIT_TRADE_STATUS__) tradeStatusEl.value = String(window.__INIT_TRADE_STATUS__);
+    var tradeStatusEl2 = document.getElementById("tradeStatus");
+    if (tradeStatusEl2 && window.__INIT_TRADE_STATUS__) tradeStatusEl2.value = String(window.__INIT_TRADE_STATUS__);
   }
 
-  // 업로드된 이미지 메타를 hidden(JSON)로 유지
+  // 업로드된 이미지 메타(JSON)
   var uploadedImages = [];
   var uploadedImagesJsonEl = document.getElementById("uploadedImagesJson");
   function setUploadedImagesHidden() {
     if (uploadedImagesJsonEl) uploadedImagesJsonEl.value = JSON.stringify(uploadedImages);
   }
 
+  // ✅ 업로드: 컨트롤러가 요구(file,tempKey,boardType)
   function uploadBlob(blob, done) {
+    var tk = getTempKey();
+    if (!tk) { alert("tempKey가 없습니다. (/community/form에서 tempKey를 내려줘야 합니다)"); return; }
+
     var fd = new FormData();
     fd.append("file", blob);
+    fd.append("tempKey", tk);
+    fd.append("boardType", boardType);
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", ctx + "/community/upload", true);
@@ -144,13 +175,69 @@
     xhr.send(fd);
   }
 
-  function appendImageToEditor(url) {
+  // ===== 리사이즈 가능한 래퍼 삽입 =====
+  function insertResizableImageAtCursor(url) {
+    editor.focus();
+
+    var initWidthPx = 480;
+    var html =
+      '<span class="hsf-img-wrap" data-hsf-img="1" style="width:' + initWidthPx + 'px;">' +
+      '  <img class="hsf-img" src="' + url + '" alt="image" />' +
+      '</span>' +
+      '<p></p>';
+
+    var cm = editor.getCurrentModeEditor && editor.getCurrentModeEditor();
+    if (cm && cm.insertHTML) {
+      cm.insertHTML(html);
+      return;
+    }
+
     var current = editor.getHTML() || "";
-    var add = '<p><img src="' + url + '" alt="image" /></p>';
-    editor.setHTML(current + add);
+    editor.setHTML(current + "<p>" + html + "</p>");
   }
 
-  // ===== 첨부파일: 이미지 자동업로드 + 비이미지 파일만 input에 남기기 =====
+  function wrapNewestInsertedImage(url) {
+    try {
+      var root = editor.getRootElement ? editor.getRootElement() : document.querySelector("#editor");
+      if (!root) return;
+
+      var imgs = root.querySelectorAll('img[src="' + cssEscape(url) + '"]');
+      if (!imgs || imgs.length === 0) return;
+
+      var target = null;
+      for (var i = imgs.length - 1; i >= 0; i--) {
+        var img = imgs[i];
+        if (img.classList && img.classList.contains("hsf-img")) continue;
+        if (img.closest && img.closest(".hsf-img-wrap")) continue;
+        target = img;
+        break;
+      }
+      if (!target) return;
+
+      var wrap = document.createElement("span");
+      wrap.className = "hsf-img-wrap";
+      wrap.setAttribute("data-hsf-img", "1");
+      wrap.style.width = "480px";
+
+      target.classList.add("hsf-img");
+
+      var parent = target.parentNode;
+      parent.insertBefore(wrap, target);
+      wrap.appendChild(target);
+
+      if (wrap.nextSibling && wrap.nextSibling.nodeName !== "P") {
+        var p = document.createElement("p");
+        p.innerHTML = "<br/>";
+        parent.insertBefore(p, wrap.nextSibling);
+      }
+    } catch (e) {}
+  }
+
+  function cssEscape(s){
+    return String(s).replace(/"/g, '\\"');
+  }
+
+  // ===== 첨부파일: 이미지 자동업로드 + 비이미지 파일만 남기기 =====
   var attachInput = document.getElementById("attachFiles");
   var fileListEl = document.getElementById("fileList");
 
@@ -217,7 +304,7 @@
         (function (f) {
           if (!isImageFile(f)) return;
           uploadBlob(f, function (res) {
-            appendImageToEditor(res.url);
+            insertResizableImageAtCursor(res.url);
           });
         })(files[i]);
       }
@@ -226,7 +313,7 @@
     });
   }
 
-  // ===== 해시태그(칩 + 추천(DB) + 최대 10개) =====
+  // ===== 해시태그(띄어쓰기 비허용) =====
   var MAX_TAGS = 10;
   var tags = [];
 
@@ -235,7 +322,6 @@
   var tagSuggest = document.getElementById("tagSuggest");
   var tagsHidden = document.getElementById("tagsHidden");
 
-  // fallback 추천 풀(서버 API 없거나 실패 시 사용)
   var SUGGEST_POOL = [
     "#플랜테리어","#봄","#홈가드닝","#식물집사","#초보식집사","#다육이","#분갈이",
     "#중고거래","#나눔","#질문","#답변","#햇빛","#물주기","#병충해","#영양제"
@@ -243,11 +329,13 @@
 
   function normalizeTag(raw){
     if(!raw) return "";
+    // ✅ 공백 포함이면 거부
+    if (/\s/.test(raw)) return "";
+
     var t = raw.trim();
     if(!t) return "";
     if(t.charAt(0) !== "#") t = "#" + t;
-    t = t.replace(/\s+/g, "");      // 공백 제거
-    t = t.replace(/#+/g, "#");      // ## -> #
+    t = t.replace(/#+/g, "#");
     if(t === "#") return "";
     if(t.length > 20) t = t.substring(0, 20);
     return t;
@@ -270,7 +358,6 @@
     setTagsHidden();
   }
 
-  // ===== edit 초기 태그 세팅 (tagsHidden: "#a,#b" 형태) =====
   if (mode === "edit" && tagsHidden && tagsHidden.value) {
     var parts = tagsHidden.value.split(",");
     for (var ti = 0; ti < parts.length; ti++) {
@@ -285,6 +372,12 @@
       alert("해시태그는 최대 " + MAX_TAGS + "개까지 가능합니다.");
       return;
     }
+
+    if (/\s/.test(raw || "")) {
+      alert("해시태그에는 띄어쓰기를 사용할 수 없습니다.");
+      return;
+    }
+
     var t = normalizeTag(raw);
     if(!t) return;
 
@@ -430,7 +523,14 @@
         return;
       }
 
-      if(key === 13 || key === 188 || key === 32){
+      // ✅ 스페이스 입력 자체 차단
+      if (key === 32) {
+        e.preventDefault();
+        return;
+      }
+
+      // Enter / 콤마로 추가
+      if(key === 13 || key === 188){
         if(e.isComposing) return;
         e.preventDefault();
         var raw = (tagInput.value || "").replace(/,/g,"").trim();
@@ -472,12 +572,35 @@
     });
   }
 
-  // ===== Submit: editor HTML hidden + 타입 검증 + tagsHidden 반영 =====
+  // ===== 저장 직전: 래퍼 제거 + img width(px) 고정 =====
+  function normalizeResizableImages(html) {
+    var wrapper = document.createElement("div");
+    wrapper.innerHTML = html;
+
+    var wraps = wrapper.querySelectorAll('span.hsf-img-wrap[data-hsf-img="1"]');
+    for (var i = 0; i < wraps.length; i++) {
+      var w = wraps[i];
+      var img = w.querySelector("img");
+      if (!img) continue;
+
+      var width = 0;
+      try { width = w.getBoundingClientRect().width; } catch (e) { width = 0; }
+      if (width && width > 0) {
+        img.style.width = Math.round(width) + "px";
+        img.style.height = "auto";
+      }
+
+      w.parentNode.insertBefore(img, w);
+      w.parentNode.removeChild(w);
+    }
+
+    return wrapper.innerHTML;
+  }
+
+  // ===== submit: contentHtml/tagsHidden 세팅 =====
   var form = document.getElementById("writeForm");
   var contentHtmlEl = document.getElementById("contentHtml");
-  var titleEl = document.getElementById("title");
 
-  // 작성자 아니면: submit 차단(UX)
   if (mode === "edit" && !isOwner && form) {
     form.addEventListener("submit", function (e) {
       alert("작성자만 수정할 수 있습니다.");
@@ -489,30 +612,25 @@
     form.addEventListener("submit", function(e){
       if (mode === "edit" && !isOwner) { e.preventDefault(); return; }
 
-      // 답글(A) 검증
-      if(boardType === "A"){
-        var parentId = document.getElementById("parentId").value;
-        if(!parentId){
-          alert("답글 작성은 질문글 번호(parentId)가 필요합니다.");
-          e.preventDefault();
-          return;
-        }
-        if(titleEl && !titleEl.value) titleEl.value = "답변";
-      }
-
-      // 본문 검증
       var html = editor.getHTML();
       if(!html || html.replace(/<[^>]*>/g, "").trim().length === 0){
         alert("본문을 입력해 주세요.");
         e.preventDefault();
         return;
       }
+
+      html = normalizeResizableImages(html);
       if(contentHtmlEl) contentHtmlEl.value = html;
 
-      // 해시태그 hidden 동기화(중요)
       setTagsHidden();
 
-      // (선택) 말머리 required인데 선택안함이면 막기
+      // tempKey 존재 체크(업로드 묶음)
+      if (!getTempKey()) {
+        alert("tempKey가 없습니다. 페이지를 새로고침 후 다시 시도해 주세요.");
+        e.preventDefault();
+        return;
+      }
+
       if(headSelect && !headSelect.value && (boardType === "T" || boardType === "S")){
         alert("거래/나눔 게시판은 말머리를 선택해 주세요.");
         e.preventDefault();
