@@ -18,7 +18,6 @@ public class CommunityMainServiceImpl implements CommunityMainService {
 
 @Override
     public Map<String, Object> dbCheck() {
-    	// TODO Auto-generated method stub
     	return null;
     }
     

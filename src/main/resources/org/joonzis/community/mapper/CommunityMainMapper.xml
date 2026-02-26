@@ -34,7 +34,7 @@
     <result property="hashtags"   column="HASHTAGS"/>
   </resultMap>
 
-  <!-- 공통 SELECT (alias 사용 안 함: 테이블명으로 전부 풀어서 작성) -->
+  <!-- 공통 SELECT -->
   <sql id="BaseSelect">
     SELECT
       TBL_BOARD.BOARD_ID AS BOARD_ID,
@@ -65,7 +65,7 @@
     WHERE TBL_BOARD.IS_ACTIVE = 'Y'
   </sql>
 
-  <!-- 인기글 (단일 int 파라미터 -> #{value}) -->
+  <!-- 인기글 -->
   <select id="selectPopularPosts" parameterType="int" resultMap="CommunityPostCardMap">
     SELECT *
     FROM (
@@ -76,7 +76,7 @@
     WHERE ROWNUM &lt;= #{value}
   </select>
 
-  <!-- 핫글 (단일 int 파라미터 -> #{value}) -->
+  <!-- 핫글 -->
   <select id="selectHotPosts" parameterType="int" resultMap="CommunityPostCardMap">
     SELECT *
     FROM (
@@ -86,7 +86,7 @@
     WHERE ROWNUM &lt;= #{value}
   </select>
 
-  <!-- 최신글 (단일 int 파라미터 -> #{value}) -->
+  <!-- 최신글 -->
   <select id="selectLatestPosts" parameterType="int" resultMap="CommunityPostCardMap">
     SELECT *
     FROM (

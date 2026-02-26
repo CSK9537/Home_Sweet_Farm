@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
+<%-- 
 <%
     // ✅ DTO 없이: List<Map> 더미 생성
     java.util.List popularPosts = (java.util.List) request.getAttribute("popularPosts");
@@ -45,9 +46,10 @@
         request.setAttribute("latestPosts", latestPosts);
     }
 %>
-
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/community/CommunityMain.css" />
+ --%>
+ 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/community/CommunityMain.css" />
 
 <c:set var="DEFAULT_POST_IMG" value="${pageContext.request.contextPath}/resources/image/Default_Plant.jpg" />
 

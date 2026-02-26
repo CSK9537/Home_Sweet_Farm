@@ -1,13 +1,21 @@
 package org.joonzis.community.service;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.joonzis.community.dto.UploadResponseDTO;
 import org.joonzis.community.mapper.CommunityFormMapper;
@@ -26,10 +34,6 @@ public class CommunityFormServiceImpl implements CommunityFormService {
 
     private final CommunityFormMapper mapper;
 
-    /**
-     * NAS 루트(UNC 권장)
-     * 예) \\192.168.0.153\\projecthsf
-     */
     @Value("${hsf.upload.root:\\\\192.168.0.153\\\\projecthsf}")
     private String uploadRoot;
 
@@ -42,7 +46,6 @@ public class CommunityFormServiceImpl implements CommunityFormService {
     }
 
     private String boardFolderKor(String boardType) {
-        // 요구사항 반영: 자유게시판 / 벼룩시장
         return isMarketType(boardType) ? "벼룩시장" : "자유게시판";
     }
 
@@ -50,29 +53,29 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         if (name == null) return "";
         int idx = name.lastIndexOf('.');
         if (idx < 0) return "";
-        String ext = name.substring(idx).toLowerCase();
-        // 필요하면 화이트리스트 처리
-        return ext;
+        return name.substring(idx).toLowerCase();
     }
 
     private String newSavedName(String originalName) {
         return UUID.randomUUID().toString().replace("-", "") + safeExt(originalName);
     }
 
+    // ===== 최종 저장(등록/수정 완료 시점) =====
     private Path buildSaveDir(String boardType) {
-        // projecthsf/board_upload/{자유게시판|벼룩시장}/{yyyyMMdd}
         return Paths.get(uploadRoot, "board_upload", boardFolderKor(boardType), today());
     }
 
     private String buildSubDir(String boardType) {
-        // DB용(상대): 자유게시판/20260224
         return boardFolderKor(boardType) + "/" + today();
     }
 
-    private String buildServeUrl(String subDir, String savedName) {
-        // 브라우저 접근은 컨트롤러 스트리밍으로 통일
-        // /community/file?subDir=자유게시판/20260224&savedName=xxx.png
-        return "/community/file?subDir=" + encode(subDir) + "&savedName=" + encode(savedName);
+    // ===== 임시 저장(업로드 직후, submit 전) =====
+    private Path buildTempDir(String tempKey) {
+        return Paths.get(uploadRoot, "board_upload", "_temp", tempKey);
+    }
+
+    private String buildTempSubDir(String tempKey) {
+        return "_temp/" + tempKey;
     }
 
     private String encode(String s) {
@@ -83,107 +86,257 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         }
     }
 
+    private String decode(String s) {
+        try {
+            return java.net.URLDecoder.decode(s, "UTF-8");
+        } catch (Exception e) {
+            return s;
+        }
+    }
+
+    private String buildServeUrl(String subDir, String savedName) {
+        return "/community/file?subDir=" + encode(subDir) + "&savedName=" + encode(savedName);
+    }
+
+    // ===== meta 저장(원본명/타입 보관용) =====
+    private Path metaPath(Path dir, String savedName) {
+        return dir.resolve(savedName + ".meta");
+    }
+
+    private void writeMeta(Path dir, String savedName, MultipartFile file, String originalName) {
+        Properties p = new Properties();
+        p.setProperty("original", originalName == null ? "" : originalName);
+        p.setProperty("size", String.valueOf(file.getSize()));
+        p.setProperty("contentType", file.getContentType() == null ? "" : file.getContentType());
+        p.setProperty("fileKind", "EDITOR");
+
+        try (OutputStream os = Files.newOutputStream(metaPath(dir, savedName))) {
+            p.store(os, "temp upload metadata");
+        } catch (IOException e) {
+            // meta 저장 실패는 치명적이지 않게 처리
+        }
+    }
+
+    private Properties readMeta(Path dir, String savedName) {
+        Properties p = new Properties();
+        Path mp = metaPath(dir, savedName);
+        if (!Files.exists(mp)) return p;
+        try (InputStream is = Files.newInputStream(mp)) {
+            p.load(is);
+        } catch (IOException e) {
+            // ignore
+        }
+        return p;
+    }
+
+    private void deleteQuietly(Path p) {
+        try { Files.deleteIfExists(p); } catch (Exception e) {}
+    }
+
+    private void deleteDirectoryRecursive(Path dir) {
+        if (dir == null) return;
+        if (!Files.exists(dir)) return;
+        try {
+            Files.walk(dir)
+                 .sorted((a, b) -> b.compareTo(a))
+                 .forEach(this::deleteQuietly);
+        } catch (Exception e) {
+            // ignore
+        }
+    }
+
+    // ===== 본문 HTML에서 temp 이미지(savedName)만 추출 =====
+    private Set<String> extractTempSavedNamesFromHtml(String html, String tempSubDir) {
+        Set<String> out = new HashSet<>();
+        if (html == null || html.trim().isEmpty()) return out;
+
+        // .../community/file?subDir=_temp%2F{tempKey}&savedName=xxxx.png
+        Pattern p = Pattern.compile("subDir=([^&\\\"']+)&savedName=([a-zA-Z0-9._-]+)");
+        Matcher m = p.matcher(html);
+        while (m.find()) {
+            String subDirRaw = m.group(1);
+            String saved = m.group(2);
+            String subDirDecoded = decode(subDirRaw);
+            if (tempSubDir.equals(subDirDecoded)) {
+                out.add(saved);
+            }
+        }
+        return out;
+    }
+
+    private String rewriteHtmlTempToFinal(String html, String tempSubDir, String finalSubDir, Set<String> savedNames) {
+        if (html == null || html.trim().isEmpty()) return html;
+        if (savedNames == null || savedNames.isEmpty()) return html;
+
+        String encodedTemp = encode(tempSubDir);
+        String encodedFinal = encode(finalSubDir);
+
+        String out = html;
+        for (String saved : savedNames) {
+            String from = "subDir=" + encodedTemp + "&savedName=" + encode(saved);
+            String to   = "subDir=" + encodedFinal + "&savedName=" + encode(saved);
+            out = out.replace(from, to);
+        }
+        return out;
+    }
+
+    /**
+     * ✅ submit 시점에만:
+     * 1) _temp/tempKey에 있는 이미지를 최종 폴더로 이동
+     * 2) 그때만 TBL_BOARD_FILE insert
+     * 3) 본문 HTML의 subDir을 최종 경로로 치환
+     */
+    private String finalizeTempImagesIfNeeded(int boardId, String boardType, String tempKey, String contentHtml) {
+        if (tempKey == null || tempKey.trim().isEmpty()) return contentHtml;
+        if (boardType == null || boardType.trim().isEmpty()) boardType = "G";
+
+        Path tempDir = buildTempDir(tempKey);
+        if (!Files.exists(tempDir)) return contentHtml;
+
+        String tempSubDir = buildTempSubDir(tempKey);
+        Set<String> usedSaved = extractTempSavedNamesFromHtml(contentHtml, tempSubDir);
+
+        // 본문에서 temp 이미지를 다 지운 경우: temp 폴더 통째로 정리
+        if (usedSaved.isEmpty()) {
+            deleteDirectoryRecursive(tempDir);
+            return contentHtml;
+        }
+
+        Path finalDir = buildSaveDir(boardType);
+        String finalSubDir = buildSubDir(boardType);
+        try {
+            Files.createDirectories(finalDir);
+        } catch (IOException e) {
+            throw new RuntimeException("final dir create failed", e);
+        }
+
+        for (String savedName : usedSaved) {
+            Path src = tempDir.resolve(savedName);
+            if (!Files.exists(src)) continue;
+
+            Properties meta = readMeta(tempDir, savedName);
+            String original = meta.getProperty("original", savedName);
+            String ct = meta.getProperty("contentType", "");
+
+            long sizeLong = 0L;
+            try { sizeLong = Files.size(src); } catch (IOException e) { sizeLong = 0L; }
+
+            Path dst = finalDir.resolve(savedName);
+            try {
+                Files.move(src, dst, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException("move temp file failed", e);
+            }
+
+            deleteQuietly(metaPath(tempDir, savedName));
+
+            // ✅ 여기서만 DB insert
+            BoardFileVO vo = new BoardFileVO();
+            vo.setBoard_id(boardId);
+            vo.setOriginal_name(original);
+            vo.setSaved_name(savedName);
+            vo.setFile_size((int) Math.min(Integer.MAX_VALUE, sizeLong));
+            vo.setContent_type(ct);
+            vo.setTemp_key(null);
+            vo.setSub_dir(finalSubDir);
+            vo.setFile_kind("EDITOR");
+            vo.setIs_active("Y");
+            vo.setIs_thumbnail("N");
+            mapper.insertBoardFile(vo);
+        }
+
+        // temp 폴더 정리(본문에서 삭제된 이미지 포함)
+        deleteDirectoryRecursive(tempDir);
+
+        // 본문 URL 치환
+        return rewriteHtmlTempToFinal(contentHtml, tempSubDir, finalSubDir, usedSaved);
+    }
+
+    // ==============================
+    // Public APIs
+    // ==============================
+
     @Override
     @Transactional
-    public UploadResponseDTO uploadTempFile(String tempKey, String boardType, MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("file is empty");
-        }
-        if (tempKey == null || tempKey.trim().isEmpty()) {
-            throw new IllegalArgumentException("tempKey is required");
-        }
+    public UploadResponseDTO uploadTempFile(MultipartFile file, String tempKey, String boardType) {
+        if (file == null || file.isEmpty()) throw new IllegalArgumentException("file is empty");
+        if (tempKey == null || tempKey.trim().isEmpty()) throw new IllegalArgumentException("tempKey is required");
         if (boardType == null || boardType.trim().isEmpty()) boardType = "G";
 
         String original = file.getOriginalFilename();
         String saved = newSavedName(original);
 
-        Path dir = buildSaveDir(boardType);
+        // ✅ 업로드 시점: 로컬/NAS 임시 폴더에만 저장 (DB 저장 X)
+        Path dir = buildTempDir(tempKey);
         try {
             Files.createDirectories(dir);
-            Path target = dir.resolve(saved);
-            file.transferTo(target.toFile());
+            file.transferTo(dir.resolve(saved).toFile());
         } catch (IOException e) {
             throw new RuntimeException("upload failed", e);
         }
 
-        String subDir = buildSubDir(boardType);
+        writeMeta(dir, saved, file, original);
 
-        // DB 기록(임시, board_id = null)
-        BoardFileVO vo = new BoardFileVO();
-        vo.setBoard_id(null);
-        vo.setOriginal_name(original);
-        vo.setSaved_name(saved);
-        vo.setFile_size((int) file.getSize());
-        vo.setContent_type(file.getContentType());
-        vo.setTemp_key(tempKey);
-        vo.setSub_dir(subDir);
-        vo.setFile_kind("EDITOR");   // addImageBlobHook/첨부이미지 본문삽입 모두 여기로
-        vo.setIs_active("Y");
-        vo.setIs_thumbnail("N");     // 썸네일은 글 등록 시 첫 이미지로 세팅(정책)
-
-        mapper.insertBoardFile(vo);
-
-        // URL은 컨트롤러에서 스트리밍
+        String subDir = buildTempSubDir(tempKey);
         String url = buildServeUrl(subDir, saved);
         return new UploadResponseDTO(url, saved, subDir);
     }
 
     @Override
     @Transactional
-    public int write(BoardVO board, String tempKey, MultipartFile[] attachFiles, String tagsCsv) {
-        // 1) 게시글 insert
+    public int write(BoardVO board,
+                     int loginUserId,
+                     String tempKey,
+                     MultipartFile[] attachFiles,
+                     String tagsCsv) {
+
+        if (board == null) throw new IllegalArgumentException("board is null");
+        if (loginUserId <= 0) throw new SecurityException("login required");
+
+        board.setUser_id(loginUserId);
+
+        // 1) SEQ 선세팅
+        int nextId = mapper.selectBoardSeqNextVal();
+        board.setBoard_id(nextId);
+
+        // 2) 게시글 먼저 insert (FK 존재 시 BOARD_FILE 선 insert 방지)
         mapper.insertBoard(board);
 
-        // board_id 획득 방식:
-        // - Oracle + SEQ 사용이면 insert 전에 NEXTVAL을 받아 VO에 세팅하거나
-        // - SELECT SEQ_TBL_BOARD.CURRVAL 로 가져오는 보조쿼리 필요
-        // 여기서는 "컨트롤러에서 board_id 미리 세팅" 방식(추천)으로 가정합니다.
-        if (board.getBoard_id() <= 0) {
-            throw new IllegalStateException("board_id must be set before insert (use SEQ in controller)");
+        // 3) submit 시점: temp 이미지 이동 + DB 저장 + 본문 URL 치환
+        String contentFinal = finalizeTempImagesIfNeeded(nextId, board.getBoard_type(), tempKey, board.getContent());
+        if (contentFinal != null && !contentFinal.equals(board.getContent())) {
+            board.setContent(contentFinal);
+            mapper.updateBoard(board); // content 변경 반영
         }
 
-        // 2) 선업로드 파일들을 게시글에 연결
-        if (tempKey != null && !tempKey.trim().isEmpty()) {
-            mapper.attachTempFilesToBoard(tempKey, board.getBoard_id());
-            // (선택) 첫 이미지 썸네일 처리: tempKey 파일 목록의 첫 번째를 썸네일로 update 하는 쿼리 추가 가능
-        }
+        // 4) 첨부(비이미지) 파일 저장 + DB 기록
+        saveAttachFiles(nextId, board.getBoard_type(), attachFiles);
 
-        // 3) 첨부(비이미지) 파일 저장 + DB 기록
-        saveAttachFiles(board.getBoard_id(), board.getBoard_type(), attachFiles);
-
-        // 4) 해시태그 반영
-        // 이 프로젝트에서 "게시글-해시태그 매핑 테이블"이 무엇인지(이전 대화에서 TBL_BOARD_HASHTAG_LIST 외에 연결 테이블 존재) 기준으로
-        // upsert + mapping insert 로직을 붙이면 됩니다.
-        // 여기서는 tagsCsv 파싱까지만 걸어두고, 실제 매핑 insert는 프로젝트 테이블명 확정 후 추가하세요.
+        // 5) 해시태그 처리(추후)
         // parseTags(tagsCsv);
 
-        return board.getBoard_id();
+        return nextId;
     }
 
     @Override
     @Transactional
     public int edit(BoardVO board, int loginUserId, String tempKey, MultipartFile[] attachFiles, String tagsCsv) {
-        // 1) 작성자 검증(서버에서 1차 차단)
+        if (board == null) throw new IllegalArgumentException("board is null");
+        if (loginUserId <= 0) throw new SecurityException("login required");
+
         Integer owner = mapper.selectBoardOwnerUserId(board.getBoard_id());
         if (owner == null || owner.intValue() != loginUserId) {
             throw new SecurityException("not owner");
         }
 
-        // 2) 게시글 update
+        // ✅ submit 시점: temp 이미지 이동 + DB 저장 + 본문 URL 치환
+        String contentFinal = finalizeTempImagesIfNeeded(board.getBoard_id(), board.getBoard_type(), tempKey, board.getContent());
+        board.setContent(contentFinal);
+
         mapper.updateBoard(board);
-
-        // 3) (정책) 수정 시 기존 파일 유지/교체 선택
-        // - 교체 정책이면: 기존 파일 N 처리 후 새 tempKey 연결
-        // - 유지 정책이면: 새로 올린 것만 추가
-        // 아래는 "유지 + 새로 올린 것만 추가" 정책
-        if (tempKey != null && !tempKey.trim().isEmpty()) {
-            mapper.attachTempFilesToBoard(tempKey, board.getBoard_id());
-        }
-
-        // 4) 첨부 파일 추가 저장
         saveAttachFiles(board.getBoard_id(), board.getBoard_type(), attachFiles);
 
-        // 5) 해시태그 갱신(연결테이블 기준으로 delete+insert or diff-update)
+        // 해시태그 갱신(추후)
         // parseTags(tagsCsv);
 
         return board.getBoard_id();
@@ -191,6 +344,7 @@ public class CommunityFormServiceImpl implements CommunityFormService {
 
     private void saveAttachFiles(int boardId, String boardType, MultipartFile[] attachFiles) {
         if (attachFiles == null || attachFiles.length == 0) return;
+        if (boardType == null || boardType.trim().isEmpty()) boardType = "G";
 
         Path dir = buildSaveDir(boardType);
         String subDir = buildSubDir(boardType);
@@ -203,8 +357,7 @@ public class CommunityFormServiceImpl implements CommunityFormService {
 
             try {
                 Files.createDirectories(dir);
-                Path target = dir.resolve(saved);
-                f.transferTo(target.toFile());
+                f.transferTo(dir.resolve(saved).toFile());
             } catch (IOException e) {
                 throw new RuntimeException("attach upload failed", e);
             }
@@ -213,7 +366,7 @@ public class CommunityFormServiceImpl implements CommunityFormService {
             vo.setBoard_id(boardId);
             vo.setOriginal_name(original);
             vo.setSaved_name(saved);
-            vo.setFile_size((int) f.getSize());
+            vo.setFile_size((int) Math.min(Integer.MAX_VALUE, f.getSize()));
             vo.setContent_type(f.getContentType());
             vo.setTemp_key(null);
             vo.setSub_dir(subDir);
@@ -233,5 +386,17 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         if (limit <= 0) limit = 10;
         if (limit > 20) limit = 20;
         return mapper.selectHashtagSuggest(q, limit);
+    }
+    
+    @Override
+    public BoardVO getBoardById(int boardId) {
+    	return mapper.selectBoardById(boardId);
+    }
+    
+    @Override
+    public boolean isOwner(int boardId, int loginUserId) {
+    	if (loginUserId <= 0) return false;
+        Integer owner = mapper.selectBoardOwnerUserId(boardId);
+        return owner != null && owner.intValue() == loginUserId;
     }
 }
