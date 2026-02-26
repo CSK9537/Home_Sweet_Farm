@@ -102,6 +102,7 @@
       var isActive = (btn.getAttribute("data-step-link") === step);
       toggleClass(btn, "is-active", isActive);
       btn.setAttribute("aria-selected", String(isActive));
+      btn.disabled = !isActive;
     }
   }
 
@@ -179,13 +180,6 @@
     var closeBtn = closest(t, "[data-modal-close]");
     if (closeBtn) {
       closeModal(closest(t, ".modal"));
-      return;
-    }
-
-    // step back
-    var backBtn = closest(t, "[data-step-back]");
-    if (backBtn) {
-      setActiveStep(getAttr(backBtn, "data-step-back"));
       return;
     }
 
@@ -334,7 +328,7 @@
 		 // 형식 OK인데 아직 중복확인 안 함
 		    idMsg.innerText = "중복확인을 진행해 주세요.";
 		    idMsg.style.color = "#666";
-		    if (checkIdBtn) checkIdBtn.disabled = false;
+		    checkIdBtn.disabled = false;
 		    enableVerifyBtn();
 		 });
 	
@@ -342,28 +336,36 @@
 	var checkedOk = (typeof idCheckedOk !== "undefined") ? idCheckedOk : false;
 	var checkedId = (typeof lastCheckedId !== "undefined") ? lastCheckedId : "";
 	 
-	document.querySelector('#checkIdBtn').addEventListener('click', e=>{
+	checkIdBtn.addEventListener('click', (e) => {
+		
+	if (checkIdBtn.classList.contains('loading')) return;
 	
-	let val = document.querySelector('#userId').value.trim();
+	let originalText = checkIdBtn.textContent;
+	let val = idInput.value.trim();
+	
+	checkIdBtn.classList.add('loading');
+	checkIdBtn.textContent = "확인 중";
+	checkIdBtn.disabled = true;
 	
 	fetch(getCpath() + "/checkId?username=" + encodeURIComponent(val))
 		.then(response => {
 			
 			if(!response.ok || response.status != 200){
+				checkIdBtn.classList.remove('loading');
+				checkIdBtn.textContent = originalText;
+				checkIdBtn.disabled = false;
 				throw new Error("에러발생");
 			}
 			return response.json();
 		})
 		.then(data => {
-			const idEl = document.querySelector('#userId');
-			const msgEl = document.querySelector('#idMsg');
-			const val = (idEl.value || "").trim();
+			const val = (idInput.value || "").trim();
 			let result = data.duplicate; // result -> 아이디가 중복되면 true
 			
 			//1)아이디 미입력 시
 			if(val === ""){
-				msgEl.innerText ="아이디를 입력한 뒤 중복확인 해주세요.";
-				msgEl.style.color = "red";
+				idMsg.innerText ="아이디를 입력한 뒤 중복확인 해주세요.";
+				idMsg.style.color = "red";
 				
 				checkedOk = false;
 				checkedId = "";
@@ -371,30 +373,45 @@
 				idCheckedOk = false;
 				lastCheckedId = "";
 				
-				idEl.focus();
+				idInput.focus();
+				
+				checkIdBtn.classList.remove('loading');
+				checkIdBtn.textContent = originalText;
+				checkIdBtn.disabled = false;
+				
 				enableVerifyBtn();
 				return;
 			}
 			
 			if(result){
 				//2)중복일때
-				msgEl.innerText = "아이디가 중복되었습니다.";
-				msgEl.style.color = "red";
+				idMsg.innerText = "아이디가 중복되었습니다.";
+				idMsg.style.color = "red";
 				checkedOk = false;
 				checkedId = "";
 				
 				idCheckedOk = false;
 				lastCheckedId = "";
+				
+				checkIdBtn.classList.remove('loading');
+				checkIdBtn.textContent = originalText;
+				checkIdBtn.disabled = false;
+				
 				enableVerifyBtn();
 			}else{
 				//3)중복이 아닐 때(사용 가능)
-				msgEl.innerText = "사용 가능한 아이디입니다.";
-				msgEl.style.color = "green";
+				idMsg.innerText = "사용 가능한 아이디입니다.";
+				idMsg.style.color = "green";
+				
 				checkedOk = true;
 				checkedId = val;
 				
 				idCheckedOk = true;
 				lastCheckedId = val;
+				
+				checkIdBtn.textContent = "확인 완료";
+				idInput.setAttribute('readonly', true);
+				idInput.classList.add('no-click');
 				enableVerifyBtn();
 			}
 			
@@ -402,7 +419,7 @@
 		.catch(err => console.log(err));
 });
 
-//비번 검증
+	// 비밀번호 검증
 	const pwInput = document.querySelector('#userPw');
 	const pwMsg = document.querySelector('#pwMsg');
 	let pwCheckedOk = false;
@@ -444,7 +461,7 @@
 		}	    
 	});
 
-//비밀번호 확인 검증
+	//비밀번호 확인 검증
 	pwInput2.addEventListener("input",
 	function () {
 		const pw = pwInput.value;//현재 비번
@@ -463,12 +480,34 @@
 		}
 	});
 	
+	// 약관 동의 검증
+	let isServiceAgreed = false;
+	let isPrivacyAgreed = false;
+	let agreeCheckedOk = false; // 두 필수 약관이 모두 동의되었는지 저장
+	
+	const agreeServiceEl = document.getElementById("agreeService");
+	const agreePrivacyEl = document.getElementById("agreePrivacy");
+	const agreeAllEl = document.getElementById("agreeAll");
+	
+	function updateAgreementState() {
+		isServiceAgreed = agreeServiceEl.checked;
+		isPrivacyAgreed = agreePrivacyEl.checked;
+		
+		agreeCheckedOk = (isServiceAgreed && isPrivacyAgreed);
+		
+		enableVerifyBtn();
+	}
+
+	agreeServiceEl.addEventListener("change", updateAgreementState);
+	agreePrivacyEl.addEventListener("change", updateAgreementState);
+	agreeAllEl.addEventListener("change", updateAgreementState);
+	
 // 다음 버튼
   const toVerifyBtn = document.querySelector("#toVerifyBtn");
   
 // 다음 버튼 활성화
   function enableVerifyBtn() {
-	  if(idCheckedOk && pwCheckedOk && pw2CheckedOk){
+	  if(idCheckedOk && pwCheckedOk && pw2CheckedOk && agreeCheckedOk){
 		  toVerifyBtn.disabled = false;
 	  }else{
 		  toVerifyBtn.disabled = true;
@@ -477,8 +516,8 @@
 	
 // 다음 버튼 클릭
   if (toVerifyBtn) {
-    toVerifyBtn.addEventListener("click", function (e) {
-    	e.preventDefault(); // submit 방지
+	  toVerifyBtn.addEventListener("click", function (e) {
+	  e.preventDefault(); // submit 방지
 
       const userIdEl = document.querySelector("#userId");
       const pwEl = document.querySelector("#userPw");
@@ -489,44 +528,44 @@
       const pw2 = pw2El ? (pw2El.value || "") : "";
 
       // 1) 아이디 기본 검증
-      if (!userId || userId.length < 6 || userId.length > 20) {
-        alert("아이디는 6~20자로 입력해주세요.");
-        if (userIdEl) userIdEl.focus();
-        return;
-      }
+//      if (!userId || userId.length < 6 || userId.length > 20) {
+//        alert("아이디는 6~20자로 입력해주세요.");
+//        if (userIdEl) userIdEl.focus();
+//        return;
+//      }
+//
+//      if (!idCheckedOk || lastCheckedId !== userId) {
+//        alert("아이디 중복확인을 완료해주세요.");
+//        if (userIdEl) userIdEl.focus();
+//        return;
+//      }
 
-      if (!idCheckedOk || lastCheckedId !== userId) {
-        alert("아이디 중복확인을 완료해주세요.");
-        if (userIdEl) userIdEl.focus();
-        return;
-      }
+      // 2) 비밀번호 검증(길이만 말고 regex랑 맞추는 게 더 정확)
+//      const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}$/;
+//      if (!pwRegex.test(pw)) {
+//        alert("비밀번호는 영문, 숫자, 특수문자 포함 8~20자로 입력해주세요.");
+//        if (pwEl) pwEl.focus();
+//        return;
+//      }
+//
+//      if (pw !== pw2) {
+//        alert("비밀번호 확인이 일치하지 않습니다.");
+//        if (pw2El) pw2El.focus();
+//        return;
+//      }
 
-      // 3) 비밀번호 검증(길이만 말고 regex랑 맞추는 게 더 정확)
-      const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}$/;
-      if (!pwRegex.test(pw)) {
-        alert("비밀번호는 영문, 숫자, 특수문자 포함 8~20자로 입력해주세요.");
-        if (pwEl) pwEl.focus();
-        return;
-      }
-
-      if (pw !== pw2) {
-        alert("비밀번호 확인이 일치하지 않습니다.");
-        if (pw2El) pw2El.focus();
-        return;
-      }
-
-      // 4) 필수 약관 체크
+      // 3) 필수 약관 체크
       var agreeServiceEl = $("#agreeService");
       var agreePrivacyEl = $("#agreePrivacy");
       var agreeService = agreeServiceEl ? agreeServiceEl.checked : false;
       var agreePrivacy = agreePrivacyEl ? agreePrivacyEl.checked : false;
 
-      if (!agreeService || !agreePrivacy) {
-        alert("[필수] 약관 동의가 필요합니다.");
-        return;
-      }
+//      if (!agreeService || !agreePrivacy) {
+//        alert("[필수] 약관 동의가 필요합니다.");
+//        return;
+//      }
 
-      // 5) hidden copy
+      // 4) hidden copy
       var hidUserId = $("#hidUserId");
       var hidUserPw = $("#hidUserPw");
       var hidUserPw2 = $("#hidUserPw2");
@@ -545,97 +584,12 @@
       var agreeMarketing = agreeMarketingEl ? agreeMarketingEl.checked : false;
       if (hidAgreeMarketing) hidAgreeMarketing.value = agreeMarketing ? "1" : "0";
 
-      // 6) step2 이동
+      // 5) step2 이동
       setActiveStep("verify");
-      document.getElementById('verifynav').disabled = false;
     });
   }
 
   // ===== step2: verify =====
-
-//  //이메일 인증코드 발송
-//  var emailSendBtn = $("#emailSendBtn");
-//  var tmpemail = '';
-//  if (emailSendBtn) {
-//    emailSendBtn.addEventListener("click", (e) => {
-//      var btn = e.currentTarget;
-//      var textEl = btn.querySelector('.btn-text');
-//      var originalText = textEl.textContent;
-//      var emailEl = $("#emailAddr");
-//      var email = emailEl ? (emailEl.value || "").trim() : "";
-//
-//      if (btn.classList.contains('loading')) return;
-//      btn.classList.add('loading');
-//      
-//      if(!email){
-//      	alert("이메일을 입력해주세요.");
-//      	textEl.textContent = originalText;
-//      	btn.classList.remove('loading');
-//      	btn.disabled = false;
-//      	return;
-//      }
-//      
-//    // 이메일 중복 검사
-//  	fetch(getCpath() + "/checkEmail?email=" + encodeURIComponent(email))
-//	.then(response => {
-//		if(!response.ok || response.status != 200){
-//			throw new Error("에러발생");
-//		}
-//		return response.json();
-//	})
-//	.then(data => {
-//		let result = data.duplicate; // result -> 아이디가 중복되면 true
-//		if(result){
-//			alert("중복된 이메일입니다.");
-//			throw new Error("이메일 중복");
-//		}
-//		return data;
-//	})
-//	.then(data => {})
-//	.catch(err => console.log(err));
-//
-//      textEl.textContent = "발송 중";
-//      btn.disabled = true;
-//
-//    	fetch("/email/send", {
-//    		method: "POST",
-//    		headers: {"Content-Type":"text/plain; charset=UTF-8"},
-//    		body: email
-//    	})
-//    	.then(response =>{
-//    		if(!response.ok) throw new Error();
-//    		alert("인증코드를 이메일로 발송했습니다.");
-//    		btn.classList.remove('loading');
-//    		tmpemail = email;
-//
-//    		// 인증번호 재발송
-//    		let resendTimer = null;
-//    		// 60초 대기
-//    		let remain = 60;
-//    		textEl.textContent = `재전송 (${remain}s)`;
-//    		
-//    		if (resendTimer) clearInterval(resendTimer);
-//    		resendTimer = setInterval(() => {
-//    			
-//    			remain--;
-//    			if (remain <= 0) {
-//    				clearInterval(resendTimer);
-//    				btn.disabled = false;
-//    				textEl.textContent = "인증메일 재전송";
-//    				return;
-//    			}
-//    			textEl.textContent = `재전송 (${remain}s)`;
-//    			
-//    		}, 1000);  
-//    	})
-//    	.catch(()=>{
-//    		alert("이메일 발송에 실패했습니다.");
-//    	textEl.textContent = originalText;
-//        btn.classList.remove('loading');
-//        btn.disabled = false;
-//    	});
-//    });
-//  }
 
   var emailSendBtn = $("#emailSendBtn");
   var tmpemail = '';

@@ -38,31 +38,31 @@ public class UserController {
 	 * */
 	
 	//1)회원가입 화면
-	@GetMapping("/JoinUser")
+	@GetMapping("/join")
 	public String joinForm() {
 		return "user/JoinUser";
 	}
 	
 	//2)회원가입 처리
-		@PostMapping("/JoinUser") 
-		public String joinProcess(
-				UserVO vo, HttpSession session,
-				@RequestParam(value ="aspectNames", required=false)String aspectNames,
-				@RequestParam(value ="brith_date_js", required=false) String brith_date_js, Model model) {
-		    try {
-		    	// yyyy-MM-dd 형식의 문자열을 java.sql.Date로 변환
-				if (brith_date_js != null && !brith_date_js.isEmpty()) {
-			        vo.setBrith_date(java.sql.Date.valueOf(brith_date_js));
-			    }
-				uservice.insert(vo, aspectNames);
-				session.setAttribute("msg", "회원가입 완료");
-				return "redirect:/";
-			} catch (Exception e) {
-				model.addAttribute("msg", "회원가입 실패");
-				model.addAttribute("vo", vo);
-				return "user/JoinUser"; //회원가입 화면으로 다시 돌아감
-			}
+	@PostMapping("/join") 
+	public String joinProcess(
+			UserVO vo, HttpSession session,
+			@RequestParam(value ="aspectNames", required=false)String aspectNames,
+			@RequestParam(value ="brith_date_js", required=false) String brith_date_js, Model model) {
+	    try {
+	    	// yyyy-MM-dd 형식의 문자열을 java.sql.Date로 변환
+			if (brith_date_js != null && !brith_date_js.isEmpty()) {
+		        vo.setBrith_date(java.sql.Date.valueOf(brith_date_js));
+		    }
+			uservice.insert(vo, aspectNames);
+			session.setAttribute("msg", "회원가입 완료");
+			return "user/JoinSuccess";
+		} catch (Exception e) {
+			model.addAttribute("msg", "회원가입 실패");
+			model.addAttribute("vo", vo);
+			return "user/JoinUser"; //회원가입 화면으로 다시 돌아감
 		}
+	}
 	
 		
 	//3)로그인 화면

@@ -1,9 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Home Sweet Farm</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/ContentLayout.css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/user/JoinUser.css" />
-
+</head>
+<body>
 <div class="page-shell">
   <div class="content-wrap">
     <div class="content-card">
@@ -160,7 +166,6 @@
               </div>
 
               <div class="btn-row">
-                <button type="button" class="btn btn-ghost" data-step-back="account">이전</button>
                 <button type="button" class="btn btn-primary" id="toProfileBtn">다음</button>
               </div>
               <p class="verify-msg">※ 이메일 인증 완료 후 다음 단계로 이동할 수 있습니다.</p>
@@ -170,7 +175,7 @@
           <!-- STEP 3: 회원정보 입력 + 최종 가입 -->
           <section class="step-panel" id="step-profile" data-step="profile" aria-label="회원정보 입력">
             <!-- 최종 제출 폼 (서버 insert용) -->
-            <form id="joinForm" method="post" action="${pageContext.request.contextPath}/user/JoinUser" autocomplete="off">
+            <form id="joinForm" method="post" action="${pageContext.request.contextPath}/user/join" autocomplete="off">
               <!-- STEP1 값들 hidden으로 전달 -->
               <input type="hidden" name="username" id="hidUserId" />
               <input type="hidden" name="password" id="hidUserPw" />
@@ -227,13 +232,12 @@
                 
                 <div class="form-col">
                   <label class="form-label" for="userEmail">이메일 주소</label>
-                  <input class="form-input no-click" type="email" id="userEmail" name="email" placeholder="이메일 인증 후 자동 입력됩니다."readonly/>
+                  <input class="form-input no-click" type="email" id="userEmail" name="email" placeholder="이메일 인증 후 자동 입력됩니다." readonly/>
                 </div>
 
               </div>
 
               <div class="btn-row end">
-                <button type="button" class="btn btn-ghost" data-step-back="verify">이전</button>
                 <button type="submit" class="btn btn-primary" id="joinSubmitBtn">회원가입</button>
               </div>
             </form>
@@ -346,4 +350,6 @@
     </div>
   </div>
 </div>
+</body>
 <script src="${pageContext.request.contextPath}/resources/js/user/JoinUser.js"></script>
+</html>

@@ -25,7 +25,7 @@
               <button type="button" class="tab-btn is-active" data-target="panel-login" role="tab" aria-selected="true">로그인</button>
               <button type="button" class="tab-btn" data-target="panel-find-id" role="tab" aria-selected="false">아이디 찾기</button>
               <button type="button" class="tab-btn" data-target="panel-find-pw" role="tab" aria-selected="false">비밀번호 찾기</button>
-              <a class="tab-link" href="${pageContext.request.contextPath}/user/JoinUser" title="회원가입 페이지로 이동">회원가입</a>
+              <a class="tab-link" href="${pageContext.request.contextPath}/user/join" title="회원가입 페이지로 이동">회원가입</a>
             </div>
 
             <!-- PANEL: 로그인 -->
@@ -76,7 +76,7 @@
                   <span class="sep">|</span>
                   <button type="button" class="helper-link js-go" data-target="panel-find-pw">비밀번호 찾기</button>
                   <span class="sep">|</span>
-                  <a class="helper-link" href="${pageContext.request.contextPath}/user/JoinUser">회원가입</a>
+                  <a class="helper-link" href="${pageContext.request.contextPath}/user/join">회원가입</a>
                 </div>
 
                 <p class="security-note">

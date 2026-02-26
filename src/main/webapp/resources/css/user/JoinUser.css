@@ -119,15 +119,15 @@ body{
   border-bottom: 2px solid transparent;
 }
 
-.step-nav__btn:hover{
-  font-weight: 800;
-  border-bottom-color: #6b7b61;
-}
-
 .step-nav__btn.is-active{
   font-weight: 800;
   border-bottom-color: #6b7b61;
 }
+
+.step-nav__btn:disabled{
+  pointer-events: none;
+}
+
 
 /* step panel show/hide */
 .step-panel{
@@ -140,9 +140,8 @@ body{
 
 /* form */
 .form-col{
-  margin-top: 14px;
+	margin: 15px 0;
 }
-
 .form-label{
   display: block;
   font-size: 13px;
@@ -155,10 +154,12 @@ body{
   width: 100%;
   height: 46px;
   padding: 0 14px;
+  margin: 0;
   border: 2px solid #6b7b61;
   border-radius: 8px;
   background: #f4f2ed;
   outline: none;
+  box-sizing: border-box;
 }
 
 .form-input::placeholder{
@@ -173,6 +174,10 @@ body{
   color: transparent;
 }
 
+.form-input[readonly]{
+	background: #dfddd8;
+}
+
 .no-click {
   pointer-events: none;
 }
@@ -182,9 +187,14 @@ body{
 	gap: 16px;      /* 입력창과 버튼 사이의 간격 */
 }
 
-.errMsg{
-	height: 14px;
-	font-size: 14px;
+.errMsg {
+	height: 14px; 
+	font-size: 13px;
+	margin: 5px 0;  /* 입력창과의 간격 */
+}
+.errMsg p {
+    margin: 0;
+    padding: 0;
 }
 
 /* terms */
@@ -244,10 +254,6 @@ button:disabled{
   cursor: not-allowed;
 }
 
-button:disabled:hover {
-  box-shadow: none;
-}
-
 .btn-row{
   display: flex;
   justify-content: flex-end;
@@ -279,12 +285,12 @@ button:disabled:hover {
 }
 
 .btn-ghost{
-  background: transparent;
+  background: #f4f2ed;
   border-color: #6b7b61;
   color: #6b7b61;
 }
 
-.btn-ghost:not(:disabled):active{
+.btn-ghost:active{
   background: #6b7b61;
   color: #f4f2ed;
 }
@@ -601,6 +607,12 @@ button:disabled:hover {
 @media (max-width: 1024px){
   .join-shell{ gap: 26px; }
   .join-left{ flex-basis: 44%; min-height: 520px; }
+  .content-wrap {
+    padding: 60px 40px; 
+  }
+  .content-card {
+    padding: 40px 30px;
+  }
 }
 
 @media (max-width: 767px){
@@ -608,4 +620,10 @@ button:disabled:hover {
   .join-left{ flex-basis: auto; min-height: 240px; }
   .join-right{ min-width: 0; }
   .social-row{ grid-template-columns: 1fr; }
+  .content-wrap {
+    padding: 30px 16px; 
+  }
+  .content-card {
+    padding: 24px 20px;
+  }
 }
