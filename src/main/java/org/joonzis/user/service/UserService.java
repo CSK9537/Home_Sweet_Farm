@@ -19,6 +19,8 @@ public interface UserService {
 	public int delete(UserVO vo);
 	//아이디 찾기(이메일)
 	public String findIdByEmail(@Param("email")String email);
+	//아이디- 결과메시지
+	public String findId(String name, String email);
 	//비밀번호 찾기 대상 확인(이메일)
 	public int existUserByEmail(@Param("username")String username,
 							@Param("email")String email);
@@ -32,7 +34,6 @@ public interface UserService {
 	
 	//자동로그인-아이디로 찾기(쿠키)
 	public UserVO findByUsername(String username);
-	
 	//공개형 프로필
 	//1) 닉네임, 프로필, 회원등급, 자기소개
 	public UserDTO selectPublicProfile(int userId);

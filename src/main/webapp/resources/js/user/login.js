@@ -206,6 +206,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
 	const resetBtn = document.querySelector("#resetBtn");//재발송 버튼
 	const verifyBtn = document.querySelector("#verifyBtn");//인증 버튼
 	const nextBtn = document.querySelector("#nextBtn");//다음 버튼
+	const resultEl = document.querySelector("#findIdResultMsg");//결과메시지
 	
 	if(!nameInput || !nameMsg || 
 		!emailInput || !emailMsg ||
@@ -402,6 +403,33 @@ function sendVerifyCode(){
     	  codeMsg.style.color = "red";
     	  return;
       }
-      setActiveStep("profile");
-    });
-  }
+      //"다음" -> 결과메시지
+      const name = findIdName.value.trim();
+      const email = findIdEmail.value.trim();
+      if(!name){
+    	  resultEl.innerText = "이메일을 입력해주세요.";
+    	  resultEl.style.color = "red";
+    	  return;
+      }
+      fetch("/user/findId-ajax", {
+          method: "POST",
+          headers: {"Content-Type":"application/json; charset=UTF-8"},
+          body: JSON.stringify({ name, email })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.ok) {
+            resultEl.innerText = `아이디는 ${data.maskedId} 입니다`;
+            resultEl.style.color = "green";
+          } else {
+            resultEl.innerText = data.message || "일치하는 계정이 없습니다.";
+            resultEl.style.color = "red";
+          }
+        })
+        .catch(() => {
+          resultEl.innerText = "요청 실패(서버 확인 필요)";
+          resultEl.style.color = "red";
+        });
+
+      });
+    }

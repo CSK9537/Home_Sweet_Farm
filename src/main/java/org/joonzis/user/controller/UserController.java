@@ -186,6 +186,29 @@ public class UserController {
 	    uservice.resetPw(vo);
 		return "OK";
 	}
+	//아이디
+	@PostMapping("/user/findId-ajax")
+	@ResponseBody
+	public Map<String, Object> findIdAjax(@RequestBody Map<String, String> req){
+
+	    String name = req.get("name");
+	    String email = req.get("email");
+
+	    String userId = uservice.findId(name, email);
+
+	    Map<String,Object> res = new HashMap<>();
+
+	    if(userId == null){
+	        res.put("ok", false);
+	        res.put("message","일치하는 계정이 없습니다.");
+	        return res;
+	    }
+
+	    res.put("ok", true);
+	    res.put("maskedId", maskId(userId)); // ★ 아이디 ** 처리
+	    return res;
+	}
+	
 
 	//7)아이디 중복체크
 	@GetMapping("/id-check") //url예시: http://localhost:8081/user/id-check?username=linwee

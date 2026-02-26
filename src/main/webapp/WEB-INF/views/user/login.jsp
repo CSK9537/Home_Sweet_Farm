@@ -128,6 +128,7 @@
                 <div class="helper-links">
                   <button type="button" class="helper-link js-go" data-target="panel-login">로그인하러 가기</button>
                 </div>
+                <div id="findIdResultMsg" class="error-msg" style="margin-top:8px; font-size:14px;"></div>
               </form>
             </section>
 
