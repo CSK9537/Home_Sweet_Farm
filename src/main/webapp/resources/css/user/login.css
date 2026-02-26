@@ -1,4 +1,8 @@
 /* login.css - ContentLayout.css의 content-card 내부를 2분할하여 사용 */
+body{
+	margin: 0;
+	padding: 0;
+}
 
 .login-layout{
   width: 100%;

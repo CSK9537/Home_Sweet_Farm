@@ -1,7 +1,8 @@
+body{background-color: #6b7b61;}
 /* 페이지 배경 */
 .page-shell {
   background-color: #6b7b61;
-  border: 1px solid #000;
+  /* border: 1px solid #000; */
   width: 100%;
   margin: 0 auto;
   position: relative;

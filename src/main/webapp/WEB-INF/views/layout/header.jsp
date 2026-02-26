@@ -78,7 +78,7 @@
 					  <c:when test="${empty sessionScope.loginUser}">
 					    <a class="auth__link" href="/user/login">로그인</a>
 					    <span class="auth__sep" aria-hidden="true">||</span>
-					    <a class="auth__link" href="/user/JoinUser">회원가입</a>
+					    <a class="auth__link" href="/user/join">회원가입</a>
 					  </c:when>
 					
 					  <c:otherwise>
@@ -108,7 +108,7 @@
 				<c:when test="${empty sessionScope.loginUser}">
 					 <a class="auth__link" href="/user/login">로그인</a>
 					 <span class="auth__sep" aria-hidden="true">||</span>
-					 <a class="auth__link" href="/user/JoinUser">회원가입</a>
+					 <a class="auth__link" href="/user/join">회원가입</a>
 				</c:when>
 					
 				<c:otherwise>
