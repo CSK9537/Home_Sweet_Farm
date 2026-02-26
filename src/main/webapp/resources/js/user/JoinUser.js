@@ -285,6 +285,57 @@
     });
   }
       
+  // 보기 모달
+  document.querySelectorAll('.link-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+    const modalId = e.currentTarget.getAttribute('data-modal-open'); 
+        
+    const urlMap = {
+        'modal-service': '/rules/use',
+        'modal-privacy': '/rules/privacy'
+    };
+    const sectionMap = {
+        'modal-service': 'terms__section',
+        'modal-privacy': 'policy__section'
+    };
+  
+    const url = urlMap[modalId]; // 대상 URL 결정
+    const targetModal = document.getElementById(modalId); 
+      const modalBody = targetModal ? targetModal.querySelector('.modal__body') : null;
+  
+      if (modalBody && url) {
+          fetch(url)
+              .then(response => {
+                  if (!response.ok) throw new Error('파일을 불러올 수 없습니다.');
+                  return response.text();
+              })
+              .then(data => {
+                // 임시 DOM 객체를 만들어 HTML 문자열을 주입
+                  const parser = new DOMParser();
+                  const doc = parser.parseFromString(data, 'text/html');
+                  
+                  // 1. querySelectorAll로 여러 요소 선택
+                  const sections = doc.querySelectorAll('.' + sectionMap[modalId]); 
+  
+                  // 2. 내용을 담을 빈 변수 생성
+                  let combinedHtml = '';
+  
+                  // 3. 루프를 돌며 HTML 코드를 하나로 합침
+                  sections.forEach(el => {
+                      combinedHtml += el.outerHTML; // 태그 포함 전체 내용 합치기
+                  });
+  
+                  // 4. 모달에 한꺼번에 주입
+                  modalBody.innerHTML = combinedHtml || '<p class="modal__text">내용이 없습니다.</p>';
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  modalBody.innerHTML = '약관을 불러오는 중 오류가 발생했습니다.';
+              });
+      }
+    });
+  });
+  
   
 //===== step1 -> step2 (account -> verify) =====
 

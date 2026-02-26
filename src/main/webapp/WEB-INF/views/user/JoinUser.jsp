@@ -49,16 +49,17 @@
             <form id="accountForm" autocomplete="off">
               <div class="form-col">
                 <label class="form-label" for="userId">아이디</label>
-                <input class="form-input" type="text" id="userId" name="username"
-                       placeholder="아이디 입력 (6~20자)" minlength="6" maxlength="20" required />
+                <div class="login-group">
+                  <input class="form-input" type="text" id="userId" name="username"
+                         placeholder="아이디 입력 (6~20자)" minlength="6" maxlength="20" required />
                   
                   <!-- 중복확인 버튼 -->
-				  <button type="button" id="checkIdBtn" class="form-btn">중복확인</button>
-
-				  <span id="idCheckMsg"></span>
-				
+				  <button type="button" id="checkIdBtn" class="btn btn-primary">중복확인</button>
+				</div>
 				  <!-- 결과 메시지-id -->
-				  <p id="idMsg" style="margin-top:6px; font-size:14px;"></p> 
+				  <div class="errMsg">
+				  	<p id="idMsg"></p> 
+				  </div>
               </div>
 
               <div class="form-col">
@@ -67,7 +68,9 @@
                        placeholder="영문 대/소문자, 숫자, 특수문자 포함 8~20자"
                        minlength="8" maxlength="20" required />
                    <!-- 결과 메시지-pw -->
-                   <p id="pwMsg" style="margin-top:6px; font-size:14px;"></p> 
+                   <div class="errMsg">
+	                   <p id="pwMsg"></p> 
+				   </div>
               </div>
 
               <div class="form-col">
@@ -75,7 +78,9 @@
                 <input class="form-input" type="password" id="userPw2" name="confirmPassword"
                        placeholder="비밀번호 확인" minlength="8" maxlength="20" required />
                    <!-- 결과 메시지-pw2 -->
-                   <p id="pwMsg2" style="margin-top:6px; font-size:14px;"></p> 
+                   <div class="errMsg">
+	                   	<p id="pwMsg2"></p> 
+				   </div>
               </div>
 
               <div class="terms-box">
@@ -128,7 +133,7 @@
                   <button type="button" class="social-btn google">구글</button>
                 </div>
                 <p class="login-guide">
-             	 회원가입 하셨다면<a class="login-link" href="${pageContext.request.contextPath}/user/login">로그인</a>
+             	 이미 회원가입 하셨다면?&nbsp;<a class="login-link" href="${pageContext.request.contextPath}/user/login">로그인</a>
              	 </p>
               </div>
               
@@ -186,17 +191,17 @@
               <div class="form-grid">
                 <div class="form-col">
                   <label class="form-label" for="userName">이름</label>
-                  <input class="form-input light" type="text" id="userName" name="name" placeholder="이름 입력" />
+                  <input class="form-input" type="text" id="userName" name="name" placeholder="이름 입력" />
                 </div>
 
                 <div class="form-col">
                   <label class="form-label" for="userNick">닉네임</label>
-                  <input class="form-input light" type="text" id="userNick" name="nickname" placeholder="닉네임 입력" />
+                  <input class="form-input" type="text" id="userNick" name="nickname" placeholder="닉네임 입력" />
                 </div>
 
                 <div class="form-col">
                   <label class="form-label" for="userInterest">관심사</label>
-                  <input class="form-input light" type="text" name="aspectNames" id="userInterest" placeholder="다육식물, 병해충, 비료" />
+                  <input class="form-input" type="text" name="aspectNames" id="userInterest" placeholder="다육식물, 병해충, 비료" />
                 </div>
 
                 <div class="form-col">
@@ -209,22 +214,22 @@
 
                 <div class="form-col">
                   <label class="form-label" for="userBirth">생년월일</label>
-                  <input class="form-input light" type="date" id="userBirth" name="brith_date_js" placeholder="yyyy.mm.dd" />
+                  <input class="form-input" type="date" id="userBirth" name="brith_date_js" placeholder="yyyy.mm.dd" />
                 </div>
 
                 <div class="form-col">
                   <label class="form-label" for="userPhone">휴대전화번호</label>
-                  <input class="form-input light" type="text" id="userPhone" name="phone" placeholder="휴대전화번호를 입력하세요(- 포함)" />
+                  <input class="form-input" type="text" id="userPhone" name="phone" placeholder="휴대전화번호를 입력하세요(- 포함)" />
                 </div>
 
                 <div class="form-col">
                   <label class="form-label" for="userEmail">이메일 주소</label>
-                  <input class="form-input light" type="email" id="userEmail" name="email" placeholder="plant@gmail.com" />
+                  <input class="form-input" type="email" id="userEmail" name="email" placeholder="plant@gmail.com" />
                 </div>
 
                 <div class="form-col">
                   <label class="form-label" for="userAddr">주소</label>
-                  <input class="form-input light" type="text" id="userAddr" name="address" placeholder="주소 입력" />
+                  <input class="form-input" type="text" id="userAddr" name="address" placeholder="주소 입력" />
                 </div>
               </div>
 
@@ -246,11 +251,7 @@
             <h4>서비스 이용약관</h4>
             <button type="button" class="modal__x" data-modal-close aria-label="닫기">×</button>
           </div>
-          <div class="modal__body">
-            <p class="modal__text">
-              (예시) 서비스 이용약관 내용을 여기에 출력합니다. 실제 프로젝트에서는 서버/파일에서 불러오세요.
-            </p>
-          </div>
+          <div class="modal__body"></div>
           <div class="modal__foot">
             <button type="button" class="btn btn-primary" data-modal-close>확인</button>
           </div>
@@ -264,11 +265,7 @@
             <h4>개인정보 처리방침</h4>
             <button type="button" class="modal__x" data-modal-close aria-label="닫기">×</button>
           </div>
-          <div class="modal__body">
-            <p class="modal__text">
-              (예시) 개인정보 처리방침 내용을 여기에 출력합니다. 민감 정보/보관 기간/파기 등을 명시하세요.
-            </p>
-          </div>
+          <div class="modal__body"></div>
           <div class="modal__foot">
             <button type="button" class="btn btn-primary" data-modal-close>확인</button>
           </div>
@@ -304,13 +301,13 @@
           <div class="modal__body">
             <div class="modal-form">
               <label class="form-label" for="emailAddr">이메일</label>
-              <input class="form-input light" type="email" id="emailAddr" placeholder="plant@gmail.com" />
+              <input class="form-input" type="email" id="emailAddr" placeholder="plant@gmail.com" />
               <div class="modal-mini-row">
                 <button type="button" class="btn btn-outline" id="emailSendBtn">인증메일 발송</button>
               </div>
 
               <label class="form-label" for="emailCode">인증코드</label>
-              <input class="form-input light" type="text" id="emailCode" placeholder="인증코드 입력" />
+              <input class="form-input" type="text" id="emailCode" placeholder="인증코드 입력" />
               <div class="modal-mini-row">
                 <button type="button" class="btn btn-primary" id="emailVerifyBtn">인증 완료</button>
               </div>
@@ -333,7 +330,7 @@
           <div class="modal__body">
             <div class="modal-form">
               <label class="form-label" for="plantNameInput">식물명</label>
-              <input class="form-input light" type="text" id="plantNameInput" placeholder="예) 몬스테라" />
+              <input class="form-input" type="text" id="plantNameInput" placeholder="예) 몬스테라" />
               <div class="modal-mini-row">
                 <button type="button" class="btn btn-primary" id="addPlantBtn">추가</button>
               </div>
