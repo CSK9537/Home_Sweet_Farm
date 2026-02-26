@@ -318,7 +318,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
 });
 
 
-		
 //이메일 인증코드 발송
 function sendVerifyCode(){
 	const emailEl = document.querySelector("#findIdEmail");
@@ -352,17 +351,8 @@ function sendVerifyCode(){
   		if(codeMsg) codeMsg.style.color = "red";
   	});
 }
-
-////발송 버튼(발송만)
-//  const sendBtn = document.querySelector("#sendBtn");
-//  if (sendBtn) {
-//	  sendBtn.addEventListener("click", function () {
-//		  console.log("SEND BTN CLICK")
-//		  sendVerifyCode();
-//	  });
-//  }
-		  
-//인증버튼(코드 검증만)		  
+	  
+//인증버튼	  
   const verifyBtn = document.querySelector("#verifyBtn")
       if (verifyBtn) {
 	  verifyBtn.addEventListener("click", function () {
@@ -391,18 +381,27 @@ function sendVerifyCode(){
         .catch(() => alert("인증 확인 중 오류가 발생했습니다."));
     });
   }
-////다음 단계 이동 버튼
-//  var nextBtn = $("#nextBtn");
-//  if (nextBtn) {
-//	  nextBtn.addEventListener("click", function () {
-//      if (!state.verifiedEmail) {
-//    	  return;
-//      }
-//      setActiveStep("profile");
-//    });
-//	  nextBtn();
-//  }
-//  function nextBtn(){
-//	  if(!nextBtn) return;
-//	  nextBtn.disabled = !state.verifiedEmail;
-//}
+  
+//다음 단계 이동 버튼
+  const nextBtnEl = document.querySelector("#nextBtn");
+  
+  if(nextBtnEl){
+	  nextBtnEl.dataset.verified = "false";
+  }
+  function updateNextBtn(){
+	  if(!nextBtnEl) return;
+	  nextBtnEl.disabled = nextBtnEl.dataset.verified !== "true";
+}
+  //최초 진입 시 비활성화
+  updateNextBtn();
+  
+  if (nextBtnEl) {
+	  nextBtnEl.addEventListener("click", function () {
+      if (nextBtnEl.dataset.verified !== "true") {
+    	  setMsg(codeMsg, "이메일 인증을 완료해주세요.");  
+    	  codeMsg.style.color = "red";
+    	  return;
+      }
+      setActiveStep("profile");
+    });
+  }
