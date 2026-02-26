@@ -1,4 +1,8 @@
 /* login.css - ContentLayout.css의 content-card 내부를 2분할하여 사용 */
+body{
+	margin: 0;
+	padding: 0;
+}
 
 .login-layout{
   width: 100%;
@@ -16,7 +20,7 @@
   border-right: 3px solid #6b7b61;
   background:
     linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.25)),
-    url("/resources/image/Default_Plant.jpg");
+    url("/resources/image/Main_Plant.jpg");
   background-size: cover;
   background-position: center;
 }

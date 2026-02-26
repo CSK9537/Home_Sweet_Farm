@@ -7,13 +7,31 @@
 	<!-- 회원가입  -->
 	<insert id="insert" parameterType="org.joonzis.user.vo.UserVO">
 		INSERT INTO TBL_USER
-			(user_id, username, password, 
-			name, nickname, brith_date, phone, email, address, 
-			confirm_service, confirm_userinfo, confirm_event)
+			(user_id,
+			username,
+			password,
+			nickname,
+			name,
+			email,
+			brith_date,
+			address,
+			phone,
+			confirm_service,
+			confirm_userinfo,
+			confirm_event)
 		VALUES
-			 (USER_ID_SEQ.NEXTVAL, #{username}, #{password},
-			  #{name}, #{nickname}, #{brith_date}, #{phone}, #{email}, #{address},  
-			  #{confirm_service}, #{confirm_userinfo}, #{confirm_event})
+			(USER_ID_SEQ.NEXTVAL,
+			#{username},
+			#{password},
+			#{nickname, jdbcType=VARCHAR},
+			#{name, jdbcType=VARCHAR},
+			#{email, jdbcType=VARCHAR},
+			#{brith_date, jdbcType=DATE},
+			#{address, jdbcType=VARCHAR},
+			#{phone, jdbcType=VARCHAR},
+			#{confirm_service},
+			#{confirm_userinfo},
+			#{confirm_event})
 	</insert>
 	
 	<!-- user-id 조회  -->
