@@ -2,54 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<%-- 
-<%
-    // ✅ DTO 없이: List<Map> 더미 생성
-    java.util.List popularPosts = (java.util.List) request.getAttribute("popularPosts");
-    java.util.List hotPosts     = (java.util.List) request.getAttribute("hotPosts");
-    java.util.List latestPosts  = (java.util.List) request.getAttribute("latestPosts");
-
-    if (popularPosts == null || popularPosts.isEmpty()) {
-
-        popularPosts = new java.util.ArrayList();
-        hotPosts     = new java.util.ArrayList();
-        latestPosts  = new java.util.ArrayList();
-
-        String defaultImg = request.getContextPath() + "/resources/image/Default_Plant.jpg";
-
-        for (int i = 1; i <= 8; i++) {
-            java.util.Map p = new java.util.HashMap();
-
-            p.put("boardId", i);
-            p.put("title", "더미 게시글 제목 " + i);
-            p.put("author", "테스트유저" + i);
-
-            // ✅ JSP/JS 공통 키로 맞춤
-            p.put("thumbSrc", defaultImg);
-
-            p.put("viewCount", 100 * i);
-            p.put("likeCount", 20 * i);
-            p.put("replyCount", 3 * i);
-
-            // ✅ 문자열(콤마구분) 유지 → JSP에서 fn:split로 처리
-            p.put("hashtags", "텃밭,농사,식물");
-
-            p.put("moveUrl", "#");
-
-            popularPosts.add(p);
-            hotPosts.add(p);
-            latestPosts.add(p);
-        }
-
-        request.setAttribute("popularPosts", popularPosts);
-        request.setAttribute("hotPosts", hotPosts);
-        request.setAttribute("latestPosts", latestPosts);
-    }
-%>
- --%>
- 
-<jsp:include page="/WEB-INF/views/layout/header.jsp" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/community/CommunityMain.css" />
+<jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
 <c:set var="DEFAULT_POST_IMG" value="${pageContext.request.contextPath}/resources/image/Default_Plant.jpg" />
 
@@ -82,9 +36,7 @@
            data-more-api="${pageContext.request.contextPath}/community/main/more"
            data-default-img="${DEFAULT_POST_IMG}">
 
-        <!-- =================================================
-             ✅ 홈 화면(기존 3블록) : content-card의 기본 화면
-        ================================================== -->
+        <!-- 홈 화면(기존 3블록) : content-card의 기본 화면 -->
         <div id="communityHomeView">
 
           <!-- ===================== 인기글 ===================== -->
@@ -114,7 +66,7 @@
                   <c:otherwise>
                     <div class="rail-track">
                       <c:forEach var="p" items="${popularPosts}">
-                        <!-- ✅ thumbSrc(더미/실데이터 공통 호환) -->
+                        <!-- thumbSrc(더미/실데이터 공통 호환) -->
                         <c:set var="thumbSrc"
                                value="${not empty p.thumbSrc ? p.thumbSrc : (not empty p.thumbUrl ? p.thumbUrl : (not empty p.imgUrl ? p.imgUrl : DEFAULT_POST_IMG))}" />
 

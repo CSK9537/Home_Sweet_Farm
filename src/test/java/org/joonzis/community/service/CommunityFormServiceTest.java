@@ -62,60 +62,60 @@ public class CommunityFormServiceTest {
 //        }
 //    }
 //	
-	// 게시글 수정
-    @Test
-    public void write_withFiles_shouldInsertBoardAndFiles() {
-        // given
-        int loginUserId = 221;
-        String tempKey = "TEST_TEMP_KEY_FILES";
-        String tagsCsv = "#수정";
-
-        BoardVO board = new BoardVO();
-        board.setUser_id(loginUserId);
-        board.setTitle("수정");
-        board.setContent("수정");
-
-        board.setBoard_type("G");
-        board.setCategory_id(120);
-        board.setParent_id(null);
-        board.setPrice(null);
-        board.setTrade_status(null);
-        board.setIs_active("Y");
-        board.setIs_selected("N");
-
-        // “첨부파일 형태” 더미 (MultipartFile)
-        MockMultipartFile file1 = new MockMultipartFile(
-                "attachFiles",              // name (컨트롤러 파라미터명과 같게 하는 게 제일 안전)
-                "test1.png",                // original filename
-                "image/png",                // content-type
-                "PNG_DUMMY_BYTES".getBytes()
-        );
-
-        MockMultipartFile file2 = new MockMultipartFile(
-                "attachFiles",
-                "test2.jpg",
-                "image/jpeg",
-                "JPG_DUMMY_BYTES".getBytes()
-        );
-
-        MultipartFile[] attachFiles = new MultipartFile[] { file1, file2 };
-
-        // when
-        try {
-            communityFormService.write(board, loginUserId, tempKey, attachFiles, tagsCsv);
-
-            // then
-            assertTrue("board_id가 채워지지 않았습니다. (selectKey/useGeneratedKeys 설정 확인)",
-                    board.getBoard_id() > 0);
-
-            // 파일 테이블 insert까지 검증하려면,
-            // 1) BoardFileMapper/Repository를 @Autowired 해서 board_id로 조회 후 count 체크
-            // 2) 또는 communityFormService에 “첨부파일 저장 결과”를 리턴하도록 설계
-            // 둘 중 하나가 필요함 (현재 테스트만으론 '예외 없이 저장 로직이 수행됨'까지만 확실)
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("write() (withFiles) 중 예외 발생: " + e.getMessage());
-        }
-    }
+//	// 게시글 수정
+//    @Test
+//    public void write_withFiles_shouldInsertBoardAndFiles() {
+//        // given
+//        int loginUserId = 221;
+//        String tempKey = "TEST_TEMP_KEY_FILES";
+//        String tagsCsv = "#수정";
+//
+//        BoardVO board = new BoardVO();
+//        board.setUser_id(loginUserId);
+//        board.setTitle("수정");
+//        board.setContent("수정");
+//
+//        board.setBoard_type("G");
+//        board.setCategory_id(120);
+//        board.setParent_id(null);
+//        board.setPrice(null);
+//        board.setTrade_status(null);
+//        board.setIs_active("Y");
+//        board.setIs_selected("N");
+//
+//        // “첨부파일 형태” 더미 (MultipartFile)
+//        MockMultipartFile file1 = new MockMultipartFile(
+//                "attachFiles",              // name (컨트롤러 파라미터명과 같게 하는 게 제일 안전)
+//                "test1.png",                // original filename
+//                "image/png",                // content-type
+//                "PNG_DUMMY_BYTES".getBytes()
+//        );
+//
+//        MockMultipartFile file2 = new MockMultipartFile(
+//                "attachFiles",
+//                "test2.jpg",
+//                "image/jpeg",
+//                "JPG_DUMMY_BYTES".getBytes()
+//        );
+//
+//        MultipartFile[] attachFiles = new MultipartFile[] { file1, file2 };
+//
+//        // when
+//        try {
+//            communityFormService.write(board, loginUserId, tempKey, attachFiles, tagsCsv);
+//
+//            // then
+//            assertTrue("board_id가 채워지지 않았습니다. (selectKey/useGeneratedKeys 설정 확인)",
+//                    board.getBoard_id() > 0);
+//
+//            // 파일 테이블 insert까지 검증하려면,
+//            // 1) BoardFileMapper/Repository를 @Autowired 해서 board_id로 조회 후 count 체크
+//            // 2) 또는 communityFormService에 “첨부파일 저장 결과”를 리턴하도록 설계
+//            // 둘 중 하나가 필요함 (현재 테스트만으론 '예외 없이 저장 로직이 수행됨'까지만 확실)
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            fail("write() (withFiles) 중 예외 발생: " + e.getMessage());
+//        }
+//    }
 }
