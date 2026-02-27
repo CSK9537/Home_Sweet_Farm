@@ -2,40 +2,50 @@ import { chatState } from "./ChatState.js";
 import { loadMessages } from "./ChatMessage.js";
 
 export function jumpToMessage(msgId, keyword) {
-    // 이전 점프 하이라이트 제거
-    document.querySelectorAll(".highlight-jump")
-        .forEach(el => el.classList.remove("highlight-jump"));
-
-    // 이전 검색 하이라이트 제거
-    document.querySelectorAll(".message-box").forEach(el => {
+        document.querySelectorAll(".message-box .text-content").forEach(el => {
         if (el.dataset.original) {
-            el.innerText = el.dataset.original;
+            el.textContent = el.dataset.original;
             delete el.dataset.original;
         }
     });
+
     const container = document.getElementById("messages");
     const target = container.querySelector(`[data-msg_id="${msgId}"]`);
     if (!target) return;
-
     target.scrollIntoView({ behavior: "smooth", block: "center" });
 
-    const box = target.querySelector(".message-box");
-    if (box) {
+    const box = target.querySelector(".message-box .text-content");
+    if (!box) return;
 
-        // 기존 검색 하이라이트 제거
-        if (box.dataset.original) {
-            box.innerText = box.dataset.original;
+    if (keyword) {
+        if (!box.dataset.original) {
+            box.dataset.original = box.innerText;
         }
-        if (keyword) {
-            if (!box.dataset.original) {
-                box.dataset.original = box.innerText;
-            }
-            const original = box.dataset.original;
-            const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(`(${escaped})`, "gi");
-            box.innerHTML =
-                original.replace(regex, `<span class="highlight-search">$1</span>`);
+
+        const original = box.dataset.original;
+        const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escaped})`, "gi");
+
+        // 기존 textNode 기반 하이라이트
+        box.textContent = original; // 원본 텍스트 복원
+        const frag = document.createDocumentFragment();
+
+        let lastIndex = 0;
+        let match;
+        while ((match = regex.exec(original)) !== null) {
+            frag.appendChild(document.createTextNode(original.slice(lastIndex, match.index)));
+
+            const span = document.createElement('span');
+            span.classList.add('highlight-search');
+            span.textContent = match[0];
+            frag.appendChild(span);
+
+            lastIndex = regex.lastIndex;
         }
+        frag.appendChild(document.createTextNode(original.slice(lastIndex)));
+
+        box.innerHTML = ""; // 기존 내용 제거
+        box.appendChild(frag);
     }
 }
 
@@ -156,7 +166,6 @@ export function initSearchKeydown() {
     });
 
 }
-
 export function initNextSearchButton() {
 
     document.getElementById("nextSearchBtn").addEventListener("click", () => {

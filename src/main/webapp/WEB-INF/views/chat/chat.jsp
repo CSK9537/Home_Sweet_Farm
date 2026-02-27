@@ -7,6 +7,8 @@
 			<meta charset="UTF-8">
 			<title>Insert title here</title>
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/chat/chat.css">
+			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 		</head>
 
 		<body>
@@ -103,10 +105,10 @@
 							<div class="chat-button-area">
 								<div class="left-buttons">
 									<button class="btn-image" title="이미지 첨부">
-										<img src="image_icon.png" alt="이미지">
+										<i class="fa-regular fa-image"></i>
 									</button>
 									<button class="btn-file" title="파일 첨부">
-										<img src="file_icon.png" alt="파일">
+										<i class="fa-regular fa-file"></i>
 									</button>
 								</div>
 								<div class="right-info">
@@ -153,6 +155,9 @@
 				<div class="modal-content image-modal-content">
 					<span id="closeImageModal" class="close-btn">&times;</span>
 					<img id="previewImage" src="" alt="이미지 미리보기">
+					<button id="downloadImageBtn" class="download-btn">
+						다운로드
+					</button>
 				</div>
 			</div>
 

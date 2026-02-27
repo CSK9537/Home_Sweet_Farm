@@ -3,6 +3,18 @@ import { loadMessages } from "./ChatMessage.js";
 import { subscribeRoom } from "./ChatWebSocket.js";
 import { updateSearchCounter } from "./ChatSearch.js";
 
+// 채팅방 프리뷰 분기
+function makePreviewMessage(msg, type) {
+
+    if (type === "IMAGE") return "📷 사진";
+    if (type === "FILE") return "📎 파일";
+
+    return (msg || "")
+        .replace(/\n/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
 // 채팅방 최근 메세지 날짜 계산
 function formatChatTime(dateString) {
 
@@ -38,7 +50,19 @@ export function loadChatRooms() {
     const chatListContainer = document.querySelector('.chat-items');
 
     fetch(`/chat/rooms?testUser_id=${chatState.session.myUserId}`)
-        .then(res => res.json())
+        .then(async res => {
+
+            const text = await res.text();
+
+            console.log(" 서버 raw 응답 =", text);
+
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error("JSON 파싱 실패");
+                throw e;
+            }
+        })
         .then(rooms => {
             console.log("채팅방 데이터:", rooms);
             chatListContainer.innerHTML = ""; // 기존 내용 초기화
@@ -53,7 +77,9 @@ export function loadChatRooms() {
             <img src="https://via.placeholder.com/40" alt="유저">
             <div class="info">
             <div class="name">${room.other_user_name}</div>
-            <div class="last-msg">${room.last_msg || ''}</div>
+                <div class="last-msg">
+                    ${makePreviewMessage(room.last_msg, room.last_msg_type)}
+                </div>
             </div>
             <div class="right">
                 <div class="time">
@@ -124,6 +150,8 @@ export function loadChatRooms() {
 
 //채팅방 목록 실시간 업데이트
 export function updateRoomListRealtime(msg) {
+    console.log("realtime msg =", msg);
+
 
     const chatListContainer = document.querySelector('.chat-items');
 
@@ -148,7 +176,9 @@ export function updateRoomListRealtime(msg) {
             <img src="https://via.placeholder.com/40">
             <div class="info">
                 <div class="name">${msg.sender_name || "유저"}</div>
-                <div class="last-msg">${msg.content || ""}</div>
+                    <div class="last-msg">
+                        ${makePreviewMessage(msg.content, msg.msg_type)}
+                    </div>
             </div>
         `;
 
@@ -156,9 +186,10 @@ export function updateRoomListRealtime(msg) {
     }
 
     // 마지막 메시지 갱신 
-    const lastMsg = item.querySelector(".last-msg");
-    if (lastMsg) {
-        lastMsg.innerText = msg.content || "";
+    const lastMsg = makePreviewMessage(msg.content, msg.msg_type);
+    const lastMsgEl = item.querySelector(".last-msg");
+    if (lastMsgEl) {
+        lastMsgEl.innerText = lastMsg;
     }
 
     // 시간 갱신
@@ -169,7 +200,22 @@ export function updateRoomListRealtime(msg) {
 
     // unread 카운트
     if (!isCurrentRoom && msg.sender_id !== chatState.session.myUserId) {
-        const right = item.querySelector(".right")
+
+        const groupId = msg.upload_group_id || msg.msg_id;
+        const roomKey = String(roomId);
+
+        if (!chatState.message.roomUnreadGroupMap[roomKey]) {
+            chatState.message.roomUnreadGroupMap[roomKey] = new Set();
+        }
+
+        const unreadGroupSet = chatState.message.roomUnreadGroupMap[roomKey];
+
+        // 이미 unread 처리된 그룹이면 무시
+        if (unreadGroupSet.has(groupId)) return;
+
+        unreadGroupSet.add(groupId);
+
+        const right = item.querySelector(".right");
         let badge = right.querySelector(".badge");
 
         if (!badge) {
@@ -332,9 +378,15 @@ export function initPendingFilesModal() {
 
     function renderFileList() {
         container.innerHTML = "";
+
+        const fileContainer = document.createElement("div");
+        fileContainer.classList.add("file-container"); // CSS에서 display: block
+
         currentFiles.forEach((file, idx) => {
-            const div = document.createElement("div");
-            div.innerText = file.name;
+            const span = document.createElement("span");
+            span.href = "#"; // 다운로드 URL 연결 필요
+            span.innerText = `📎 ${file.name}`;
+            span.classList.add("file-name");
 
             const removeBtn = document.createElement("button");
             removeBtn.innerText = "삭제";
@@ -343,9 +395,16 @@ export function initPendingFilesModal() {
                 renderFileList();
             });
 
-            div.appendChild(removeBtn);
-            container.appendChild(div);
+            const wrapper = document.createElement("div");
+            wrapper.style.display = "flex";
+            wrapper.style.justifyContent = "space-between";
+            wrapper.appendChild(span);
+            wrapper.appendChild(removeBtn);
+
+            fileContainer.appendChild(wrapper);
         });
+
+        container.appendChild(fileContainer);
 
         uploadBtn.disabled = currentFiles.length === 0;
         uploadBtn.style.background = currentFiles.length === 0 ? "gray" : "#4CAF50";
@@ -361,9 +420,11 @@ export function initPendingFilesModal() {
     }
 
     function uploadSelectedFiles() {
+
+        const uploadGroupId = crypto.randomUUID();
         currentFiles.forEach(file => {
-            const type = file.type.startsWith("image/") ? "IMAGE" : "FILE";
-            uploadFile(file, type);
+            const type = currentModalType;
+            uploadFile(file, type, uploadGroupId);
         });
         currentFiles = [];
         renderFileList();
@@ -385,7 +446,7 @@ export function initPendingFilesModal() {
     [btnImage, btnFile].forEach(btn => {
         btn.addEventListener("click", () => {
             currentModalType = btn.classList.contains("btn-image") ? "IMAGE" : "FILE";
-            modalTitle.innerText = currentModalType === "IMAGE"? "이미지 첨부" : "파일 첨부";
+            modalTitle.innerText = currentModalType === "IMAGE" ? "이미지 첨부" : "파일 첨부";
             currentFiles = [];
             renderFileList();
 
@@ -409,13 +470,17 @@ export function initPendingFilesModal() {
 }
 
 // 실제 업로드 함수
+function uploadFile(file, type, group_id) {
+
+// 실제 업로드 함수
 function uploadFile(file, type) {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("sender_id", chatState.session.myUserId);
+    formData.append("testUser_id", chatState.session.myUserId);
     formData.append("receiver_id", chatState.session.receiverId);
     formData.append("room_id", chatState.session.currentRoomId);
     formData.append("msg_type", type);
+    formData.append("upload_group_id", group_id);
 
     fetch("/chat/rooms/upload", {
         method: "POST",
@@ -430,14 +495,33 @@ export function initImagePreviewModal() {
     const modal = document.getElementById("imagePreviewModal");
     const previewImg = document.getElementById("previewImage");
     const closeBtn = document.getElementById("closeImageModal");
+    const downloadBtn = document.getElementById("downloadImageBtn");
 
+    let currentImageUrl = null;
     // 이미지 클릭 시
     document.addEventListener("click", (e) => {
         if (e.target.tagName === "IMG" && e.target.classList.contains("chat-thumbnail")) {
-            previewImg.src = e.target.src;
+            currentImageUrl = e.target.src;
+            previewImg.src = currentImageUrl;
             modal.classList.add("show");
             document.body.classList.add("modal-open");
         }
+    });
+
+    // 다운로드 
+    downloadBtn.addEventListener("click", () => {
+
+        if (!currentImageUrl) return;
+
+        const a = document.createElement("a");
+        a.href = currentImageUrl;
+        a.download = decodeURIComponent(
+            currentImageUrl.split("/").pop()
+        );
+
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
     });
 
     // 모달 닫기
@@ -445,6 +529,7 @@ export function initImagePreviewModal() {
         modal.classList.remove("show");
         document.body.classList.remove("modal-open");
         previewImg.src = "";
+        currentImageUrl = null;
     });
 
     // 모달 바깥 클릭 시 닫기
