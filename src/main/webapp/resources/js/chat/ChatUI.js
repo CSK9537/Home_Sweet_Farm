@@ -471,9 +471,6 @@ export function initPendingFilesModal() {
 
 // 실제 업로드 함수
 function uploadFile(file, type, group_id) {
-
-// 실제 업로드 함수
-function uploadFile(file, type) {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("testUser_id", chatState.session.myUserId);
