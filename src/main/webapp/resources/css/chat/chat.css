@@ -611,6 +611,10 @@ body {
     padding: 6px 0;
 }
 
+.message-box:has(.image-grid) {
+    padding: 6px;
+}
+
 /* 상대 메시지 박스 스타일 */
 .message-row.received .message-box {
     background-color: #fff;

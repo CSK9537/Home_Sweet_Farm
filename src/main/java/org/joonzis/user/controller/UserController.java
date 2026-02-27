@@ -20,6 +20,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -38,31 +40,31 @@ public class UserController {
 	 * */
 	
 	//1)회원가입 화면
-	@GetMapping("/JoinUser")
+	@GetMapping("/join")
 	public String joinForm() {
 		return "user/JoinUser";
 	}
 	
 	//2)회원가입 처리
-		@PostMapping("/JoinUser") 
-		public String joinProcess(
-				UserVO vo, HttpSession session,
-				@RequestParam(value ="aspectNames", required=false)String aspectNames,
-				@RequestParam(value ="brith_date_js", required=false) String brith_date_js, Model model) {
-		    try {
-		    	// yyyy-MM-dd 형식의 문자열을 java.sql.Date로 변환
-				if (brith_date_js != null && !brith_date_js.isEmpty()) {
-			        vo.setBrith_date(java.sql.Date.valueOf(brith_date_js));
-			    }
-				uservice.insert(vo, aspectNames);
-				session.setAttribute("msg", "회원가입 완료");
-				return "redirect:/";
-			} catch (Exception e) {
-				model.addAttribute("msg", "회원가입 실패");
-				model.addAttribute("vo", vo);
-				return "user/JoinUser"; //회원가입 화면으로 다시 돌아감
-			}
+	@PostMapping("/join") 
+	public String joinProcess(
+			UserVO vo, HttpSession session,
+			@RequestParam(value ="aspectNames", required=false)String aspectNames,
+			@RequestParam(value ="brith_date_js", required=false) String brith_date_js, Model model) {
+	    try {
+	    	// yyyy-MM-dd 형식의 문자열을 java.sql.Date로 변환
+			if (brith_date_js != null && !brith_date_js.isEmpty()) {
+		        vo.setBrith_date(java.sql.Date.valueOf(brith_date_js));
+		    }
+			uservice.insert(vo, aspectNames);
+			session.setAttribute("msg", "회원가입 완료");
+			return "user/JoinSuccess";
+		} catch (Exception e) {
+			model.addAttribute("msg", "회원가입 실패");
+			model.addAttribute("vo", vo);
+			return "user/JoinUser"; //회원가입 화면으로 다시 돌아감
 		}
+	}
 	
 		
 	//3)로그인 화면
@@ -150,72 +152,87 @@ public class UserController {
 	public Map<String, Boolean> checkId(@RequestParam("username") String username) {
 		     boolean isDuplicate = uservice.isIdDuplicate(username.trim());
 		     return Collections.singletonMap("duplicate", isDuplicate);
-		    }	
-
+		    }
+	
+	//8)이메일 중복 확인
+	@GetMapping(value = "/checkEmail", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Map<String, Boolean> checkEmail(@RequestParam("email") String email) {
+		     boolean isDuplicate = uservice.isEmailDuplicate(email.trim());
+		     return Collections.singletonMap("duplicate", isDuplicate);
+		    }
 		 
 	/*
 	 * 아이디 찾기, 비밀번호 찾기
 	 * */
 	
-	//1)화면요청용 컨트롤러
-		@GetMapping("/findId")
-		public String findIdForm() {
-			return "/user/findId";
-		}
-		
-		@GetMapping("/findPw")
-		public String findPwForm() {
-			return "/user/findPw";
-		}
-
-	//2)아이디 찾기(이메일)-비동기 방식
-	@GetMapping("/findId/email")//url예시: http://localhost:8081/user/find-id/email?email=test@test.com
+	//1)아이디 찾기(이메일)-비동기 방식
+	@GetMapping(value="/findId/email", 
+	produces = "text/plain; charset=UTF-8")
 	@ResponseBody
-	public String findIdByEmail(@RequestParam String email) {
-		return uservice.findIdByEmail(email);
+	public String findIdByEmail(@RequestParam String name,
+								@RequestParam String email) {
+		String id = uservice.findIdByEmail(name, email);
+		return(id == null || id.isBlank()) ? "NOT_FOUND" : id;
 	}
 	
-	//3)아이디 찾기(전화번호)
-	@GetMapping("/findId/phone") //url예시: http://localhost:8081/user/find-id/phone?phone=13571357
-	@ResponseBody
-	public String findIdByPhone(@RequestParam String phone) {
-		return uservice.findIdByPhone(phone);
-	}
+//	// 2) 이메일 인증코드 체크
+//	@PutMapping("/email/check/{code}")
+//	@ResponseBody
+//	public String checkEmailCode(@PathVariable String code,
+//	                             HttpSession session) {
+//
+//	    String savedCode = (String) session.getAttribute("emailCode");
+//
+//	    // 세션에 코드 없으면 실패
+//	    if(savedCode == null) {
+//	        return "fail";
+//	    }
+//
+//	    // 코드 비교
+//	    if(savedCode.equals(code)) {
+//	        return "verified";
+//	    }
+//
+//	    return "fail";
+//	}
 	
-	//4)비밀번호 찾기 대상 확인(이메일)
-	@GetMapping("/findPw/email") //url예시: http://localhost:8081/user/find-pw/email?username=linwee&email=test@test.com
+	//2)비밀번호 찾기 대상 확인(아이디+이메일)
+	@GetMapping(value="/findPw/email", 
+	produces = "text/plain; charset= UTF-8") 
 	@ResponseBody
-	public int existByEmail(@RequestParam String username, 
+	public String checkPwTarget(@RequestParam String username, 
 									@RequestParam String email) {
-		return uservice.existUserByEmail(username, email);
-	}
-	
-	//5)비밀번호 찾기 대상 확인(전화번호)
-	@GetMapping("/findPw/phone") //url예시: http://localhost:8081/user/find-pw/phone?username=linwee&phone=12345678
-	@ResponseBody
-	public int existByPhone(@RequestParam String username,
-							@RequestParam String phone) {
-		return uservice.existUserByPhone(username, phone);
+		int exists = uservice.existUserByEmail(username, email);
+		return exists == 1 ? "OK" : "NOT_FOUND";
 	}
 
-	//6)비밀번호 재설정
-	// 비밀번호 재설정 화면 보여주기
-	@GetMapping("/find-pw/reset")
-	public String resetPwPage() {
-	    return "/userTest/resetPw"; // resetPw.jsp
-	}
-
-	//7)실제 비밀번호 변경 처리
-	@PostMapping("/find-pw/reset")
+	//6)비밀번호 재설정(아이디 + 이메일 + 새 비번)
+	@GetMapping(value="/find-pw/reset", 
+	produces = "text/plain; charset= UTF-8")
 	public String resetPw(UserVO vo) {
-		uservice.updatePw(vo);
-		return "redirect:/user/login";
+		int exists = uservice.existUserByEmail(vo.getUsername(), vo.getEmail());
+		if(exists != 1)
+	    return "NOT_FOUND";
+	    uservice.resetPw(vo);
+		return "OK";
 	}
-	//8)아이디 중복체크
+
+	//7)아이디 중복체크
 	@GetMapping("/id-check") //url예시: http://localhost:8081/user/id-check?username=linwee
 	@ResponseBody
 	public boolean idCheck(@RequestParam String username) {
 		return uservice.isIdDuplicate(username);
+	}
+	
+	@GetMapping("/me")
+	@ResponseBody
+	public UserVO getCurrentUser(HttpSession session) {
+	    UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+	    if (loginUser == null) {
+	        throw new RuntimeException("로그인 필요");
+	    }
+	    return loginUser;
 	}
 	
 	
@@ -228,5 +245,5 @@ public class UserController {
 		// UserDTO profile =
 		uservice.selectPublicProfile(userId);
 		return "userTest/publicProfile";
-	}
+		}
 	}

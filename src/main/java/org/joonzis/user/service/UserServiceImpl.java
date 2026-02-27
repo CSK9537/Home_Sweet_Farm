@@ -76,29 +76,24 @@ public class UserServiceImpl implements UserService{
 		return usermapper.delete(vo);
 	}
 	@Override
-	public String findIdByEmail(String email) {
-		return usermapper.findIdByEmail(email);
-	}
-	@Override
-	public String findIdByPhone(String phone) {
-		return usermapper.findIdByPhone(phone);
+	public String findIdByEmail(String name, String email) {
+		return usermapper.findIdByEmail(name, email);
 	}
 	@Override
 	public int existUserByEmail(String username, String email) {
 		return usermapper.existUserByEmail(username, email);
 	}
 	@Override
-	public int existUserByPhone(String username, String phone) {
-		return usermapper.existUserByPhone(username, phone);
-	}
-	@Override
-	public void updatePw(UserVO vo) {
-		usermapper.updatePw(vo);
-
+	public void resetPw(UserVO vo) {
+		usermapper.resetPw(vo);
 	}
 	@Override
 	public boolean isIdDuplicate(String username) {
 		return usermapper.countByUsername(username)>0;
+	}
+	@Override
+	public boolean isEmailDuplicate(String email) {
+		return usermapper.countByEmail(email)>0;
 	}
 	@Override
 	public int countByUsername(String username) {
@@ -108,6 +103,7 @@ public class UserServiceImpl implements UserService{
 	public UserVO findByUsername(String username) {
 		return usermapper.findByUsername(username);
 	}
+	
 	@Override
 	public UserDTO selectPublicProfile(int user_id) {
 		UserDTO dto =

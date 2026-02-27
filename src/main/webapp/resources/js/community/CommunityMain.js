@@ -1,199 +1,218 @@
 (function () {
+  function qs(sel, parent) { return (parent || document).querySelector(sel); }
+  function qsa(sel, parent) { return Array.prototype.slice.call((parent || document).querySelectorAll(sel)); }
 
-  function qs(sel, root) { return (root || document).querySelector(sel); }
-  function qsa(sel, root) { return (root || document).querySelectorAll(sel); }
-  function toInt(v) { var n = parseInt(v, 10); return isNaN(n) ? 0 : n; }
+  var root = qs('#communityMainSections');
+  if (!root) return;
 
-  // rail 안의 카드들을 rail-track으로 감싸기
-  function ensureTrack(rail) {
-    var track = rail.querySelector('.rail-track');
-    if (track) return track;
+  // ====== API/기본 이미지 ======
+  var MORE_API = root.getAttribute('data-more-api') || '/community/main/more';
+  var DEFAULT_IMG = root.getAttribute('data-default-img') || '';
 
-    track = document.createElement('div');
-    track.className = 'rail-track';
+  // ====== content-card 내부 "홈뷰/전체보기뷰" ======
+  var homeView = qs('#communityHomeView', root);
+  var moreView = qs('#communityMoreView', root);
+  var moreTitle = qs('#cmMoreTitle', root);
+  var moreList = qs('#cmMoreList', root);
+  var backBtn = qs('#cmMoreBackBtn', root);
+  var viewBtnsWrap = qs('#cmMoreViewBtns', root);
 
-    // rail의 직계 element만 track으로 이동
-    var nodes = [];
-    var i;
-    for (i = 0; i < rail.childNodes.length; i++) {
-      if (rail.childNodes[i].nodeType === 1) nodes.push(rail.childNodes[i]);
-    }
-    for (i = 0; i < nodes.length; i++) track.appendChild(nodes[i]);
-
-    rail.appendChild(track);
-    return track;
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
-  function getGap(track) {
-    var cs = window.getComputedStyle(track);
-    var g = cs.columnGap || cs.gap || '0';
-    return toInt(g);
+  function formatHashtags(hashtags) {
+    if (!hashtags) return '';
+    return String(hashtags)
+      .split(',')
+      .map(function (t) { return t.trim(); })
+      .filter(Boolean)
+      .map(function (t) { return '#' + t; })
+      .join(' ');
   }
 
-  function visibleCountByRail(rail) {
-    var w = rail.getBoundingClientRect().width;
-    // CSS 반응형과 동일하게
-    if (w <= 767) return 1;
-    if (w <= 1024) return 2;
-    return 4;
-  }
+  // ====== 기존 캐러셀 네비/카드 이동 유지 ======
+  function initCarouselNav(scope) {
+    qsa('.js-nav', scope).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = btn.getAttribute('data-target');
+        var dir = parseInt(btn.getAttribute('data-dir') || '1', 10);
 
-  function initCarousel(key) {
-    var rail = document.getElementById('rail-' + key);
-    if (!rail) return;
+        // 기존 코드 구조에 맞춰 rail id가 #rail-popular 같은 형태라면 아래를 유지
+        var rail = qs('#rail-' + target, root) || qs('#' + target + 'Rail', root);
+        if (!rail) return;
 
-    var track = ensureTrack(rail);
-    var leftBtn = qs('.js-nav[data-target="' + key + '"][data-dir="-1"]');
-    var rightBtn = qs('.js-nav[data-target="' + key + '"][data-dir="1"]');
-
-    var state = {
-      key: key,
-      rail: rail,
-      track: track,
-      left: leftBtn,
-      right: rightBtn,
-      idx: 0,
-      step: 0,
-      visible: 4,
-      total: 0,
-      maxCards: 10
-    };
-
-    function applyMax10() {
-      var kids = track.children;
-      var i;
-      for (i = 0; i < kids.length; i++) {
-        // 10개 초과분은 숨김
-        kids[i].style.display = (i >= state.maxCards) ? 'none' : '';
-      }
-    }
-
-    function recountTotal() {
-      var kids = track.children;
-      var count = 0;
-      var i;
-      for (i = 0; i < kids.length; i++) {
-        if (kids[i].style.display === 'none') continue;
-        count++;
-      }
-      state.total = count;
-    }
-
-    function computeStep() {
-      var kids = track.children;
-      var first = null;
-      var i;
-      for (i = 0; i < kids.length; i++) {
-        if (kids[i].style.display === 'none') continue;
-        first = kids[i];
-        break;
-      }
-      if (!first) { state.step = 0; return; }
-
-      var gap = getGap(track);
-      var w = first.getBoundingClientRect().width;
-      state.step = w + gap;
-    }
-
-    function maxIdx() {
-      var m = state.total - state.visible;
-      return m < 0 ? 0 : m;
-    }
-
-    function clampIdx() {
-      if (state.idx < 0) state.idx = 0;
-      var m = maxIdx();
-      if (state.idx > m) state.idx = m;
-    }
-
-    function render() {
-      clampIdx();
-      var x = -(state.idx * state.step);
-      track.style.transform = 'translateX(' + x + 'px)';
-
-      if (state.left) state.left.disabled = (state.idx === 0);
-      if (state.right) state.right.disabled = (state.idx === maxIdx());
-    }
-
-    function measure() {
-      applyMax10();
-      recountTotal();
-      state.visible = visibleCountByRail(state.rail);
-      computeStep();
-      clampIdx();
-      render();
-    }
-
-    if (state.left) {
-      state.left.onclick = function () {
-        state.idx -= 1;   // 1장씩 이동
-        render();
-      };
-    }
-    if (state.right) {
-      state.right.onclick = function () {
-        state.idx += 1;   // 1장씩 이동
-        render();
-      };
-    }
-
-    // 초기
-    measure();
-
-    // 리사이즈 대응
-    var t = null;
-    window.addEventListener('resize', function () {
-      if (t) clearTimeout(t);
-      t = setTimeout(measure, 80);
+        var amount = Math.max(rail.clientWidth, 300) * dir;
+        rail.scrollBy({ left: amount, behavior: 'smooth' });
+      });
     });
   }
 
-  function bindMoves() {
-    // 탭 이동
-    var tabs = qsa('#communityTabs .tab-item');
-    var i;
-    for (i = 0; i < tabs.length; i++) {
-      tabs[i].onclick = function () {
-        var mv = this.getAttribute('data-move');
-        if (mv) window.location.href = mv;
-      };
-    }
+  function initCardMove(scope) {
+    qsa('.js-card', scope).forEach(function (card) {
+      card.addEventListener('click', function () {
+        var url = card.getAttribute('data-move');
+        if (url) location.href = url;
+      });
+    });
+  }
 
-    // 글쓰기 이동
-    var btnWrite = qs('#btnWrite');
-    if (btnWrite) {
-      btnWrite.onclick = function () {
-        var mv = btnWrite.getAttribute('data-move');
-        if (mv) window.location.href = mv;
-      };
-    }
+  // ====== API 호출 ======
+  function fetchMore(kind, limit, cb) {
+    var url = MORE_API + '?kind=' + encodeURIComponent(kind) + '&limit=' + encodeURIComponent(limit || 100);
 
-    // 카드 클릭 이동(.card / .qcard 모두 js-card 사용)
-    document.addEventListener('click', function (e) {
-      var el = e.target;
-      while (el && el !== document) {
-        if (el.classList && el.classList.contains('js-card')) {
-          var url = el.getAttribute('data-move');
-          if (url) window.location.href = url;
-          break;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          cb(null, JSON.parse(xhr.responseText));
+        } catch (e) {
+          cb(e);
         }
-        el = el.parentNode;
+      } else {
+        cb(new Error('HTTP ' + xhr.status));
       }
+    };
+    xhr.send();
+  }
+
+  // ====== 전체보기 item ======
+  function buildItem(post) {
+    var a = document.createElement('a');
+    a.className = 'cm-item';
+    a.href = post.moveUrl || '#';
+
+    var imgSrc = post.thumbSrc || DEFAULT_IMG;
+
+    a.innerHTML =
+      '<div class="cm-item__imgWrap">' +
+        '<img class="cm-item__img" src="' + escapeHtml(imgSrc) + '" alt="" ' +
+          'onerror="this.onerror=null; this.src=\'' + escapeHtml(DEFAULT_IMG) + '\';" />' +
+        '<div class="cm-item__overlay">' +
+          '<div class="cm-item__overlayTitle">' + escapeHtml(post.title || '') + '</div>' +
+          '<div class="cm-item__overlayMeta"><span>' + escapeHtml(post.userId || post.author || '') + '</span></div>' +
+          '<div class="cm-item__overlayStats">' +
+            '<span>조회수 ' + (post.viewCount || 0) + '</span><span class="sep">|</span>' +
+            '<span>좋아요 ' + (post.likeCount || 0) + '</span><span class="sep">|</span>' +
+            '<span>댓글 ' + (post.replyCount || 0) + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="cm-item__body">' +
+        '<div class="cm-item__title">' + escapeHtml(post.title || '') + '</div>' +
+        '<div class="cm-item__writer">' + escapeHtml(post.userId || post.author || '') + '</div>' +
+        '<div class="cm-item__meta">' +
+          '<span class="value">조회수 ' + (post.viewCount || 0) + '</span>' +
+          '<span class="sep">|</span>' +
+          '<span class="value">좋아요 ' + (post.likeCount || 0) + '</span>' +
+          '<span class="sep">|</span>' +
+          '<span class="value">댓글 ' + (post.replyCount || 0) + '</span>' +
+        '</div>' +
+        '<div class="cm-item__tags">' + escapeHtml(formatHashtags(post.hashtags)) + '</div>' +
+      '</div>';
+
+    return a;
+  }
+
+  function setView(view) {
+    if (!moreList || !viewBtnsWrap) return;
+
+    moreList.className = moreList.className
+      .replace(/\bview-card\b/g, '')
+      .replace(/\bview-album\b/g, '')
+      .replace(/\bview-list\b/g, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+
+    moreList.className += ' view-' + view;
+
+    qsa('.cm-viewBtn', viewBtnsWrap).forEach(function (b) {
+      var v = b.getAttribute('data-view');
+      b.className = (v === view) ? 'cm-viewBtn is-active' : 'cm-viewBtn';
     });
   }
 
-  function ready(fn) {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
-    else fn();
+  // ====== content-card 통째로 교체 (핵심) ======
+  function openMorePage(kind, titleText) {
+    if (!homeView || !moreView || !moreList) return;
+
+    if (moreTitle) moreTitle.textContent = titleText || '전체보기';
+
+    // 홈 숨기고 전체보기 표시
+    homeView.style.display = 'none';
+    moreView.style.display = 'block';
+
+    // 기본 뷰
+    setView('card');
+
+    // 로딩
+    moreList.innerHTML = '<div class="cm-loading">불러오는 중...</div>';
+
+    // 데이터
+    fetchMore(kind, 100, function (err, data) {
+      if (err) {
+        moreList.innerHTML = '<div class="cm-loading">불러오기 실패</div>';
+        return;
+      }
+      if (!data || data.length === 0) {
+        moreList.innerHTML = '<div class="empty-panel"><div class="empty-text">게시글 없음</div></div>';
+        return;
+      }
+
+      moreList.innerHTML = '';
+      for (var i = 0; i < data.length; i++) {
+        moreList.appendChild(buildItem(data[i]));
+      }
+    });
+
+    // content-card 상단으로 스크롤(UX)
+    try { root.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
   }
 
-  ready(function () {
-    // 네 JSP 기준 4개 rail
-    initCarousel('popular');
-    initCarousel('hot');
-    initCarousel('latest');
-    initCarousel('qa');
-    bindMoves();
-  });
+  function closeMorePage() {
+    if (!homeView || !moreView) return;
+    moreView.style.display = 'none';
+    homeView.style.display = 'block';
+    if (moreList) moreList.innerHTML = '';
+  }
 
+  // ====== 이벤트 바인딩 ======
+  function initMoreButtons() {
+    qsa('.js-more', root).forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        var kind = btn.getAttribute('data-more-kind') || 'latest';
+        var title = btn.getAttribute('data-more-title') || '전체보기';
+
+        openMorePage(kind, title);
+      });
+    });
+  }
+
+  // 뒤로 버튼
+  if (backBtn) backBtn.addEventListener('click', closeMorePage);
+
+  // 보기 버튼
+  if (viewBtnsWrap) {
+    qsa('.cm-viewBtn', viewBtnsWrap).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        setView(btn.getAttribute('data-view'));
+      });
+    });
+  }
+
+  // 최초 바인딩
+  initCarouselNav(root);
+  initCardMove(root);
+  initMoreButtons();
 })();

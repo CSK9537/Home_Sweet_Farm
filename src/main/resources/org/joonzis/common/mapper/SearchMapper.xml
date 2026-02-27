@@ -3,32 +3,53 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.joonzis.common.mapper.SearchMapper">
+	<!-- user_id로 유저 찾기 -->
+	<select id="findUserbyId" resultType="org.joonzis.user.vo.UserVO">
+		SELECT username, nickname, name FROM tbl_user WHERE user_id = #{user_id}
+	</select>
+	
 	<!-- 커뮤니티 검색 결과 출력 -->
 	<!-- 제목 검색 -->
 	<select id="searchBoardsByTitle" resultType="org.joonzis.community.vo.BoardVO">
-		SELECT * FROM tmp_board WHERE LOWER(title) LIKE LOWER('%' || #{q} || '%')
+		<![CDATA[
+			SELECT * FROM tmp_board WHERE LOWER(title) LIKE LOWER('%' || #{q} || '%')
+			AND ROWNUM <= 12
+		]]>
 	</select>
 	<!-- 내용 검색 -->
 	<select id="searchBoardsByContent" resultType="org.joonzis.community.vo.BoardVO">
-		SELECT * FROM tmp_board WHERE LOWER(content) LIKE LOWER('%' || #{q} || '%')
+		<![CDATA[
+			SELECT * FROM tmp_board WHERE LOWER(content) LIKE LOWER('%' || #{q} || '%')
+			AND ROWNUM <= 12
+		]]>
 	</select>
 	<!-- 작성자 검색 -->
 	<select id="searchBoardsByWriter" resultType="org.joonzis.community.vo.BoardVO">
-		SELECT * FROM tmp_board WHERE user_id =
-			(SELECT user_id FROM tbl_user
-			WHERE LOWER(username) LIKE LOWER('%' || #{q} || '%')
-			OR LOWER(nickname) LIKE LOWER('%' || #{q} || '%'))
+		<![CDATA[
+			SELECT * FROM tmp_board WHERE user_id =
+				(SELECT user_id FROM tbl_user
+				WHERE LOWER(username) LIKE LOWER('%' || #{q} || '%')
+				OR LOWER(nickname) LIKE LOWER('%' || #{q} || '%')
+				OR LOWER(name) LIKE LOWER('%' || #{q} || '%'))
+				AND ROWNUM <= 12
+		]]>
 	</select>
 	
 	<!-- 식물 검색(이름) 결과 출력 -->
 	<select id="searchPlants" resultType="org.joonzis.plant.dto.SimplePlantDTO">
-		SELECT plant_id, plant_name, plant_name_kor, plant_image, plant_searchcount
-		FROM tbl_plant
-		WHERE plant_name LIKE INITCAP('%' || #{q} || '%') OR plant_name_kor LIKE '%' || #{q} || '%'
+		<![CDATA[
+			SELECT plant_id, plant_name, plant_name_kor, plant_image, plant_searchcount
+			FROM tbl_plant
+			WHERE plant_name LIKE INITCAP('%' || #{q} || '%') OR plant_name_kor LIKE '%' || #{q} || '%'
+			AND ROWNUM <= 12
+		]]>
 	</select>
 	
 	<!-- 스토어 검색(이름) 결과 출력 -->
 	<select id="searchProducts" resultType="org.joonzis.store.vo.ProductVO">
-		SELECT * FROM tbl_product WHERE LOWER(product_name) LIKE LOWER('%' || #{q} || '%')
+		<![CDATA[
+			SELECT * FROM tbl_product WHERE LOWER(product_name) LIKE LOWER('%' || #{q} || '%')
+			AND ROWNUM <= 12
+		]]>
 	</select>
 </mapper>

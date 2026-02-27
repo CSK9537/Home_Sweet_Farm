@@ -1,4 +1,8 @@
 /* login.css - ContentLayout.css의 content-card 내부를 2분할하여 사용 */
+body{
+	margin: 0;
+	padding: 0;
+}
 
 .login-layout{
   width: 100%;
@@ -16,7 +20,7 @@
   border-right: 3px solid #6b7b61;
   background:
     linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.25)),
-    url("/resources/image/Default_Plant.jpg");
+    url("/resources/image/Main_Plant.jpg");
   background-size: cover;
   background-position: center;
 }
@@ -258,10 +262,74 @@
 }
 
 .code-boxes{
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+#sendBtn {
+  min-width: 90px;
+  height: 46px;        /* input 높이 맞춤 */
+  padding: 0 16px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 0;
+  background: #6b7b61;;
+  cursor: pointer;
+  color : fff;
+}
+#findIdEmail{
+	flex: 1;
+  height: 48px;        /* ← 크기 핵심 */
+  font-size: 16px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 2px solid #6b7b61;
+}
+
+/* 이메일 입력 + 발송 버튼 한 줄 고정 */
+.input-with-btn{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;           /* 줄바꿈 금지 */
+}
+
+/* 핵심: input이 100% 먹지 못하게 만들기 */
+.input-with-btn > input{
+  flex: 1 1 auto;
+  width: auto !important;      /* 기존 width:100% 덮어쓰기 */
+  min-width: 0;                /* flex에서 줄어들게(중요) */
+}
+
+/* 버튼은 고정 */
+.input-with-btn > button{
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* 🔥 인증번호 입력칸 크게 */
+#verifyCode {
+  flex: 1;
+  height: 48px;        /* ← 크기 핵심 */
+  font-size: 16px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 2px solid #6b7b61;
+}
+
+/* 🔥 인증 버튼 크게 */
+#verifyBtn {
+  min-width: 90px;
+  height: 46px;        /* input 높이 맞춤 */
+  padding: 0 16px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 0;
+  background: #6b7b61;;
+  cursor: pointer;
+  color : fff;
 }
 
 .code-input{

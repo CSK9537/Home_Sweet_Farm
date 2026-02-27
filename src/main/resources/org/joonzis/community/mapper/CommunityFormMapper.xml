@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.joonzis.community.mapper.CommunityFormMapper">
+
+  <!-- =========================================================
+       Board
+       - Oracle 11g: SEQ 선발급 후 board_id를 서비스에서 세팅
+       ========================================================= -->
+  <!-- SEQ 조회 (서비스에서 호출) -->
+  <select id="selectBoardSeqNextVal" resultType="int">
+    SELECT SEQ_TBL_BOARD.NEXTVAL FROM DUAL
+  </select>
+
+  <!-- 게시글 등록 (board_id는 서비스에서 세팅) -->
+  <insert id="insertBoard" parameterType="org.joonzis.community.vo.BoardVO">
+    INSERT INTO TBL_BOARD (
+      BOARD_ID,
+      USER_ID,
+      CATEGORY_ID,
+      PARENT_ID,
+      TITLE,
+      CONTENT,
+      BOARD_TYPE,
+      PRICE,
+      TRADE_STATUS,
+      VIEW_COUNT,
+      REPLY_CNT,
+      LIKE_COUNT,
+      IS_ACTIVE,
+      IS_SELECTED,
+      REG_DATE,
+      UPDATE_DATE
+    ) VALUES (
+      #{board_id},
+      #{user_id},
+      #{category_id},
+      #{parent_id},
+      #{title},
+      #{content},
+      #{board_type},
+      #{price},
+      #{trade_status},
+      0,
+      0,
+      0,
+      'Y',
+      'N',
+      SYSDATE,
+      SYSDATE
+    )
+  </insert>
+
+  <!-- 게시글 수정 -->
+  <update id="updateBoard" parameterType="org.joonzis.community.vo.BoardVO">
+    UPDATE TBL_BOARD
+       SET CATEGORY_ID  = #{category_id},
+           PARENT_ID    = #{parent_id},
+           TITLE        = #{title},
+           CONTENT      = #{content},
+           PRICE        = #{price},
+           TRADE_STATUS = #{trade_status},
+           UPDATE_DATE  = SYSDATE
+     WHERE BOARD_ID     = #{board_id}
+       AND IS_ACTIVE    = 'Y'
+  </update>
+
+  <!-- 게시글 조회 (edit 폼 초기값 세팅용) -->
+  <select id="selectBoardById"
+          parameterType="int"
+          resultType="org.joonzis.community.vo.BoardVO">
+    SELECT
+      BOARD_ID,
+      USER_ID,
+      CATEGORY_ID,
+      PARENT_ID,
+      TITLE,
+      CONTENT,
+      BOARD_TYPE,
+      PRICE,
+      TRADE_STATUS,
+      VIEW_COUNT,
+      REPLY_CNT,
+      LIKE_COUNT,
+      IS_ACTIVE,
+      IS_SELECTED,
+      REG_DATE,
+      UPDATE_DATE
+    FROM TBL_BOARD
+    WHERE BOARD_ID  = #{board_id}
+      AND IS_ACTIVE = 'Y'
+  </select>
+
+  <!-- 작성자 조회 (권한 체크용) -->
+  <select id="selectBoardOwnerUserId"
+          parameterType="int"
+          resultType="int">
+    SELECT USER_ID
+    FROM TBL_BOARD
+    WHERE BOARD_ID = #{board_id}
+      AND IS_ACTIVE = 'Y'
+  </select>
+
+  <!-- =========================================================
+       File
+       - 선업로드(EDITOR): BOARD_ID=NULL + TEMP_KEY 보관
+       - submit(write/edit) 시 TEMP_KEY로 BOARD_ID 연결
+       ========================================================= -->
+  <!-- 파일 등록 (선업로드/첨부 공통) -->
+  <insert id="insertBoardFile"
+          parameterType="org.joonzis.community.vo.BoardFileVO">
+    INSERT INTO TBL_BOARD_FILE (
+      FILE_ID,
+      BOARD_ID,
+      ORIGINAL_NAME,
+      SAVED_NAME,
+      FILE_SIZE,
+      CONTENT_TYPE,
+      TEMP_KEY,
+      SUB_DIR,
+      FILE_KIND,
+      IS_ACTIVE,
+      IS_THUMBNAIL,
+      REG_DATE,
+      UPDATED_AT
+    ) VALUES (
+      SEQ_TBL_BOARD_FILE.NEXTVAL,
+      #{board_id},
+      #{original_name},
+      #{saved_name},
+      #{file_size},
+      #{content_type},
+      #{temp_key},
+      #{sub_dir},
+      #{file_kind},
+      #{is_active},
+      #{is_thumbnail},
+      SYSDATE,
+      SYSDATE
+    )
+  </insert>
+
+  <!-- tempKey로 선업로드 파일 조회 -->
+  <select id="selectFilesByTempKey"
+          parameterType="string"
+          resultType="org.joonzis.community.vo.BoardFileVO">
+    SELECT
+      FILE_ID,
+      BOARD_ID,
+      ORIGINAL_NAME,
+      SAVED_NAME,
+      FILE_SIZE,
+      CONTENT_TYPE,
+      TEMP_KEY,
+      SUB_DIR,
+      FILE_KIND,
+      IS_ACTIVE,
+      IS_THUMBNAIL,
+      REG_DATE,
+      UPDATED_AT
+    FROM TBL_BOARD_FILE
+    WHERE TEMP_KEY  = #{temp_key}
+      AND IS_ACTIVE = 'Y'
+    ORDER BY FILE_ID ASC
+  </select>
+
+  <!-- temp 파일들을 게시글에 연결 (write/edit submit 시점) -->
+  <update id="attachTempFilesToBoard">
+    UPDATE TBL_BOARD_FILE
+       SET BOARD_ID   = #{board_id},
+           TEMP_KEY   = NULL,
+           UPDATED_AT = SYSDATE
+     WHERE TEMP_KEY   = #{temp_key}
+       AND BOARD_ID   IS NULL
+       AND IS_ACTIVE  = 'Y'
+  </update>
+
+  <!-- 특정 게시글의 파일 비활성화 (정책 선택 시 사용) -->
+  <update id="deactivateFilesByBoardId">
+    UPDATE TBL_BOARD_FILE
+       SET IS_ACTIVE  = 'N',
+           UPDATED_AT = SYSDATE
+     WHERE BOARD_ID   = #{board_id}
+       AND IS_ACTIVE  = 'Y'
+  </update>
+
+  <!-- Hashtag Suggest -->
+  <!-- q: 사용자가 입력 중인 문자열 (prefix 검색) -->
+  <select id="selectHashtagSuggest" resultType="string">
+    SELECT BOARD_HASHTAG_NAME
+    FROM (
+      SELECT BOARD_HASHTAG_NAME
+      FROM TBL_BOARD_HASHTAG_LIST
+      WHERE IS_ACTIVE = 'Y'
+        AND LOWER(BOARD_HASHTAG_NAME) LIKE LOWER(#{q}) || '%'
+      ORDER BY BOARD_HASHTAG_NAME
+    )
+    WHERE ROWNUM &lt;= #{limit}
+  </select>
+
+</mapper>

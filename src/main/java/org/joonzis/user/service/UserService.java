@@ -18,26 +18,23 @@ public interface UserService {
 	//데이터 삭제(회원 탈퇴)
 	public int delete(UserVO vo);
 	//아이디 찾기(이메일)
-	public String findIdByEmail(@Param("email")String email);
-	//아이디 찾기(전화번호)
-	public String findIdByPhone(@Param("phone")String phone);
+	public String findIdByEmail(@Param("email")String email, @Param("name")String name);
 	//비밀번호 찾기 대상 확인(이메일)
 	public int existUserByEmail(@Param("username")String username,
 							@Param("email")String email);
-	//비밀번호 찾기 대상 확인(전화번호)
-	public int existUserByPhone(@Param("username")String username,
-							@Param("phone")String phone);
 	//비밀번호 재설정
-	public void updatePw(UserVO vo);
+	public void resetPw(UserVO vo);
 
 	//아이디 중복 체크
 	public boolean isIdDuplicate(String username);
+	
+	//이메일 중복 체그
+	public boolean isEmailDuplicate(String email);
 	
 	public int countByUsername(String username);
 	
 	//자동로그인-아이디로 찾기(쿠키)
 	public UserVO findByUsername(String username);
-	
 	//공개형 프로필
 	//1) 닉네임, 프로필, 회원등급, 자기소개
 	public UserDTO selectPublicProfile(int userId);

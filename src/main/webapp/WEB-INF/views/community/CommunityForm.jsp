@@ -8,12 +8,15 @@
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
 <%-- =========================================================
-  작성/수정 겸용 폼
-  - insert: param.type 기준
-  - edit  : controller가 post + isOwner 내려줌
+  ✅ Controller(/community/form) 정합
+  - model: mode, tempKey, boardType 내려옴
+  - POST : /community/write, /community/edit
+  - upload: /community/upload(file,tempKey,boardType)
 ========================================================= --%>
 
-<c:set var="mode" value="${empty post ? 'insert' : 'edit'}" />
+<c:set var="modeVal" value="${not empty mode ? mode : (empty post ? 'insert' : 'edit')}" />
+<c:set var="boardTypeVal"
+       value="${not empty boardType ? boardType : (modeVal eq 'edit' ? post.board_type : param.type)}" />
 
 <div class="page-shell">
   <section class="content-wrap">
@@ -22,7 +25,7 @@
       <div class="insert-head">
         <div class="insert-title">
           <c:choose>
-            <c:when test="${mode eq 'edit'}">글수정</c:when>
+            <c:when test="${modeVal eq 'edit'}">글수정</c:when>
             <c:otherwise>글쓰기</c:otherwise>
           </c:choose>
         </div>
@@ -31,7 +34,7 @@
           <button type="button" class="btn btn--ghost" onclick="history.back()">취소</button>
 
           <c:choose>
-            <c:when test="${mode eq 'edit'}">
+            <c:when test="${modeVal eq 'edit'}">
               <c:if test="${isOwner}">
                 <button type="submit" form="writeForm" class="btn btn--primary">수정</button>
               </c:if>
@@ -43,39 +46,38 @@
         </div>
       </div>
 
-      <%-- 작성자 아니면(서버에서 isOwner=false로 내려줬다는 가정) 폼 접근 UX 차단 --%>
-      <c:if test="${mode eq 'edit' && !isOwner}">
-        <div class="warn-box">
-          작성자만 수정할 수 있습니다.
-        </div>
+      <c:if test="${modeVal eq 'edit' && !isOwner}">
+        <div class="warn-box">작성자만 수정할 수 있습니다.</div>
       </c:if>
 
       <form id="writeForm"
             action="<c:choose>
-                      <c:when test='${mode eq "edit"}'>${pageContext.request.contextPath}/Community/Update</c:when>
-                      <c:otherwise>${pageContext.request.contextPath}/Community/Insert</c:otherwise>
+                      <c:when test='${modeVal eq "edit"}'>${pageContext.request.contextPath}/community/edit</c:when>
+                      <c:otherwise>${pageContext.request.contextPath}/community/write</c:otherwise>
                     </c:choose>"
             method="post"
             enctype="multipart/form-data">
 
         <%-- mode / board_id --%>
-        <input type="hidden" id="mode" value="${mode}">
-        <c:if test="${mode eq 'edit'}">
+        <input type="hidden" id="mode" value="${modeVal}">
+        <c:if test="${modeVal eq 'edit'}">
           <input type="hidden" name="board_id" id="boardId" value="${post.board_id}">
         </c:if>
 
-        <%-- 서버 전송 --%>
-        <input type="hidden" name="board_type" id="boardType"
-               value="<c:choose>
-                        <c:when test='${mode eq "edit"}'>${post.board_type}</c:when>
-                        <c:otherwise>${param.type}</c:otherwise>
-                      </c:choose>">
+        <%-- ✅ 컨트롤러(write/edit)가 요구: tempKey --%>
+        <input type="hidden" name="tempKey" id="tempKey" value="${tempKey}">
 
-        <input type="hidden" name="parent_id" id="parentId" value="${param.parentId}">
-        <input type="hidden" name="content" id="contentHtml">
-        <input type="hidden" name="tags" id="tagsHidden" value="<c:out value='${mode eq "edit" ? post.tags : ""}'/>">
+        <%-- BoardVO 바인딩용 --%>
+        <input type="hidden" name="board_type" id="boardType" value="${boardTypeVal}">
+        <input type="hidden" name="parent_id" id="parentId"
+               value="<c:out value='${modeVal eq "edit" ? post.parent_id : param.parentId}'/>">
 
-        <%-- ★ 이미지 자동업로드 목록(중복 저장 방지용) --%>
+        <%-- ✅ 컨트롤러(write/edit)가 요구: contentHtml / tagsHidden --%>
+        <input type="hidden" name="contentHtml" id="contentHtml">
+        <input type="hidden" name="tagsHidden" id="tagsHidden"
+               value="<c:out value='${modeVal eq "edit" ? post.tags : ""}'/>">
+
+        <%-- (옵션) 업로드된 이미지 메타(추후 활용 가능) --%>
         <input type="hidden" name="uploadedImagesJson" id="uploadedImagesJson" value="[]">
 
         <div class="form-row form-row--grid">
@@ -88,7 +90,9 @@
               <option value="Q">질문글</option>
               <option value="A">답글</option>
             </select>
-            <div class="hint">type 파라미터/기존 데이터로 자동 결정됩니다.</div>
+            <div class="hint">
+              커뮤니티 글쓰기(insert)에서는 G/T/S만 노출되며 변경 가능합니다. QnA(Q/A)는 자동 결정 및 변경 불가입니다.
+            </div>
           </div>
 
           <div class="form-field">
@@ -102,11 +106,7 @@
               <option value="104" data-for="G">기타</option>
 
               <option value="201" data-for="T">판매</option>
-              <option value="202" data-for="T">구매</option>
-              <option value="203" data-for="T">거래완료</option>
-
               <option value="301" data-for="S">나눔</option>
-              <option value="302" data-for="S">완료</option>
 
               <option value="401" data-for="Q">질문</option>
               <option value="501" data-for="A">답변</option>
@@ -120,7 +120,7 @@
             <label class="label">제목</label>
             <input class="input" type="text" name="title" id="title"
                    placeholder="제목을 입력해 주세요." maxlength="200" required
-                   value="<c:out value='${mode eq "edit" ? post.title : ""}'/>">
+                   value="<c:out value='${modeVal eq "edit" ? post.title : ""}'/>">
           </div>
         </div>
 
@@ -129,7 +129,7 @@
             <label class="label">가격</label>
             <input class="input" type="number" name="price" id="price"
                    placeholder="예) 40000" min="0" step="100"
-                   value="<c:out value='${mode eq "edit" ? post.price : ""}'/>">
+                   value="<c:out value='${modeVal eq "edit" ? post.price : ""}'/>">
             <div class="hint">중고거래(T)에서는 가격 사용을 권장합니다.</div>
           </div>
 
@@ -159,8 +159,7 @@
           <label class="label">본문</label>
           <div id="editor" class="editor-box"></div>
 
-          <%-- edit 초기 본문(HTML) 전달용: JS에서 editor.setHTML --%>
-          <c:if test="${mode eq 'edit'}">
+          <c:if test="${modeVal eq 'edit'}">
             <textarea id="initContent" style="display:none;"><c:out value="${post.content}" escapeXml="false"/></textarea>
           </c:if>
         </div>
@@ -179,7 +178,7 @@
               <div id="tagSuggest" class="tag-suggest" style="display:none;"></div>
             </div>
 
-            <div class="hint">Enter/쉼표/스페이스로 추가 · Backspace로 마지막 태그 삭제</div>
+            <div class="hint">Enter/쉼표로 추가 · Backspace로 마지막 태그 삭제 (띄어쓰기 불가)</div>
           </div>
         </div>
 
@@ -190,9 +189,9 @@
 
 <script>
   window.__CTX__ = "${pageContext.request.contextPath}";
-  window.__IS_OWNER__ = ${mode eq 'edit' ? isOwner : true};
-  window.__INIT_CATEGORY__ = "${mode eq 'edit' ? post.category_id : ''}";
-  window.__INIT_TRADE_STATUS__ = "${mode eq 'edit' ? post.trade_status : ''}";
+  window.__IS_OWNER__ = ${modeVal eq 'edit' ? isOwner : true};
+  window.__INIT_CATEGORY__ = "${modeVal eq 'edit' ? post.category_id : ''}";
+  window.__INIT_TRADE_STATUS__ = "${modeVal eq 'edit' ? post.trade_status : ''}";
 </script>
 
 <script src="${pageContext.request.contextPath}/resources/js/community/CommunityForm.js"></script>

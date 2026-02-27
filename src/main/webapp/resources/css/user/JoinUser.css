@@ -51,7 +51,7 @@ body{
   border: 2px solid #6b7b61;
   border-radius: 12px;
   overflow: hidden;
-  background: url("/resources/image/Default_Plant.jpg") center/cover no-repeat; /* 프로젝트에 맞게 경로 수정 */
+  background: url("/resources/image/Main_Plant.jpg") center/cover no-repeat; /* 프로젝트에 맞게 경로 수정 */
   position: relative;
 }
 
@@ -119,15 +119,15 @@ body{
   border-bottom: 2px solid transparent;
 }
 
-.step-nav__btn:hover{
-  font-weight: 800;
-  border-bottom-color: #6b7b61;
-}
-
 .step-nav__btn.is-active{
   font-weight: 800;
   border-bottom-color: #6b7b61;
 }
+
+.step-nav__btn:disabled{
+  pointer-events: none;
+}
+
 
 /* step panel show/hide */
 .step-panel{
@@ -140,9 +140,8 @@ body{
 
 /* form */
 .form-col{
-  margin-top: 14px;
+	margin: 15px 0;
 }
-
 .form-label{
   display: block;
   font-size: 13px;
@@ -153,27 +152,49 @@ body{
 
 .form-input{
   width: 100%;
-  height: 52px;
-  border-radius: 10px;
-  border: 2px solid #6b7b61;
-  background: #0b0b0b;
-  color: #e9e9e9;
+  height: 46px;
   padding: 0 14px;
+  margin: 0;
+  border: 2px solid #6b7b61;
+  border-radius: 8px;
+  background: #f4f2ed;
   outline: none;
+  box-sizing: border-box;
 }
 
 .form-input::placeholder{
-  color: rgba(233,233,233,0.55);
+  color: #6b7b61;
 }
 
-.form-input.light{
-  background: #e9e9e9;
-  color: #111;
-  border-color: #c9c9c9;
+.form-input:focus{
+  border-color: #4e5c46;
 }
 
-.form-input.light::placeholder{
-  color: rgba(0,0,0,0.35);
+.form-input:focus::placeholder{
+  color: transparent;
+}
+
+.form-input[readonly]{
+	background: #dfddd8;
+}
+
+.no-click {
+  pointer-events: none;
+}
+
+.login-group {
+	display: flex; /* 요소들을 가로로 나열 */
+	gap: 16px;      /* 입력창과 버튼 사이의 간격 */
+}
+
+.errMsg {
+	height: 14px; 
+	font-size: 13px;
+	margin: 5px 0;  /* 입력창과의 간격 */
+}
+.errMsg p {
+    margin: 0;
+    padding: 0;
 }
 
 /* terms */
@@ -228,6 +249,11 @@ body{
 }
 
 /* buttons */
+button:disabled{
+  color: #999;
+  cursor: not-allowed;
+}
+
 .btn-row{
   display: flex;
   justify-content: flex-end;
@@ -253,18 +279,68 @@ body{
   color: #f4f2ed;
 }
 
+.btn-primary:not(:disabled):active{
+  background: #f4f2ed;
+  color: #6b7b61;
+}
+
 .btn-ghost{
-  background: transparent;
+  background: #f4f2ed;
   border-color: #6b7b61;
   color: #6b7b61;
 }
 
+.btn-ghost:active{
+  background: #6b7b61;
+  color: #f4f2ed;
+}
+
 .btn-outline{
-  background: transparent;
+  background: #f4f2ed;
   border-color: #6b7b61;
   color: #6b7b61;
   width: 100%;
   height: 54px;
+}
+
+.btn-outline:not(:disabled):active{
+	background: #6b7b61;
+	color: #f4f2ed;
+}
+#toVerifyBtn:disabled{
+  background: #e2e2e2;
+  border-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
+
+#emailSendBtn:disabled {
+  background: #e2e2e2;
+  border-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: none;
+  width: 7px;
+  height: 7px;
+  border: 2px solid #6b7b61;
+  border-top-color: #e2e2e2;
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+}
+
+/* 버튼에 'loading' 클래스가 붙었을 때 스피너 표시 */
+#emailSendBtn.loading .spinner {
+  display: inline-block;
+}
+
+/* 스피너 회전 애니메이션 */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* social */
@@ -295,6 +371,14 @@ body{
 .social-btn.kakao{ background: #ffe812; }
 .social-btn.naver{ background: #4de66e; }
 .social-btn.google{ background: #fff; }
+
+/* login */
+.login-guide{
+  margin-top: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #2f3b2a;
+}
 
 /* verify */
 .verify-card{
@@ -334,6 +418,12 @@ body{
   font-weight: 800;
   margin-top: 8px;
 }
+#sendCode-btn:disabled {
+  background: #e2e2e2 !important;
+  border-color: #ccc !important;
+  color: #999 !important;
+  cursor: not-allowed;
+}
 .badge{
   display: inline-flex;
   align-items: center;
@@ -349,6 +439,20 @@ body{
 .badge.done{
   background: #6b7b61;
   color: #f4f2ed;
+}
+
+#toProfileBtn:disabled{
+	background-color: #e2e2e2;
+	border-color: #ccc;
+	color: #999;
+	cursor: not-allowed;
+	opacity: 0.7;
+}
+.verify-msg {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #888;   /* 연한 회색 추천 */
+  text-align: right; /* 버튼 쪽 정렬하면 자연스러움 */
 }
 
 .hint{
@@ -503,6 +607,12 @@ body{
 @media (max-width: 1024px){
   .join-shell{ gap: 26px; }
   .join-left{ flex-basis: 44%; min-height: 520px; }
+  .content-wrap {
+    padding: 60px 40px; 
+  }
+  .content-card {
+    padding: 40px 30px;
+  }
 }
 
 @media (max-width: 767px){
@@ -510,4 +620,10 @@ body{
   .join-left{ flex-basis: auto; min-height: 240px; }
   .join-right{ min-width: 0; }
   .social-row{ grid-template-columns: 1fr; }
+  .content-wrap {
+    padding: 30px 16px; 
+  }
+  .content-card {
+    padding: 24px 20px;
+  }
 }

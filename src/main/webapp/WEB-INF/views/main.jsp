@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/main.css">
 
@@ -47,59 +48,35 @@
         <section class="section">
           <header class="section__header">
             <h3 class="section__title">인기 식물(많이 키우는 식물)</h3>
-            <a class="section__more" href="#">전체보기</a>
+            <a class="section__more" href="/plant">전체보기</a>
           </header>
 
           <div class="card-grid card-grid--3">
-            <%-- 데이터 없을 때 --%>
-            <%-- <div class="empty-state">데이터가 없습니다.</div> --%>
-
-            <a class="plant-card" href="#">
-              <div class="plant-card__thumb" aria-hidden="true"></div>
-
-              <div class="plant-card__body">
-                <div class="plant-card__name">식물 이름</div>
-                <div class="plant-card__sci">학술명</div>
-
-                <div class="meta-row">
-                  <span class="meta"><span class="meta__label">조회수</span><span class="meta__value">312</span></span>
-                  <span class="meta-row__sep">|</span>
-                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">312</span></span>
-                  <span class="meta-row__sep">|</span>
-                  <span class="meta"><span class="meta__label">집사수</span><span class="meta__value">48</span></span>
-                </div>
-              </div>
-            </a>
-
-            <a class="plant-card" href="#">
-              <div class="plant-card__thumb" aria-hidden="true"></div>
-              <div class="plant-card__body">
-                <div class="plant-card__name">식물 이름</div>
-                <div class="plant-card__sci">학술명</div>
-                <div class="meta-row">
-                  <span class="meta"><span class="meta__label">조회수</span><span class="meta__value">312</span></span>
-                  <span class="meta-row__sep">|</span>
-                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">312</span></span>
-                  <span class="meta-row__sep">|</span>
-                  <span class="meta"><span class="meta__label">집사수</span><span class="meta__value">48</span></span>
-                </div>
-              </div>
-            </a>
-
-            <a class="plant-card" href="#">
-              <div class="plant-card__thumb" aria-hidden="true"></div>
-              <div class="plant-card__body">
-                <div class="plant-card__name">식물 이름</div>
-                <div class="plant-card__sci">학술명</div>
-                <div class="meta-row">
-                  <span class="meta"><span class="meta__label">조회수</span><span class="meta__value">312</span></span>
-                  <span class="meta-row__sep">|</span>
-                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">312</span></span>
-                  <span class="meta-row__sep">|</span>
-                  <span class="meta"><span class="meta__label">집사수</span><span class="meta__value">48</span></span>
-                </div>
-              </div>
-            </a>
+          <c:choose>
+            <c:when test="${empty popularPlants}">
+            	<div class="empty-state">데이터가 없습니다.</div>
+            </c:when>
+            <c:otherwise>
+            	<c:forEach items="${popularPlants}" var="p">
+	            	<a class="plant-card" href="/plant/info/${p.plant_name}">
+		              <div class="plant-card__thumb">
+		              	<img src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" loading="lazy" />
+		              </div>
+		              <div class="plant-card__body">
+		                <div class="plant-card__name">${p.plant_name_kor}</div>
+		                <div class="plant-card__sci">${p.plant_name}</div>
+		                <div class="meta-row">
+		                  <span class="meta"><span class="meta__label">조회수</span><span class="meta__value">${p.plant_searchcount}</span></span>
+		                  <span class="meta-row__sep">|</span>
+		                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">??</span></span>
+		                  <span class="meta-row__sep">|</span>
+		                  <span class="meta"><span class="meta__label">집사수</span><span class="meta__value">??</span></span>
+		                </div>
+	              	  </div>
+	                </a>
+                </c:forEach>
+             </c:otherwise>
+             </c:choose>
           </div>
         </section>
 

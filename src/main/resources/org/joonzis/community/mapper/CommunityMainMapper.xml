@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.joonzis.community.mapper.CommunityMainMapper">
+
+  <!-- (옵션) 세션 확인 -->
+  <select id="selectSessionInfo" resultType="map">
+    SELECT USER AS LOGIN_USER,
+           SYS_CONTEXT('USERENV','CURRENT_SCHEMA') AS CURRENT_SCHEMA,
+           SYS_CONTEXT('USERENV','DB_NAME') AS DB_NAME,
+           SYS_CONTEXT('USERENV','SERVICE_NAME') AS SERVICE_NAME,
+           SYS_CONTEXT('USERENV','HOST') AS HOST
+    FROM dual
+  </select>
+
+  <!-- (옵션) BOARD_ID 스모크 테스트 -->
+  <select id="selectBoardIdSmoke" resultType="int">
+    SELECT TBL_BOARD.BOARD_ID
+    FROM TBL_BOARD
+    WHERE ROWNUM = 1
+  </select>
+
+  <!-- 결과 매핑 -->
+  <resultMap id="CommunityPostCardMap" type="org.joonzis.community.dto.CommunityPostCardDTO">
+    <result property="boardId"    column="BOARD_ID"/>
+    <result property="title"      column="TITLE"/>
+    <result property="userId"     column="USERID"/>
+    <result property="thumbSrc"   column="THUMB_SRC"/>
+    <result property="viewCount"  column="VIEW_COUNT"/>
+    <result property="likeCount"  column="LIKE_COUNT"/>
+    <result property="replyCount" column="REPLY_CNT"/>
+    <result property="hashtags"   column="HASHTAGS"/>
+  </resultMap>
+
+  <!-- 공통 SELECT -->
+  <sql id="BaseSelect">
+    SELECT
+      TBL_BOARD.BOARD_ID AS BOARD_ID,
+      TBL_BOARD.TITLE    AS TITLE,
+      NVL(TBL_USER.NICKNAME, '익명') AS AUTHOR,
+
+      NVL(TBL_BOARD.VIEW_COUNT, 0) AS VIEW_COUNT,
+      NVL(TBL_BOARD.LIKE_COUNT, 0) AS LIKE_COUNT,
+      NVL(TBL_BOARD.REPLY_CNT, 0)  AS REPLY_CNT,
+
+      ( SELECT MIN(TBL_BOARD_FILE.SAVED_NAME) 
+  		FROM TBL_BOARD_FILE 
+ 	 	WHERE TBL_BOARD_FILE.BOARD_ID = TBL_BOARD.BOARD_ID 
+  		AND TBL_BOARD_FILE.IS_THUMBNAIL = 'Y' 
+		) AS THUMB_SRC,
+
+      ( SELECT LISTAGG(TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_NAME, ',') WITHIN GROUP (ORDER BY TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_NAME) 
+          FROM TBL_BOARD_ASPECT 
+          JOIN TBL_BOARD_HASHTAG_LIST 
+            ON TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_ID = TBL_BOARD_ASPECT.BOARD_HASHTAG_ID 
+          WHERE TBL_BOARD_ASPECT.BOARD_ID = TBL_BOARD.BOARD_ID 
+          AND TBL_BOARD_HASHTAG_LIST.IS_ACTIVE = 'Y' 
+        ) AS HASHTAGS
+
+    FROM TBL_BOARD
+    JOIN TBL_USER
+      ON TBL_USER.USER_ID = TBL_BOARD.USER_ID
+    WHERE TBL_BOARD.IS_ACTIVE = 'Y'
+  </sql>
+
+  <!-- 인기글 -->
+  <select id="selectPopularPosts" parameterType="int" resultMap="CommunityPostCardMap">
+    SELECT *
+    FROM (
+      <include refid="BaseSelect"/>
+      /* 별칭 제거: 컬럼 alias로 정렬 */
+      ORDER BY LIKE_COUNT DESC, TBL_BOARD.REG_DATE DESC
+    )
+    WHERE ROWNUM &lt;= #{value}
+  </select>
+
+  <!-- 핫글 -->
+  <select id="selectHotPosts" parameterType="int" resultMap="CommunityPostCardMap">
+    SELECT *
+    FROM (
+      <include refid="BaseSelect"/>
+      ORDER BY VIEW_COUNT DESC, TBL_BOARD.REG_DATE DESC
+    )
+    WHERE ROWNUM &lt;= #{value}
+  </select>
+
+  <!-- 최신글 -->
+  <select id="selectLatestPosts" parameterType="int" resultMap="CommunityPostCardMap">
+    SELECT *
+    FROM (
+      <include refid="BaseSelect"/>
+      ORDER BY TBL_BOARD.REG_DATE DESC
+    )
+    WHERE ROWNUM &lt;= #{value}
+  </select>
+
+  <!-- 전체보기 -->
+  <select id="selectMorePosts" parameterType="map" resultMap="CommunityPostCardMap">
+    SELECT *
+    FROM (
+      <include refid="BaseSelect"/>
+
+      <if test="boardType != null and boardType != ''">
+        AND TBL_BOARD.BOARD_TYPE = #{boardType}
+      </if>
+
+      <choose>
+        <when test="kind == 'popular'">
+          ORDER BY LIKE_COUNT DESC, TBL_BOARD.REG_DATE DESC
+        </when>
+        <when test="kind == 'hot'">
+          ORDER BY VIEW_COUNT DESC, TBL_BOARD.REG_DATE DESC
+        </when>
+        <otherwise>
+          ORDER BY TBL_BOARD.REG_DATE DESC
+        </otherwise>
+      </choose>
+    )
+    WHERE ROWNUM &lt;= #{limit}
+  </select>
+
+</mapper>

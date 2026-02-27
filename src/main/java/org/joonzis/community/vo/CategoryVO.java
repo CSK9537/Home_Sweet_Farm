@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CategoryVO {
 	private int category_id;
-	private String category_name;
-	private char is_active;
+	private String category_name, is_active;
 }
