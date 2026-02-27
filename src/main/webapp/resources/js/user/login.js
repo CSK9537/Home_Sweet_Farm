@@ -357,6 +357,14 @@ function sendVerifyCode(){
 	  
 //인증버튼	  
   const verifyBtn = document.querySelector("#verifyBtn")
+  const codeInput = document.querySelector("#verifyCode");
+  	  if (codeInput) {
+  		codeInput.addEventListener("input", 
+  		()=>{
+  			nextBtn.dataset.verified = "false";
+  			updateNextBtn();
+  		});
+  	  }
       if (verifyBtn) {
 	  verifyBtn.addEventListener("click", function () {
 	    const codeEl = document.querySelector("#verifyCode");

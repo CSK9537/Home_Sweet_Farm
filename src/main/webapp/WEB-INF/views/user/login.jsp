@@ -118,7 +118,7 @@
                 <div id="codeMsg" class="error-msg" style="margin-top:6px; font-size:14px;"></div>
 
                 <div class="row-between">
-                  <span class="timer" aria-label="남은 시간"><span class="time">03:00</span></span>
+                  <span class="timer" aria-label="남은 시간"></span>
                   <button id="resetBtn" type="button" class="btn-ghost">재전송</button>
                 </div>
 
@@ -135,7 +135,7 @@
             <section id = "panel-find-id-result" style="display: none;">
             	<h2> 아이디 찾기 결과</h2>
             	<p id="resultIdText"></p>
-            	<a href="/user/login">로그인하러 가기</a>
+            	<button type="button" class="helper-link js-go" data-target="panel-login">로그인하러 가기</button>
             </section>
 
 
