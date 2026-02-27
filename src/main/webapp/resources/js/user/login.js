@@ -167,32 +167,63 @@ function setMsg(msgEl, text, color){
 	msgEl.style.color = color || (text ? "red" : "");
 }
 
-//타이머 함수
-let resendTimer = null;
+////타이머 함수
+//let resendTimer = null;
+//
+//function startResendCooldown(seconds) {
+//    const resetBtn = document.querySelector("#resetBtn");
+//    if (!resetBtn) return;
+//
+//    let remain = seconds;
+//    resetBtn.disabled = true;
+//    resetBtn.textContent = `재전송 (${remain}s)`;
+//
+//    if (resendTimer) clearInterval(resendTimer);
+//
+//    resendTimer = setInterval(() => {
+//      remain-= 1;
+//      
+//      if (remain <= 0) {
+//        clearInterval(resendTimer);
+//        resendTimer = null;
+//        resetBtn.disabled = false;
+//        resetBtn.textContent = "인증메일 재전송";
+//        return;
+//      }
+//      resetBtn.textContent = `재전송 (${remain}s)`;
+//    }, 1000);
+//  }
+function startResendCooldown(seconds, resetBtnEl) {
+	  if (!resetBtnEl) return;
 
-function startResendCooldown(seconds) {
-    const resetBtn = document.querySelector("#resetBtn");
-    if (!resetBtn) return;
+	  // 버튼별로 타이머를 저장 (버튼 2개여도 각각 독립)
+	  if (resetBtnEl._resendTimer) clearInterval(resetBtnEl._resendTimer);
 
-    let remain = seconds;
-    resetBtn.disabled = true;
-    resetBtn.textContent = `재전송 (${remain}s)`;
+	  let remain = seconds;
+	  resetBtnEl.disabled = true;
+	  resetBtnEl.style.opacity = "0.5";
+	  resetBtnEl.style.cursor = "not-allowed";
+	  resetBtnEl.textContent = `재전송 (${remain}s)`;
 
-    if (resendTimer) clearInterval(resendTimer);
+	  resetBtnEl._resendTimer = setInterval(() => {
+	    remain--;
 
-    resendTimer = setInterval(() => {
-      remain-= 1;
-      
-      if (remain <= 0) {
-        clearInterval(resendTimer);
-        resendTimer = null;
-        resetBtn.disabled = false;
-        resetBtn.textContent = "인증메일 재전송";
-        return;
-      }
-      resetBtn.textContent = `재전송 (${remain}s)`;
-    }, 1000);
-  }
+	    if (remain <= 0) {
+	      clearInterval(resetBtnEl._resendTimer);
+	      resetBtnEl._resendTimer = null;
+
+	      resetBtnEl.disabled = false;
+	      resetBtnEl.style.opacity = "";
+	      resetBtnEl.style.cursor = "pointer";
+	      resetBtnEl.textContent = "인증메일 재전송";
+	      return;
+	    }
+
+	    resetBtnEl.textContent = `재전송 (${remain}s)`;
+	  }, 1000);
+	}
+
+
 
 //1. 아이디 검증
 document.addEventListener("DOMContentLoaded", ()=>{
@@ -348,7 +379,7 @@ function sendVerifyCode(){
   		if(codeInput)
   		codeInput.focus();
   		if(typeof startResendCooldown === "function"){
-  		startResendCooldown(60);//인증번호 재전송
+  		startResendCooldown(60, resetBtn);//인증번호 재전송
   		}
   	})
   	.catch((err)=>{
@@ -628,7 +659,7 @@ function sendVerifyCode(){
     		if(codeInput2)
     		codeInput2.focus();
     		if(typeof startResendCooldown === "function"){
-    		startResendCooldown(60);//인증번호 재전송
+    		startResendCooldown(60, resetBtn2);//인증번호 재전송
     		}
     	})
     	.catch((err)=>{
@@ -715,39 +746,44 @@ function sendVerifyCode(){
         	  codeMsg2.style.color = "red";
         	  return;
           }
-          //"다음"
+       // "다음"
           const id = idInput.value.trim();
           const pwEmail = emailInput2.value.trim();
-          fetch("/user/findPw/pwEmail?id=" + encodeURIComponent(id) + "&pwEmail=" + encodeURIComponent(pwEmail))
-          .then(r => r.text())
-          .then(pw => {
 
-        	  if(!resultPwEl){
-        		  console.error("#resultPwText 요소가 없습니다.");
-        		  return;
-        	  }
-        	  if (pw === "NOT_FOUND") {
-        		  resultPwEl.innerText = "일치하는 계정이 없습니다.";
-        		  resultPwEl.style.color = "red";
-                  if (resultPwPanelEl) resultPwPanelEl.style.display = "none";
-                  if (resultPwPanelEl) resultPwPanelEl.style.display = "block";
-                  return;
-                }
+          fetch("/user/findPw/email?username=" + encodeURIComponent(id) + "&email=" + encodeURIComponent(pwEmail))
+            .then(r => r.text())
+            .then(text => {
 
-        	  resultPwEl.innerText = `비밀번호는 ${pw} 입니다`;
-        	  resultPwEl.style.color = "green";
+              if (!resultPwEl) {
+                console.error("#resultPwText 요소가 없습니다.");
+                return;
+              }
 
-                if (findPwPanelEl) findIdPanelEl.style.display = "none";
-                if (resultPwPanelEl) resultPanelEl.style.display = "block";
-              })
-              .catch(() => {
-                if (!resultPwEl) return;
-                resultPwEl.innerText = "요청 실패 (서버 확인 필요)";
+              if (text === "NOT_FOUND") {
+                resultPwEl.innerText = "일치하는 계정이 없습니다.";
                 resultPwEl.style.color = "red";
 
-                if (findPwPanelEl) findPwPanelEl.style.display = "none";
-                if (resultPwPanelEl) resultPwPanelEl.style.display = "block";
-              });
+                if (findPwPanelEl) findPwPanelEl.style.display = "block";
+                if (resultPwPanelEl) resultPwPanelEl.style.display = "none";
+                return;
+              }
 
+              // text === "OK"
+              resultPwEl.innerText = "확인되었습니다. 이메일 인증을 진행해주세요.";
+              resultPwEl.style.color = "green";
+
+              // ✅ 여기서 다음 단계로 패널 이동(원하는 쪽으로)
+              if (findPwPanelEl) findPwPanelEl.style.display = "none";
+              if (resultPwPanelEl) resultPwPanelEl.style.display = "block";
+            })
+            .catch(() => {
+              if (!resultPwEl) return;
+
+              resultPwEl.innerText = "요청 실패 (서버 확인 필요)";
+              resultPwEl.style.color = "red";
+
+              if (findPwPanelEl) findPwPanelEl.style.display = "block";
+              if (resultPwPanelEl) resultPwPanelEl.style.display = "none";
+            });
           });
-        }
+      }

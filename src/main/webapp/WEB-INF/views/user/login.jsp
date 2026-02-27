@@ -185,7 +185,7 @@
             
             <!-- STEP 2: 결과 화면 -->
             <section id = "panel-find-pw-result" style="display: none;">
-            	<h2> 아이디 찾기 결과</h2>
+            	<h2> 비밀번호 찾기 결과</h2>
             	<p id="resultPwText"></p>
             	<button type="button" class="helper-link js-go" data-target="panel-login">로그인하러 가기</button>
             </section>
