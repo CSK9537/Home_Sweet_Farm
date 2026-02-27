@@ -527,32 +527,6 @@
       const pw = pwEl ? (pwEl.value || "") : "";
       const pw2 = pw2El ? (pw2El.value || "") : "";
 
-      // 1) 아이디 기본 검증
-//      if (!userId || userId.length < 6 || userId.length > 20) {
-//        alert("아이디는 6~20자로 입력해주세요.");
-//        if (userIdEl) userIdEl.focus();
-//        return;
-//      }
-//
-//      if (!idCheckedOk || lastCheckedId !== userId) {
-//        alert("아이디 중복확인을 완료해주세요.");
-//        if (userIdEl) userIdEl.focus();
-//        return;
-//      }
-
-      // 2) 비밀번호 검증(길이만 말고 regex랑 맞추는 게 더 정확)
-//      const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}$/;
-//      if (!pwRegex.test(pw)) {
-//        alert("비밀번호는 영문, 숫자, 특수문자 포함 8~20자로 입력해주세요.");
-//        if (pwEl) pwEl.focus();
-//        return;
-//      }
-//
-//      if (pw !== pw2) {
-//        alert("비밀번호 확인이 일치하지 않습니다.");
-//        if (pw2El) pw2El.focus();
-//        return;
-//      }
 
       // 3) 필수 약관 체크
       var agreeServiceEl = $("#agreeService");
@@ -560,10 +534,6 @@
       var agreeService = agreeServiceEl ? agreeServiceEl.checked : false;
       var agreePrivacy = agreePrivacyEl ? agreePrivacyEl.checked : false;
 
-//      if (!agreeService || !agreePrivacy) {
-//        alert("[필수] 약관 동의가 필요합니다.");
-//        return;
-//      }
 
       // 4) hidden copy
       var hidUserId = $("#hidUserId");
