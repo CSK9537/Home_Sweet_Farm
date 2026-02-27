@@ -42,7 +42,6 @@ public class UserController {
 	//1)회원가입 화면
 	@GetMapping("/join")
 	public String joinForm(Model model) {
-		model.addAttribute("msg", "회원 가입에 실패했습니다. 다시 시도해 주세요.");
 		return "user/JoinUser";
 	}
 	
@@ -58,7 +57,6 @@ public class UserController {
 		        vo.setBrith_date(java.sql.Date.valueOf(brith_date_js));
 		    }
 			uservice.insert(vo, aspectNames);
-			model.addAttribute("msg", "회원가입 완료");
 			return "user/JoinSuccess";
 		} catch (Exception e) {
 			model.addAttribute("msg", "회원가입 실패");
