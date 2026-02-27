@@ -116,8 +116,6 @@
 									<button class="btn-send">전송</button>
 								</div>
 							</div>
-							<input type="file" id="imageInput" accept="image/*" multiple hidden>
-							<input type="file" id="fileInput" multiple hidden>
 						</div>
 
 					</div>

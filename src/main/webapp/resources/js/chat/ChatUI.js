@@ -9,7 +9,9 @@ function makePreviewMessage(msg, type) {
     if (type === "IMAGE") return "📷 사진";
     if (type === "FILE") return "📎 파일";
 
-    return (msg || "")
+    if (!msg) return "";
+
+    return String(msg)
         .replace(/\n/g, " ")
         .replace(/\s+/g, " ")
         .trim();
@@ -68,6 +70,7 @@ export function loadChatRooms() {
             chatListContainer.innerHTML = ""; // 기존 내용 초기화
 
             rooms.forEach(room => {
+
                 const item = document.createElement("div");
                 item.classList.add("chat-item");
                 item.dataset.room_id = room.room_id;
@@ -248,6 +251,7 @@ export function updateRoomListRealtime(msg) {
     // 최신 채팅방 위로
     chatListContainer.prepend(item);
 }
+
 export function initTabs() {
     const tabAll = document.getElementById('tab-all');
     const tabSearch = document.getElementById('tab-search');
@@ -287,6 +291,7 @@ export function initTabs() {
         chatState.search.isSearchJump = false;
 
         updateSearchCounter();
+        loadChatRooms();
     });
 
     tabSearch.addEventListener('click', () => {
@@ -335,25 +340,28 @@ export function initDropdownMenu() {
     });
 }
 
-export function initUploadFile() {
-    const btnImage = document.querySelector(".btn-image");
-    const btnFile = document.querySelector(".btn-file");
+export function initCharCount() {
 
-    const imageInput = document.getElementById("imageInput");
-    if (imageInput.dataset.bound) return;
-    imageInput.dataset.bound = "true";
-    const fileInput = document.getElementById("fileInput");
+    const textarea = document.getElementById("chat-textarea");
+    const counter = document.getElementById("char-count");
 
-    // 이미지 버튼
-    btnImage.addEventListener("click", () => {
-        imageInput.click();
+    if (!textarea || !counter) return;
+
+    const MAX = 1000;
+
+    textarea.addEventListener("input", () => {
+
+        let length = textarea.value.length;
+
+        // 혹시 maxlength 무시되는 상황 대비
+        if (length > MAX) {
+            textarea.value = textarea.value.slice(0, MAX);
+            length = MAX;
+        }
+
+        counter.innerText = `${length}/${MAX}`;
+
     });
-
-    // 파일 버튼
-    btnFile.addEventListener("click", () => {
-        fileInput.click();
-    });
-
 }
 
 
@@ -377,44 +385,125 @@ export function initPendingFilesModal() {
     let currentModalType = null; // IMAGE or FILE
 
     function renderFileList() {
+
         container.innerHTML = "";
 
+        // ===== Drop Zone =====
+        const dropZone = document.createElement("div");
+        dropZone.classList.add("drop-zone");
+
+        dropZone.innerHTML = `
+            <div class="drop-text">
+                이곳에 파일을 끌어서 혹은 첨부 버튼을 눌러서 추가
+            </div>
+        `;
+
+        dropZone.addEventListener("dragover", e => {
+            e.preventDefault();
+            dropZone.classList.add("drag-over");
+        });
+
+        dropZone.addEventListener("dragleave", () => {
+            dropZone.classList.remove("drag-over");
+        });
+
+        dropZone.addEventListener("drop", e => {
+
+            e.preventDefault();
+            dropZone.classList.remove("drag-over");
+
+            const files = e.dataTransfer.files;
+
+            if (!files || files.length === 0) return;
+
+            handleFileSelect(files);
+        });
+
+        // ===== 파일 리스트 =====
+        if (currentFiles.length === 0) {
+            container.appendChild(dropZone);
+            uploadBtn.disabled = true;
+            uploadBtn.style.background = "gray";
+            return;
+        }
+
         const fileContainer = document.createElement("div");
-        fileContainer.classList.add("file-container"); // CSS에서 display: block
+        fileContainer.classList.add("modal-file-container");
 
         currentFiles.forEach((file, idx) => {
-            const span = document.createElement("span");
-            span.href = "#"; // 다운로드 URL 연결 필요
-            span.innerText = `📎 ${file.name}`;
-            span.classList.add("file-name");
-
-            const removeBtn = document.createElement("button");
-            removeBtn.innerText = "삭제";
-            removeBtn.addEventListener("click", () => {
-                currentFiles.splice(idx, 1);
-                renderFileList();
-            });
-
             const wrapper = document.createElement("div");
-            wrapper.style.display = "flex";
-            wrapper.style.justifyContent = "space-between";
-            wrapper.appendChild(span);
-            wrapper.appendChild(removeBtn);
+
+            // ===== 이미지 vs 파일 분기 =====
+            if (currentModalType === "IMAGE" && file.type.startsWith("image/")) {
+                wrapper.classList.add("pending-file-item", "image-item");
+
+                const img = document.createElement("img");
+                img.classList.add("pending-thumbnail");
+                const reader = new FileReader();
+                reader.onload = e => img.src = e.target.result;
+                reader.readAsDataURL(file);
+
+                wrapper.appendChild(img);
+
+                // 삭제 버튼
+                const removeBtn = document.createElement("button");
+                removeBtn.innerText = "✕";
+                removeBtn.className = "";
+                removeBtn.classList.add("image-remove-btn");
+                removeBtn.addEventListener("click", () => {
+                    currentFiles.splice(idx, 1);
+                    renderFileList();
+                });
+                wrapper.appendChild(removeBtn);
+
+            } else { // FILE 모달 또는 IMAGE지만 이미지 아님
+                wrapper.classList.add("pending-file-item", "file-item");
+
+                const span = document.createElement("span");
+                span.classList.add("file-name");
+                span.innerText = `📎 ${file.name}`;
+                wrapper.appendChild(span);
+
+                // 삭제 버튼
+                const removeBtn = document.createElement("button");
+                removeBtn.innerText = "삭제";
+                removeBtn.className = "";
+                removeBtn.classList.add("file-remove-btn");
+                removeBtn.addEventListener("click", () => {
+                    currentFiles.splice(idx, 1);
+                    renderFileList();
+                });
+                wrapper.appendChild(removeBtn);
+            }
 
             fileContainer.appendChild(wrapper);
         });
 
         container.appendChild(fileContainer);
 
-        uploadBtn.disabled = currentFiles.length === 0;
-        uploadBtn.style.background = currentFiles.length === 0 ? "gray" : "#4CAF50";
+        uploadBtn.disabled = false;
+        uploadBtn.style.background = "#4CAF50";
     }
 
     function handleFileSelect(files) {
-        currentFiles = [...currentFiles, ...Array.from(files)];
+        const filtered = Array.from(files).filter(file => {
+
+            if (currentModalType === "IMAGE") {
+                return file.type.startsWith("image/");
+            }
+
+            return true; // FILE 모달은 전부 허용
+        });
+
+        const existingNames = new Set(currentFiles.map(f => f.name + f.size + f.lastModified));
+        const newFiles = filtered.filter(f => !existingNames.has(f.name + f.size + f.lastModified))
+
+        currentFiles = [...currentFiles, ...newFiles];
         renderFileList();
+
         modal.classList.add("show");
         document.body.classList.add("modal-open");
+
         imageInput.value = "";
         fileInput.value = "";
     }
@@ -447,11 +536,18 @@ export function initPendingFilesModal() {
         btn.addEventListener("click", () => {
             currentModalType = btn.classList.contains("btn-image") ? "IMAGE" : "FILE";
             modalTitle.innerText = currentModalType === "IMAGE" ? "이미지 첨부" : "파일 첨부";
+
+            modal.classList.remove("image-modal", "file-modal");
+            modal.classList.add(currentModalType === "IMAGE" ? "image-modal" : "file-modal");
+
             currentFiles = [];
             renderFileList();
 
             modal.classList.add("show");
             document.body.classList.add("modal-open");
+
+            imageInput.value = "";
+            fileInput.value = "";
         });
     });
 
@@ -467,6 +563,38 @@ export function initPendingFilesModal() {
 
     // 업로드 버튼
     uploadBtn.addEventListener("click", uploadSelectedFiles);
+
+    // Drag & Drop 업로드
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ["dragenter", "dragover", "dragleave", "drop"]
+        .forEach(eventName => {
+            modal.addEventListener(eventName, preventDefaults);
+        });
+
+    // 드래그 들어오면 강조
+    modal.addEventListener("dragenter", () => {
+        modal.classList.add("drag-over");
+    });
+
+    modal.addEventListener("dragleave", () => {
+        modal.classList.remove("drag-over");
+    });
+
+    modal.addEventListener("drop", (e) => {
+
+        modal.classList.remove("drag-over");
+
+        const files = e.dataTransfer.files;
+
+        if (!files || files.length === 0) return;
+
+        //IMAGE 모달인지 FILE 모달인지 유지
+        handleFileSelect(files);
+    });
 }
 
 // 실제 업로드 함수
@@ -538,3 +666,4 @@ export function initImagePreviewModal() {
         }
     });
 }
+
