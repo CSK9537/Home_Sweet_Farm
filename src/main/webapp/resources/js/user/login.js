@@ -205,13 +205,12 @@ document.addEventListener("DOMContentLoaded", ()=>{
 	const sendBtn = document.querySelector("#sendBtn");//발송 버튼
 	const resetBtn = document.querySelector("#resetBtn");//재발송 버튼
 	const verifyBtn = document.querySelector("#verifyBtn");//인증 버튼
-	const nextBtn = document.querySelector("#nextBtn");//다음 버튼
-	const nextBtnEl = document.querySelector("#nextBtn");
+	const nextBtnEl = document.querySelector("#nextBtn");//다음 버튼
 	
 	if(!nameInput || !nameMsg || 
 		!emailInput || !emailMsg ||
 		!codeInput || !codeMsg || 
-		!verifyBtn || !nextBtn) return;
+		!verifyBtn || !nextBtnEl) return;
 	
 	nameInput.addEventListener("input",()=>{
 		const name = nameInput.value.trim();
@@ -302,7 +301,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
 	}
 	
 	//다음버튼에서 인증번호 빈 값 체크
-	nextBtn.addEventListener("click", (e)=>{
+	nextBtnEl.addEventListener("click", (e)=>{
 		e.preventDefault();
 		
 		const verifyCode = codeInput.value.trim();
@@ -340,6 +339,11 @@ function sendVerifyCode(){
   	.then((response) =>{
   		if(!response.ok) throw new Error("HTTP"+ response.status);
   		setMsg(codeMsg, "인증코드를 이메일로 발송했습니다.");
+  		//발송버튼 클릭 후 발송버튼 비활성화
+  		sendBtn.disabled = true;
+  		sendBtn.style.opacity = "0.5";
+  		sendBtn.style.cursor = "not-allowed";
+  		
   		if(codeMsg) codeMsg.style.color = "green";
   		if(codeInput)
   		codeInput.focus();
@@ -361,7 +365,7 @@ function sendVerifyCode(){
   	  if (codeInput) {
   		codeInput.addEventListener("input", 
   		()=>{
-  			nextBtn.dataset.verified = "false";
+  			nextBtnEl.dataset.verified = "false";
   			updateNextBtn();
   		});
   	  }
