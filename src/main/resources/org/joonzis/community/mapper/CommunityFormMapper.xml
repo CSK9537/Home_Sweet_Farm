@@ -11,7 +11,7 @@
        ========================================================= -->
   <!-- SEQ 조회 (서비스에서 호출) -->
   <select id="selectBoardSeqNextVal" resultType="int">
-    SELECT SEQ_TBL_BOARD.NEXTVAL FROM DUAL
+    SELECT BOARD_SEQ.NEXTVAL FROM DUAL
   </select>
 
   <!-- 게시글 등록 (board_id는 서비스에서 세팅) -->
@@ -37,12 +37,12 @@
       #{board_id},
       #{user_id},
       #{category_id},
-      #{parent_id},
+      #{parent_id, jdbcType=NUMERIC},
       #{title},
       #{content},
       #{board_type},
-      #{price},
-      #{trade_status},
+      #{price, jdbcType=NUMERIC},
+      #{trade_status, jdbcType=NUMERIC},
       0,
       0,
       0,
@@ -126,13 +126,13 @@
       REG_DATE,
       UPDATED_AT
     ) VALUES (
-      SEQ_TBL_BOARD_FILE.NEXTVAL,
+      BOARD_FILE_SEQ.NEXTVAL,
       #{board_id},
       #{original_name},
       #{saved_name},
       #{file_size},
       #{content_type},
-      #{temp_key},
+      #{temp_key, jdbcType=NUMERIC},
       #{sub_dir},
       #{file_kind},
       #{is_active},
@@ -161,7 +161,7 @@
       REG_DATE,
       UPDATED_AT
     FROM TBL_BOARD_FILE
-    WHERE TEMP_KEY  = #{temp_key}
+    WHERE TEMP_KEY  = #{temp_key, jdbcType=NUMERIC}
       AND IS_ACTIVE = 'Y'
     ORDER BY FILE_ID ASC
   </select>
@@ -172,7 +172,7 @@
        SET BOARD_ID   = #{board_id},
            TEMP_KEY   = NULL,
            UPDATED_AT = SYSDATE
-     WHERE TEMP_KEY   = #{temp_key}
+     WHERE TEMP_KEY   = #{temp_key, jdbcType=NUMERIC}
        AND BOARD_ID   IS NULL
        AND IS_ACTIVE  = 'Y'
   </update>
