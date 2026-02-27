@@ -169,16 +169,6 @@ body{
   filter: brightness(0.95);
 }
 
-.btn-secondary{
-  height: 40px;
-  padding: 0 14px;
-  background: #ffffff;
-  border: 2px solid #6b7b61;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #2f3b2a;
-}
-
 .btn-secondary:hover{
   font-weight: 700;
   text-decoration: underline;
@@ -268,6 +258,8 @@ body{
   margin-top: 8px;
 }
 
+
+/* 아이디 찾기 */
 #sendBtn {
   min-width: 90px;
   height: 46px;        /* input 높이 맞춤 */
@@ -331,6 +323,71 @@ body{
   cursor: pointer;
   color : fff;
 }
+
+
+/* 비밀번호 찾기 */
+#sendBtn2 {
+  min-width: 90px;
+  height: 46px;        /* input 높이 맞춤 */
+  padding: 0 16px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 0;
+  background: #6b7b61;;
+  cursor: pointer;
+  color : fff;
+}
+#findPwContact{
+	flex: 1;
+  height: 48px;        /* ← 크기 핵심 */
+  font-size: 16px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 2px solid #6b7b61;
+}
+.input-with-btn {
+    display: flex;
+    gap: 8px;
+}
+
+.input-with-btn .text-input {
+    flex: 1;
+}
+
+
+/* 🔥 인증번호 입력칸 크게 */
+#verifyCode2 {
+  flex: 1;
+  height: 48px;        /* ← 크기 핵심 */
+  font-size: 16px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 2px solid #6b7b61;
+}
+/* 🔥 인증 버튼 크게 */
+#verifyBtn2 {
+  min-width: 90px;
+  height: 46px;        /* input 높이 맞춤 */
+  padding: 0 16px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 0;
+  background: #6b7b61;;
+  cursor: pointer;
+  color : fff;
+}
+.btn-secondary{
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: #2f3b2a;
+  text-decoration: none;
+}
+
+
+
+
 
 .code-input{
   height: 44px;
