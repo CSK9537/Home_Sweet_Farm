@@ -1,8 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Home Sweet Farm</title>
+<link rel="stylesheet" href="/webjars/sweetalert2/11.10.7/dist/sweetalert2.min.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/globals.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/ContentLayout.css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/user/login.css">
+</head>
+<body>
 
 <div class="page-shell">
   <div class="content-wrap">
@@ -180,5 +189,10 @@
     </div><!-- /content-card -->
   </div><!-- /content-wrap -->
 </div><!-- /page-shell -->
-
+<div class=hiddenMsg id="serverMsg" data-msg="${msg}"></div>
+<div class=hiddenMsg id="serverMsgType" data-msgType="${msgType}"></div>
+</body>
+<script src="/webjars/sweetalert2/11.10.7/dist/sweetalert2.all.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/common/SweetAlertService.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/user/login.js"></script>
+</html>
