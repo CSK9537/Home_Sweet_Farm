@@ -41,7 +41,7 @@ public class UserController {
 	
 	//1)회원가입 화면
 	@GetMapping("/join")
-	public String joinForm(Model model) {
+	public String joinForm() {
 		return "user/JoinUser";
 	}
 	

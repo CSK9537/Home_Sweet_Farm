@@ -274,6 +274,13 @@
 		    <scope>compile</scope>
 		</dependency>
 		
+		<!-- 토스트메시지 라이브러리 -->
+		<dependency>
+			<groupId>org.webjars.npm</groupId>
+			<artifactId>sweetalert2</artifactId>
+			<version>11.10.7</version>
+		</dependency>
+		
 	<!-- 크롤링 라이브러리 -->
 		
 		<!-- 셀레니움 라이브러리 -->
