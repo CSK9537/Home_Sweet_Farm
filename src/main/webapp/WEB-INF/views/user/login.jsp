@@ -172,6 +172,7 @@
                   	<button type="button" class="btn-secondary js-go" data-target="panel-login">로그인하러 가기</button>
                   </div>
 
+
                 <p class="security-note">
                   본인확인 후 비밀번호 재설정 단계로 이동합니다. 민감정보 입력에 유의하세요.
                 </p>
