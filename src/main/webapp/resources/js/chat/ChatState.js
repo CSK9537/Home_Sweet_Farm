@@ -1,4 +1,3 @@
-// ChatState.js
 
 export const chatState = {
 

@@ -7,6 +7,7 @@ function createMessageRow(data) {
 
     const row = document.createElement("div");
     row.dataset.msg_id = data.msg_id;
+    console.log(data.msg_type, data);
 
     const myId = Number(
         new URLSearchParams(location.search).get("testUser_id")
@@ -19,6 +20,7 @@ function createMessageRow(data) {
 
     return row;
 }
+
 
 // DB에서 기존 메시지 불러오기
 export async function loadMessages(room_id) {
@@ -39,7 +41,7 @@ export async function loadMessages(room_id) {
     };
     chatState.message.roomUnreadGroupMap[room_id] = new Set();
 
-    // 🔹 1️⃣ 마지막 읽은 메시지 먼저 가져오기
+    // 마지막 읽은 메시지 먼저 가져오기
     try {
         const resLast = await fetch(`/chat/rooms/${room_id}/last-read?testUser_id=${chatState.session.myUserId}`);
         const { last_read_msg_id } = await resLast.json();
@@ -48,12 +50,13 @@ export async function loadMessages(room_id) {
         console.error("마지막 읽은 메시지 가져오기 실패", err);
     }
 
-    // 🔹 2️⃣ 메시지 목록 가져오기
+    // 메시지 목록 가져오기
     try {
         const res = await fetch(`/chat/rooms/${room_id}/messages?testUser_id=${chatState.session.myUserId}`);
         const list = await res.json();
 
         const container = document.getElementById("messages");
+        container.classList.add("loading");
         container.innerHTML = "";
         chatState.message.lastDateKey = null;
 
@@ -73,10 +76,10 @@ export async function loadMessages(room_id) {
             chatState.message.lastDateKey = dateStr;
         });
 
-        // 🔹 3️⃣ appendMessage 실행
+        // appendMessage 실행
         list.forEach(msg => appendMessage(msg, true));
 
-        // 🔹 4️⃣ 현재 방 read 처리
+        //  현재 방 read 처리
         if (list.length > 0) {
             const lastMsgId = list[list.length - 1].msg_id; // 마지막 메시지 ID
 
@@ -109,20 +112,32 @@ export async function loadMessages(room_id) {
             loadChatRooms();
         }
 
-        // 🔹 5️⃣ 스크롤 처리
+        // 스크롤 처리
         requestAnimationFrame(() => {
+
             const container = document.getElementById("messages");
+
+            // 스크롤 먼저 이동
             if (chatState.scroll.jumpMsgId && chatState.search.isSearchJump) {
-                jumpToMessage(chatState.scroll.jumpMsgId, chatState.search.currentSearchKeyword);
+
+                jumpToMessage(
+                    chatState.scroll.jumpMsgId,
+                    chatState.search.currentSearchKeyword
+                );
+
                 chatState.search.currentSearchIndex = 0;
                 updateSearchCounter();
                 chatState.scroll.jumpMsgId = null;
                 chatState.search.isSearchJump = false;
+
             } else {
                 container.scrollTop = container.scrollHeight;
             }
+
+            container.classList.remove("loading");//렌더링 후 보여주기
+
             chatState.loading.isLoadingMessages = false;
-            chatState.loading.isInitialLoad = false; 
+            chatState.loading.isInitialLoad = false;
         });
 
     } catch (err) {
@@ -133,7 +148,11 @@ export async function loadMessages(room_id) {
 
 export function appendMessage(data, isInitialLoad = false) {
     if (!data.msg_id) return;
-
+    const msgId = Number(data.msg_id);
+    if (chatState.message.appendedMsgSet.has(msgId)) {
+        console.log("중복 메시지 차단", msgId);
+        return;
+    }
     const container = document.getElementById("messages");
 
     const { dateStr, timeStr, currentTime } = prepareMessageMeta(data);
@@ -175,6 +194,20 @@ export function appendMessage(data, isInitialLoad = false) {
     // 메시지를 새 row로 붙일지 결정
     let row = null;
     if (shouldAppendRow) {
+
+        const prevSender = roomState.lastSenderId;
+        const prevTimeStr = roomState.lastTimeStr;
+
+        if (prevSender === data.sender_id && prevTimeStr === timeStr) {
+            const lastRow = container.lastElementChild;
+            if (lastRow) {
+                const prevTimeEl = lastRow.querySelector(".time");
+                if (prevTimeEl) {
+                    prevTimeEl.remove();
+                }
+            }
+        }
+
         row = createMessageRow(data);
         row.appendChild(box);
 
@@ -184,9 +217,6 @@ export function appendMessage(data, isInitialLoad = false) {
         row.appendChild(timeEl);
 
         container.appendChild(row);
-    } else {
-        // 같은 그룹 이미지라면 기존 imageGroupBox에 append만
-        chatState.message.lastMessageTime = currentTime;
     }
 
     // 메시지 상태 항상 갱신

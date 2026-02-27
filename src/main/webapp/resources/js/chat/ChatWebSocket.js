@@ -54,6 +54,7 @@ export function subscribeRoom(room_id) {
     "/topic/room." + room_id,
     (msg) => {
       console.log("WS received:", msg.body);
+      if (chatState.loading.isLoadingMessages) return;
       const data = JSON.parse(msg.body);
 
       console.log("subscribeRoom 콜백", {

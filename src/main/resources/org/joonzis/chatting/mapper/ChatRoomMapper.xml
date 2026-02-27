@@ -21,6 +21,7 @@
 		other_user_name,
 
 		m.content AS last_msg,
+		m.msg_type AS last_msg_type,
 		m.created_at AS created_at,
 
 		(
@@ -61,22 +62,26 @@
 
 
 		LEFT JOIN (
-		SELECT room_id, MAX(msg_id) AS last_msg_id
-		FROM tbl_msg
-		GROUP BY
-		room_id
-		) lm
-		ON lm.room_id = r.room_id
-
-
-		LEFT JOIN tbl_msg m
-		ON m.msg_id = lm.last_msg_id
+			SELECT *
+			    FROM (
+			        SELECT
+			            msg.*,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY msg.room_id
+			                ORDER BY msg.created_at DESC, msg.msg_id DESC
+			            ) rn
+			        FROM tbl_msg msg
+			    )
+		    WHERE rn = 1
+		) m
+		ON m.room_id = r.room_id
 
 		WHERE r.user1_id =
 		#{user_id}
 		OR r.user2_id = #{user_id}
 
-		ORDER BY m.created_at DESC
+		ORDER BY m.created_at DESC NULLS LAST,
+         m.msg_id DESC
 
 	</select>
 
