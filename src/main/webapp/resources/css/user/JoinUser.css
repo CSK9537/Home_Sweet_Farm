@@ -1,43 +1,4 @@
-body{
-	margin: 0;
-	padding: 0;
-}
-
-/* 페이지 배경 */
-.page-shell {
-  background-color: #6b7b61;
-  margin: 0 auto;
-  /* position: relative; */
-}
-
-/* 컨텐츠 래퍼 */
-.content-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  padding: 80px 120px;   /* PC 기본값 수정 */
-}
-
-/* 실제 컨텐츠 박스 */
-.content-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-
-  width: 100%;
-  max-width: 1260px;   /* 고정 width 제거 */
-  padding: 50px 60px;
-
-  background-color: #f4f2ed;
-  border-radius: 10px;
-  border: 3px solid #6b7b61;
-}
-
-
 /* 공용 레이아웃(ContentLayout.css)의 .content-card 내부에 들어가는 전용 스타일 */
-
 .join-shell{
   width: 100%;
   display: flex;
@@ -76,7 +37,7 @@ body{
 
 .join-right{
   flex: 1 1 auto;
-  min-width: 360px;
+  min-width: 300px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -290,10 +251,11 @@ button:disabled{
   color: #6b7b61;
 }
 
-.btn-ghost:active{
+.btn-ghost:not(:disabled):active{
   background: #6b7b61;
   color: #f4f2ed;
 }
+
 
 .btn-outline{
   background: #f4f2ed;
@@ -307,6 +269,14 @@ button:disabled{
 	background: #6b7b61;
 	color: #f4f2ed;
 }
+
+#checkIdBtn:disabled{
+  background: #e2e2e2;
+  border-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
+
 #toVerifyBtn:disabled{
   background: #e2e2e2;
   border-color: #ccc;
@@ -607,12 +577,6 @@ button:disabled{
 @media (max-width: 1024px){
   .join-shell{ gap: 26px; }
   .join-left{ flex-basis: 44%; min-height: 520px; }
-  .content-wrap {
-    padding: 60px 40px; 
-  }
-  .content-card {
-    padding: 40px 30px;
-  }
 }
 
 @media (max-width: 767px){
@@ -620,10 +584,5 @@ button:disabled{
   .join-left{ flex-basis: auto; min-height: 240px; }
   .join-right{ min-width: 0; }
   .social-row{ grid-template-columns: 1fr; }
-  .content-wrap {
-    padding: 30px 16px; 
-  }
-  .content-card {
-    padding: 24px 20px;
-  }
+
 }

@@ -6,10 +6,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Home Sweet Farm</title>
+<link rel="stylesheet" href="/webjars/sweetalert2/11.10.7/dist/sweetalert2.min.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/globals.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/ContentLayout.css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/user/JoinUser.css" />
 </head>
 <body>
+
 <div class="page-shell">
   <div class="content-wrap">
     <div class="content-card">
@@ -59,7 +62,7 @@
                          placeholder="아이디 입력 (6~20자)" minlength="6" maxlength="20" required />
                   
                   <!-- 중복확인 버튼 -->
-				  <button type="button" id="checkIdBtn" class="btn btn-primary" disabled>중복확인</button>
+				  <button type="button" id="checkIdBtn" class="btn btn-ghost" disabled>중복확인</button>
 				</div>
 				  <!-- 결과 메시지-id -->
 				  <div class="errMsg">
@@ -350,6 +353,10 @@
     </div>
   </div>
 </div>
+<div class=hiddenMsg id="serverMsg" data-msg="${msg}"></div>
+<div class=hiddenMsg id="serverMsgType" data-msgType="${msgType}"></div>
 </body>
+<script src="/webjars/sweetalert2/11.10.7/dist/sweetalert2.all.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/common/SweetAlertService.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/user/JoinUser.js"></script>
 </html>

@@ -1,4 +1,4 @@
-(function () {
+(function () {	
   "use strict";
 
   // ===== helpers (ES5) =====
@@ -412,6 +412,7 @@
 				checkIdBtn.textContent = "확인 완료";
 				idInput.setAttribute('readonly', true);
 				idInput.classList.add('no-click');
+				idInput.classList.add('.duplck');
 				enableVerifyBtn();
 			}
 			

@@ -26,11 +26,15 @@
 	<bean id="webSecurityExpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler">
 	    <property name="roleHierarchy" ref="roleHierarchy" />
 	</bean>
-	
+
 	<!-- HTTP 통신 보안 구성 요소 -> 통신에 관한 것들-->
 	<security:http auto-config="true" use-expressions="true">
 		<!-- 모든 사용자가 모든 경로에 접근 가능하도록 허용 (Permissive Mode) -->
 		<security:intercept-url pattern="/**" access="permitAll" />	<!--모든 요청(경로)을 허용한다는 뜻-->
+		
+		<!-- 토스트 라이브러리를 위한 access -->
+		<!-- <security:intercept-url pattern="/js/**" access="permitAll" /> -->
+		<!-- <security:intercept-url pattern="/css/**" access="permitAll" /> -->
 		
 		<!-- CSRF 토큰 검사 비활성화 (로그인 403 에러 방지용) -->
 		<security:csrf disabled="true"/> <!-- csrf를 꺼두면 기존의 403이 사라짐 -->

@@ -7,6 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Home Sweet Farm</title>
+<link rel="stylesheet" href="/webjars/sweetalert2/11.10.7/dist/sweetalert2.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/header.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/globals.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/ContentLayout.css">
@@ -241,4 +242,6 @@
 	    </aside>
 	
 	  </div>
+	  <div class=hiddenMsg id="serverMsg" data-msg="${msg}"></div>
+	  <div class=hiddenMsg id="serverMsgType" data-msgType="${msgType}"></div>
 	</header>
