@@ -91,7 +91,7 @@
               <option value="A">답글</option>
             </select>
             <div class="hint">
-              커뮤니티 글쓰기(insert)에서는 G/T/S만 노출되며 변경 가능합니다. QnA(Q/A)는 자동 결정 및 변경 불가입니다.
+             	 커뮤니티 글쓰기(insert)에서는 G/T/S만 노출되며 변경 가능합니다. QnA(Q/A)는 자동 결정 및 변경 불가입니다.
             </div>
           </div>
 
@@ -100,16 +100,17 @@
             <select class="select" name="category_id" id="headSelect">
               <option value="" data-for="G,Q">선택 안 함</option>
 
-              <option value="101" data-for="G">일상</option>
-              <option value="102" data-for="G">정보</option>
-              <option value="103" data-for="G">공지</option>
-              <option value="104" data-for="G">기타</option>
+              <option value="120" data-for="G">일상</option>
+              <option value="130" data-for="G">정보</option>
+              <option value="140" data-for="G">후기</option>
+              <option value="150" data-for="G">공지</option>
 
-              <option value="201" data-for="T">판매</option>
-              <option value="301" data-for="S">나눔</option>
+              <option value="160" data-for="T">판매</option>
+              <option value="170" data-for="T">구매</option>
+              <option value="180" data-for="S">나눔</option>
 
-              <option value="401" data-for="Q">질문</option>
-              <option value="501" data-for="A">답변</option>
+              <option value="190" data-for="Q">질문</option>
+              <option value="200" data-for="A">답변</option>
             </select>
             <div class="hint">현재 type에 맞는 말머리만 노출됩니다.</div>
           </div>
@@ -148,8 +149,8 @@
             <label class="label">첨부파일(선택)</label>
             <input class="input" type="file" name="attachFiles" id="attachFiles" multiple>
             <div class="hint">
-              이미지 파일은 자동 업로드되어 본문에 삽입되며, submit 시에는 첨부에서 제외됩니다(중복 저장 방지).<br/>
-              문서/압축 등 비이미지 파일만 “첨부”로 제출됩니다.
+		              이미지 파일은 자동 업로드되어 본문에 삽입되며, submit 시에는 첨부에서 제외됩니다(중복 저장 방지).<br/>
+		              문서/압축 등 비이미지 파일만 “첨부”로 제출됩니다.
             </div>
             <div id="fileList" class="file-list" style="display:none;"></div>
           </div>
