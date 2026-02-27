@@ -176,26 +176,6 @@ public class UserController {
 		return(id == null || id.isBlank()) ? "NOT_FOUND" : id;
 	}
 	
-//	// 2) 이메일 인증코드 체크
-//	@PutMapping("/email/check/{code}")
-//	@ResponseBody
-//	public String checkEmailCode(@PathVariable String code,
-//	                             HttpSession session) {
-//
-//	    String savedCode = (String) session.getAttribute("emailCode");
-//
-//	    // 세션에 코드 없으면 실패
-//	    if(savedCode == null) {
-//	        return "fail";
-//	    }
-//
-//	    // 코드 비교
-//	    if(savedCode.equals(code)) {
-//	        return "verified";
-//	    }
-//
-//	    return "fail";
-//	}
 	
 	//2)비밀번호 찾기 대상 확인(아이디+이메일)
 	@GetMapping(value="/findPw/email", 

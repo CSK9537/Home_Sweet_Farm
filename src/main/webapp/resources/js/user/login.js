@@ -207,7 +207,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
 	const verifyBtn = document.querySelector("#verifyBtn");//인증 버튼
 	const nextBtn = document.querySelector("#nextBtn");//다음 버튼
 	const nextBtnEl = document.querySelector("#nextBtn");
-	const resultEl = document.querySelector("#findIdResultMsg");//결과메시지
 	
 	if(!nameInput || !nameMsg || 
 		!emailInput || !emailMsg ||
