@@ -355,7 +355,6 @@ function sendVerifyCode(){
   	});
 }
 
-
 	  
 //인증버튼	  
   const verifyBtn = document.querySelector("#verifyBtn")
@@ -369,7 +368,12 @@ function sendVerifyCode(){
     	  codeMsg.style.color = "red";
         return;
       }
-      
+      //인증번호 6자리 필수 입력
+	     if (!/^\d{6}$/.test(code)) {
+	       setMsg(codeMsg, "인증번호 6자리를 정확히 입력해주세요.");
+	       codeMsg.style.color = "red";
+	       return;
+	      }
       fetch("/email/check/" + encodeURIComponent(code), {
           method: "PUT",
           credentials: "same-origin",
@@ -381,26 +385,23 @@ function sendVerifyCode(){
         	  codeMsg.style.color = "green";
         	  nextBtnEl.dataset.verified = "true";
         	  updateNextBtn();
-//            nextBtn.disabled = false;
           } else {
         	  setMsg(codeMsg, "인증코드가 올바르지 않습니다.");  
         	  codeMsg.style.color = "red";
           }
         })
         .catch(() => alert("인증 확인 중 오류가 발생했습니다."));
-      
-//	   // 👇 여기부터 새로
-//	      setMsg(codeMsg, "인증되었습니다.");
-//	      codeMsg.style.color = "green";
-//	      nextBtnEl.dataset.verified = true;
-//	      updateNextBtn();
+	     
     });
   }
+
 
   
 //다음 단계 이동 버튼
   const nextBtnEl = document.querySelector("#nextBtn");
-  const resultEl = document.querySelector("#findIdResultMsg");
+  const findIdPanelEl = document.querySelector("#panel-find-id");
+  const resultPanelEl = document.querySelector("#panel-find-id-result");
+  const resultEl = document.querySelector("#resultIdText");
   
   if(nextBtnEl){
 	  nextBtnEl.dataset.verified = "false";
@@ -416,6 +417,10 @@ function sendVerifyCode(){
 	  nextBtnEl.addEventListener("click", function () {
 	 const nameInput = document.querySelector("#findIdName");//이름 입력
 	 const emailInput = document.querySelector("#findIdEmail");//이메일 입력
+	  if (!nameInput || !emailInput){
+		  console.error("findIdName 또는  findIdEmail 요소를 찾지 못했습니다.");
+		  return;
+	  }
       if (nextBtnEl.dataset.verified !== "true") {
     	  setMsg(codeMsg, "이메일 인증을 완료해주세요.");  
     	  codeMsg.style.color = "red";
@@ -428,19 +433,32 @@ function sendVerifyCode(){
       .then(r => r.text())
       .then(id => {
 
-        if(id === "NOT_FOUND"){
-          resultEl.innerText = "일치하는 계정이 없습니다.";
-          resultEl.style.color = "red";
-          return;
-        }
+    	  if(!resultEl){
+    		  console.error("#resultIdText 요소가 없습니다.");
+    		  return;
+    	  }
+    	  if (id === "NOT_FOUND") {
+              resultEl.innerText = "일치하는 계정이 없습니다.";
+              resultEl.style.color = "red";
+              if (findIdPanelEl) findIdPanelEl.style.display = "none";
+              if (resultPanelEl) resultPanelEl.style.display = "block";
+              return;
+            }
 
-        resultEl.innerText = `아이디는 ${id} 입니다`;
-        resultEl.style.color = "green";
-      })
-      .catch(() => {
-        resultEl.innerText = "요청 실패 (서버 확인 필요)";
-        resultEl.style.color = "red";
+            resultEl.innerText = `아이디는 ${id} 입니다`;
+            resultEl.style.color = "green";
+
+            if (findIdPanelEl) findIdPanelEl.style.display = "none";
+            if (resultPanelEl) resultPanelEl.style.display = "block";
+          })
+          .catch(() => {
+            if (!resultEl) return;
+            resultEl.innerText = "요청 실패 (서버 확인 필요)";
+            resultEl.style.color = "red";
+
+            if (findIdPanelEl) findIdPanelEl.style.display = "none";
+            if (resultPanelEl) resultPanelEl.style.display = "block";
+          });
+
       });
-
-  });
-  }
+    }

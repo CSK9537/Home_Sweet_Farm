@@ -86,6 +86,7 @@
             </section>
 
             <!-- PANEL: 아이디 찾기 -->
+            <!-- STEP 1 인증화면  -->
             <section id="panel-find-id" class="tab-panel" role="tabpanel" aria-label="아이디 찾기">
               <h2 class="panel-title">아이디 찾기</h2>
 			  
@@ -127,9 +128,17 @@
                 <div class="helper-links">
                   <button type="button" class="helper-link js-go" data-target="panel-login">로그인하러 가기</button>
                 </div>
-                <div id="findIdResultMsg" class="error-msg" style="margin-top:8px; font-size:14px;"></div>
+               <!--<div id="findIdResultMsg" class="error-msg" style="margin-top:8px; font-size:14px;"></div>  --> <div id="findIdResultMsg" class="error-msg" style="margin-top:8px; font-size:14px;"></div>
               </form>
             </section>
+            
+            <!-- STEP 2 결과 화면 -->
+            <section id = "panel-find-id-result" style="display: none;">
+            	<h2> 아이디 찾기 결과</h2>
+            	<p id="resultIdText"></p>
+            	<a href="/user/login">로그인하러 가기</a>
+            </section>
+
 
             <!-- PANEL: 비밀번호 찾기 -->
             <section id="panel-find-pw" class="tab-panel" role="tabpanel" aria-label="비밀번호 찾기">
