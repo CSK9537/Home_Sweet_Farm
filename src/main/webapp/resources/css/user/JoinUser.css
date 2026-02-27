@@ -3,6 +3,47 @@ body{
 	padding: 0;
 }
 
+/* ------ 토스트 메시지 관련 css ------ */
+/* 메세지 폰트 */
+.swal2-toast .swal2-title {
+	font-size: 15px !important; /* 원하는 폰트 크기로 변경 (기본은 약 14~15px) */
+	font-weight: 400 !important; /* 글자 굵기 조절 (normal, bold 등) */
+	/* line-height: 1.5 !important; */ /* 줄 간격 조절 (글씨가 길어질 경우 대비) */
+}
+
+/* 폰트에 맞춰 아이콘 크기 조절 */
+.swal2-toast .swal2-icon {
+	transform: scale(1); /* 1이 기본 크기, 0.8은 80% 크기로 축소 */
+}
+
+/* 아이콘 애니메이션 차단 */
+.swal2-icon,
+.swal2-icon * {
+	animation: none !important;
+	transition: none !important;
+}
+
+/* 메시지 나타나는 애니메이션 (0.5초 동안 부드럽게) */
+.my-fade-in {
+	animation: fadeIn 0.5s ease-in-out;
+}
+
+/* 메시지 사라지는 애니메이션 (0.5초 동안 부드럽게) */
+.my-fade-out {
+	animation: fadeOut 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+	from { opacity: 0; transform: translateY(20px); } /* 살짝 아래에서 위로 올라오며 등장 (옵션) */
+	to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+	from { opacity: 1; }
+	to { opacity: 0; }
+}
+/* --------- 토스트 css 종료 --------- */
+
 /* 페이지 배경 */
 .page-shell {
   background-color: #6b7b61;
@@ -290,10 +331,11 @@ button:disabled{
   color: #6b7b61;
 }
 
-.btn-ghost:active{
+.btn-ghost:not(:disabled):active{
   background: #6b7b61;
   color: #f4f2ed;
 }
+
 
 .btn-outline{
   background: #f4f2ed;
@@ -307,6 +349,14 @@ button:disabled{
 	background: #6b7b61;
 	color: #f4f2ed;
 }
+
+#checkIdBtn:disabled{
+  background: #e2e2e2;
+  border-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
+
 #toVerifyBtn:disabled{
   background: #e2e2e2;
   border-color: #ccc;

@@ -293,7 +293,6 @@
 		    <version>6.3.3</version>
 		    <scope>compile</scope>
 		</dependency>
-				
 		
 	<!-- 웹 소켓 -->
       <!-- Spring WebSocket -->

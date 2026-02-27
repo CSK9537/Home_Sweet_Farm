@@ -17,6 +17,9 @@
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
 		up static resources in the ${webappRoot}/resources directory -->
 	<resources mapping="/resources/**" location="/resources/" />
+	
+	<!-- WebJars Resources Mapping -->
+	<resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/" />
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
 		in the /WEB-INF/views directory -->
@@ -28,7 +31,7 @@
 
 	<!-- multipart resolver -->
 	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"/>
-
+	
 	<context:component-scan
 		base-package="org.joonzis.common.controller" />
 	<context:component-scan

@@ -1,4 +1,43 @@
 (function () {
+	
+	// 토스트 메시지 기본 설정 (재사용을 위한 변수 선언)
+	const Toast = Swal.mixin({
+		toast: true,
+		position: 'bottom',			// 알림 위치 (bottom, top, top-end 등)
+		width: 'fit-content',
+		padding: '10px',
+		showConfirmButton: false,	// 확인 버튼 숨김
+		timer: 2000,				// 2초 후 사라짐
+//		timerProgressBar: true,		// 타이머 진행바 표시
+//		didOpen: (toast) => {		// 마우스를 올리면 타이머 일시정지
+//			toast.addEventListener('mouseenter', Swal.stopTimer)
+//			toast.addEventListener('mouseleave', Swal.resumeTimer)
+//		}
+		showClass: {
+			popup: 'my-fade-in'
+		},
+		hideClass: {
+			popup: 'my-fade-out'
+		}
+		
+	});
+	
+	// 페이지 로딩이 완료되었을 때 실행
+	window.onload = function() {
+		const serverMsg = document.getElementById('serverMsg').value; // Controller에서 넘어온 msg 값
+		
+		// msg 값이 비어있지 않다면 토스트를 실행합니다
+		if (serverMsg !== "") {
+			Toast.fire({
+				icon: 'error', // 실패 아이콘 (success, error, warning, info, question)
+				background: '#B85C5C', // 토스트 배경색
+				color: '#FFFFFF',      // 토스트 글자색
+				iconColor: '#FFFFFF',  // 에러 아이콘 색상 (기본 빨간색을 흰색으로 변경)
+				title: serverMsg
+			});
+		}
+	};
+	
   "use strict";
 
   // ===== helpers (ES5) =====
@@ -412,6 +451,7 @@
 				checkIdBtn.textContent = "확인 완료";
 				idInput.setAttribute('readonly', true);
 				idInput.classList.add('no-click');
+				idInput.classList.add('.duplck');
 				enableVerifyBtn();
 			}
 			
