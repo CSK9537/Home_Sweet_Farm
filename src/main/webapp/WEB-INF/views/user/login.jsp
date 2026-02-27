@@ -139,18 +139,21 @@
 
 
             <!-- PANEL: 비밀번호 찾기 -->
+            <!-- STEP 1: 인증화면  -->
             <section id="panel-find-pw" class="tab-panel" role="tabpanel" aria-label="비밀번호 찾기">
               <h2 class="panel-title">비밀번호 찾기</h2>
               
               <form class="form-block" method="post" action="${pageContext.request.contextPath}/user/findPw" autocomplete="off">
                 <label class="input-label" for="findPwId">아이디</label>
                 <input id="findPwId" name="username" class="text-input" type="text" placeholder="아이디" />
+                <div id="idMsg2" class="error-msg" style="margin-top:6px; font-size:14px;"></div>
 
                 <label class="input-label" for="findPwContact">이메일</label>
                 <div class="input-with-btn">
-	                <input id="findPwContact" name="contact" class="text-input" type="text" placeholder="본인확인용 이메일" />
+	                <input id="findPwEmail" name="contact" class="text-input" type="text" placeholder="본인확인용 이메일" />
 					<button type="button" id="sendBtn2" class="btn-ghost">발송</button>
 				</div>
+				<div id="emailMsg2" class="error-msg" style="margin-top:6px; font-size:14px;"></div>
 				
                 <div class="row-between">
                   <span class="mini-hint">인증번호를 입력해 주세요</span>
@@ -160,10 +163,11 @@
          			placeholder="인증번호 입력" autocomplete="one-time-code" />
   					<button type="button" id="verifyBtn2" class="btn-ghost">인증</button>
                 </div>
+                <div id="codeMsg2" class="error-msg" style="margin-top:6px; font-size:14px;"></div>
 
                 <div class="row-between">
-                  <span class="timer"><span class="time">03:00</span></span>
-                  <button type="button" class="btn-ghost">재전송</button>
+                  <span class="timer" aria-label="남은 시간"></span>
+                  <button id="resetBtn2" type="button" class="btn-ghost">재전송</button>
                 </div>
 
                   <button id="nextBtn2" type="button" class="btn-primary">다음</button>
@@ -177,6 +181,13 @@
                   본인확인 후 비밀번호 재설정 단계로 이동합니다. 민감정보 입력에 유의하세요.
                 </p>
               </form>
+            </section>
+            
+            <!-- STEP 2: 결과 화면 -->
+            <section id = "panel-find-pw-result" style="display: none;">
+            	<h2> 아이디 찾기 결과</h2>
+            	<p id="resultPwText"></p>
+            	<button type="button" class="helper-link js-go" data-target="panel-login">로그인하러 가기</button>
             </section>
 
           </div>
