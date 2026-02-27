@@ -194,7 +194,7 @@ function startResendCooldown(seconds) {
     }, 1000);
   }
 
-//아이디 검증
+//1. 아이디 검증
 document.addEventListener("DOMContentLoaded", ()=>{
 	const nameInput = document.querySelector("#findIdName");//이름 입력
 	const nameMsg = document.querySelector("#nameMsg");
@@ -437,7 +437,7 @@ function sendVerifyCode(){
     	  codeMsg.style.color = "red";
     	  return;
       }
-      //"다음" -> 결과메시지
+      //"다음"
       const name = nameInput.value.trim();
       const email = emailInput.value.trim();
       fetch("/user/findId/email?name=" + encodeURIComponent(name) + "&email=" + encodeURIComponent(email))
@@ -473,3 +473,8 @@ function sendVerifyCode(){
 
       });
     }
+  
+  
+//2. 비밀번호 검증
+  
+  
