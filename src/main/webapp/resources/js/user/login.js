@@ -331,7 +331,7 @@ function sendVerifyCode(){
 	
     const email = emailEl ?
   (emailEl.value || "").trim() : "";
-  
+  	
   	fetch("/email/send", {
   		method: "POST",
   		credentials: "same-origin",

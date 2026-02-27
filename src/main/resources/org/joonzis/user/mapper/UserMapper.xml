@@ -107,7 +107,7 @@
 		SELECT username 
 		FROM TBL_USER 
 		WHERE name = #{name}
-		WHERE email = #{email}
+		AND email = #{email}
 	</select>
 	
 	
