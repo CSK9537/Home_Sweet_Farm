@@ -334,6 +334,7 @@ function sendVerifyCode(){
   
   	fetch("/email/send", {
   		method: "POST",
+  		credentials: "same-origin",
   		headers: {"Content-Type":"text/plain;charset=UTF-8"},
   		body: email
   	})
@@ -370,7 +371,8 @@ function sendVerifyCode(){
       }
       
       fetch("/email/check/" + encodeURIComponent(code), {
-          method: "PUT"
+          method: "PUT",
+          credentials: "same-origin",
         })
         .then(response => response.text().then(text => ({ status: response.status, text })))
         .then(({ status, text }) => {
@@ -412,13 +414,16 @@ function sendVerifyCode(){
   
   if (nextBtnEl) {
 	  nextBtnEl.addEventListener("click", function () {
+	 const nameInput = document.querySelector("#findIdName");//이름 입력
+	 const emailInput = document.querySelector("#findIdEmail");//이메일 입력
       if (nextBtnEl.dataset.verified !== "true") {
     	  setMsg(codeMsg, "이메일 인증을 완료해주세요.");  
     	  codeMsg.style.color = "red";
     	  return;
       }
       //"다음" -> 결과메시지
-      const email = findIdEmail.value.trim();
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
       fetch("/user/findId/email?name=" + encodeURIComponent(name) + "&email=" + encodeURIComponent(email))
       .then(r => r.text())
       .then(id => {
