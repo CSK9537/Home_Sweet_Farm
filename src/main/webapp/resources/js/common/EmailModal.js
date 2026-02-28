@@ -116,8 +116,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       fetch("/email/check/" + encodeURIComponent(code), { method: "PUT" })
         .then(response => response.json().then(data => ({ status: response.status, data: data })))
-        .then(({ status, text }) => {
-          if (status === 202 && text === "verified") {
+        .then(({ status, data }) => {
+          if (status === 202 && data.message === "verified") {
             if(typeof showCustomToast === "function") showCustomToast("인증 완료", "success");
             
             // 모달 닫기

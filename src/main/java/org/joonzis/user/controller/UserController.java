@@ -129,7 +129,7 @@ public class UserController {
 	// 마이페이지 이동
 	@GetMapping("/mypage")
 	public String moveMypage() {
-		return "user/Mypage";
+		return "user/MyPage";
 	}
 	
 	// 로그아웃

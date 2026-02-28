@@ -38,7 +38,9 @@
           <div class="step-nav" role="tablist" aria-label="로그인 메뉴">
             <button type="button" class="step-nav__btn tab-btn is-active" data-target="panel-login" role="tab" aria-selected="true">로그인</button>
             <button type="button" class="step-nav__btn tab-btn" data-target="panel-find-id" role="tab" aria-selected="false">아이디 찾기</button>
+            <button type="button" class="step-nav__btn tab-btn" data-target="panel-find-id-result" role="tab" aria-selected="false" style="display:none;">아이디 찾기 결과</button>
             <button type="button" class="step-nav__btn tab-btn" data-target="panel-find-pw" role="tab" aria-selected="false">비밀번호 찾기</button>
+            <button type="button" class="step-nav__btn tab-btn" data-target="panel-find-pw-result" role="tab" aria-selected="false" style="display:none;">비밀번호 찾기 결과</button>
           </div>
 
           <section id="panel-login" class="step-panel tab-panel is-show" role="tabpanel" aria-label="로그인">
@@ -93,21 +95,10 @@
               <div class="verify-actions">
                 <button type="button" class="btn btn-outline" id="sendCode-btn" data-email-open>이메일 인증</button>
               </div>
-
-              <div class="verify-status">
-                <div class="status-line">
-                  <span>이메일 인증</span>
-                  <span class="badge" id="emailBadge">미완료</span>
-                </div>
-              </div>
-
-              <div class="btn-row">
-                <button type="button" class="btn btn-primary" id="nextBtn" disabled>다음</button>
-              </div>
             </div>
           </section>
             
-          <section id="panel-find-id-result" class="step-panel tab-panel" style="display: none;">
+          <section id="panel-find-id-result" class="step-panel tab-panel" >
             <div class="verify-card">
               <h3 class="verify-title">아이디 찾기 결과</h3>
               <p class="verify-desc" style="font-size: 16px; margin: 20px 0;">

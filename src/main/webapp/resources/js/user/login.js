@@ -17,14 +17,18 @@ function setActiveTab(targetId) {
     }
   });
   
-  // 탭 이동 시 기존에 띄워져 있던 결과 화면 숨기기
-  const resultPanels = document.querySelectorAll('[id$="-result"]');
-  resultPanels.forEach(p => p.style.display = 'none');
-  
   // 탭 버튼 상태 변경
+  // 만약 결과 화면이라면, 꼬리표('-result')를 떼고 부모 탭을 찾음
+  let activeTabTarget = targetId;
+ 
+  if (targetId.endsWith('-result')) {
+	activeTabTarget = targetId.replace('-result', ''); 
+  }
+  
   const tabs = document.querySelectorAll('.tab-btn');
+  
   tabs.forEach(t => {
-    const isOn = (t.getAttribute('data-target') === targetId);
+    const isOn = (t.getAttribute('data-target') === activeTabTarget);
     if (isOn) {
       t.classList.add('is-active');
       t.setAttribute('aria-selected', 'true');
@@ -132,61 +136,16 @@ rememberMe.addEventListener("change", function() {
 });
 
 // 아이디 찾기
-// 요소들
 const sendCodeBtn = document.querySelector("#sendCode-btn"); // 이메일 인증(모달 열기)
-const emailBadge = document.querySelector("#emailBadge");
-const nextBtn = document.querySelector("#nextBtn");
-var state = {verifiedEmail: false}; // 기본 인증 상태 : 미완료
-
-function addClass(el, c) {
-	if (!el) return;
-	if (el.classList) el.classList.add(c);
-	else if (!hasClass(el, c)) el.className += " " + c;
-}
-
-function removeClass(el, c) {
-	if (!el) return;
-	if (el.classList) el.classList.remove(c);
-	else el.className = el.className.replace(new RegExp("(^|\\s)" + c + "(\\s|$)", "g"), " ").replace(/\s+/g, " ").replace(/^\s|\s$/g, "");
-}
-
-function toggleClass(el, c, on) {
-	if (!el) return;
-	if (on) addClass(el, c);
-	else removeClass(el, c);
-}
-
-function updateVerifyBadges() {
-	if (emailBadge) {
-		emailBadge.innerHTML = state.verifiedEmail ? "완료" : "미완료";
-		toggleClass(emailBadge, "done", state.verifiedEmail);
-	}
-	if (sendCodeBtn) sendCodeBtn.disabled = state.verifiedEmail;
-}
-
-function updateNextBtn(){
-	if(!nextBtn) return;
-	nextBtn.disabled = !state.verifiedEmail;
-}
 
 document.addEventListener("emailVerifiedSuccess", function (e) {
-	// 인증 완료
-	state.verifiedEmail = true;
+	
 	// 아이디 설정
 	const foundUserId = e.detail.userId;
 	const resultIdText = document.querySelector("#resultIdText");
 	if(resultIdText) {
 		resultIdText.innerText = foundUserId;
 	}
-	// 배지 업데이트 및 다음 버튼 활성화 로직 호출
-	updateVerifyBadges();
-	updateNextBtn();
+	
+	setActiveTab("panel-find-id-result");
 });
-  
-// 이동 버튼 클릭
-if (nextBtn) {
-	nextBtn.addEventListener("click", function () {
-		if (!state.verifiedEmail) return;
-		setActiveTab('panel-find-id-result');
-	});
-}
