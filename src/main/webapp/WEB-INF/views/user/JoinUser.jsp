@@ -22,12 +22,9 @@
         <!-- LEFT: 이미지/로고 -->
         <div class="join-left" aria-label="회원가입 이미지 영역">
           <div class="join-left__inner">
-            <button type="button"
-                    class="join-brand"
-                    id="goHomeBtn"
-                    aria-label="메인으로 이동">
-              	Home Sweet Farm
-            </button>
+            <a class="join-brand" href="${pageContext.request.contextPath}/" title="메인페이지로 이동">
+              Home Sweet Farm
+            </a>
           </div>
         </div>
 
@@ -49,15 +46,12 @@
               	회원정보
             </button>
           </div>
-			<c:if test="${not empty error}">
-				  <div style="color:red; margin-bottom:10px;">${error}</div>
-			</c:if>
           <!-- STEP 1: 계정 정보 -->
           <section class="step-panel is-active" id="step-account" data-step="account" aria-label="계정 정보">
             <form id="accountForm" autocomplete="off">
               <div class="form-col">
                 <label class="form-label" for="userId">아이디</label>
-                <div class="login-group">
+                <div class="id-group">
                   <input class="form-input" type="text" id="userId" name="username"
                          placeholder="아이디 입력 (6~20자)" minlength="6" maxlength="20" required />
                   

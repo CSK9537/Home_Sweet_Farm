@@ -233,14 +233,6 @@
     });
   }
 
-  // logo -> home
-  var goHomeBtn = $("#goHomeBtn");
-  if (goHomeBtn) {
-    goHomeBtn.addEventListener("click", function () {
-      window.location.href = "/";
-    });
-  }
-
   // login
   var goLoginBtn = $("#goLoginBtn");
   if (goLoginBtn) {
