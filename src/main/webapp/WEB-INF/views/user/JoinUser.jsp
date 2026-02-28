@@ -61,8 +61,8 @@
                   <input class="form-input" type="text" id="userId" name="username"
                          placeholder="아이디 입력 (6~20자)" minlength="6" maxlength="20" required />
                   
-                  <!-- 중복확인 버튼 -->
-				  <button type="button" id="checkIdBtn" class="btn btn-ghost" disabled>중복확인</button>
+                  <!-- 중복 확인 버튼 -->
+				  <button type="button" id="checkIdBtn" class="btn btn-ghost" disabled>중복 확인</button>
 				</div>
 				  <!-- 결과 메시지-id -->
 				  <div class="errMsg">
@@ -320,10 +320,6 @@
               <div class="modal-mini-row">
                 <button type="button" class="btn btn-primary" id="emailVerifyBtn">인증 완료</button>
               </div>
-
-              <p class="hint">
-                	실제 발송/검증은 서버에서 처리하세요. 여기서는 UI 흐름만 제공합니다.
-              </p>
             </div>
           </div>
         </div>
