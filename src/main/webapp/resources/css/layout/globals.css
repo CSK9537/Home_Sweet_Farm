@@ -19,14 +19,18 @@ a {
 }
 
 /* ------ 토스트 메시지 관련 css ------ */
-.swal2-toast {
-	display: flex !important;
-	align-items: center !important; 
+.swal2-container {
+    z-index: 99999 !important; 
 }
 
 /* 메시지 위치(아랫쪽) 조정 */
 .swal2-container.swal2-bottom {
     bottom: 0px !important; /* 원하는 만큼 위치 조정 (기본값은 0) */
+}
+
+.swal2-toast {
+	display: flex !important;
+	align-items: center !important; 
 }
 
 /* 메세지 */

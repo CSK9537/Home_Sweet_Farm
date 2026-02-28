@@ -21,7 +21,8 @@
 	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
 		<!-- log4jdbc -->
 		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
-		<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@192.168.0.153:1521:XE"></property>
+		<!-- <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@192.168.0.153:1521:XE"></property> -->
+		<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:XE"></property>
 		<property name="username" value="scott"></property>
 		<property name="password" value="tiger"></property>
 	</bean>
@@ -36,7 +37,7 @@
 
 	<!-- 트랜잭션 및 AOP 관련항목 -->
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		   <property name="dataSource" ref="dataSource"/>
+		<property name="dataSource" ref="dataSource"/>
 	</bean>
 	<tx:annotation-driven/>
 	<task:annotation-driven/><!-- 임시 업로드(_temp)한 파일 submit 없이 이탈한 경우의 고아 파일을 주기적으로 정리하기 위해 @Scheduled 기반 스케줄러를 활성화 -->

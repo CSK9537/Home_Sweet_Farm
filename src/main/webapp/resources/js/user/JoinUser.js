@@ -302,10 +302,14 @@
 //아이디 검증
 	const idInput = document.querySelector('#userId');
 	const idMsg = document.querySelector('#idMsg');
-	const checkIdBtn = document.querySelector('#checkIdBtn')
+	const checkIdBtn = document.querySelector('#checkIdBtn');
+	let originalText = checkIdBtn.textContent;
 	
 	let idCheckedOk = false;
 	let lastCheckedId = "";
+	
+	var checkedOk = (typeof idCheckedOk !== "undefined") ? idCheckedOk : false;
+	var checkedId = (typeof lastCheckedId !== "undefined") ? lastCheckedId : "";
 	
 	const idRegex = /^[a-z0-9]{6,20}$/;
 	
@@ -313,34 +317,33 @@
 	function(){
 		const id = idInput.value.trim();
 		
-		//아이디를 바꾸면 중복확인 무조건 무효
+		//아이디를 바꾸면 중복 확인 무조건 무효
 		idCheckedOk = false;
 		lastCheckedId = "";
+		checkedOk = false;
+		checkIdBtn.textContent = originalText;	
+		if(checkIdBtn.classList.contains('loading')) checkIdBtn.classList.remove('loading');
 		
 	    if (!idRegex.test(id)) {
 	    	idMsg.innerText = "영문 소문자/숫자 6~20자로 입력해 주세요.";
 	    	idMsg.style.color = "red";
-	    	if (checkIdBtn) checkIdBtn.disabled = true;
+	    	checkIdBtn.disabled = true;
 	    	idCheckedOk = false;
 	    	enableVerifyBtn();
 	        return;
 	    } 
-		 // 형식 OK인데 아직 중복확인 안 함
-		    idMsg.innerText = "중복확인을 진행해 주세요.";
+		 // 형식 OK인데 아직 중복 확인 안 함
+		    idMsg.innerText = "중복 확인을 진행해 주세요.";
 		    idMsg.style.color = "#666";
 		    checkIdBtn.disabled = false;
 		    enableVerifyBtn();
 		 });
 	
-	// 아이디 중복확인
-	var checkedOk = (typeof idCheckedOk !== "undefined") ? idCheckedOk : false;
-	var checkedId = (typeof lastCheckedId !== "undefined") ? lastCheckedId : "";
-	 
+	// 아이디 중복 확인
 	checkIdBtn.addEventListener('click', (e) => {
 		
 	if (checkIdBtn.classList.contains('loading')) return;
 	
-	let originalText = checkIdBtn.textContent;
 	let val = idInput.value.trim();
 	
 	checkIdBtn.classList.add('loading');
@@ -364,7 +367,7 @@
 			
 			//1)아이디 미입력 시
 			if(val === ""){
-				idMsg.innerText ="아이디를 입력한 뒤 중복확인 해주세요.";
+				idMsg.innerText ="아이디를 입력한 뒤 중복 확인 해주세요.";
 				idMsg.style.color = "red";
 				
 				checkedOk = false;
@@ -410,9 +413,6 @@
 				lastCheckedId = val;
 				
 				checkIdBtn.textContent = "확인 완료";
-				idInput.setAttribute('readonly', true);
-				idInput.classList.add('no-click');
-				idInput.classList.add('.duplck');
 				enableVerifyBtn();
 			}
 			
@@ -576,7 +576,7 @@
       if (btn.classList.contains('loading')) return;
 
       if (!email) {
-        alert("이메일을 입력해주세요.");
+        showCustomToast("이메일을 입력해주세요.", "warning");
         return;
       }
 
@@ -593,7 +593,7 @@
         })
         .then(data => {
           if (data.duplicate) {
-            alert("중복된 이메일입니다.");
+            showCustomToast("중복된 이메일입니다.", "error");
             throw new Error("DUPLICATE"); // 중복이면 에러를 던져서 중단
           }
 
@@ -609,7 +609,7 @@
           if (!response.ok) throw new Error("SEND_FAIL");
           
           // 발송 성공 후 타이머
-          alert("인증코드를 이메일로 발송했습니다.");
+          showCustomToast("인증코드를 이메일로 발송했습니다.", "info");
           btn.classList.remove('loading');
           tmpemail = email;
 
@@ -632,7 +632,7 @@
           if (err.message === "DUPLICATE") {
             // 중복일 때 상태 복구
           } else if (err.message === "SEND_FAIL") {
-            alert("이메일 발송에 실패했습니다.");
+            showCustomToast("이메일 발송에 실패했습니다.", "error");
           } else {
             console.error(err);
           }
@@ -653,7 +653,7 @@
       var code = codeEl ? (codeEl.value || "").trim() : "";
       
       if (!code) {
-        alert("인증코드를 입력해주세요.");
+        showCustomToast("인증코드를 입력해주세요.", "error");
         return;
       }
       fetch("/email/check/" + encodeURIComponent(code), {
@@ -666,22 +666,19 @@
             document.getElementById('userEmail').value = tmpemail;
             updateVerifyBadges();
             updateNextBtn();
-            alert("이메일 인증 완료!");
+            showCustomToast("이메일 인증 완료", "success");
             closeModal($("#modal-email"));
           } else {
             state.verifiedEmail = false;
-            updateVerifyBadges();
             updateNextBtn();
-            alert("인증코드가 올바르지 않습니다.");
+            showCustomToast("인증코드가 올바르지 않습니다.", "error");
           }
         })
         .catch(() => {
-          alert("인증 확인 중 오류가 발생했습니다.");
+          showCustomToast("인증 확인 중 오류가 발생했습니다.", "error");
         });
     });
   }
-  
-  //인증번호 재전송
 
   //다음 단계 이동 버튼
   var toProfileBtn = $("#toProfileBtn");
@@ -690,7 +687,6 @@
       if (!state.verifiedEmail) {
     	  return;
       }
-      updateVerifyBadges();
       setActiveStep("profile");
     });
     updateNextBtn();
@@ -707,14 +703,14 @@
       var input = $("#plantNameInput");
       var name = input ? (input.value || "").replace(/^\s+|\s+$/g, "") : "";
       if (!name) {
-        alert("식물명을 입력해주세요.");
+        showCustomToast("식물명을 입력해주세요.", "warning");
         return;
       }
 
       var i;
       for (i = 0; i < state.interests.length; i++) {
         if (state.interests[i] === name) {
-          alert("이미 추가된 식물입니다.");
+          showCustomToast("이미 추가된 식물입니다.", "warning");
           return;
         }
       }
@@ -738,13 +734,13 @@
 
       if (!vId || !vPw) {
         if (e && e.preventDefault) e.preventDefault();
-        alert("계정 정보가 누락되었습니다. 처음 단계부터 다시 진행해주세요.");
+        showCustomToast("계정 정보가 누락되었습니다. 처음 단계부터 다시 진행해주세요.", "warning");
         setActiveStep("account");
         return false;
       }
       if (!state.verifiedEmail) {
     	if (e && e.preventDefault) e.preventDefault();
-    	alert("이메일 인증을 진행해주세요.");
+      showCustomToast("이메일 인증을 진행해주세요.", "warning");
     	setActiveStep("verify");
     	return false;
       }

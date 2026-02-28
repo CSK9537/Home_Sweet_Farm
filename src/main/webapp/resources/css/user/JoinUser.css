@@ -293,8 +293,8 @@ button:disabled{
 
 .spinner {
   display: none;
-  width: 7px;
-  height: 7px;
+  width: 9px;
+  height: 9px;
   border: 2px solid #6b7b61;
   border-top-color: #e2e2e2;
   border-radius: 50%;

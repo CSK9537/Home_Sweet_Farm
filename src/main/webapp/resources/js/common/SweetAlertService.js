@@ -23,7 +23,7 @@ function showCustomToast(message, type) {
     let toastIcon = type || 'info';		// 기본 아이콘타입
 
     switch(toastIcon) {
-        case 'success': toastBackground = '#55634D'; break; // 성공 프로젝트 컬러
+        case 'success': toastBackground = '#526645'; break; // 성공 비빋드 다크 그린
         case 'error': toastBackground = '#B85C5C'; break;   // 에러 테라코타 레드 
         case 'warning': toastBackground = '#E5B55C'; break; // 경고 머스타드 옐로우 
         case 'info': default: toastBackground = '#5C8CB8'; toastIcon = 'info'; break; // 정보 블루
