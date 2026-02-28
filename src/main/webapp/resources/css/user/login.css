@@ -299,20 +299,77 @@ button:disabled {
   text-decoration: underline;
 }
 
-/* Result Card (아이디/비밀번호 찾기 결과) */
-.verify-card {
-  padding: 30px 0;
-  text-align: center;
+/* 이메일 인증 */
+.verify-card{
+  padding-top: 8px;
 }
-.verify-title {
+.verify-title{
+  text-align: center;
   color: #6b7b61;
-  margin: 0 0 10px;
+  margin: 10px 0 6px;
   font-size: 26px;
 }
-.verify-desc {
+.verify-desc{
+  text-align: center;
   color: #6b7b61;
-  font-size: 14px;
+  opacity: 0.85;
+  font-size: 13px;
   line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+.verify-actions{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin: 10px 0 16px;
+}
+
+.verify-status{
+  border-top: 1px solid rgba(107,123,97,0.35);
+  padding-top: 12px;
+}
+.status-line{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #6b7b61;
+  font-weight: 800;
+  margin-top: 8px;
+}
+#sendCode-btn:disabled {
+  background: #e2e2e2 !important;
+  border-color: #ccc !important;
+  color: #999 !important;
+  cursor: not-allowed;
+}
+.badge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(107,123,97,0.45);
+  font-size: 12px;
+  font-weight: 900;
+}
+.badge.done{
+  background: #6b7b61;
+  color: #f4f2ed;
+}
+#nextBtn:disabled{
+  background: #e2e2e2;
+  border-color: #ccc;
+  color: #999;
+  cursor: not-allowed;
+}
+.btn-row{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 /* responsive */

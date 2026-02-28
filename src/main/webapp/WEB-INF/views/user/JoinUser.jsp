@@ -273,9 +273,9 @@
         </div>
       </div>
       
-      <jsp:include page="/WEB-INF/views/common/EmailModal.jsp">
-        <jsp:param name="mode" value="signup" />
-      </jsp:include>
+	<jsp:include page="/WEB-INF/views/common/EmailModal.jsp">
+		<jsp:param name="mode" value="signup" />
+	</jsp:include>
 
       <div class="modal" id="modal-marketing" aria-hidden="true" role="dialog" aria-label="마케팅 정보 수신 동의">
         <div class="modal__dim" data-modal-close></div>
@@ -324,6 +324,5 @@
 </body>
 <script src="/webjars/sweetalert2/11.10.7/dist/sweetalert2.all.min.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/common/SweetAlertService.js"></script>
-<script src="${pageContext.request.contextPath}/resources/js/common/EmailModal.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/user/JoinUser.js"></script>
 </html>

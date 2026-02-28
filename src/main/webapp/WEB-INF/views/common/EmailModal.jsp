@@ -34,3 +34,5 @@
 
   </div>
 </div>
+
+<script src="${pageContext.request.contextPath}/resources/js/common/EmailModal.js"></script>

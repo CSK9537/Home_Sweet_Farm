@@ -83,41 +83,28 @@
           </section>
 
           <section id="panel-find-id" class="step-panel tab-panel" role="tabpanel" aria-label="아이디 찾기">
-            <form id="findIdForm" method="post" action="${pageContext.request.contextPath}/user/findId" autocomplete="off">
+            <div class="verify-card">
+              <h3 class="verify-title">이메일 인증</h3>
+              <p class="verify-desc">
+               	 회원님의 개인정보 보호를 위해 <strong>이메일 인증</strong>이 필요합니다.<br/>
+               	 등록된 이메일을 통해 인증을 진행해주세요.
+              </p>
 
-              <div class="form-col">
-                <label class="form-label" for="findIdEmail">본인확인용 이메일</label>
-                <div class="login-group">
-                  <input id="findIdEmail" name="contact" class="form-input" type="text" placeholder="본인확인용 이메일" />
-                  <button type="button" id="sendBtn" class="btn btn-ghost">발송</button>
-                </div>
-                <div class="errMsg"><p id="emailMsg"></p></div>
+              <div class="verify-actions">
+                <button type="button" class="btn btn-outline" id="sendCode-btn" data-email-open>이메일 인증</button>
               </div>
 
-              <div class="form-col">
-                <div class="terms-row" style="margin-top:0;">
-                  <span class="security-note" style="margin:0;">인증번호를 입력해 주세요</span>
-                  <span class="timer" aria-label="남은 시간" style="color:#d60000; font-weight:700;"></span>
+              <div class="verify-status">
+                <div class="status-line">
+                  <span>이메일 인증</span>
+                  <span class="badge" id="emailBadge">미완료</span>
                 </div>
-                <div class="login-group" style="margin-top:8px;">
-                   <input id="verifyCode" name="code" class="form-input" type="text" placeholder="인증번호 6자리 입력" autocomplete="one-time-code" />
-                   <button type="button" id="verifyBtn" class="btn btn-ghost">인증</button>
-                </div>
-                <div class="errMsg"><p id="codeMsg"></p></div>
               </div>
 
               <div class="btn-row">
-                <button id="resetBtn" type="button" class="btn btn-outline" style="flex: 1;">재전송</button>
-                <button id="nextBtn" type="button" class="btn btn-primary" style="flex: 1;">다음</button>
+                <button type="button" class="btn btn-primary" id="nextBtn" disabled>다음</button>
               </div>
-
-              <div class="social-box">
-                <p class="login-guide">
-                  기억이 나셨나요?&nbsp;<button type="button" class="link-btn js-go" data-target="panel-login">로그인</button>
-                </p>
-              </div>
-
-            </form>
+            </div>
           </section>
             
           <section id="panel-find-id-result" class="step-panel tab-panel" style="display: none;">
@@ -191,6 +178,9 @@
         </div></div></div>
   </div>
 </div>
+<jsp:include page="/WEB-INF/views/common/EmailModal.jsp">
+	<jsp:param name="mode" value="find" />
+</jsp:include>
 <div class="hiddenMsg" id="serverMsg" data-msg="${msg}"></div>
 <div class="hiddenMsg" id="serverMsgType" data-msgType="${msgType}"></div>
 </body>

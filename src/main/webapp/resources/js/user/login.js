@@ -16,7 +16,11 @@ function setActiveTab(targetId) {
       p.classList.remove('is-show');
     }
   });
-
+  
+  // 탭 이동 시 기존에 띄워져 있던 결과 화면 숨기기
+  const resultPanels = document.querySelectorAll('[id$="-result"]');
+  resultPanels.forEach(p => p.style.display = 'none');
+  
   // 탭 버튼 상태 변경
   const tabs = document.querySelectorAll('.tab-btn');
   tabs.forEach(t => {
@@ -29,10 +33,6 @@ function setActiveTab(targetId) {
       t.setAttribute('aria-selected', 'false');
     }
   });
-  
-  // 탭 이동 시 기존에 띄워져 있던 결과 화면 숨기기
-  const resultPanels = document.querySelectorAll('[id$="-result"]');
-  resultPanels.forEach(p => p.style.display = 'none');
 }
 
 document.addEventListener("click", function (e) {
@@ -46,34 +46,12 @@ document.addEventListener("click", function (e) {
   }
 });
 
-// 기존에 있던 인증번호 입력칸(.code-input) 자동 포커스 기능 유지
-function wireCodeInputs() {
-  const groups = document.querySelectorAll('.code-boxes');
-  groups.forEach(wrap => {
-    const inputs = wrap.querySelectorAll('.code-input');
-    inputs.forEach((input, idx) => {
-      input.addEventListener('input', function () {
-        this.value = (this.value || '').replace(/[^0-9]/g, '');
-        if (this.value && idx < inputs.length - 1) {
-          inputs[idx + 1].focus();
-        }
-      });
-      input.addEventListener('keydown', function (e) {
-        if (e.key === 'Backspace' && !this.value && idx > 0) {
-          inputs[idx - 1].focus();
-        }
-      });
-    });
-  });
-}
-
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', () => {
-  wireCodeInputs();
   setActiveTab('panel-login'); // 기본 탭: 로그인
 });
 
-
+// 로그인
 // 요소들
 const loginForm = document.querySelector("#loginForm");
 const loginBtn = document.querySelector("#loginBtn");
@@ -147,630 +125,68 @@ loginBtn.addEventListener("click", () => {
 	
 });
 
-
 //자동로그인: rememberMe
 rememberMe.addEventListener("change", function() {
 	rememberHidden.value =
 	rememberMe.checked ? "Y" : "N";
 });
 
-////타이머 함수
-//let resendTimer = null;
-//
-//function startResendCooldown(seconds) {
-//    const resetBtn = document.querySelector("#resetBtn");
-//    if (!resetBtn) return;
-//
-//    let remain = seconds;
-//    resetBtn.disabled = true;
-//    resetBtn.textContent = `재전송 (${remain}s)`;
-//
-//    if (resendTimer) clearInterval(resendTimer);
-//
-//    resendTimer = setInterval(() => {
-//      remain-= 1;
-//      
-//      if (remain <= 0) {
-//        clearInterval(resendTimer);
-//        resendTimer = null;
-//        resetBtn.disabled = false;
-//        resetBtn.textContent = "인증메일 재전송";
-//        return;
-//      }
-//      resetBtn.textContent = `재전송 (${remain}s)`;
-//    }, 1000);
-//  }
-function startResendCooldown(seconds, resetBtnEl) {
-	  if (!resetBtnEl) return;
+// 아이디 찾기
+// 요소들
+const sendCodeBtn = document.querySelector("#sendCode-btn"); // 이메일 인증(모달 열기)
+const emailBadge = document.querySelector("#emailBadge");
+const nextBtn = document.querySelector("#nextBtn");
+var state = {verifiedEmail: false}; // 기본 인증 상태 : 미완료
 
-	  // 버튼별로 타이머를 저장 (버튼 2개여도 각각 독립)
-	  if (resetBtnEl._resendTimer) clearInterval(resetBtnEl._resendTimer);
+function addClass(el, c) {
+	if (!el) return;
+	if (el.classList) el.classList.add(c);
+	else if (!hasClass(el, c)) el.className += " " + c;
+}
 
-	  let remain = seconds;
-	  resetBtnEl.disabled = true;
-	  resetBtnEl.style.opacity = "0.5";
-	  resetBtnEl.style.cursor = "not-allowed";
-	  resetBtnEl.textContent = `재전송 (${remain}s)`;
+function removeClass(el, c) {
+	if (!el) return;
+	if (el.classList) el.classList.remove(c);
+	else el.className = el.className.replace(new RegExp("(^|\\s)" + c + "(\\s|$)", "g"), " ").replace(/\s+/g, " ").replace(/^\s|\s$/g, "");
+}
 
-	  resetBtnEl._resendTimer = setInterval(() => {
-	    remain--;
+function toggleClass(el, c, on) {
+	if (!el) return;
+	if (on) addClass(el, c);
+	else removeClass(el, c);
+}
 
-	    if (remain <= 0) {
-	      clearInterval(resetBtnEl._resendTimer);
-	      resetBtnEl._resendTimer = null;
-
-	      resetBtnEl.disabled = false;
-	      resetBtnEl.style.opacity = "";
-	      resetBtnEl.style.cursor = "pointer";
-	      resetBtnEl.textContent = "인증메일 재전송";
-	      return;
-	    }
-
-	    resetBtnEl.textContent = `재전송 (${remain}s)`;
-	  }, 1000);
+function updateVerifyBadges() {
+	if (emailBadge) {
+		emailBadge.innerHTML = state.verifiedEmail ? "완료" : "미완료";
+		toggleClass(emailBadge, "done", state.verifiedEmail);
 	}
+	if (sendCodeBtn) sendCodeBtn.disabled = state.verifiedEmail;
+}
 
+function updateNextBtn(){
+	if(!nextBtn) return;
+	nextBtn.disabled = !state.verifiedEmail;
+}
 
-
-//1. 아이디 검증
-document.addEventListener("DOMContentLoaded", ()=>{
-	const nameInput = document.querySelector("#findIdName");//이름 입력
-	const nameMsg = document.querySelector("#nameMsg");
-	const emailInput = document.querySelector("#findIdEmail");//이메일 입력
-	const emailMsg = document.querySelector("#emailMsg");
-	const codeInput = document.querySelector("#verifyCode");//인증번호 
-	const codeMsg = document.querySelector("#codeMsg");
-	const sendBtn = document.querySelector("#sendBtn");//발송 버튼
-	const resetBtn = document.querySelector("#resetBtn");//재발송 버튼
-	const verifyBtn = document.querySelector("#verifyBtn");//인증 버튼
-	const nextBtnEl = document.querySelector("#nextBtn");//다음 버튼
-	
-	if(!nameInput || !nameMsg || 
-		!emailInput || !emailMsg ||
-		!codeInput || !codeMsg || 
-		!verifyBtn || !nextBtnEl) return;
-	
-	nameInput.addEventListener("input",()=>{
-		const name = nameInput.value.trim();
-		if(name.length >=2){
-			setMsg(nameMsg, "");
-		}
-	});
-	emailInput.addEventListener("input",()=>{
-		const email = emailInput.value.trim();
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		//비었으면: 메시지 지우거나 유지
-		if(email === ""){
-			setMsg(emailMsg, "");
-			return;
-		}
-		//형식이 맞으면 메시지 지우기
-		if(emailRegex.test(email)){
-			setMsg(emailMsg, "");
-		}
-	});
-	codeInput.addEventListener("input",()=>{
-		setMsg(codeMsg, "");
-	});
-	
-	function validateName(){
-		const name = nameInput.value.trim();
-		
-		//빈 값 체크
-		if(!name){
-			setMsg(nameMsg, "이름을 입력해주세요.");
-			nameMsg.style.color = "red";
-			nameInput.focus();
-			return false;
-		}
-		//길이 검사
-		if(name.length < 2){
-			setMsg(nameMsg, "이름은 2자 이상 입력해주세요.");
-			nameMsg.style.color = "red";
-			nameInput.focus();
-			return false;
-		}
-		setMsg(nameMsg, "확인되었습니다.");
-		nameMsg.style.color = "green";
-		return true;
+document.addEventListener("emailVerifiedSuccess", function (e) {
+	// 인증 완료
+	state.verifiedEmail = true;
+	// 아이디 설정
+	const foundUserId = e.detail.userId;
+	const resultIdText = document.querySelector("#resultIdText");
+	if(resultIdText) {
+		resultIdText.innerText = foundUserId;
 	}
-	function validateEmail(){
-		const email = emailInput.value.trim();
-		//빈 값 체크
-		if(!email){
-			setMsg(emailMsg, "이메일을 입력해주세요.");
-			emailMsg.style.color = "red";
-			emailInput.focus();
-			return false;
-		}
-		//정규식 검사
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if(!emailRegex.test(email)){
-			setMsg(emailMsg, "올바른 이메일 형식으로 입력해주세요.");
-			emailMsg.style.color = "red";
-			emailInput.focus();
-			return false;
-		}
-		setMsg(emailMsg, "확인되었습니다.");
-		emailMsg.style.color = "green";
-		return true;
-	}	
-	
-//인증번호 검증 버튼 클릭
-	sendBtn.addEventListener("click",(e)=>{
-		e.preventDefault();
-		setMsg(codeMsg,"");
-		codeMsg.style.color = "";
-		if(!validateName()) return;
-		if(!validateEmail()) return;
-		sendVerifyCode();
-	})
-	
-	// 재전송 버튼
-	if (resetBtn) {
-	   resetBtn.addEventListener("click", (e)=>{
-	      e.preventDefault();
-	
-	      if(!validateName()) return;
-	      if(!validateEmail()) return;
-	
-	      sendVerifyCode();
-	   });
-	}
-	
-	//다음버튼에서 인증번호 빈 값 체크
-	nextBtnEl.addEventListener("click", (e)=>{
-		e.preventDefault();
-		
-		const verifyCode = codeInput.value.trim();
-		//빈 값 체크   
-		   if(!verifyCode){
-			   setMsg(codeMsg, "인증번호를 입력해주세요.");
-			    codeMsg.style.color = "red";
-			    codeInput.focus();
-				return;
-			}
-		   	setMsg(codeMsg, "");
-			
-		});
+	// 배지 업데이트 및 다음 버튼 활성화 로직 호출
+	updateVerifyBadges();
+	updateNextBtn();
 });
-
-
-//이메일 인증코드 발송
-function sendVerifyCode(){
-	const emailEl = document.querySelector("#findIdEmail");
-	const codeInput = document.querySelector("#verifyCode");
-	const codeMsg = document.querySelector("#codeMsg");
-	
-	setMsg(codeMsg, "");
-	codeMsg.style.color ="";
-	
-    const email = emailEl ?
-  (emailEl.value || "").trim() : "";
-  	
-  	fetch("/email/send", {
-  		method: "POST",
-  		credentials: "same-origin",
-  		headers: {"Content-Type":"text/plain;charset=UTF-8"},
-  		body: email
-  	})
-  	.then((response) =>{
-  		if(!response.ok) throw new Error("HTTP"+ response.status);
-  		setMsg(codeMsg, "인증코드를 이메일로 발송했습니다.");
-  		//발송버튼 클릭 후 발송버튼 비활성화
-  		sendBtn.disabled = true;
-  		sendBtn.style.opacity = "0.5";
-  		sendBtn.style.cursor = "not-allowed";
-  		
-  		if(codeMsg) codeMsg.style.color = "green";
-  		if(codeInput)
-  		codeInput.focus();
-  		if(typeof startResendCooldown === "function"){
-  		startResendCooldown(60, resetBtn);//인증번호 재전송
-  		}
-  	})
-  	.catch((err)=>{
-  		console.error("SEND ERROR:", err); // ✅ 이거 추가
-  		setMsg(codeMsg, "이메일 발송에 실패했습니다.")
-  		if(codeMsg) codeMsg.style.color = "red";
-  	});
+  
+// 이동 버튼 클릭
+if (nextBtn) {
+	nextBtn.addEventListener("click", function () {
+		if (!state.verifiedEmail) return;
+		setActiveTab('panel-find-id-result');
+	});
 }
-
-	  
-//인증버튼	  
-  const verifyBtn = document.querySelector("#verifyBtn")
-  const codeInput = document.querySelector("#verifyCode");
-  	  if (codeInput) {
-  		codeInput.addEventListener("input", 
-  		()=>{
-  			nextBtnEl.dataset.verified = "false";
-  			updateNextBtn();
-  		});
-  	  }
-      if (verifyBtn) {
-	  verifyBtn.addEventListener("click", function () {
-	    const codeEl = document.querySelector("#verifyCode");
-	    const code = codeEl ? (codeEl.value || "").trim() : "";
-
-      if (!code) {
-    	  setMsg(codeMsg, "인증코드를 입력해주세요.");
-    	  codeMsg.style.color = "red";
-        return;
-      }
-      //인증번호 6자리 필수 입력
-	     if (!/^\d{6}$/.test(code)) {
-	       setMsg(codeMsg, "인증번호 6자리를 정확히 입력해주세요.");
-	       codeMsg.style.color = "red";
-	       return;
-	      }
-      fetch("/email/check/" + encodeURIComponent(code), {
-          method: "PUT",
-          credentials: "same-origin",
-        })
-        .then(response => response.text().then(text => ({ status: response.status, text })))
-        .then(({ status, text }) => {
-          if (status === 202 && text === "verified") {
-        	  setMsg(codeMsg, "인증되었습니다.");  
-        	  codeMsg.style.color = "green";
-        	  nextBtnEl.dataset.verified = "true";
-        	  updateNextBtn();
-          } else {
-        	  setMsg(codeMsg, "인증코드가 올바르지 않습니다.");  
-        	  codeMsg.style.color = "red";
-          }
-        })
-        .catch(() => alert("인증 확인 중 오류가 발생했습니다."));
-	     
-    });
-  }
-
-
-  
-//다음 단계 이동 버튼
-  const nextBtnEl = document.querySelector("#nextBtn");
-  const findIdPanelEl = document.querySelector("#panel-find-id");
-  const resultPanelEl = document.querySelector("#panel-find-id-result");
-  const resultEl = document.querySelector("#resultIdText");
-  
-  if(nextBtnEl){
-	  nextBtnEl.dataset.verified = "false";
-  }
-  function updateNextBtn(){
-	  if(!nextBtnEl) return;
-	  nextBtnEl.disabled = nextBtnEl.dataset.verified !== "true";
-}
-  //최초 진입 시 비활성화
-  updateNextBtn();
-  
-  if (nextBtnEl) {
-	  nextBtnEl.addEventListener("click", function () {
-	 const nameInput = document.querySelector("#findIdName");//이름 입력
-	 const emailInput = document.querySelector("#findIdEmail");//이메일 입력
-	  if (!nameInput || !emailInput){
-		  console.error("findIdName 또는  findIdEmail 요소를 찾지 못했습니다.");
-		  return;
-	  }
-      if (nextBtnEl.dataset.verified !== "true") {
-    	  setMsg(codeMsg, "이메일 인증을 완료해주세요.");  
-    	  codeMsg.style.color = "red";
-    	  return;
-      }
-      //"다음"
-      const name = nameInput.value.trim();
-      const email = emailInput.value.trim();
-      fetch("/user/findId/email?name=" + encodeURIComponent(name) + "&email=" + encodeURIComponent(email))
-      .then(r => r.text())
-      .then(id => {
-
-    	  if(!resultEl){
-    		  console.error("#resultIdText 요소가 없습니다.");
-    		  return;
-    	  }
-    	  if (id === "NOT_FOUND") {
-              resultEl.innerText = "일치하는 계정이 없습니다.";
-              resultEl.style.color = "red";
-              if (findIdPanelEl) findIdPanelEl.style.display = "none";
-              if (resultPanelEl) resultPanelEl.style.display = "block";
-              return;
-            }
-
-            resultEl.innerText = `아이디는 ${id} 입니다`;
-            resultEl.style.color = "green";
-
-            if (findIdPanelEl) findIdPanelEl.style.display = "none";
-            if (resultPanelEl) resultPanelEl.style.display = "block";
-          })
-          .catch(() => {
-            if (!resultEl) return;
-            resultEl.innerText = "요청 실패 (서버 확인 필요)";
-            resultEl.style.color = "red";
-
-            if (findIdPanelEl) findIdPanelEl.style.display = "none";
-            if (resultPanelEl) resultPanelEl.style.display = "block";
-          });
-
-      });
-    }
-  
-  
-//2. 비밀번호 검증
-  document.addEventListener("DOMContentLoaded", ()=>{
-  	const idInput = document.querySelector("#findPwId");//아이디 입력
-  	const idMsg2 = document.querySelector("#idMsg2");
-  	const emailInput2 = document.querySelector("#findPwEmail");//이메일 입력
-  	const emailMsg2 = document.querySelector("#emailMsg2");
-  	const codeInput2 = document.querySelector("#verifyCode2");//인증번호 
-  	const codeMsg2 = document.querySelector("#codeMsg2");
-  	const sendBtn2 = document.querySelector("#sendBtn2");//발송 버튼
-  	const resetBtn2 = document.querySelector("#resetBtn2");//재발송 버튼
-  	const verifyBtn2 = document.querySelector("#verifyBtn2");//인증 버튼
-  	const nextBtn2 = document.querySelector("#nextBtn2");//다음 버튼
-  	
-  	if(!idInput || !idMsg2 || 
-  		!emailInput2 || !emailMsg2 ||
-  		!codeInput2 || !codeMsg2 || 
-  		!sendBtn2 || !resetBtn2 ||
-  		!verifyBtn2 || !nextBtn2) return;
-  	
-  	idInput.addEventListener("input",()=>{
-  		const id2 = idInput.value.trim();
-  		if(id2.length >=2){
-  			setMsg(idMsg2, "");
-  		}
-  	});
-  	emailInput2.addEventListener("input",()=>{
-  		const pwEmail = emailInput2.value.trim();
-  		const emailRegex2 = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  		//비었으면: 메시지 지우거나 유지
-  		if(pwEmail === ""){
-  			setMsg(emailMsg, "");
-  			return;
-  		}
-  		//형식이 맞으면 메시지 지우기
-  		if(emailRegex2.test(pwEmail)){
-  			setMsg(emailMsg2, "");
-  		}
-  	});
-  	codeInput2.addEventListener("input",()=>{
-  		setMsg(codeMsg2, "");
-  	});
-  	
-  	function validateId(){
-  		const id2 = idInput.value.trim();
-  		
-  		//빈 값 체크
-  		if(!id2){
-  			setMsg(idMsg2, "아이디를 입력해주세요.");
-  			idMsg2.style.color = "red";
-  			idInput.focus();
-  			return false;
-  		}
-  		//길이 검사
-  		if(id2.length < 2){
-  			setMsg(idMsg2, "아이디는 2자 이상 입력해주세요.");
-  			idMsg2.style.color = "red";
-  			idInput.focus();
-  			return false;
-  		}
-  		setMsg(idMsg2, "확인되었습니다.");
-  		idMsg2.style.color = "green";
-  		return true;
-  	}
-  	function validateEmail2(){
-  		const pwEmail = emailInput2.value.trim();
-  		//빈 값 체크
-  		if(!pwEmail){
-  			setMsg(emailMsg2, "이메일을 입력해주세요.");
-  			emailMsg2.style.color = "red";
-  			emailInput2.focus();
-  			return false;
-  		}
-  		//정규식 검사
-  		const emailRegex2 = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  		if(!emailRegex2.test(pwEmail)){
-  			setMsg(emailMsg2, "올바른 이메일 형식으로 입력해주세요.");
-  			emailMsg2.style.color = "red";
-  			emailInput2.focus();
-  			return false;
-  		}
-  		setMsg(emailMsg2, "확인되었습니다.");
-  		emailMsg2.style.color = "green";
-  		return true;
-  	}	
-  	
-  //인증번호 검증 버튼 클릭
-  	sendBtn2.addEventListener("click",(e)=>{
-  		e.preventDefault();
-  		setMsg(codeMsg2,"");
-  		codeMsg2.style.color = "";
-  		if(!validateId()) return;
-  		if(!validateEmail2()) return;
-  		sendVerifyCode2();
-  	})
-  	
-  	// 재전송 버튼
-  	if (resetBtn2) {
-  	   resetBtn2.addEventListener("click", (e)=>{
-  	      e.preventDefault();
-  	
-  	      if(!validateId()) return;
-  	      if(!validateEmail2()) return;
-  	
-  	      sendVerifyCode2();
-  	   });
-  	}
-  	
-  	//다음버튼에서 인증번호 빈 값 체크
-  	nextBtn2.addEventListener("click", (e)=>{
-  		e.preventDefault();
-  		
-  		const verifyCode2 = codeInput2.value.trim();
-  		//빈 값 체크   
-  		   if(!verifyCode2){
-  			   setMsg(codeMsg2, "인증번호를 입력해주세요.");
-  			    codeMsg2.style.color = "red";
-  			    codeInput2.focus();
-  				return;
-  			}
-  		   	setMsg(codeMsg2, "");
-  			
-  		});
-  });  
-//이메일 인증코드 발송
-  function sendVerifyCode2(){
-  	const emailInput2 = document.querySelector("#findPwEmail");
-  	const codeInput2 = document.querySelector("#verifyCode2");
-  	const codeMsg2 = document.querySelector("#codeMsg2");
-  	
-  	setMsg(codeMsg2, "");
-  	codeMsg2.style.color ="";
-  	
-      const pwEmail = emailInput2 ?
-    (emailInput2.value || "").trim() : "";
-    	
-    	fetch("/email/send", {
-    		method: "POST",
-    		credentials: "same-origin",
-    		headers: {"Content-Type":"text/plain;charset=UTF-8"},
-    		body: pwEmail
-    	})
-    	.then((response) =>{
-    		if(!response.ok) throw new Error("HTTP"+ response.status);
-    		setMsg(codeMsg2, "인증코드를 이메일로 발송했습니다.");
-    		//발송버튼 클릭 후 발송버튼 비활성화
-    		sendBtn2.disabled = true;
-    		sendBtn2.style.opacity = "0.5";
-    		sendBtn2.style.cursor = "not-allowed";
-    		
-    		if(codeMsg2) codeMsg2.style.color = "green";
-    		if(codeInput2)
-    		codeInput2.focus();
-    		if(typeof startResendCooldown === "function"){
-    		startResendCooldown(60, resetBtn2);//인증번호 재전송
-    		}
-    	})
-    	.catch((err)=>{
-    		console.error("SEND ERROR:", err); // ✅ 이거 추가
-    		setMsg2(codeMsg2, "이메일 발송에 실패했습니다.")
-    		if(codeMsg2) codeMsg2.style.color = "red";
-    	});
-  }
-  
-//인증버튼	  
-  const verifyBtn2 = document.querySelector("#verifyBtn2")
-  const codeInput2 = document.querySelector("#verifyCode2");
-  	  if (codeInput2) {
-  		codeInput2.addEventListener("input", 
-  		()=>{
-  			nextBtn2.dataset.verified = "false";
-  			updateNextBtn2();
-  		});
-  	  }
-      if (verifyBtn2) {
-	  verifyBtn2.addEventListener("click", function () {
-	    const codeInput2 = document.querySelector("#verifyCode2");
-	    const code2 = codeInput2 ? (codeInput2.value || "").trim() : "";
-
-      if (!code2) {
-    	  setMsg(codeMsg2, "인증코드를 입력해주세요.");
-    	  codeMsg2.style.color = "red";
-        return;
-      }
-      //인증번호 6자리 필수 입력
-	     if (!/^\d{6}$/.test(code2)) {
-	       setMsg(codeMsg2, "인증번호 6자리를 정확히 입력해주세요.");
-	       codeMsg2.style.color = "red";
-	       return;
-	      }
-      fetch("/email/check/" + encodeURIComponent(code2), {
-          method: "PUT",
-          credentials: "same-origin",
-        })
-        .then(response => response.text().then(text => ({ status: response.status, text })))
-        .then(({ status, text }) => {
-          if (status === 202 && text === "verified") {
-        	  setMsg(codeMsg2, "인증되었습니다.");  
-        	  codeMsg2.style.color = "green";
-        	  nextBtn2.dataset.verified = "true";
-        	  updateNextBtn2();
-          } else {
-        	  setMsg(codeMsg2, "인증코드가 올바르지 않습니다.");  
-        	  codeMsg2.style.color = "red";
-          }
-        })
-        .catch(() => alert("인증 확인 중 오류가 발생했습니다."));
-	     
-    });
-  }
-      
-      
-    //다음 단계 이동 버튼
-      const nextBtn2 = document.querySelector("#nextBtn2");
-      const findPwPanelEl = document.querySelector("#panel-find-pw");
-      const resultPwPanelEl = document.querySelector("#panel-find-pw-result");
-      const resultPwEl = document.querySelector("#resultPwText");
-      
-      if(nextBtn2){
-    	  nextBtn2.dataset.verified = "false";
-      }
-      function updateNextBtn2(){
-    	  if(!nextBtn2) return;
-    	  nextBtn2.disabled = nextBtn2.dataset.verified !== "true";
-    }
-      //최초 진입 시 비활성화
-      updateNextBtn2();
-      
-      if (nextBtn2) {
-    	  nextBtn2.addEventListener("click", function () {
-    	 const idInput = document.querySelector("#findPwId");//아이디 입력
-    	 const emailInput2 = document.querySelector("#findPwEmail");//이메일 입력
-    	  if (!idInput || !emailInput2){
-    		  console.error("findPwId 또는  findPwEmail 요소를 찾지 못했습니다.");
-    		  return;
-    	  }
-          if (nextBtn2.dataset.verified !== "true") {
-        	  setMsg(codeMsg2, "이메일 인증을 완료해주세요.");  
-        	  codeMsg2.style.color = "red";
-        	  return;
-          }
-       // "다음"
-          const id = idInput.value.trim();
-          const pwEmail = emailInput2.value.trim();
-
-          fetch("/user/findPw/email?username=" + encodeURIComponent(id) + "&email=" + encodeURIComponent(pwEmail))
-            .then(r => r.text())
-            .then(text => {
-
-              if (!resultPwEl) {
-                console.error("#resultPwText 요소가 없습니다.");
-                return;
-              }
-
-              if (text === "NOT_FOUND") {
-                resultPwEl.innerText = "일치하는 계정이 없습니다.";
-                resultPwEl.style.color = "red";
-
-                if (findPwPanelEl) findPwPanelEl.style.display = "block";
-                if (resultPwPanelEl) resultPwPanelEl.style.display = "none";
-                return;
-              }
-
-              // text === "OK"
-              resultPwEl.innerText = "확인되었습니다. 이메일 인증을 진행해주세요.";
-              resultPwEl.style.color = "green";
-
-              // ✅ 여기서 다음 단계로 패널 이동(원하는 쪽으로)
-              if (findPwPanelEl) findPwPanelEl.style.display = "none";
-              if (resultPwPanelEl) resultPwPanelEl.style.display = "block";
-            })
-            .catch(() => {
-              if (!resultPwEl) return;
-
-              resultPwEl.innerText = "요청 실패 (서버 확인 필요)";
-              resultPwEl.style.color = "red";
-
-              if (findPwPanelEl) findPwPanelEl.style.display = "block";
-              if (resultPwPanelEl) resultPwPanelEl.style.display = "none";
-            });
-          });
-      }

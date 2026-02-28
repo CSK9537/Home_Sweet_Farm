@@ -32,7 +32,7 @@ public interface UserMapper {
 	public int delete(UserVO vo);
 	
 	//아이디 찾기(이메일)
-	public String findIdByEmail(@Param("name")String name, @Param("email")String email);
+	public String findIdByEmail(String email);
 	//비밀번호 찾기 대상 확인(이메일)
 	public int existUserByEmail(@Param("username")String username,
 						@Param("email")String email);

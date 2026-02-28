@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalEl = document.querySelector("#emailAuthModal");
   const emailSendBtn = document.querySelector("#emailAuthSendBtn");
   const emailVerifyBtn = document.querySelector("#emailAuthVerifyBtn");
-  let tmpemail = '';
+  let resultEmail = '';
 
   // 1. 모달 열기/닫기 공통 로직
   // 부모 페이지에서 data-email-open 속성을 가진 버튼을 누르면 모달 열림
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
           
           if(typeof showCustomToast === "function") showCustomToast("인증코드를 발송했습니다.", "info");
           btn.classList.remove('loading');
-          tmpemail = email;
+          resultEmail = email;
 
           let remain = 60;
           textEl.textContent = `재전송 (${remain}s)`;
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       fetch("/email/check/" + encodeURIComponent(code), { method: "PUT" })
-        .then(response => response.text().then(text => ({ status: response.status, text })))
+        .then(response => response.json().then(data => ({ status: response.status, data: data })))
         .then(({ status, text }) => {
           if (status === 202 && text === "verified") {
             if(typeof showCustomToast === "function") showCustomToast("인증 완료", "success");
@@ -128,7 +128,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // 부모 페이지로 성공 이벤트 발송
             document.dispatchEvent(new CustomEvent("emailVerifiedSuccess", {
-              detail: { email: tmpemail }
+              detail: {
+            	  email: resultEmail,
+            	  userId: data.userId
+            	  }
             }));
           } else {
             if(typeof showCustomToast === "function") showCustomToast("코드가 올바르지 않습니다.", "error");
