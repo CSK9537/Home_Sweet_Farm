@@ -1,6 +1,5 @@
 package org.joonzis.user.service;
 
-import java.util.List;
 
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.mapper.UserMapper;
@@ -14,6 +13,7 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 @Service
 public class UserServiceImpl implements UserService{
+	
 	@Autowired
 	private UserMapper usermapper;
 	

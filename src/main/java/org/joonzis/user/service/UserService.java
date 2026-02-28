@@ -1,20 +1,17 @@
 package org.joonzis.user.service;
 
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
-import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
 	
 	//데이터 넣기(회원가입)
 	public void insert(UserVO vo, String aspectNames);
 	//데이터 조회
-	public  UserVO selectLogin(int user_id);
+	public UserVO selectLogin(int user_id);
 	//로그인
-	public UserVO login(@Param("username")String username, @Param("password")String password);
+	public UserVO login(String username, String password);
 	//데이터 삭제(회원 탈퇴)
 	public int delete(UserVO vo);
 	//아이디 찾기(이메일)

@@ -553,125 +553,21 @@
   }
 
   // ===== step2: verify =====
-
-  var emailSendBtn = $("#emailSendBtn");
-  var tmpemail = '';
-
-  if (emailSendBtn) {
-    emailSendBtn.addEventListener("click", (e) => {
-      var btn = e.currentTarget;
-      var textEl = btn.querySelector('.btn-text');
-      var originalText = textEl.textContent;
-      var emailEl = $("#emailAddr");
-      var email = emailEl ? (emailEl.value || "").trim() : "";
-
-      if (btn.classList.contains('loading')) return;
-
-      if (!email) {
-        showCustomToast("이메일을 입력해주세요.", "warning");
-        return;
-      }
-
-      // 로딩 상태 시작
-      btn.classList.add('loading');
-      btn.disabled = true;
-      textEl.textContent = "검사 중";
-
-      // 이메일 중복 검사
-      fetch(getCpath() + "/checkEmail?email=" + encodeURIComponent(email))
-        .then(response => {
-          if (!response.ok || response.status != 200) throw new Error("네트워크 에러");
-          return response.json();
-        })
-        .then(data => {
-          if (data.duplicate) {
-            showCustomToast("중복된 이메일입니다.", "error");
-            throw new Error("DUPLICATE"); // 중복이면 에러를 던져서 중단
-          }
-
-          // 중복이 아닐 때 발송
-          textEl.textContent = "발송 중";
-          return fetch("/email/send", {
-            method: "POST",
-            headers: { "Content-Type": "text/plain; charset=UTF-8" },
-            body: email
-          });
-        })
-        .then(response => {
-          if (!response.ok) throw new Error("SEND_FAIL");
-          
-          // 발송 성공 후 타이머
-          showCustomToast("인증코드를 이메일로 발송했습니다.", "info");
-          btn.classList.remove('loading');
-          tmpemail = email;
-
-          let remain = 60;
-          textEl.textContent = `재전송 (${remain}s)`;
-
-          let resendTimer = setInterval(() => {
-            remain--;
-            if (remain <= 0) {
-              clearInterval(resendTimer);
-              btn.disabled = false;
-              textEl.textContent = "인증메일 재전송";
-              return;
-            }
-            textEl.textContent = `재전송 (${remain}s)`;
-          }, 1000);
-        })
-        .catch(err => {
-          // 모든 단계의 에러가 여기서 처리됨
-          if (err.message === "DUPLICATE") {
-            // 중복일 때 상태 복구
-          } else if (err.message === "SEND_FAIL") {
-            showCustomToast("이메일 발송에 실패했습니다.", "error");
-          } else {
-            console.error(err);
-          }
-          
-          // 공통 에러 복구 로직
-          textEl.textContent = originalText;
-          btn.classList.remove('loading');
-          btn.disabled = false;
-        });
-    });
-  }
   
+  document.addEventListener("emailVerifiedSuccess", function (e) {
+    // e.detail.email 안에는 모달에서 인증 성공한 이메일이 들어있음
+    state.verifiedEmail = true;
 
-  var emailVerifyBtn = $("#emailVerifyBtn");
-  if (emailVerifyBtn) {
-    emailVerifyBtn.addEventListener("click", function () {
-      var codeEl = $("#emailCode");
-      var code = codeEl ? (codeEl.value || "").trim() : "";
-      
-      if (!code) {
-        showCustomToast("인증코드를 입력해주세요.", "error");
-        return;
-      }
-      fetch("/email/check/" + encodeURIComponent(code), {
-          method: "PUT"
-        })
-        .then(response => response.text().then(text => ({ status: response.status, text })))
-        .then(({ status, text }) => {
-          if (status === 202 && text === "verified") {
-            state.verifiedEmail = true;
-            document.getElementById('userEmail').value = tmpemail;
-            updateVerifyBadges();
-            updateNextBtn();
-            showCustomToast("이메일 인증 완료", "success");
-            closeModal($("#modal-email"));
-          } else {
-            state.verifiedEmail = false;
-            updateNextBtn();
-            showCustomToast("인증코드가 올바르지 않습니다.", "error");
-          }
-        })
-        .catch(() => {
-          showCustomToast("인증 확인 중 오류가 발생했습니다.", "error");
-        });
-    });
-  }
+    const userEmailInput = document.getElementById('userEmail');
+    if (userEmailInput) {
+      userEmailInput.value = e.detail.email; // 이메일 자동 입력
+    }
 
+    // 배지 업데이트 및 다음 버튼 활성화 로직 호출
+    updateVerifyBadges();
+    updateNextBtn();
+  });
+  
   //다음 단계 이동 버튼
   var toProfileBtn = $("#toProfileBtn");
   if (toProfileBtn) {
@@ -732,7 +628,7 @@
       }
       if (!state.verifiedEmail) {
     	if (e && e.preventDefault) e.preventDefault();
-      showCustomToast("이메일 인증을 진행해주세요.", "warning");
+    	showCustomToast("이메일 인증을 진행해주세요.", "warning");
     	setActiveStep("verify");
     	return false;
       }

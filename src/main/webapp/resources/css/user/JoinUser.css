@@ -295,28 +295,6 @@ button:disabled{
   cursor: not-allowed;
 }
 
-.spinner {
-  display: none;
-  width: 9px;
-  height: 9px;
-  border: 2px solid #6b7b61;
-  border-top-color: #e2e2e2;
-  border-radius: 50%;
-  animation: spin 1.5s linear infinite;
-}
-
-/* 버튼에 'loading' 클래스가 붙었을 때 스피너 표시 */
-#emailSendBtn.loading .spinner {
-  display: inline-block;
-}
-
-/* 스피너 회전 애니메이션 */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* social */
 .social-box{
   margin-top: 18px;
