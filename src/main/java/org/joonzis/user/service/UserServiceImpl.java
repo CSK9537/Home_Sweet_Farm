@@ -80,12 +80,16 @@ public class UserServiceImpl implements UserService{
 		return usermapper.findIdByEmail(email);
 	}
 	@Override
-	public int existUserByEmail(String username, String email) {
-		return usermapper.existUserByEmail(username, email);
+	public boolean existUserByEmail(String username, String email) {
+		return usermapper.existUserByEmail(username, email)>0;
 	}
 	@Override
-	public void resetPw(UserVO vo) {
-		usermapper.resetPw(vo);
+	public UserVO findUserByEmail(String email) {
+		return usermapper.findUserByEmail(email);
+	}
+	@Override
+	public boolean resetPw(UserVO vo) {
+		return usermapper.resetPw(vo)>0;
 	}
 	@Override
 	public boolean isIdDuplicate(String username) {

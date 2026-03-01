@@ -75,9 +75,11 @@ public class EmailAuthController {
 	        session.setAttribute("emailVerifiedStatus", "true");
 	        
 	        String userId = uservice.findIdByEmail(email);
+	        String userPw = "";
 	        
 	        result.put("message", "verified");
 	        result.put("userId", userId);
+	        result.put("userPw", userPw);
 	        
 	        return new ResponseEntity<>(result, HttpStatus.ACCEPTED);            
 	    } else {
@@ -87,5 +89,15 @@ public class EmailAuthController {
 	        result.put("message", "reject");
 	        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
 	    }
+	}
+	
+	@PostMapping(value = "/clearSession")
+	public ResponseEntity<String> clearSession(HttpSession session) {
+		
+		session.removeAttribute("authEmail");
+		session.removeAttribute("code");
+		session.removeAttribute("emailVerifiedStatus");
+		
+		return new ResponseEntity<>("cleared", HttpStatus.OK);
 	}
 }

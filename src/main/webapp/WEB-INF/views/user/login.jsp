@@ -93,7 +93,7 @@
               </p>
 
               <div class="verify-actions">
-                <button type="button" class="btn btn-outline" id="sendCode-btn" data-email-open>이메일 인증</button>
+                <button type="button" class="btn btn-outline" id="sendCode-btn1" data-email-open data-mode="findId">이메일 인증</button>
               </div>
             </div>
           </section>
@@ -106,6 +106,9 @@
                 <strong id="resultIdText" style="color:#2f3b2a; font-size:20px;"></strong> 입니다.
               </p>
               <div class="btn-row">
+                <button type="button" id="findIdToFindPw" class="btn btn-primary js-go" data-target="panel-find-pw" style="width:100%;">비밀번호 찾기</button>
+              </div>
+              <div class="btn-row">
                 <button type="button" class="btn btn-primary js-go" data-target="panel-login" style="width:100%;">로그인하러 가기</button>
               </div>
             </div>
@@ -116,53 +119,46 @@
               
               <div class="form-col">
                 <label class="form-label" for="findPwId">아이디</label>
-                <input id="findPwId" name="username" class="form-input" type="text" placeholder="아이디 입력" />
+                <input id="findPwById" name="username" class="form-input" type="text" placeholder="아이디 입력" />
                 <div class="errMsg"><p id="idMsg2"></p></div>
               </div>
 
-              <div class="form-col">
-                <label class="form-label" for="findPwEmail">가입한 이메일</label>
-                <div class="login-group">
-                  <input id="findPwEmail" name="contact" class="form-input" type="text" placeholder="본인확인용 이메일" />
-                  <button type="button" id="sendBtn2" class="btn btn-ghost">발송</button>
-                </div>
-                <div class="errMsg"><p id="emailMsg2"></p></div>
-              </div>
-                
-              <div class="form-col">
-                <div class="terms-row" style="margin-top:0;">
-                  <span class="security-note" style="margin:0;">인증번호를 입력해 주세요</span>
-                  <span class="timer" aria-label="남은 시간" style="color:#d60000; font-weight:700;"></span>
-                </div>
-                <div class="login-group" style="margin-top:8px;">
-                   <input id="verifyCode2" name="code" class="form-input" type="text" placeholder="인증번호 6자리 입력" autocomplete="one-time-code" />
-                   <button type="button" id="verifyBtn2" class="btn btn-ghost">인증</button>
-                </div>
-                <div class="errMsg"><p id="codeMsg2"></p></div>
-              </div>
-
-              <div class="btn-row">
-                <button id="resetBtn2" type="button" class="btn btn-outline" style="flex: 1;">재전송</button>
-                <button id="nextBtn2" type="button" class="btn btn-primary" style="flex: 1;">다음</button>
-              </div>
-                  
-              <div class="social-box">
-                <p class="login-guide">
-                  <button type="button" class="link-btn js-go" data-target="panel-login">로그인</button> | 
-                  <a class="login-link" href="${pageContext.request.contextPath}/user/join">회원가입</a>
+              <div class="verify-card">
+                <h3 class="verify-title">이메일 인증</h3>
+                <p class="verify-desc">
+                 	 회원님의 개인정보 보호를 위해 <strong>이메일 인증</strong>이 필요합니다.<br/>
+                 	 등록된 이메일을 통해 인증을 진행해주세요.
                 </p>
+
+                <div class="verify-actions">
+                  <button type="button" class="btn btn-outline" id="sendCode-btn2" data-email-open data-mode="findPw" disabled>이메일 인증</button>
+                </div>
               </div>
 
             </form>
           </section>
             
-          <section id="panel-find-pw-result" class="step-panel tab-panel" style="display: none;">
+          <section id="panel-find-pw-result" class="step-panel tab-panel">
             <div class="verify-card">
-              <h3 class="verify-title">비밀번호 찾기 결과</h3>
-              <p class="verify-desc" id="resultPwText" style="font-size: 15px; margin: 20px 0;"></p>
-              <div class="btn-row">
-                <button type="button" class="btn btn-primary js-go" data-target="panel-login" style="width:100%;">로그인하러 가기</button>
-              </div>
+              <h3 class="verify-title">비밀번호 재설정</h3>
+              
+              <form id="modifyPwForm" autocomplete="off">
+                <div class="form-col">
+                  <label class="form-label" for="loginPw">비밀번호</label>
+                  <input id="modifyPw" name="password" class="form-input" type="password" maxlength="20" placeholder="영문 대/소문자, 숫자, 특수문자 포함 8~20자" />
+                  <div class="errMsg"><p id="pwMsg2"></p></div>
+                </div>
+                
+                <div class="form-col">
+                  <label class="form-label" for="loginPw">비밀번호 확인</label>
+                  <input id="modifyPw2" name="confirmPassword" class="form-input" type="password" maxlength="20" placeholder="비밀번호 확인" />
+                  <div class="errMsg"><p id="pwMsg3"></p></div>
+                </div>
+                
+                <div class="btn-row">
+                  <button type="button" id="pwModifyBtn" class="btn btn-primary" style="width:100%;" disabled>재설정</button>
+                </div>
+              </form>
             </div>
           </section>
 

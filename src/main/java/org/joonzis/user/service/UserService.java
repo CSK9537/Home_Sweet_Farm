@@ -1,6 +1,5 @@
 package org.joonzis.user.service;
 
-import org.apache.ibatis.annotations.Param;
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
 
@@ -17,10 +16,11 @@ public interface UserService {
 	//아이디 찾기(이메일)
 	public String findIdByEmail(String email);
 	//비밀번호 찾기 대상 확인(이메일)
-	public int existUserByEmail(@Param("username")String username,
-							@Param("email")String email);
+	public boolean existUserByEmail(String username, String email);
+	//이메일로 유저정보 가져오기
+	public UserVO findUserByEmail(String email);
 	//비밀번호 재설정
-	public void resetPw(UserVO vo);
+	public boolean resetPw(UserVO vo);
 
 	//아이디 중복 체크
 	public boolean isIdDuplicate(String username);

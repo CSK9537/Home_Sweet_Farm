@@ -14,7 +14,7 @@
     <div class="email-auth-modal__body">
       <div class="email-auth-form">
         <label class="email-auth-label" for="emailAuthAddrInput">이메일</label>
-        <input class="email-auth-input" type="email" id="emailAuthAddrInput" placeholder="plant@gmail.com" />
+        <input class="email-auth-input" type="email" id="emailAuthAddrInput" placeholder="이메일 입력" />
         
         <div class="email-auth-row">
           <button type="button" class="email-auth-btn-outline" id="emailAuthSendBtn">

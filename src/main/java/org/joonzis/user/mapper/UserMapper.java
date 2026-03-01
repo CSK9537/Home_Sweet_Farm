@@ -34,11 +34,11 @@ public interface UserMapper {
 	//아이디 찾기(이메일)
 	public String findIdByEmail(String email);
 	//비밀번호 찾기 대상 확인(이메일)
-	public int existUserByEmail(@Param("username")String username,
-						@Param("email")String email);
-	
+	public int existUserByEmail(@Param("username") String username, @Param("email") String email);
+	// 이메일로 유저정보 가져오기
+	public UserVO findUserByEmail(String email);
 	//비밀번호 재설정
-	public void resetPw(UserVO vo);
+	public int resetPw(UserVO vo);
 
 	//아이디 중복 체크
 	public int countByUsername(@Param("username")String username);

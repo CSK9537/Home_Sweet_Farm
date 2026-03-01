@@ -168,46 +168,121 @@ public class UserController {
 		    }
 	
 	// 이메일 중복 확인
-	@GetMapping(value = "/checkEmail", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/checkEmail", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Map<String, Boolean> checkEmail(@RequestParam("email") String email) {
-		     boolean isDuplicate = uservice.isEmailDuplicate(email.trim());
-		     return Collections.singletonMap("duplicate", isDuplicate);
-		    }
-		 
-	/*
-	 * 아이디 찾기, 비밀번호 찾기
-	 * */
-	
+	public Map<String, Boolean> checkEmail(@RequestBody Map<String, String> payload) {
+		
+		// 1. JSON Body에서 데이터 추출
+		String email = payload.get("email") != null ? payload.get("email").trim() : "";
+		String mode = payload.get("mode");
+		String username = payload.get("userId");
 
+		// 결과를 담을 Map (모드에 따라 키값이 달라지므로 HashMap 사용)
+		Map<String, Boolean> result = new HashMap<>();
+
+		// 모드(mode)에 따라 분기 처리
+		if ("signup".equals(mode)) {
+			// 회원가입: 이메일 중복 확인
+			boolean isDuplicate = uservice.isEmailDuplicate(email);
+			result.put("duplicate", isDuplicate);
+
+		} else if ("findId".equals(mode)) {
+			// 아이디 찾기: 가입된 이메일이 있는지 확인
+			boolean isExist = uservice.isEmailDuplicate(email);
+			result.put("exist", isExist);
+
+		} else if ("findPw".equals(mode)) {
+			// 비밀번호 찾기: 아이디와 이메일이 매칭되는지 확인
+			boolean isMatch = uservice.existUserByEmail(username, email);
+			result.put("isMatch", isMatch);
+		} else {
+			result.put("error", true);
+		}
+
+		return result;
+	}
+	
+	// 비밀번호 재설정
+	@PostMapping(value = "/resetPw", produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public Map<String, Object> resetPassword(@RequestBody Map<String, String> payload, HttpSession session) {
+		Map<String, Object> result = new HashMap<>();
+		String newPassword = payload.get("newPassword");
+		
+		// 1. 세션에서 인증받은 이메일 꺼내기 (비정상적인 접근 차단)
+		Object emailObj = session.getAttribute("authEmail");
+		Object verifiedObj = session.getAttribute("emailVerifiedStatus");
+		
+		if (emailObj == null || verifiedObj == null || !"true".equals(verifiedObj.toString())) {
+			result.put("success", false);
+			result.put("message", "이메일 인증이 만료되었거나 올바르지 않은 접근입니다.");
+			return result;
+		}
+		
+		String email = emailObj.toString();
+		
+		// 2. 이메일로 유저 조회
+		UserVO vo = uservice.findUserByEmail(email);
+		
+		if (vo == null) {
+			result.put("success", false);
+			result.put("message", "사용자 정보를 찾을 수 없습니다.");
+			return result;
+		}
+		
+		// 3. 기존 비밀번호와 비교 
+		// 암호화(Spring Security) 경우: 
+		// if (passwordEncoder.matches(newPassword, vo.getPassword())) {
+		
+		if (newPassword.equals(vo.getPassword())) {
+			result.put("success", false);
+			result.put("reason", "same_as_old"); // JS에서 이 reason을 보고 토스트를 띄웁니다.
+			return result;
+		}
+		
+		// 4. 비밀번호 업데이트 (새 비밀번호 암호화 필요시 인코딩해서 넘기기)
+		// uservice.updatePassword(vo.getUserId(), passwordEncoder.encode(newPassword));
+		vo.setPassword(newPassword);
+		boolean isSuccess = uservice.resetPw(vo);
+		
+		if(isSuccess) {
+			result.put("success", true);
+			return result;
+		} else {
+			result.put("success", false);
+			result.put("message", "비밀번호 변경에 실패했습니다.");
+			return result;
+		}
+	}
+	
 	
 	//2)비밀번호 찾기 대상 확인(아이디+이메일)
-	@GetMapping(value="/findPw/email", 
-	produces = "text/plain; charset= UTF-8") 
-	@ResponseBody
-	public String checkPwTarget(@RequestParam String username, 
-									@RequestParam String email) {
-		int exists = uservice.existUserByEmail(username, email);
-		return exists == 1 ? "OK" : "NOT_FOUND";
-	}
+//	@GetMapping(value="/findPw/email", 
+//	produces = "text/plain; charset= UTF-8") 
+//	@ResponseBody
+//	public String checkPwTarget(@RequestParam String username, 
+//									@RequestParam String email) {
+//		int exists = uservice.existUserByEmail(username, email);
+//		return exists == 1 ? "OK" : "NOT_FOUND";
+//	}
 
 	//6)비밀번호 재설정(아이디 + 이메일 + 새 비번)
-	@GetMapping(value="/find-pw/reset", 
-	produces = "text/plain; charset= UTF-8")
-	public String resetPw(UserVO vo) {
-		int exists = uservice.existUserByEmail(vo.getUsername(), vo.getEmail());
-		if(exists != 1)
-	    return "NOT_FOUND";
-	    uservice.resetPw(vo);
-		return "OK";
-	}
+//	@GetMapping(value="/find-pw/reset", 
+//	produces = "text/plain; charset= UTF-8")
+//	public String resetPw(UserVO vo) {
+//		int exists = uservice.existUserByEmail(vo.getUsername(), vo.getEmail());
+//		if(exists != 1)
+//	    return "NOT_FOUND";
+//	    uservice.resetPw(vo);
+//		return "OK";
+//	}
 
 	//7)아이디 중복체크
-	@GetMapping("/id-check") //url예시: http://localhost:8081/user/id-check?username=linwee
-	@ResponseBody
-	public boolean idCheck(@RequestParam String username) {
-		return uservice.isIdDuplicate(username);
-	}
+//	@GetMapping("/id-check") //url예시: http://localhost:8081/user/id-check?username=linwee
+//	@ResponseBody
+//	public boolean idCheck(@RequestParam String username) {
+//		return uservice.isIdDuplicate(username);
+//	}
 	
 	@GetMapping("/me")
 	@ResponseBody
