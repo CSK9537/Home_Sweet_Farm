@@ -1,8 +1,12 @@
 package org.joonzis.user.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.user.service.EmailService;
+import org.joonzis.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +26,9 @@ import lombok.extern.log4j.Log4j;
 @RequestMapping("/email")
 public class EmailAuthController {
 	@Autowired
-	EmailService emailer;
+	private EmailService emailer;
+	@Autowired
+	private UserService uservice;
 	
 	@PostMapping(
 			value = "/send",
@@ -36,6 +42,7 @@ public class EmailAuthController {
 		try {
 			if(!emailer.sendEmail(email, code)) throw new RuntimeException("이메일 발송에 실패함");
 			session.setAttribute("code", code);
+			session.setAttribute("authEmail", email);
 			return new ResponseEntity<String>(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -45,25 +52,52 @@ public class EmailAuthController {
 	
 	@PutMapping(
 			value = "/check/{userInput}",
-			produces = "text/plain;charset=UTF-8")
-	public ResponseEntity<String> checkCode(
-			@PathVariable("userInput")String userInput,
-			HttpSession session){
-		String code;
-		try {
-			code = session.getAttribute("code").toString();
-		} catch (NullPointerException e) {
-			log.error(e.getMessage());
-			log.error("세션에 코드가 없음, 올바르지 않는 과정의 요청");
-			return new ResponseEntity<String>("올바르지 않는 요청", HttpStatus.BAD_REQUEST);
-		}
-		if(userInput.equals(code)) {
-			session.setAttribute("emailVerifiedStatus", "true");
-			return new ResponseEntity<String>("verified",HttpStatus.ACCEPTED);			
-		} else {
-			log.info("유저의 입력 : " + userInput);
-			log.info("세션에 저장된 코드 : " + code);
-			return new ResponseEntity<String>("reject", HttpStatus.BAD_REQUEST);
-		}
+			produces = "application/json;charset=UTF-8")
+	public ResponseEntity<Map<String, String>> checkCode(
+	        @PathVariable("userInput") String userInput,
+	        HttpSession session) {
+	    
+	    Map<String, String> result = new HashMap<>();
+	    String code;
+	    String email;
+	    
+	    try {
+	        code = session.getAttribute("code").toString();
+	        email = session.getAttribute("authEmail").toString();
+	    } catch (NullPointerException e) {
+	        log.error(e.getMessage());
+	        log.error("세션에 코드가 없음, 올바르지 않는 과정의 요청");
+	        result.put("message", "올바르지 않는 요청");
+	        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+	    }
+	    
+	    if (userInput.equals(code)) {
+	        session.setAttribute("emailVerifiedStatus", "true");
+	        
+	        String userId = uservice.findIdByEmail(email);
+	        String userPw = "";
+	        
+	        result.put("message", "verified");
+	        result.put("userId", userId);
+	        result.put("userPw", userPw);
+	        
+	        return new ResponseEntity<>(result, HttpStatus.ACCEPTED);            
+	    } else {
+	        log.info("유저의 입력 : " + userInput);
+	        log.info("세션에 저장된 코드 : " + code);
+	        
+	        result.put("message", "reject");
+	        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+	    }
+	}
+	
+	@PostMapping(value = "/clearSession")
+	public ResponseEntity<String> clearSession(HttpSession session) {
+		
+		session.removeAttribute("authEmail");
+		session.removeAttribute("code");
+		session.removeAttribute("emailVerifiedStatus");
+		
+		return new ResponseEntity<>("cleared", HttpStatus.OK);
 	}
 }

@@ -83,7 +83,7 @@
 					  </c:when>
 					
 					  <c:otherwise>
-					 	<a class="auth__link" href="/user/Mypage">마이페이지</a>
+					 	<a class="auth__link" href="/user/mypage">마이페이지</a>
 					    <span class="auth__sep" aria-hidden="true">||</span>
 					    <a class="auth__link" href="/user/logout">로그아웃</a>
 					  </c:otherwise>

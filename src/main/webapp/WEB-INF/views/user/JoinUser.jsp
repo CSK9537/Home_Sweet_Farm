@@ -22,12 +22,9 @@
         <!-- LEFT: 이미지/로고 -->
         <div class="join-left" aria-label="회원가입 이미지 영역">
           <div class="join-left__inner">
-            <button type="button"
-                    class="join-brand"
-                    id="goHomeBtn"
-                    aria-label="메인으로 이동">
-              	Home Sweet Farm
-            </button>
+            <a class="join-brand" href="${pageContext.request.contextPath}/" title="메인페이지로 이동">
+              Home Sweet Farm
+            </a>
           </div>
         </div>
 
@@ -49,15 +46,12 @@
               	회원정보
             </button>
           </div>
-			<c:if test="${not empty error}">
-				  <div style="color:red; margin-bottom:10px;">${error}</div>
-			</c:if>
           <!-- STEP 1: 계정 정보 -->
           <section class="step-panel is-active" id="step-account" data-step="account" aria-label="계정 정보">
             <form id="accountForm" autocomplete="off">
               <div class="form-col">
                 <label class="form-label" for="userId">아이디</label>
-                <div class="login-group">
+                <div class="id-group">
                   <input class="form-input" type="text" id="userId" name="username"
                          placeholder="아이디 입력 (6~20자)" minlength="6" maxlength="20" required />
                   
@@ -157,7 +151,7 @@
               </p>
 
               <div class="verify-actions">
-                <button type="button" class="btn btn-outline" id="sendCode-btn" data-modal-open="modal-email">이메일 인증</button>
+                <button type="button" class="btn btn-outline" id="sendCode-btn" data-email-open>이메일 인증</button>
               </div>
 
 
@@ -250,6 +244,7 @@
       </div><!-- /join-shell -->
 
       <!-- ===== MODALS ===== -->
+      
       <div class="modal" id="modal-service" aria-hidden="true" role="dialog" aria-label="서비스 이용약관">
         <div class="modal__dim" data-modal-close></div>
         <div class="modal__card">
@@ -277,6 +272,10 @@
           </div>
         </div>
       </div>
+      
+	<jsp:include page="/WEB-INF/views/common/EmailModal.jsp">
+		<jsp:param name="mode" value="signup" />
+	</jsp:include>
 
       <div class="modal" id="modal-marketing" aria-hidden="true" role="dialog" aria-label="마케팅 정보 수신 동의">
         <div class="modal__dim" data-modal-close></div>
@@ -292,35 +291,6 @@
           </div>
           <div class="modal__foot">
             <button type="button" class="btn btn-primary" data-modal-close>확인</button>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="modal" id="modal-email" aria-hidden="true" role="dialog" aria-label="이메일 인증">
-        <div class="modal__dim" data-modal-close></div>
-        <div class="modal__card">
-          <div class="modal__head">
-            <h4>이메일 인증</h4>
-            <button type="button" class="modal__x" data-modal-close aria-label="닫기">×</button>
-          </div>
-          <div class="modal__body">
-            <div class="modal-form">
-              <label class="form-label" for="emailAddr">이메일</label>
-              <input class="form-input" type="email" id="emailAddr" placeholder="plant@gmail.com" />
-              <div class="modal-mini-row">
-                <button type="button" class="btn btn-outline" id="emailSendBtn">
-                  <span class="spinner"></span>
-                  <span class="btn-text">인증메일 발송</span>
-                </button>
-              </div>
-
-              <label class="form-label" for="emailCode">인증코드</label>
-              <input class="form-input" type="text" id="emailCode" placeholder="인증코드 입력" />
-              <div class="modal-mini-row">
-                <button type="button" class="btn btn-primary" id="emailVerifyBtn">인증 완료</button>
-              </div>
-            </div>
           </div>
         </div>
       </div>

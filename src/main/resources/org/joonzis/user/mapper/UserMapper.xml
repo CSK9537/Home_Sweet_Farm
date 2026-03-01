@@ -106,8 +106,7 @@
 	<select id="findIdByEmail" parameterType="String" resultType="String">
 		SELECT username 
 		FROM TBL_USER 
-		WHERE name = #{name}
-		AND email = #{email}
+		WHERE email = #{email}
 	</select>
 	
 	
@@ -117,8 +116,14 @@
 		SELECT COUNT(*)
 		FROM TBL_USER
 		WHERE username = #{username}
-		AND
-		email = #{email}
+		AND email = #{email}
+	</select>
+	
+	<!-- 이메일로 유저정보 가져오기 -->
+	<select id="findUserByEmail" resultType="org.joonzis.user.vo.UserVO">
+		SELECT username, password, email
+		FROM TBL_USER
+		WHERE email = #{email}
 	</select>
 	
 	<!-- 2)비밀번호 재설정  -->
