@@ -7,6 +7,7 @@ html,
 body {
   margin: 0px;
   height: 100%;
+  background-color: #6b7b61;
 }
 /* a blue color as a generic focus style */
 button:focus-visible {
@@ -16,3 +17,70 @@ button:focus-visible {
 a {
   text-decoration: none;
 }
+
+/* ------ 토스트 메시지 관련 css ------ */
+.swal2-container {
+    z-index: 99999 !important; 
+}
+
+/* 메시지 위치(아랫쪽) 조정 */
+.swal2-container.swal2-bottom {
+    bottom: 0px !important; /* 원하는 만큼 위치 조정 (기본값은 0) */
+}
+
+.swal2-toast {
+	display: flex !important;
+	align-items: center !important; 
+}
+
+/* 메세지 */
+.swal2-toast .swal2-title {
+	margin: 5px !important;
+	padding: 0 !important;
+	align-items: center !important;
+	display: flex !important;
+	line-height: 1.4 !important; /* 줄 간격 조절 (글씨가 길어질 경우 대비) */
+	font-size: 15px !important; /* 원하는 폰트 크기로 변경 (기본은 약 14~15px) */
+	font-weight: 400 !important; /* 글자 굵기 조절 (normal, bold 등) */
+}
+
+/* 아이콘 */
+.swal2-toast .swal2-icon {
+	margin-top: 1px !important;
+	margin-bottom: 1px !important;
+	margin-right: 7px !important;
+	transform: scale(0.7); /* 1이 기본 크기, 0.8은 80% 크기로 축소 */
+}
+
+/* 아이콘 애니메이션 차단 */
+.swal2-icon,
+.swal2-icon * {
+	animation: none !important;
+	transition: none !important;
+}
+
+/* 메시지 나타나는 애니메이션 (0.5초 동안 부드럽게) */
+.my-fade-in {
+	animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+	from { opacity: 0; /* transform: translateY(20px); */ }
+	to { opacity: 1; t/* ransform: translateY(0); */ }
+}
+
+/* 메시지 사라지는 애니메이션 (0.5초 동안 부드럽게) */
+.my-fade-out {
+	animation: fadeOut 0.5s ease-in-out;
+}
+
+@keyframes fadeOut {
+ 	from { opacity: 1; /* transform: translateY(0); */ }
+	to { opacity: 0; /* transform: translateY(20px); */ }
+}
+
+/* jsp에서 msg수신부 숨김 처리 */
+.hiddenMsg{
+	display: none;
+}
+/* --------- 토스트 css 종료 --------- */

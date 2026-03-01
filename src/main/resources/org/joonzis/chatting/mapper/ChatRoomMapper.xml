@@ -12,53 +12,88 @@
 
 		CASE
 		WHEN r.user1_id = #{user_id}
-		THEN r.user2_id
+		THEN
+		r.user2_id
 		ELSE r.user1_id
 		END AS other_user_id,
 
-		u.nickname AS other_user_name,
+		u.nickname AS
+		other_user_name,
 
 		m.content AS last_msg,
+		m.msg_type AS last_msg_type,
 		m.created_at AS created_at,
 
 		(
-		SELECT COUNT(*)
+		SELECT COUNT(
+	    DISTINCT
+	       CASE
+	           WHEN msg.msg_type = 'TEXT'
+	               THEN TO_CHAR(msg.msg_id)
+	           ELSE
+	               msg.sender_id
+	               || '_' ||
+	               TO_CHAR(msg.created_at,'YYYYMMDDHH24MISS')
+	       END
+		)
 		FROM tbl_msg msg
 		JOIN tbl_chat_room_user cru
-		ON cru.room_id = msg.room_id
+		ON
+		cru.room_id = msg.room_id
 		WHERE cru.room_id = r.room_id
-		AND cru.user_id = #{user_id}
+		AND cru.user_id
+		= #{user_id}
 		AND msg.sender_id != #{user_id}
-		AND msg.msg_id > NVL(cru.last_read_msg_id,0)
+		AND msg.msg_id >
+		NVL(cru.last_read_msg_id,0)
 		) AS unread_count
 
 		FROM tbl_room r
 
-		JOIN tbl_user u
+		JOIN
+		tbl_user u
 		ON u.user_id =
 		CASE
 		WHEN r.user1_id = #{user_id}
-		THEN r.user2_id
+		THEN
+		r.user2_id
 		ELSE r.user1_id
 		END
 
-		
+
 		LEFT JOIN (
-		SELECT room_id, MAX(msg_id) AS last_msg_id
-		FROM tbl_msg
-		GROUP BY room_id
-		) lm
-		ON lm.room_id = r.room_id
+			SELECT *
+			    FROM (
+			        SELECT
+			            msg.*,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY msg.room_id
+			                ORDER BY msg.created_at DESC, msg.msg_id DESC
+			            ) rn
+			        FROM tbl_msg msg
+			    )
+		    WHERE rn = 1
+		) m
+		ON m.room_id = r.room_id
 
-		
-		LEFT JOIN tbl_msg m
-		ON m.msg_id = lm.last_msg_id
-
-		WHERE r.user1_id = #{user_id}
+		WHERE r.user1_id =
+		#{user_id}
 		OR r.user2_id = #{user_id}
 
-		ORDER BY m.created_at DESC
+		ORDER BY m.created_at DESC NULLS LAST,
+         m.msg_id DESC
 
+	</select>
+
+	<select id="selectOtherUserId" resultType="int">
+		SELECT
+			CASE
+				WHEN user1_id = #{sender_id}
+				THEN user2_id
+				ELSE user1_id
+			END
+		FROM tbl_room
+		WHERE room_id = #{room_id}
 	</select>
 
 

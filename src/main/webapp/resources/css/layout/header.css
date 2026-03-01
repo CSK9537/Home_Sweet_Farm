@@ -42,7 +42,7 @@ a{ color: inherit; text-decoration: none; }
 
 /* Logo (desktop/tablet) */
 .logo{
-  width: 320px;
+  min-width: 285px;
   height: 50px;
   display:flex;
   align-items:flex-end;

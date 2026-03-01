@@ -7,6 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Home Sweet Farm</title>
+<link rel="stylesheet" href="/webjars/sweetalert2/11.10.7/dist/sweetalert2.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/header.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/globals.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/ContentLayout.css">
@@ -78,10 +79,12 @@
 					  <c:when test="${empty sessionScope.loginUser}">
 					    <a class="auth__link" href="/user/login">로그인</a>
 					    <span class="auth__sep" aria-hidden="true">||</span>
-					    <a class="auth__link" href="/user/JoinUser">회원가입</a>
+					    <a class="auth__link" href="/user/join">회원가입</a>
 					  </c:when>
 					
 					  <c:otherwise>
+					 	<a class="auth__link" href="/user/mypage">마이페이지</a>
+					    <span class="auth__sep" aria-hidden="true">||</span>
 					    <a class="auth__link" href="/user/logout">로그아웃</a>
 					  </c:otherwise>
 					</c:choose>
@@ -106,10 +109,12 @@
 				<c:when test="${empty sessionScope.loginUser}">
 					 <a class="auth__link" href="/user/login">로그인</a>
 					 <span class="auth__sep" aria-hidden="true">||</span>
-					 <a class="auth__link" href="/user/JoinUser">회원가입</a>
+					 <a class="auth__link" href="/user/join">회원가입</a>
 				</c:when>
 					
 				<c:otherwise>
+					<a class="auth__link" href="/user/Mypage">마이페이지</a>
+					<span class="auth__sep" aria-hidden="true">||</span>
 					<a class="auth__link" href="/user/logout">로그아웃</a>
 				</c:otherwise>
 			</c:choose>
@@ -237,4 +242,6 @@
 	    </aside>
 	
 	  </div>
+	  <div class=hiddenMsg id="serverMsg" data-msg="${msg}"></div>
+	  <div class=hiddenMsg id="serverMsgType" data-msgType="${msgType}"></div>
 	</header>

@@ -1,6 +1,5 @@
 package org.joonzis.user.service;
 
-import java.util.List;
 
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.mapper.UserMapper;
@@ -14,6 +13,7 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 @Service
 public class UserServiceImpl implements UserService{
+	
 	@Autowired
 	private UserMapper usermapper;
 	
@@ -80,25 +80,24 @@ public class UserServiceImpl implements UserService{
 		return usermapper.findIdByEmail(email);
 	}
 	@Override
-	public String findIdByPhone(String phone) {
-		return usermapper.findIdByPhone(phone);
+	public boolean existUserByEmail(String username, String email) {
+		return usermapper.existUserByEmail(username, email)>0;
 	}
 	@Override
-	public int existUserByEmail(String username, String email) {
-		return usermapper.existUserByEmail(username, email);
+	public UserVO findUserByEmail(String email) {
+		return usermapper.findUserByEmail(email);
 	}
 	@Override
-	public int existUserByPhone(String username, String phone) {
-		return usermapper.existUserByPhone(username, phone);
-	}
-	@Override
-	public void updatePw(UserVO vo) {
-		usermapper.updatePw(vo);
-
+	public boolean resetPw(UserVO vo) {
+		return usermapper.resetPw(vo)>0;
 	}
 	@Override
 	public boolean isIdDuplicate(String username) {
 		return usermapper.countByUsername(username)>0;
+	}
+	@Override
+	public boolean isEmailDuplicate(String email) {
+		return usermapper.countByEmail(email)>0;
 	}
 	@Override
 	public int countByUsername(String username) {
@@ -108,6 +107,7 @@ public class UserServiceImpl implements UserService{
 	public UserVO findByUsername(String username) {
 		return usermapper.findByUsername(username);
 	}
+	
 	@Override
 	public UserDTO selectPublicProfile(int user_id) {
 		UserDTO dto =

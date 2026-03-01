@@ -54,4 +54,6 @@
 	</footer>
 </body>
 </html>
+<script src="/webjars/sweetalert2/11.10.7/dist/sweetalert2.all.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/common/SweetAlertService.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/layout/header.js"></script>

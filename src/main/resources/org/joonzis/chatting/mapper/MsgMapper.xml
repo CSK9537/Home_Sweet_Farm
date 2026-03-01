@@ -70,7 +70,7 @@
 		SELECT *
 		FROM tbl_msg
 		WHERE room_id = #{room_id}
-		AND <![CDATA[msg_id > #{msg_id}]]>
+		AND <![CDATA[msg_id > #{last_read_msg_id}]]>
 		ORDER BY msg_id ASC
 	</select>
 

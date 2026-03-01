@@ -3,6 +3,20 @@ import { loadMessages } from "./ChatMessage.js";
 import { subscribeRoom } from "./ChatWebSocket.js";
 import { updateSearchCounter } from "./ChatSearch.js";
 
+// 채팅방 프리뷰 분기
+function makePreviewMessage(msg, type) {
+
+    if (type === "IMAGE") return "📷 사진";
+    if (type === "FILE") return "📎 파일";
+
+    if (!msg) return "";
+
+    return String(msg)
+        .replace(/\n/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
 // 채팅방 최근 메세지 날짜 계산
 function formatChatTime(dateString) {
 
@@ -38,12 +52,25 @@ export function loadChatRooms() {
     const chatListContainer = document.querySelector('.chat-items');
 
     fetch(`/chat/rooms?testUser_id=${chatState.session.myUserId}`)
-        .then(res => res.json())
+        .then(async res => {
+
+            const text = await res.text();
+
+            console.log(" 서버 raw 응답 =", text);
+
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error("JSON 파싱 실패");
+                throw e;
+            }
+        })
         .then(rooms => {
             console.log("채팅방 데이터:", rooms);
             chatListContainer.innerHTML = ""; // 기존 내용 초기화
 
             rooms.forEach(room => {
+
                 const item = document.createElement("div");
                 item.classList.add("chat-item");
                 item.dataset.room_id = room.room_id;
@@ -53,7 +80,9 @@ export function loadChatRooms() {
             <img src="https://via.placeholder.com/40" alt="유저">
             <div class="info">
             <div class="name">${room.other_user_name}</div>
-            <div class="last-msg">${room.last_msg || ''}</div>
+                <div class="last-msg">
+                    ${makePreviewMessage(room.last_msg, room.last_msg_type)}
+                </div>
             </div>
             <div class="right">
                 <div class="time">
@@ -124,6 +153,8 @@ export function loadChatRooms() {
 
 //채팅방 목록 실시간 업데이트
 export function updateRoomListRealtime(msg) {
+    console.log("realtime msg =", msg);
+
 
     const chatListContainer = document.querySelector('.chat-items');
 
@@ -148,7 +179,9 @@ export function updateRoomListRealtime(msg) {
             <img src="https://via.placeholder.com/40">
             <div class="info">
                 <div class="name">${msg.sender_name || "유저"}</div>
-                <div class="last-msg">${msg.content || ""}</div>
+                    <div class="last-msg">
+                        ${makePreviewMessage(msg.content, msg.msg_type)}
+                    </div>
             </div>
         `;
 
@@ -156,9 +189,10 @@ export function updateRoomListRealtime(msg) {
     }
 
     // 마지막 메시지 갱신 
-    const lastMsg = item.querySelector(".last-msg");
-    if (lastMsg) {
-        lastMsg.innerText = msg.content || "";
+    const lastMsg = makePreviewMessage(msg.content, msg.msg_type);
+    const lastMsgEl = item.querySelector(".last-msg");
+    if (lastMsgEl) {
+        lastMsgEl.innerText = lastMsg;
     }
 
     // 시간 갱신
@@ -169,7 +203,22 @@ export function updateRoomListRealtime(msg) {
 
     // unread 카운트
     if (!isCurrentRoom && msg.sender_id !== chatState.session.myUserId) {
-        const right = item.querySelector(".right")
+
+        const groupId = msg.upload_group_id || msg.msg_id;
+        const roomKey = String(roomId);
+
+        if (!chatState.message.roomUnreadGroupMap[roomKey]) {
+            chatState.message.roomUnreadGroupMap[roomKey] = new Set();
+        }
+
+        const unreadGroupSet = chatState.message.roomUnreadGroupMap[roomKey];
+
+        // 이미 unread 처리된 그룹이면 무시
+        if (unreadGroupSet.has(groupId)) return;
+
+        unreadGroupSet.add(groupId);
+
+        const right = item.querySelector(".right");
         let badge = right.querySelector(".badge");
 
         if (!badge) {
@@ -202,6 +251,7 @@ export function updateRoomListRealtime(msg) {
     // 최신 채팅방 위로
     chatListContainer.prepend(item);
 }
+
 export function initTabs() {
     const tabAll = document.getElementById('tab-all');
     const tabSearch = document.getElementById('tab-search');
@@ -241,6 +291,7 @@ export function initTabs() {
         chatState.search.isSearchJump = false;
 
         updateSearchCounter();
+        loadChatRooms();
     });
 
     tabSearch.addEventListener('click', () => {
@@ -289,25 +340,28 @@ export function initDropdownMenu() {
     });
 }
 
-export function initUploadFile() {
-    const btnImage = document.querySelector(".btn-image");
-    const btnFile = document.querySelector(".btn-file");
+export function initCharCount() {
 
-    const imageInput = document.getElementById("imageInput");
-    if (imageInput.dataset.bound) return;
-    imageInput.dataset.bound = "true";
-    const fileInput = document.getElementById("fileInput");
+    const textarea = document.getElementById("chat-textarea");
+    const counter = document.getElementById("char-count");
 
-    // 이미지 버튼
-    btnImage.addEventListener("click", () => {
-        imageInput.click();
+    if (!textarea || !counter) return;
+
+    const MAX = 1000;
+
+    textarea.addEventListener("input", () => {
+
+        let length = textarea.value.length;
+
+        // 혹시 maxlength 무시되는 상황 대비
+        if (length > MAX) {
+            textarea.value = textarea.value.slice(0, MAX);
+            length = MAX;
+        }
+
+        counter.innerText = `${length}/${MAX}`;
+
     });
-
-    // 파일 버튼
-    btnFile.addEventListener("click", () => {
-        fileInput.click();
-    });
-
 }
 
 
@@ -331,39 +385,135 @@ export function initPendingFilesModal() {
     let currentModalType = null; // IMAGE or FILE
 
     function renderFileList() {
+
         container.innerHTML = "";
-        currentFiles.forEach((file, idx) => {
-            const div = document.createElement("div");
-            div.innerText = file.name;
 
-            const removeBtn = document.createElement("button");
-            removeBtn.innerText = "삭제";
-            removeBtn.addEventListener("click", () => {
-                currentFiles.splice(idx, 1);
-                renderFileList();
-            });
+        // ===== Drop Zone =====
+        const dropZone = document.createElement("div");
+        dropZone.classList.add("drop-zone");
 
-            div.appendChild(removeBtn);
-            container.appendChild(div);
+        dropZone.innerHTML = `
+            <div class="drop-text">
+                이곳에 파일을 끌어서 혹은 첨부 버튼을 눌러서 추가
+            </div>
+        `;
+
+        dropZone.addEventListener("dragover", e => {
+            e.preventDefault();
+            dropZone.classList.add("drag-over");
         });
 
-        uploadBtn.disabled = currentFiles.length === 0;
-        uploadBtn.style.background = currentFiles.length === 0 ? "gray" : "#4CAF50";
+        dropZone.addEventListener("dragleave", () => {
+            dropZone.classList.remove("drag-over");
+        });
+
+        dropZone.addEventListener("drop", e => {
+
+            e.preventDefault();
+            dropZone.classList.remove("drag-over");
+
+            const files = e.dataTransfer.files;
+
+            if (!files || files.length === 0) return;
+
+            handleFileSelect(files);
+        });
+
+        // ===== 파일 리스트 =====
+        if (currentFiles.length === 0) {
+            container.appendChild(dropZone);
+            uploadBtn.disabled = true;
+            uploadBtn.style.background = "gray";
+            return;
+        }
+
+        const fileContainer = document.createElement("div");
+        fileContainer.classList.add("modal-file-container");
+
+        currentFiles.forEach((file, idx) => {
+            const wrapper = document.createElement("div");
+
+            // ===== 이미지 vs 파일 분기 =====
+            if (currentModalType === "IMAGE" && file.type.startsWith("image/")) {
+                wrapper.classList.add("pending-file-item", "image-item");
+
+                const img = document.createElement("img");
+                img.classList.add("pending-thumbnail");
+                const reader = new FileReader();
+                reader.onload = e => img.src = e.target.result;
+                reader.readAsDataURL(file);
+
+                wrapper.appendChild(img);
+
+                // 삭제 버튼
+                const removeBtn = document.createElement("button");
+                removeBtn.innerText = "✕";
+                removeBtn.className = "";
+                removeBtn.classList.add("image-remove-btn");
+                removeBtn.addEventListener("click", () => {
+                    currentFiles.splice(idx, 1);
+                    renderFileList();
+                });
+                wrapper.appendChild(removeBtn);
+
+            } else { // FILE 모달 또는 IMAGE지만 이미지 아님
+                wrapper.classList.add("pending-file-item", "file-item");
+
+                const span = document.createElement("span");
+                span.classList.add("file-name");
+                span.innerText = `📎 ${file.name}`;
+                wrapper.appendChild(span);
+
+                // 삭제 버튼
+                const removeBtn = document.createElement("button");
+                removeBtn.innerText = "삭제";
+                removeBtn.className = "";
+                removeBtn.classList.add("file-remove-btn");
+                removeBtn.addEventListener("click", () => {
+                    currentFiles.splice(idx, 1);
+                    renderFileList();
+                });
+                wrapper.appendChild(removeBtn);
+            }
+
+            fileContainer.appendChild(wrapper);
+        });
+
+        container.appendChild(fileContainer);
+
+        uploadBtn.disabled = false;
+        uploadBtn.style.background = "#4CAF50";
     }
 
     function handleFileSelect(files) {
-        currentFiles = [...currentFiles, ...Array.from(files)];
+        const filtered = Array.from(files).filter(file => {
+
+            if (currentModalType === "IMAGE") {
+                return file.type.startsWith("image/");
+            }
+
+            return true; // FILE 모달은 전부 허용
+        });
+
+        const existingNames = new Set(currentFiles.map(f => f.name + f.size + f.lastModified));
+        const newFiles = filtered.filter(f => !existingNames.has(f.name + f.size + f.lastModified))
+
+        currentFiles = [...currentFiles, ...newFiles];
         renderFileList();
+
         modal.classList.add("show");
         document.body.classList.add("modal-open");
+
         imageInput.value = "";
         fileInput.value = "";
     }
 
     function uploadSelectedFiles() {
+
+        const uploadGroupId = crypto.randomUUID();
         currentFiles.forEach(file => {
-            const type = file.type.startsWith("image/") ? "IMAGE" : "FILE";
-            uploadFile(file, type);
+            const type = currentModalType;
+            uploadFile(file, type, uploadGroupId);
         });
         currentFiles = [];
         renderFileList();
@@ -385,12 +535,19 @@ export function initPendingFilesModal() {
     [btnImage, btnFile].forEach(btn => {
         btn.addEventListener("click", () => {
             currentModalType = btn.classList.contains("btn-image") ? "IMAGE" : "FILE";
-            modalTitle.innerText = currentModalType === "IMAGE"? "이미지 첨부" : "파일 첨부";
+            modalTitle.innerText = currentModalType === "IMAGE" ? "이미지 첨부" : "파일 첨부";
+
+            modal.classList.remove("image-modal", "file-modal");
+            modal.classList.add(currentModalType === "IMAGE" ? "image-modal" : "file-modal");
+
             currentFiles = [];
             renderFileList();
 
             modal.classList.add("show");
             document.body.classList.add("modal-open");
+
+            imageInput.value = "";
+            fileInput.value = "";
         });
     });
 
@@ -406,16 +563,49 @@ export function initPendingFilesModal() {
 
     // 업로드 버튼
     uploadBtn.addEventListener("click", uploadSelectedFiles);
+
+    // Drag & Drop 업로드
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ["dragenter", "dragover", "dragleave", "drop"]
+        .forEach(eventName => {
+            modal.addEventListener(eventName, preventDefaults);
+        });
+
+    // 드래그 들어오면 강조
+    modal.addEventListener("dragenter", () => {
+        modal.classList.add("drag-over");
+    });
+
+    modal.addEventListener("dragleave", () => {
+        modal.classList.remove("drag-over");
+    });
+
+    modal.addEventListener("drop", (e) => {
+
+        modal.classList.remove("drag-over");
+
+        const files = e.dataTransfer.files;
+
+        if (!files || files.length === 0) return;
+
+        //IMAGE 모달인지 FILE 모달인지 유지
+        handleFileSelect(files);
+    });
 }
 
 // 실제 업로드 함수
-function uploadFile(file, type) {
+function uploadFile(file, type, group_id) {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("sender_id", chatState.session.myUserId);
+    formData.append("testUser_id", chatState.session.myUserId);
     formData.append("receiver_id", chatState.session.receiverId);
     formData.append("room_id", chatState.session.currentRoomId);
     formData.append("msg_type", type);
+    formData.append("upload_group_id", group_id);
 
     fetch("/chat/rooms/upload", {
         method: "POST",
@@ -430,14 +620,33 @@ export function initImagePreviewModal() {
     const modal = document.getElementById("imagePreviewModal");
     const previewImg = document.getElementById("previewImage");
     const closeBtn = document.getElementById("closeImageModal");
+    const downloadBtn = document.getElementById("downloadImageBtn");
 
+    let currentImageUrl = null;
     // 이미지 클릭 시
     document.addEventListener("click", (e) => {
         if (e.target.tagName === "IMG" && e.target.classList.contains("chat-thumbnail")) {
-            previewImg.src = e.target.src;
+            currentImageUrl = e.target.src;
+            previewImg.src = currentImageUrl;
             modal.classList.add("show");
             document.body.classList.add("modal-open");
         }
+    });
+
+    // 다운로드 
+    downloadBtn.addEventListener("click", () => {
+
+        if (!currentImageUrl) return;
+
+        const a = document.createElement("a");
+        a.href = currentImageUrl;
+        a.download = decodeURIComponent(
+            currentImageUrl.split("/").pop()
+        );
+
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
     });
 
     // 모달 닫기
@@ -445,6 +654,7 @@ export function initImagePreviewModal() {
         modal.classList.remove("show");
         document.body.classList.remove("modal-open");
         previewImg.src = "";
+        currentImageUrl = null;
     });
 
     // 모달 바깥 클릭 시 닫기
@@ -456,3 +666,4 @@ export function initImagePreviewModal() {
         }
     });
 }
+

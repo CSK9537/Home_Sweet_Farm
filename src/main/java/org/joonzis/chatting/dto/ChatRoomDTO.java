@@ -17,4 +17,5 @@ public class ChatRoomDTO {// 채팅방 리스트
     private String last_msg;
     private int unread_count;
     private Date created_at;
+    private String last_msg_type;
 }

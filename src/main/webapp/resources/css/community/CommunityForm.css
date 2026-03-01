@@ -1,5 +1,26 @@
-/* CommunityInsert.css */
+/* ===============================
+   공통 컬러 변수
+   =============================== */
+:root{
+  --dark:#6B7B61;
+  --light:#F4F2ED;
+  --border:#E2E6E0;
+}
 
+/* ===============================
+   기본 텍스트 컬러 통일
+   =============================== */
+body,
+.insert-title,
+.label,
+.file-item__name,
+.tag-chip{
+  color:var(--dark);
+}
+
+/* ===============================
+   상단 헤더
+   =============================== */
 .insert-head{
   width:100%;
   display:flex;
@@ -7,21 +28,66 @@
   align-items:center;
   margin-bottom:18px;
 }
-.insert-title{ font-size:22px; font-weight:800; }
 
-.insert-actions{ display:flex; gap:8px; }
-
-.btn{
-  border:0;
-  border-radius:10px;
-  padding:10px 14px;
+.insert-title{
+  font-size:22px;
   font-weight:800;
-  cursor:pointer;
 }
-.btn--primary{ background:#2d6a4f; color:#fff; }
-.btn--ghost{ background:#f3f5f7; color:#222; }
 
+.insert-actions{
+  display:flex;
+  gap:10px;
+}
+
+/* ===============================
+   버튼 (hover: 굵기 + 밑줄)
+   =============================== */
+.btn{
+  border-radius:12px;
+  padding:10px 18px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .15s ease;
+  border:1px solid var(--dark);
+}
+
+/* 등록 버튼 */
+.btn--primary{
+  background:var(--dark);
+  color:var(--light);
+}
+
+/* 취소 버튼 */
+.btn--ghost{
+  background:var(--light);
+  color:var(--dark);
+}
+
+/* hover 효과: 색상 변화 없음 */
+.btn:hover{
+  font-weight:900;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+
+/* ===============================
+   글쓰기/버튼 영역 하단 구분선
+   =============================== */
+.insert-head{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+  padding-bottom:16px;
+  border-bottom:3px solid #6B7B61;  /* 구분선 */
+}
+
+/* ===============================
+   폼 영역
+   =============================== */
 .form-row{ margin:14px 0; }
+
 .form-row--grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -29,59 +95,109 @@
 }
 
 .form-field{ width:100%; }
+
 .label{
   display:block;
   font-weight:900;
   margin-bottom:8px;
 }
+
 .input, .select{
   width:100%;
-  border:1px solid #e6e8ea;
-  border-radius:10px;
+  border:1px solid var(--border);
+  border-radius:12px;
   padding:10px 12px;
   outline:none;
   background:#fff;
+  transition:all .2s ease;
+  color:var(--dark);
 }
-.input:focus, .select:focus{ border-color:#2d6a4f; }
+
+.input:focus, .select:focus{
+  border-color:var(--dark);
+  box-shadow:0 0 0 2px rgba(107,123,97,.15);
+}
 
 .hint{
   font-size:12px;
-  color:#777;
+  color:#8A9684;
   margin-top:6px;
   line-height:1.4;
 }
 
+/* ===============================
+   에디터
+   =============================== */
 .editor-box{
-  border:1px solid #e6e8ea;
-  border-radius:12px;
+  border:1px solid var(--border);
+  border-radius:14px;
   overflow:hidden;
 }
 
+/* ===============================
+   ✅ 본문 이미지(리사이즈 지원)
+   - 이미지 클릭 후 모서리 드래그로 크기 조절 가능
+   =============================== */
+
+/* 에디터 내 이미지 기본 안전장치 */
+#editor img{
+  max-width:100%;
+  height:auto;
+}
+
+/* 리사이즈 래퍼: 브라우저 기본 핸들 사용 */
+#editor .hsf-img-wrap{
+  display:inline-block;
+  max-width:100%;
+  resize: both;          /* 핵심: 드래그 리사이즈 */
+  overflow: auto;        /* resize 핸들이 보이려면 필요 */
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:6px;
+  background:#fff;
+  vertical-align: top;
+}
+
+/* 래퍼 안의 이미지는 래퍼 너비에 맞춤 */
+#editor .hsf-img-wrap img.hsf-img{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+/* ===============================
+   파일 리스트
+   =============================== */
 .file-list{
   margin-top:10px;
-  border:1px solid #eef0f2;
-  border-radius:10px;
+  border:1px solid var(--border);
+  border-radius:12px;
   padding:10px;
-  background:#fafafa;
+  background:var(--light);
 }
+
 .file-item{
   display:flex;
   justify-content:space-between;
   align-items:center;
   padding:6px 0;
-  border-bottom:1px dashed #e6e8ea;
+  border-bottom:1px dashed var(--border);
 }
+
 .file-item:last-child{ border-bottom:0; }
-.file-item__name{ font-weight:700; }
+
 .file-item__tag{
   font-size:12px;
-  padding:4px 8px;
+  padding:4px 10px;
   border-radius:999px;
-  background:#eaf4ef;
-  color:#2d6a4f;
+  background:#E3E9DF;
+  color:var(--dark);
   font-weight:800;
 }
 
+/* ===============================
+   해시태그
+   =============================== */
 .tag-input-wrap{ position:relative; }
 
 .tag-chips{
@@ -90,24 +206,28 @@
   gap:8px;
   margin-bottom:10px;
 }
+
 .tag-chip{
   display:inline-flex;
   align-items:center;
   gap:8px;
-  padding:6px 10px;
+  padding:6px 12px;
   border-radius:999px;
-  background:#f1f6f3;
-  border:1px solid #dfeae4;
+  background:var(--light);
+  border:1px solid var(--border);
   font-weight:800;
 }
+
 .tag-del{
   border:0;
   background:transparent;
   font-weight:900;
   cursor:pointer;
   line-height:1;
+  color:var(--dark);
 }
 
+/* 추천 박스 */
 .tag-suggest{
   position:absolute;
   left:0;
@@ -115,34 +235,46 @@
   top:100%;
   margin-top:6px;
   background:#fff;
-  border:1px solid #e6e8ea;
-  border-radius:12px;
+  border:1px solid var(--border);
+  border-radius:14px;
   box-shadow:0 8px 20px rgba(0,0,0,.08);
   overflow:hidden;
   z-index:10;
 }
+
 .tag-suggest-item{
   display:flex;
   justify-content:space-between;
   align-items:center;
   padding:10px 12px;
   cursor:pointer;
+  transition:background .15s ease;
 }
-.tag-suggest-item:hover{ background:#f5f7f8; }
+
+.tag-suggest-item:hover{
+  background:var(--light);
+}
+
 .tag-suggest-empty{
   padding:12px;
-  color:#777;
+  color:#8A9684;
 }
-.muted{ color:#999; font-size:12px; }
 
-/* ===== edit 권한 안내(추가) ===== */
+.muted{
+  color:#9BA693;
+  font-size:12px;
+}
+
+/* ===============================
+   경고 박스
+   =============================== */
 .warn-box{
   width:100%;
   padding:12px 14px;
-  border:1px solid #e2c9c9;
-  background:#fff6f6;
-  border-radius:10px;
-  color:#a33;
+  border:1px solid var(--border);
+  background:#F8FAF7;
+  border-radius:12px;
+  color:var(--dark);
   font-weight:800;
   margin:10px 0 14px;
 }

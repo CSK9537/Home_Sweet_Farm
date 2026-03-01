@@ -1,4 +1,4 @@
-(function () {
+(function () {	
   "use strict";
 
   // ===== helpers (ES5) =====
@@ -102,13 +102,7 @@
       var isActive = (btn.getAttribute("data-step-link") === step);
       toggleClass(btn, "is-active", isActive);
       btn.setAttribute("aria-selected", String(isActive));
-    }
-
-    var subtitle = $("#stepSubtitle");
-    if (subtitle) {
-      if (step === "account") subtitle.innerHTML = "계정 정보 입력";
-      else if (step === "verify") subtitle.innerHTML = "본인인증";
-      else subtitle.innerHTML = "회원 정보 입력";
+      btn.disabled = !isActive;
     }
   }
 
@@ -142,53 +136,7 @@
     var hidEmail = $("#hidVerifiedEmail");
     if (hidEmail) hidEmail.value = String(state.verifiedEmail);
   }
-  //인증번호 재전송
-  let resendTimer = null;
 
-  function startResendCooldown(seconds) {
-    const btn = document.querySelector("#emailSendBtn");
-    if (!btn) return;
-
-    let remain = seconds;
-    btn.disabled = true;
-    btn.textContent = `재전송 (${remain}s)`;
-
-    if (resendTimer) clearInterval(resendTimer);
-
-    resendTimer = setInterval(() => {
-      remain--;
-      if (remain <= 0) {
-        clearInterval(resendTimer);
-        btn.disabled = false;
-        btn.textContent = "인증메일 재전송";
-        return;
-      }
-      btn.textContent = `재전송 (${remain}s)`;
-    }, 1000);
-  }
-  
-
-  function startResendCooldown(seconds) {
-    const btn = document.querySelector("#emailSendBtn");
-    if (!btn) return;
-
-    let remain = seconds;
-    btn.disabled = true;
-    btn.textContent = `재전송 (${remain}s)`;
-
-    if (resendTimer) clearInterval(resendTimer);
-
-    resendTimer = setInterval(() => {
-      remain--;
-      if (remain <= 0) {
-        clearInterval(resendTimer);
-        btn.disabled = false;
-        btn.textContent = "인증메일 재전송";
-        return;
-      }
-      btn.textContent = `재전송 (${remain}s)`;
-    }, 1000);
-  }
   
 //renderChips
   function renderChips() {
@@ -232,13 +180,6 @@
     var closeBtn = closest(t, "[data-modal-close]");
     if (closeBtn) {
       closeModal(closest(t, ".modal"));
-      return;
-    }
-
-    // step back
-    var backBtn = closest(t, "[data-step-back]");
-    if (backBtn) {
-      setActiveStep(getAttr(backBtn, "data-step-back"));
       return;
     }
 
@@ -292,14 +233,6 @@
     });
   }
 
-  // logo -> home
-  var goHomeBtn = $("#goHomeBtn");
-  if (goHomeBtn) {
-    goHomeBtn.addEventListener("click", function () {
-      window.location.href = "/";
-    });
-  }
-
   // login
   var goLoginBtn = $("#goLoginBtn");
   if (goLoginBtn) {
@@ -308,6 +241,52 @@
     });
   }
       
+  // 보기 모달
+  document.querySelectorAll('.link-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+    const modalId = e.currentTarget.getAttribute('data-modal-open'); 
+        
+    const urlMap = {
+        'modal-service': '/rules/use',
+        'modal-privacy': '/rules/privacy'
+    };
+    const sectionMap = {
+        'modal-service': 'terms__section',
+        'modal-privacy': 'policy__section'
+    };
+  
+    const url = urlMap[modalId]; // 대상 URL 결정
+    const targetModal = document.getElementById(modalId); 
+      const modalBody = targetModal ? targetModal.querySelector('.modal__body') : null;
+  
+      if (modalBody && url) {
+          fetch(url)
+              .then(response => {
+                  if (!response.ok) throw new Error('파일을 불러올 수 없습니다.');
+                  return response.text();
+              })
+              .then(data => {
+                // 임시 DOM 객체를 만들어 HTML 문자열을 주입
+                  const parser = new DOMParser();
+                  const doc = parser.parseFromString(data, 'text/html');
+                  const sections = doc.querySelectorAll('.' + sectionMap[modalId]); 
+  
+                  let combinedHtml = '';
+  
+                  sections.forEach(el => {
+                      combinedHtml += el.outerHTML; // 태그 포함 전체 내용 합치기
+                  });
+  
+                  modalBody.innerHTML = combinedHtml || '<p class="modal__text">내용이 없습니다.</p>';
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  modalBody.innerHTML = '약관을 불러오는 중 오류가 발생했습니다.';
+              });
+      }
+    });
+  });
+  
   
 //===== step1 -> step2 (account -> verify) =====
 
@@ -315,10 +294,14 @@
 //아이디 검증
 	const idInput = document.querySelector('#userId');
 	const idMsg = document.querySelector('#idMsg');
-	const checkIdBtn = document.querySelector('#checkIdBtn')
+	const checkIdBtn = document.querySelector('#checkIdBtn');
+	let originalText = checkIdBtn.textContent;
 	
 	let idCheckedOk = false;
 	let lastCheckedId = "";
+	
+	var checkedOk = (typeof idCheckedOk !== "undefined") ? idCheckedOk : false;
+	var checkedId = (typeof lastCheckedId !== "undefined") ? lastCheckedId : "";
 	
 	const idRegex = /^[a-z0-9]{6,20}$/;
 	
@@ -326,48 +309,58 @@
 	function(){
 		const id = idInput.value.trim();
 		
-		//아이디를 바꾸면 중복확인 무조건 무효
+		//아이디를 바꾸면 중복 확인 무조건 무효
 		idCheckedOk = false;
 		lastCheckedId = "";
+		checkedOk = false;
+		checkIdBtn.textContent = originalText;	
+		if(checkIdBtn.classList.contains('loading')) checkIdBtn.classList.remove('loading');
 		
 	    if (!idRegex.test(id)) {
 	    	idMsg.innerText = "영문 소문자/숫자 6~20자로 입력해 주세요.";
 	    	idMsg.style.color = "red";
-	    	if (checkIdBtn) checkIdBtn.disabled = true;
+	    	checkIdBtn.disabled = true;
+	    	idCheckedOk = false;
+	    	enableVerifyBtn();
 	        return;
 	    } 
-		 // 형식 OK인데 아직 중복확인 안 함
-		    idMsg.innerText = "중복확인을 진행해 주세요.";
+		 // 형식 OK인데 아직 중복 확인 안 함
+		    idMsg.innerText = "중복 확인을 진행해 주세요.";
 		    idMsg.style.color = "#666";
-		    if (checkIdBtn) checkIdBtn.disabled = false;
+		    checkIdBtn.disabled = false;
+		    enableVerifyBtn();
 		 });
 	
-	// 아이디 중복확인
-	var checkedOk = (typeof idCheckedOk !== "undefined") ? idCheckedOk : false;
-	var checkedId = (typeof lastCheckedId !== "undefined") ? lastCheckedId : "";
-	 
-	document.querySelector('#checkIdBtn').addEventListener('click', e=>{
+	// 아이디 중복 확인
+	checkIdBtn.addEventListener('click', (e) => {
+		
+	if (checkIdBtn.classList.contains('loading')) return;
 	
-	let val = document.querySelector('#userId').value.trim();
+	let val = idInput.value.trim();
+	
+	checkIdBtn.classList.add('loading');
+	checkIdBtn.textContent = "확인 중";
+	checkIdBtn.disabled = true;
 	
 	fetch(getCpath() + "/checkId?username=" + encodeURIComponent(val))
 		.then(response => {
 			
 			if(!response.ok || response.status != 200){
+				checkIdBtn.classList.remove('loading');
+				checkIdBtn.textContent = originalText;
+				checkIdBtn.disabled = false;
 				throw new Error("에러발생");
 			}
 			return response.json();
 		})
 		.then(data => {
-			const idEl = document.querySelector('#userId');
-			const msgEl = document.querySelector('#idMsg');
-			const val = (idEl.value || "").trim();
+			const val = (idInput.value || "").trim();
 			let result = data.duplicate; // result -> 아이디가 중복되면 true
 			
 			//1)아이디 미입력 시
 			if(val === ""){
-				msgEl.innerText ="아이디를 입력한 뒤 중복확인 해주세요.";
-				msgEl.style.color = "red";
+				idMsg.innerText ="아이디를 입력한 뒤 중복 확인 해주세요.";
+				idMsg.style.color = "red";
 				
 				checkedOk = false;
 				checkedId = "";
@@ -375,78 +368,149 @@
 				idCheckedOk = false;
 				lastCheckedId = "";
 				
-				idEl.focus();
+				idInput.focus();
+				
+				checkIdBtn.classList.remove('loading');
+				checkIdBtn.textContent = originalText;
+				checkIdBtn.disabled = false;
+				
+				enableVerifyBtn();
 				return;
 			}
 			
 			if(result){
 				//2)중복일때
-				msgEl.innerText = "아이디가 중복되었습니다.";
-				msgEl.style.color = "red";
+				idMsg.innerText = "아이디가 중복되었습니다.";
+				idMsg.style.color = "red";
 				checkedOk = false;
 				checkedId = "";
 				
 				idCheckedOk = false;
 				lastCheckedId = "";
+				
+				checkIdBtn.classList.remove('loading');
+				checkIdBtn.textContent = originalText;
+				checkIdBtn.disabled = false;
+				
+				enableVerifyBtn();
 			}else{
 				//3)중복이 아닐 때(사용 가능)
-				msgEl.innerText = "사용 가능한 아이디입니다.";
-				msgEl.style.color = "green";
+				idMsg.innerText = "사용 가능한 아이디입니다.";
+				idMsg.style.color = "green";
+				
 				checkedOk = true;
 				checkedId = val;
 				
 				idCheckedOk = true;
 				lastCheckedId = val;
+				
+				checkIdBtn.textContent = "확인 완료";
+				enableVerifyBtn();
 			}
 			
 		})
 		.catch(err => console.log(err));
 });
 
-//비번 검증
+	// 비밀번호 검증
 	const pwInput = document.querySelector('#userPw');
 	const pwMsg = document.querySelector('#pwMsg');
+	let pwCheckedOk = false;
 	
-	pwInput.addEventListener("input",
-	function(){
-		const pw = pwInput.value;//현재 비번
-		
-		const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}$/;
-		
-	    if (!pwRegex.test(pw)) {
-	        pwMsg.innerText = "영문, 숫자, 특수문자 포함 8~20자";
-	        pwMsg.style.color = "red";
-	    } else {
-	        pwMsg.innerText = "사용 가능한 비밀번호입니다.";
-	        pwMsg.style.color = "green";
-	    }
-		
-	    
-	});
-
-//비밀번호 확인 검증
 	const pwInput2 = document.querySelector('#userPw2');
 	const pwMsg2 = document.querySelector('#pwMsg2');
+	let pw2CheckedOk = false;
 	
+	pwInput.addEventListener("input",
+	function () {
+		const pw = pwInput.value;//현재 비번
+		const pw2 = pwInput2.value;
+		const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}$/;
+		
+		if (!pwRegex.test(pw)) {
+			pwMsg.innerText = "영문, 숫자, 특수문자 포함 8~20자";
+			pwMsg.style.color = "red";
+			pwMsg2.innerText = "비밀번호 확인이 일치하지 않습니다.";
+			pwMsg2.style.color = "red";
+			pwCheckedOk = false;
+			pw2CheckedOk = false;
+			enableVerifyBtn();
+		} else {
+			pwMsg.innerText = "사용 가능한 비밀번호입니다.";
+			pwMsg.style.color = "green";
+			pwCheckedOk = true;
+			if(pw !== pw2){
+				pwMsg2.innerText = "비밀번호 확인이 일치하지 않습니다.";
+				pwMsg2.style.color = "red";
+				pw2CheckedOk = false;
+				enableVerifyBtn();
+			}else{
+				pwMsg2.innerText = "비밀번호 확인이 일치합니다.";
+				pwMsg2.style.color = "green";
+				pw2CheckedOk = true;
+				enableVerifyBtn();
+			}
+			
+		}	    
+	});
+
+	//비밀번호 확인 검증
 	pwInput2.addEventListener("input",
-	function(){
+	function () {
 		const pw = pwInput.value;//현재 비번
 		const pw2 = pwInput2.value;//확인 비번
 		
 		if(pw !== pw2){
 			pwMsg2.innerText = "비밀번호 확인이 일치하지 않습니다.";
-	        pwMsg2.style.color = "red";
+			pwMsg2.style.color = "red";
+			pw2CheckedOk = false;
+			enableVerifyBtn();
 		}else{
 			pwMsg2.innerText = "비밀번호 확인이 일치합니다.";
-	        pwMsg2.style.color = "green";
+			pwMsg2.style.color = "green";
+			pw2CheckedOk = true;
+			enableVerifyBtn();
 		}
 	});
+	
+	// 약관 동의 검증
+	let isServiceAgreed = false;
+	let isPrivacyAgreed = false;
+	let agreeCheckedOk = false; // 두 필수 약관이 모두 동의되었는지 저장
+	
+	const agreeServiceEl = document.getElementById("agreeService");
+	const agreePrivacyEl = document.getElementById("agreePrivacy");
+	const agreeAllEl = document.getElementById("agreeAll");
+	
+	function updateAgreementState() {
+		isServiceAgreed = agreeServiceEl.checked;
+		isPrivacyAgreed = agreePrivacyEl.checked;
+		
+		agreeCheckedOk = (isServiceAgreed && isPrivacyAgreed);
+		
+		enableVerifyBtn();
+	}
 
-// 다음 버튼 클릭
+	agreeServiceEl.addEventListener("change", updateAgreementState);
+	agreePrivacyEl.addEventListener("change", updateAgreementState);
+	agreeAllEl.addEventListener("change", updateAgreementState);
+	
+// 다음 버튼
   const toVerifyBtn = document.querySelector("#toVerifyBtn");
+  
+// 다음 버튼 활성화
+  function enableVerifyBtn() {
+	  if(idCheckedOk && pwCheckedOk && pw2CheckedOk && agreeCheckedOk){
+		  toVerifyBtn.disabled = false;
+	  }else{
+		  toVerifyBtn.disabled = true;
+	  }
+  }
+	
+// 다음 버튼 클릭
   if (toVerifyBtn) {
-    toVerifyBtn.addEventListener("click", function (e) {
-    	e.preventDefault(); // submit 방지
+	  toVerifyBtn.addEventListener("click", function (e) {
+	  e.preventDefault(); // submit 방지
 
       const userIdEl = document.querySelector("#userId");
       const pwEl = document.querySelector("#userPw");
@@ -456,45 +520,15 @@
       const pw = pwEl ? (pwEl.value || "") : "";
       const pw2 = pw2El ? (pw2El.value || "") : "";
 
-      // 1) 아이디 기본 검증
-      if (!userId || userId.length < 6 || userId.length > 20) {
-        alert("아이디는 6~20자로 입력해주세요.");
-        if (userIdEl) userIdEl.focus();
-        return;
-      }
 
-      if (!idCheckedOk || lastCheckedId !== userId) {
-        alert("아이디 중복확인을 완료해주세요.");
-        if (userIdEl) userIdEl.focus();
-        return;
-      }
-
-      // 3) 비밀번호 검증(길이만 말고 regex랑 맞추는 게 더 정확)
-      const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}$/;
-      if (!pwRegex.test(pw)) {
-        alert("비밀번호는 영문, 숫자, 특수문자 포함 8~20자로 입력해주세요.");
-        if (pwEl) pwEl.focus();
-        return;
-      }
-
-      if (pw !== pw2) {
-        alert("비밀번호 확인이 일치하지 않습니다.");
-        if (pw2El) pw2El.focus();
-        return;
-      }
-
-      // 4) 필수 약관 체크
+      // 3) 필수 약관 체크
       var agreeServiceEl = $("#agreeService");
       var agreePrivacyEl = $("#agreePrivacy");
       var agreeService = agreeServiceEl ? agreeServiceEl.checked : false;
       var agreePrivacy = agreePrivacyEl ? agreePrivacyEl.checked : false;
 
-      if (!agreeService || !agreePrivacy) {
-        alert("[필수] 약관 동의가 필요합니다.");
-        return;
-      }
 
-      // 5) hidden copy
+      // 4) hidden copy
       var hidUserId = $("#hidUserId");
       var hidUserPw = $("#hidUserPw");
       var hidUserPw2 = $("#hidUserPw2");
@@ -513,75 +547,27 @@
       var agreeMarketing = agreeMarketingEl ? agreeMarketingEl.checked : false;
       if (hidAgreeMarketing) hidAgreeMarketing.value = agreeMarketing ? "1" : "0";
 
-      // 6) step2 이동
+      // 5) step2 이동
       setActiveStep("verify");
     });
   }
 
   // ===== step2: verify =====
+  
+  document.addEventListener("emailVerifiedSuccess", function (e) {
+    // e.detail.email 안에는 모달에서 인증 성공한 이메일이 들어있음
+    state.verifiedEmail = true;
 
-  //이메일 인증코드 발송
-  var emailSendBtn = $("#emailSendBtn");
-  if (emailSendBtn) {
-    emailSendBtn.addEventListener("click", function () {
-      var emailEl = $("#emailAddr");
-      var email = emailEl ?
-    (emailEl.value || "").trim() : "";
-    
-    	if(!email){
-    		alert("이메일을 입력해주세요.");
-    		return;
-    	}
-    	fetch("/email/send", {
-    		method: "POST",
-    		headers: {"Content-Type":"text/plain; charset=UTF-8"},
-    		body: email
-    	})
-    	.then(response =>{
-    		if(!response.ok) throw new Error();
-    		alert("인증코드를 이메일로 발송했습니다.");
-    		startResendCooldown(60);//인증번호 재전송
-    	})
-    	.catch(()=>{
-    		alert("이메일 발송에 실패했습니다.")
-    	});
-    });
-  }
+    const userEmailInput = document.getElementById('userEmail');
+    if (userEmailInput) {
+      userEmailInput.value = e.detail.email; // 이메일 자동 입력
+    }
 
-  var emailVerifyBtn = $("#emailVerifyBtn");
-  if (emailVerifyBtn) {
-    emailVerifyBtn.addEventListener("click", function () {
-      var codeEl = $("#emailCode");
-      var code = codeEl ? (codeEl.value || "").trim() : "";
-      
-      if (!code) {
-        alert("인증코드를 입력해주세요.");
-        return;
-      }
-      fetch("/email/check/" + encodeURIComponent(code), {
-          method: "PUT"
-        })
-        .then(response => response.text().then(text => ({ status: response.status, text })))
-        .then(({ status, text }) => {
-          if (status === 202 && text === "verified") {
-            state.verifiedEmail = true;
-            updateVerifyBadges();
-            updateNextBtn();
-            alert("이메일 인증 완료!");
-            closeModal($("#modal-email"));
-          } else {
-            state.verifiedEmail = false;
-            updateVerifyBadges();
-            updateNextBtn();
-            alert("인증코드가 올바르지 않습니다.");
-          }
-        })
-        .catch(() => {
-          alert("인증 확인 중 오류가 발생했습니다.");
-        });
-    });
-  }
-
+    // 배지 업데이트 및 다음 버튼 활성화 로직 호출
+    updateVerifyBadges();
+    updateNextBtn();
+  });
+  
   //다음 단계 이동 버튼
   var toProfileBtn = $("#toProfileBtn");
   if (toProfileBtn) {
@@ -589,7 +575,6 @@
       if (!state.verifiedEmail) {
     	  return;
       }
-      updateVerifyBadges();
       setActiveStep("profile");
     });
     updateNextBtn();
@@ -606,14 +591,14 @@
       var input = $("#plantNameInput");
       var name = input ? (input.value || "").replace(/^\s+|\s+$/g, "") : "";
       if (!name) {
-        alert("식물명을 입력해주세요.");
+        showCustomToast("식물명을 입력해주세요.", "warning");
         return;
       }
 
       var i;
       for (i = 0; i < state.interests.length; i++) {
         if (state.interests[i] === name) {
-          alert("이미 추가된 식물입니다.");
+          showCustomToast("이미 추가된 식물입니다.", "warning");
           return;
         }
       }
@@ -637,9 +622,15 @@
 
       if (!vId || !vPw) {
         if (e && e.preventDefault) e.preventDefault();
-        alert("계정 정보가 누락되었습니다. 처음 단계부터 다시 진행해주세요.");
+        showCustomToast("계정 정보가 누락되었습니다. 처음 단계부터 다시 진행해주세요.", "warning");
         setActiveStep("account");
         return false;
+      }
+      if (!state.verifiedEmail) {
+    	if (e && e.preventDefault) e.preventDefault();
+    	showCustomToast("이메일 인증을 진행해주세요.", "warning");
+    	setActiveStep("verify");
+    	return false;
       }
       return true;
     });

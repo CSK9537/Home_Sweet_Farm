@@ -7,10 +7,12 @@ import org.joonzis.community.dto.CommunityPostCardDTO;
 
 public interface CommunityMainMapper {
 
+	Map<String, Object> selectSessionInfo();
+	Integer selectBoardIdSmoke();
+	
 	List<CommunityPostCardDTO> selectPopularPosts(int limit);
     List<CommunityPostCardDTO> selectHotPosts(int limit);
     List<CommunityPostCardDTO> selectLatestPosts(int limit);
-    List<CommunityPostCardDTO> selectQaPosts(int limit);
 
     // 전체보기용(최대 100)
     List<CommunityPostCardDTO> selectMorePosts(Map<String, Object> param);

@@ -1,4 +1,3 @@
-// ChatState.js
 
 export const chatState = {
 
@@ -18,13 +17,16 @@ export const chatState = {
 
     // 메시지 흐름 & 렌더링
     message: {
+        roomUnreadGroupMap: {},
         lastSenderId: null,
         lastTimeStr: null,
 		lastTimeElement: null,
         lastDateKey: null,
         appendedMsgSet: new Set(),
         lastMessageTime: null ,
-        imageGroupBox: null
+        imageGroupBox: null ,
+        fileGroupBox: null,
+        rooms: {}
     },
 
     // 검색

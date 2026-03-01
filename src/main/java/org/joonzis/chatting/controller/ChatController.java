@@ -11,8 +11,11 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.joonzis.chatting.dto.ChatMessageDTO;
 import org.joonzis.chatting.dto.ChatRoomDTO;
 import org.joonzis.chatting.dto.RoomSearchResultDTO;
+import org.joonzis.chatting.mapper.ChatRoomMapper;
+import org.joonzis.chatting.mapper.ChatRoomUserMapper;
 import org.joonzis.chatting.service.ChatService;
 import org.joonzis.chatting.service.MsgService;
 import org.joonzis.chatting.vo.MsgVO;
@@ -40,6 +43,10 @@ public class ChatController {
     private SimpMessagingTemplate messagingTemplate;
     @Autowired
     private MsgService msgService;
+    @Autowired
+    private ChatRoomMapper chatRoomMapper;
+    @Autowired
+    private ChatRoomUserMapper chatRoomUserMapper;
 
     
     /**
@@ -61,6 +68,14 @@ public class ChatController {
         msgVO.setMsg_type("TEXT");
         
         MsgVO savedMsg = chatService.sendMessage(sender_id, receiver_id, msgVO);
+        
+        // 🔹 서버 로그 찍기
+        System.out.println("[DEBUG] sendMessage 호출됨 -> roomId=" + savedMsg.getRoom_id() +
+                           ", msgId=" + savedMsg.getMsg_id() +
+                           ", sender=" + sender_id +
+                           ", receiver=" + receiver_id +
+                           ", content=" + content);
+
         messagingTemplate.convertAndSend(
                 "/topic/room." + savedMsg.getRoom_id(),
                 savedMsg
@@ -90,7 +105,7 @@ public class ChatController {
     	    value = "/rooms/{room_id}/messages",
     	    produces = "application/json; charset=UTF-8"
     	)
-    	public List<MsgVO> getMessages(
+    	public List<ChatMessageDTO> getMessages(
     	        @PathVariable int room_id,
                 @RequestParam(required = false)Integer testUser_id,
                 HttpSession session
@@ -126,8 +141,24 @@ public class ChatController {
             HttpSession session
     ) {
     	int user_id = getUserId(session, testUser_id);
+    	System.out.println("[DEBUG] readMessage 호출: user_id=" + user_id + ", room_id=" + room_id);
         chatService.readMessage(user_id, room_id);
         return ResponseEntity.ok().build();
+    }
+    
+    @GetMapping(
+    		value = "/rooms/{room_id}/last-read", 
+    		produces = "application/json; charset=UTF-8"
+    )
+    public ResponseEntity<Map<String, Long>> getLastRead(
+            @PathVariable int room_id,
+            @RequestParam(required = false) Integer testUser_id,
+            HttpSession session
+    ) {
+        int user_id = getUserId(session, testUser_id);
+        Long lastReadMsgId = chatRoomUserMapper.findLastReadMsgId(user_id, room_id); // DB 조회
+
+        return ResponseEntity.ok(Map.of("last_read_msg_id", lastReadMsgId));
     }
 
     /**
@@ -185,12 +216,14 @@ public class ChatController {
             @RequestParam("file") MultipartFile file,
             @RequestParam int room_id,
             @RequestParam(required = false) Integer testUser_id,
+            @RequestParam String msg_type,
+            @RequestParam String upload_group_id,
             HttpSession session
     ) throws IOException {
 
         // 1. 업로드 유저
         int sender_id = getUserId(session, testUser_id);
-
+        int receiver_id = chatRoomMapper.selectOtherUserId(room_id, sender_id);
         // 2. 파일 저장
         String savedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         String dbPath = "/upload/files/" + savedName;
@@ -202,20 +235,11 @@ public class ChatController {
         file.transferTo(dest);
         
 
-        String contentType = file.getContentType();
-        String msgType;
-
-        if (contentType != null && contentType.startsWith("image")) {
-            msgType = "IMAGE";
-        } else {
-            msgType = "FILE";
-        }
-
         // 3. MsgVO 생성
         MsgVO msg = new MsgVO();
         msg.setSender_id(sender_id);
         msg.setRoom_id(room_id);
-        msg.setMsg_type(msgType); // ⭐ 여기!!
+        msg.setMsg_type(msg_type);
         msg.setContent("");
         msg.setOriginal_name(file.getOriginalFilename());
         msg.setSaved_name(savedName);
@@ -226,9 +250,26 @@ public class ChatController {
 
         // 4. DB 저장
         msgService.sendMessage(msg);
+        
+        // 5. DTO 변환
+        ChatMessageDTO dto = new ChatMessageDTO();
 
-        // 5. WebSocket 전송
-        messagingTemplate.convertAndSend("/topic/room." + room_id, msg);
+        dto.setMsg_id(msg.getMsg_id());
+        dto.setRoom_id(msg.getRoom_id());
+        dto.setSender_id(msg.getSender_id());
+        dto.setContent(msg.getContent());
+        dto.setMsg_type(msg.getMsg_type());
+        dto.setOriginal_name(msg.getOriginal_name());
+        dto.setSaved_name(msg.getSaved_name());
+        dto.setFile_path(msg.getFile_path());
+        dto.setCreated_at(msg.getCreated_at());
+//        dto.setFile_size(msg.setFile_size(file_size));
+        dto.setUpload_group_id(upload_group_id);
+
+        // 6. WebSocket 전송
+        messagingTemplate.convertAndSend("/topic/room." + room_id, dto);
+        messagingTemplate.convertAndSend("/topic/user." + receiver_id, dto);
+        messagingTemplate.convertAndSend("/topic/user." + sender_id, dto);
 
         return ResponseEntity.ok(msg);
     }

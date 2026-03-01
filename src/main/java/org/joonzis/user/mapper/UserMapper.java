@@ -10,6 +10,7 @@ public interface UserMapper {
 	public int insert(UserVO vo);
 	
 	//관심사
+	//1)user-id 조회
 	public int findUserIdByUsername(@Param("username")String username);
 	//2)해시태그 id 조회
 	public Integer findHashtagIdByName(@Param("hashtag_name") String hashtag_name);
@@ -31,21 +32,13 @@ public interface UserMapper {
 	public int delete(UserVO vo);
 	
 	//아이디 찾기(이메일)
-	public String findIdByEmail(@Param("email")String email);
-	
-	//아이디 찾기(전화번호)
-	public String findIdByPhone(@Param("phone")String phone);
-	
+	public String findIdByEmail(String email);
 	//비밀번호 찾기 대상 확인(이메일)
-	public int existUserByEmail(@Param("username")String username,
-						@Param("email")String email);
-	
-	//비밀번호 찾기 대상 확인(전화번호)
-	public int existUserByPhone(@Param("username")String username,
-			@Param("phone")String phone);
-	
+	public int existUserByEmail(@Param("username") String username, @Param("email") String email);
+	// 이메일로 유저정보 가져오기
+	public UserVO findUserByEmail(String email);
 	//비밀번호 재설정
-	public void updatePw(UserVO vo);
+	public int resetPw(UserVO vo);
 
 	//아이디 중복 체크
 	public int countByUsername(@Param("username")String username);
