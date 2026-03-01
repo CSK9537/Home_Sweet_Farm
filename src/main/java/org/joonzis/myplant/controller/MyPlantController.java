@@ -1,17 +1,14 @@
 package org.joonzis.myplant.controller;
 
 import java.security.Principal;
-import java.util.Map;
 
 import org.joonzis.myplant.dto.MyPlantDTO;
 import org.joonzis.myplant.service.MyPlantService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -61,16 +58,6 @@ public class MyPlantController {
 		mpservice.remove(myplant_id);
 		return "redirect:/myplant";
 	}
-	@PostMapping
-    public ResponseEntity<?> addMyPlant(@RequestBody Map<String, Integer> body,
-                                        Principal principal) {
 
-        int plantId = body.get("plantId");
-        String username = principal.getName();
-
-        mpservice.insertMyPlant(username, plantId);
-
-        return ResponseEntity.ok().build();
-    }
 }
 

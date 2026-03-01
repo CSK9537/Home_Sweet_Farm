@@ -57,7 +57,5 @@ public class MyPlantServiceImpl implements MyPlantService {
 			return "failure";
 		}
 	}
-	public void insertMyPlant(String username, int plantId) {
-	    mpmapper.insertMyPlant(username, plantId);
-	}
+	
 }
