@@ -329,12 +329,14 @@ public class UserController {
 		
 		UserVO myInfo = uservice.selectUser(loginUser.getUser_id());
 		model.addAttribute("myInfo", myInfo);
-		return "user/mypage";
+		return "user/myPage";
 	}
 	
 	
+	
+	
 	//2)공개형 프로필
-	@GetMapping("/profile/{userId}") 
+	@GetMapping("/profile/{userId}") //url예시: http://localhost:8081/user/profile/65
 	public String publicProfile(@PathVariable int userId, Model model) {
 		 UserDTO profile =
 		uservice.selectPublicProfile(userId);
