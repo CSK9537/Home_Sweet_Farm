@@ -15,4 +15,6 @@ public interface MyPlantMapper {
 	public int update(MyPlantDTO mpdto);
 	// 나의 식물 삭제
 	public int delete(int myplant_id);
+	
+	public void insertMyPlant(String username, int plantId);
 }
