@@ -12,7 +12,7 @@
     <div class="content-card mypage-card"
          data-ctx="${ctx}"
          data-profile-user-id="${profileUser.user_id}"
-         data-is-owner="${isOwner}">
+         data-is-owner="${isOwner ? 'true' : 'false'}">
 
       <div class="mypage-layout">
         <!-- LEFT -->
@@ -147,7 +147,7 @@
                     </div>
 
                     <div class="grade-actions">
-                      <button type="button" class="link-btn" id="btnGradeGuide">등급 안내</button>
+                      <button type="button" class="link-btn" id="btnGradeGuide" hidden>등급 안내</button>
                       <c:if test="${isOwner}">
                         <a class="link-btn" href="${ctx}/mypage/verify/expert">전문가 인증하러가기</a>
                       </c:if>

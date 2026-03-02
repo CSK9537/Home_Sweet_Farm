@@ -14,6 +14,7 @@ import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -126,10 +127,28 @@ public class UserController {
 	}
 
 	
-	// 마이페이지 이동
+//	// 마이페이지 이동
+//	@GetMapping("/mypage")
+//	public String moveMypage(HttpSession session, Model model) {
+//		User loginUser = (User) session.getAttribute("loginUser");
+//		
+//		boolean isOwner = false;
+//		if(loginUser != null) {
+//			isOwner = true;
+//		}
+//		model.addAttribute("isOwner", isOwner);
+//		
+//		return "user/MyPage";
+//	}
+	
 	@GetMapping("/mypage")
-	public String moveMypage() {
-		return "user/MyPage";
+	public String moveMypage(HttpSession session, Model model) {
+
+		User loginUser = (User) session.getAttribute("loginUser");
+		boolean isOwner = (loginUser != null);
+		model.addAttribute("isOwner", isOwner);
+
+	    return "user/MyPage";
 	}
 	
 	// 로그아웃
