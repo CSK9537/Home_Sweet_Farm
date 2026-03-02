@@ -36,5 +36,13 @@
         DELETE FROM tbl_myplant
         WHERE myplant_id = #{myplant_id}
     </delete>
-
+	<insert id="insertMyPlant">
+	    INSERT INTO tbl_myplant
+	    (myplant_id, user_id, plant_id, myplant_name)
+	    VALUES
+	    (myplant_seq.NEXTVAL,
+	     (SELECT user_id FROM tbl_user WHERE username = #{username}),
+	     #{plantId},
+	     #{myPlantName})
+	</insert>
 </mapper>
