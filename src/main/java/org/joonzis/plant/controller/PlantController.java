@@ -73,7 +73,7 @@ public class PlantController {
 	// 백과사전 상세 페이지
 	@RequestMapping("/info/{plant_name:.+}")
 	public String plantView(@PathVariable("plant_name") String plant_name, Model model) {
-		model.addAttribute("plantInfo",pservice.plantInfo(plant_name));
+		model.addAttribute("plantInfo", pservice.plantInfo(plant_name));
 		return "plant/PlantView";
 	}
 	

@@ -27,12 +27,12 @@ public class MyPlantServiceImpl implements MyPlantService {
 	
 	// 나의 식물 추가
 	@Override
-	public String register(MyPlantDTO mpdto) {
+	public boolean register(MyPlantDTO mpdto) {
 		int result = mpmapper.insert(mpdto);
 		if(result > 0) {
-			return "success";
+			return true;
 		}else {
-			return "failure";
+			return false;
 		}
 	}
 	

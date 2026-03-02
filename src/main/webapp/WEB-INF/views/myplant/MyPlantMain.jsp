@@ -9,18 +9,28 @@
   <section class="content-wrap">
     <div class="content-card myplants">
 
-      <!-- 상단 타이틀 + 버튼 -->
       <div class="myplants__header">
         <h2 class="myplants__title">나의 식물</h2>
-        <button class="mp-btn mp-btn--primary" type="button" id="openAddPlantModal"">
+        <c:if test="${not empty sessionScope.loginUser}">
+        <button class="mp-btn mp-btn--primary" type="button" id="openAddPlantModal" data-insert-open>
 		  	나의식물 추가
 		</button>
+		</c:if>
       </div>
-
-      <!-- 식물 없음 / 있음 분기 -->
+      
       <c:choose>
-        <c:when test="${empty myPlants}">
-          <!-- Empty State -->
+        <c:when test="${empty sessionScope.loginUser}">
+          <div class="myplants-empty">
+            <p class="myplants-empty__title">나의 식물 관리 서비스를 이용하고 싶으신가요?</p>
+            <p class="myplants-empty__desc">로그인 후 이용하실 수 있습니다.</p>
+
+            <a class="mp-btn mp-btn--ghost" href="/user/login">
+              	로그인
+            </a>
+          </div>
+        </c:when>
+        
+        <c:when test="${not empty sessionScope.loginUser and empty myPlants}">
           <div class="myplants-empty">
             <p class="myplants-empty__title">아직 반려식물이 없으신가요?</p>
             <p class="myplants-empty__desc">추천 받으시고 키워보세요.</p>
@@ -106,66 +116,7 @@
   </section>
 </div>
 
-<!-- 모달영역 -->
-<!-- 나의 식물 추가 모달 -->
-<div class="mpm-modal" id="addPlantModal" aria-hidden="true">
-  <div class="mpm-modal__backdrop" data-modal-close></div>
-
-  <div class="mpm-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="mpmModalTitle">
-    <div class="mpm-modal__header">
-      <h3 class="mpm-modal__title" id="mpmModalTitle">어떤 식물인가요?</h3>
-    </div>
-
-    <!-- 검색창 -->
-    <div class="mpm-modal__search">
-      <span class="mpm-modal__search-icon" aria-hidden="true">⌕</span>
-      <input
-        type="text"
-        id="plantSearchInput"
-        class="mpm-modal__search-input"
-        placeholder="식물 검색"
-        autocomplete="off"
-      />
-    </div>
-    
-
-    <div class="mpm-modal__divider"></div>
-
-    <!-- 선택한 식물 정보를 다음 단계로 넘길 폼(필요시 action 변경) -->
-    <!-- <form id="plantPickForm" method="get" action="${pageContext.request.contextPath}/my-plants/new"> -->  
-    		<input type="hidden" name="plantId" id="pickedPlantId" value="" />
-
-      <ul class="mpm-list" id="plantPickList">
-        <c:forEach var="p" items="${recommendedPlants}">
-          <li class="mpm-item">
-            <label class="mpm-item__row">
-              <input class="mpm-item__radio" type="radio" name="pick"
-                     value="${p.plantId}" data-name="${p.koreanName}" data-latin="${p.latinName}" />
-              <span class="mpm-item__thumb">
-                <img
-                  src="<c:out value='${empty p.imageUrl ? (pageContext.request.contextPath.concat("/resources/image/Default_Plant.jpg")) : p.imageUrl}'/>"
-                  alt="<c:out value='${p.koreanName}'/>"
-                />
-              </span>
-              <span class="mpm-item__text">
-                <span class="mpm-item__korean"><c:out value="${p.koreanName}"/></span>
-                <span class="mpm-item__latin"><c:out value="${p.latinName}"/></span>
-              </span>
-            </label>
-          </li>
-        </c:forEach>
-      </ul>
-		<div class="mpm-modal__nickname">
-      <div class="mpm-modal__footer">
-        <button type="button" class="mp-btn mpm-btn--secondary" data-modal-close>취소</button>
-        <button type="submit" class="mp-btn mp-btn--primary mpm-btn--primary" id="confirmAddPlant" disabled>
-          	추가
-        </button>
-      </div>
-    <!-- </form> -->
-  </div>
-  </div>
-</div>
+<jsp:include page="/WEB-INF/views/myplant/MyPlantInsertModal.jsp" />
 
 <script src="${pageContext.request.contextPath}/resources/js/myplant/MyPlantMain.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />
