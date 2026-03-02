@@ -94,10 +94,12 @@ function minusCartItem(product_id){
       return response.text();
     })
     .then(data => {
+      showCustomToast(`상품 수량이 변경되었습니다. ${data} : ${count}`)
       fetchCartList();
     })
     .catch(error => {
       console.error("Cart 조회 오류:", error);
+      showCustomToast("상품 수량 변경에 실패했습니다.","error");
     });
 }
 function plusCartItem(product_id){
@@ -112,15 +114,15 @@ function plusCartItem(product_id){
       return response.text();
     })
     .then(data => {
+      showCustomToast(`상품 수량이 변경되었습니다. ${data} : ${count}`);
       fetchCartList();
     })
     .catch(error => {
       console.error("Cart 조회 오류:", error);
+      showCustomToast("상품 수량 변경에 실패했습니다.","error");
     });
 }
 function removeCartItem(product_id){
-  if(!confirm("해당 상품을 삭제하시겠습니까?")) return;
-
   fetch(`/store/cart/removeCart/product/${product_id}`,{
     method: "DELETE",
     headers: {
@@ -132,6 +134,7 @@ function removeCartItem(product_id){
       return response.text();
     })
     .then(data => {
+      showCustomToast(`해당 상품을 성공적으로 장바구니에서 삭제했습니다. : ${data}` , "success");
       fetchCartList();
     })
     .catch(error => {
@@ -141,8 +144,6 @@ function removeCartItem(product_id){
 
 // 장바구니 전체 삭제
 function removeAllCart(){
-  if(!confirm("정말 장바구니를 비우시겠습니까?")) return;
-
   fetch(`/store/cart/removeAllCart`, {
     headers: {
       "Content-Type": "application/json"
@@ -154,6 +155,7 @@ function removeAllCart(){
     return response.text();
   })
   .then(data => {
+    showCustomToast("성공적으로 장바구니를 비웠습니다.", "success");
     fetchCartList();
   })
   .catch(error => {
@@ -162,8 +164,6 @@ function removeAllCart(){
 }
 
 function newOrder(){
-  console.log("주문하기 버튼 클릭");
-
   // 1. 현재 장바구니의 데이터 수집
   const totalPriceEl = document.getElementById("totalPrice");
   const totalPrice = totalPriceEl ? parseInt(totalPriceEl.textContent.replace(/[^0-9]/g, '')) : 0;
@@ -185,14 +185,15 @@ function newOrder(){
   });
 
   if(products.length === 0){
-    alert("장바구니가 비어있습니다.");
+    showCustomToast("장바구니가 비어있습니다." , "error");
     return;
   }
 
   // 2. 배송지 입력 (테스트용 알림/프롬프트)
+  // 추후 프롬프트를 모달로로 변경하는 편이 좋아보임 -> 모달에서 포인트 사용 여부 등의 추가적인 기능 추가 가능...
   const deliveryAddr = prompt("배송지를 입력해주세요.", "서울시 강남구 테헤란로...");
   if (!deliveryAddr) {
-    alert("배송지 입력이 취소되었습니다.");
+    showCustomToast("배송지 입력이 취소 되었습니다." , "error");
     return;
   }
 

@@ -8,6 +8,8 @@ import javax.servlet.http.HttpSession;
 import org.joonzis.store.dto.ShoppingCartDTO;
 import org.joonzis.store.dto.WishListDTO;
 import org.joonzis.store.service.ShoppingCartService;
+import org.joonzis.store.service.StoreService;
+import org.joonzis.store.vo.ProductVO;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -32,15 +34,15 @@ import lombok.extern.log4j.Log4j;
 public class WishController {
 	@Autowired
 	ShoppingCartService cService;
-	
+	@Autowired
+	StoreService sService;	
 	// 장바구니 조회
 	@GetMapping(
 			value = "/getCart",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ShoppingCartDTO>> getCartList(
 			HttpSession session){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		return new ResponseEntity<List<ShoppingCartDTO>>(cService.getShoppingCartByUserId(user_id),HttpStatus.OK);
 	}
 
@@ -53,10 +55,8 @@ public class WishController {
 			@PathVariable("product_id")int product_id,
 			@RequestParam(value="type",defaultValue = "plus")String type,
 			HttpSession session){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
-		log.info("유저 id  : " + user_id);
-		log.info("상품 id : " + product_id);
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
+		
 		int result;
 		if(type.equals("plus") || type.equals("")) {
 			result = cService.addShoppingCart(user_id, product_id);
@@ -66,7 +66,11 @@ public class WishController {
 			return new ResponseEntity<String>("Parameter type is only 'plus' or 'minus'",HttpStatus.BAD_REQUEST);			
 		}
 		
-		if (result >= 0) return new ResponseEntity<String>("success", HttpStatus.OK);
+		// UX를 위해 수량이 수정된 상품의 이름을 응답
+		if (result >= 0) {
+			ProductVO vo = sService.getProductInfo(product_id);
+			return new ResponseEntity<String>(vo.getProduct_name(), HttpStatus.OK);
+		}
 		return new ResponseEntity<String>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	// 장바구니에서 삭제
@@ -76,10 +80,13 @@ public class WishController {
 	public ResponseEntity<String> removeCartItem(
 			@PathVariable("product_id") int product_id,
 			HttpSession session){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		int result = cService.deleteShopingCart(user_id, product_id);
-		if(result > 0) return new ResponseEntity<String>("success", HttpStatus.OK);
+		
+		// UX 향상을 위해삭제된 상품 이름 가져오기(테스트)
+		ProductVO vo = sService.getProductInfo(product_id);
+		
+		if(result > 0) return new ResponseEntity<String>(vo.getProduct_name(), HttpStatus.OK);
 		else return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
@@ -89,8 +96,7 @@ public class WishController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<WishListDTO>> getWishList(
 			HttpSession session){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		return new ResponseEntity<List<WishListDTO>>(cService.getWishListByUserId(user_id),HttpStatus.OK);
 	}
 	
@@ -102,8 +108,7 @@ public class WishController {
 			@PathVariable("product_id") int product_id,
 			@RequestParam("type")String type,
 			HttpSession session){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		String result = cService.checkAlreadyIn(user_id, product_id, type);
 		return new ResponseEntity<String>(result, HttpStatus.OK);
 	}
@@ -115,8 +120,7 @@ public class WishController {
 	public ResponseEntity<String> addWishOrCart(
 			@PathVariable("product_id") int product_id,
 			HttpSession session){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		try {
 			cService.addWishList(user_id, product_id);			
 		} catch (DuplicateKeyException e) {
@@ -134,12 +138,16 @@ public class WishController {
 	public ResponseEntity<String> removeWishOrCart(
 			@PathVariable("product_id") int product_id,
 			HttpSession session){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		try {
 			int result = cService.deleteWishList(user_id, product_id);
-			log.info(result);
-			return new ResponseEntity<String>("success", HttpStatus.OK);
+			
+			// 찜목록에서 삭제한 이후 상품 이름 가져오기
+			ProductVO vo = null;
+			if(result > 0) {
+				vo = sService.getProductInfo(product_id);
+			}
+			return new ResponseEntity<String>(vo.getProduct_name(), HttpStatus.OK);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -152,8 +160,7 @@ public class WishController {
 			value = "/removeAllCart",
 			produces = "text/plain;charset=UTF-8")
 	public ResponseEntity<String> removeAllCart(HttpSession session){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		try {
 			cService.deleteAllCart(user_id);			
 			return new ResponseEntity<String>("success", HttpStatus.OK);			
@@ -167,8 +174,7 @@ public class WishController {
 			value = "/removeAllWish",
 			produces = "text/plain;charset=UTF-8")
 	public ResponseEntity<String> removeAllWish(HttpSession session){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		try {
 			cService.deleteAllWish(user_id);			
 			return new ResponseEntity<String>("success", HttpStatus.OK);
@@ -185,8 +191,7 @@ public class WishController {
 	public ResponseEntity<String> moveToCart(
 			HttpSession session,
 			@PathVariable("product_id") int product_id){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		try {
 			cService.moveToCart(user_id, product_id);
 			return new ResponseEntity<String>("success", HttpStatus.OK);

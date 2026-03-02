@@ -62,8 +62,6 @@ let fetchWishList;
 })();
 
 function removeAllWish(){
-  if(!confirm("정말 찜목록을 비우시겠습니까?")) return;
-
   fetch(`/store/cart/removeAllWish`,{
     method:"DELETE",
     headers:{
@@ -76,6 +74,7 @@ function removeAllWish(){
     return response.text();
   })
   .then(data => {
+    showCustomToast("성공적으로 찜목록을 비웠습니다." , "success");
     fetchWishList();
   })
   .catch(error => {
@@ -84,8 +83,6 @@ function removeAllWish(){
 }
 
 function removeWishItem(product_id){
-  if(!confirm("정말 찜목록에서 삭제하시겠습니까?")) return;
-
   fetch(`/store/cart/removeWish/product/${product_id}`,{
     method:"DELETE",
     headers:{
@@ -98,6 +95,7 @@ function removeWishItem(product_id){
     return response.text();
   })
   .then(data => {
+    showCustomToast(`해당 상품이 찜목록에서 성공적으로 삭제되었습니다. : ${data}` , "success");
     fetchWishList();
   })
   .catch(error => {
@@ -119,8 +117,8 @@ function moveToCart(product_id){
     return response.text();
   })
   .then(data => {
-    if(confirm("장바구니에 해당 상품이 추가되었습니다. 장바구니로 이동하시겠습니까?")) location.href="/store/cartPage";
-    else fetchWishList();
+    showCustomToast("상품이 장바구니에 추가되었습니다.","success");
+    fetchWishList();
   })
   .catch(error => {
     console.error("Wish 조회 오류:", error);
