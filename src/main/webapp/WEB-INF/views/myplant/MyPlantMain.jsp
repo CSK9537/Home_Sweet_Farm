@@ -127,13 +127,12 @@
         autocomplete="off"
       />
     </div>
-    
 
     <div class="mpm-modal__divider"></div>
 
     <!-- 선택한 식물 정보를 다음 단계로 넘길 폼(필요시 action 변경) -->
-    <!-- <form id="plantPickForm" method="get" action="${pageContext.request.contextPath}/my-plants/new"> -->  
-    		<input type="hidden" name="plantId" id="pickedPlantId" value="" />
+    <form id="plantPickForm" method="get" action="${pageContext.request.contextPath}/my-plants/new">
+      <input type="hidden" name="plantId" id="pickedPlantId" value="" />
 
       <ul class="mpm-list" id="plantPickList">
         <c:forEach var="p" items="${recommendedPlants}">
@@ -155,15 +154,14 @@
           </li>
         </c:forEach>
       </ul>
-		<div class="mpm-modal__nickname">
+
       <div class="mpm-modal__footer">
         <button type="button" class="mp-btn mpm-btn--secondary" data-modal-close>취소</button>
         <button type="submit" class="mp-btn mp-btn--primary mpm-btn--primary" id="confirmAddPlant" disabled>
           	추가
         </button>
       </div>
-    <!-- </form> -->
-  </div>
+    </form>
   </div>
 </div>
 
