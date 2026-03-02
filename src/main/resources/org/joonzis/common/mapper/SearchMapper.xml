@@ -12,21 +12,21 @@
 	<!-- 제목 검색 -->
 	<select id="searchBoardsByTitle" resultType="org.joonzis.community.vo.BoardVO">
 		<![CDATA[
-			SELECT * FROM tmp_board WHERE LOWER(title) LIKE LOWER('%' || #{q} || '%')
+			SELECT * FROM tbl_board WHERE LOWER(title) LIKE LOWER('%' || #{q} || '%')
 			AND ROWNUM <= 10
 		]]>
 	</select>
 	<!-- 내용 검색 -->
 	<select id="searchBoardsByContent" resultType="org.joonzis.community.vo.BoardVO">
 		<![CDATA[
-			SELECT * FROM tmp_board WHERE LOWER(content) LIKE LOWER('%' || #{q} || '%')
+			SELECT * FROM tbl_board WHERE LOWER(content) LIKE LOWER('%' || #{q} || '%')
 			AND ROWNUM <= 10
 		]]>
 	</select>
 	<!-- 작성자 검색 -->
 	<select id="searchBoardsByWriter" resultType="org.joonzis.community.vo.BoardVO">
 		<![CDATA[
-			SELECT * FROM tmp_board WHERE user_id =
+			SELECT * FROM tbl_board WHERE user_id =
 				(SELECT user_id FROM tbl_user
 				WHERE LOWER(username) LIKE LOWER('%' || #{q} || '%')
 				OR LOWER(nickname) LIKE LOWER('%' || #{q} || '%')

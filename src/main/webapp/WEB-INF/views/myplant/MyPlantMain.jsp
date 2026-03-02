@@ -17,7 +17,6 @@
 		</button>
 		</c:if>
       </div>
-
       
       <c:choose>
         <c:when test="${empty sessionScope.loginUser}">

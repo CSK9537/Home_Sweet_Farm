@@ -10,7 +10,7 @@ public interface MyPlantService {
 	// 나의 식물 정보
 	public MyPlantDTO get(int myplant_id);
 	// 나의 식물 추가
-	public String register(MyPlantDTO mpdto);
+	public boolean register(MyPlantDTO mpdto);
 	// 나의 식물 수정
 	public String modify(MyPlantDTO mpdto);
 	// 나의 식물 삭제

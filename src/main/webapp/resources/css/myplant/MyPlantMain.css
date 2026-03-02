@@ -258,12 +258,6 @@
   font-size:14px;
 }
 
-.mpm-modal__divider{
-  margin:16px 0 10px;
-  height:1px;
-  background:rgba(107,123,97,.45);
-}
-
 /* 리스트 */
 .mpm-list{
   list-style:none;
@@ -283,7 +277,7 @@
   display:flex;
   align-items:center;
   gap:18px;
-  padding:14px 6px;
+  padding:10px 6px;
   cursor:pointer;
 }
 
@@ -294,9 +288,9 @@
 }
 
 .mpm-item__thumb{
-  width:62px;
-  height:62px;
-  border-radius:12px;
+  width:40px;
+  height:40px;
+  border-radius:6px;
   overflow:hidden;
   background:#fff;
   flex:0 0 auto;
@@ -315,7 +309,7 @@
   color:var(--brand);
 }
 .mpm-item__korean{
-  font-size:18px;
+  font-size:15px;
   font-weight:500;
 }
 .mpm-item__latin{
@@ -342,6 +336,19 @@
   gap:14px;
   margin-top:18px;
 }
+
+/* 선택한 식물 미리보기 박스 */
+.mpm-selected-preview {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px;
+  margin-top: 16px;
+  background: rgba(107, 123, 97, .06); /* --brand 컬러 투명도 */
+  border-radius: 14px;
+  border: 1px solid rgba(107, 123, 97, .15);
+}
+
 
 /* 취소 버튼도 동일 톤(초록 계열)로 */
 .mpm-btn--secondary{
