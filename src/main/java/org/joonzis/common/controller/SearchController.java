@@ -22,6 +22,7 @@ public class SearchController {
 	@Autowired
 	private SearchService sservice;
 	
+	// 최대 10개
 	// 커뮤니티 검색
 	// 제목
 	@GetMapping(value = "/community/title",
