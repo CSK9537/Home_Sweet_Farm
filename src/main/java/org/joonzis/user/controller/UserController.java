@@ -126,6 +126,31 @@ public class UserController {
 		result.put("redirectUrl", "/");
 		return ResponseEntity.ok(result);
 	}
+
+	
+//	// 마이페이지 이동
+//	@GetMapping("/mypage")
+//	public String moveMypage(HttpSession session, Model model) {
+//		User loginUser = (User) session.getAttribute("loginUser");
+//		
+//		boolean isOwner = false;
+//		if(loginUser != null) {
+//			isOwner = true;
+//		}
+//		model.addAttribute("isOwner", isOwner);
+//		
+//		return "user/MyPage";
+//	}
+	
+	@GetMapping("/mypage")
+	public String moveMypage(HttpSession session, Model model) {
+
+		User loginUser = (User) session.getAttribute("loginUser");
+		boolean isOwner = (loginUser != null);
+		model.addAttribute("isOwner", isOwner);
+
+	    return "user/MyPage";
+	}
 	
 	// 로그아웃
 	@GetMapping("/logout")
