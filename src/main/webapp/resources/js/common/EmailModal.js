@@ -61,6 +61,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalEl.classList.contains('is-open')) {
+      modalEl.classList.remove("is-open");
+      modalEl.setAttribute("aria-hidden", "true");
+    }
+  });
 
   // 검사 및 발송
   if (emailSendBtn) {
