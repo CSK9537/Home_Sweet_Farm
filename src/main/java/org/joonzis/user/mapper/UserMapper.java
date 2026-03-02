@@ -52,7 +52,10 @@ public interface UserMapper {
 	//자동로그인-아이디로 찾기(쿠키)
 	public UserVO findByUsername(String username);
 		
-		
+	//마이페이지
+	//1) 내 정보 조회
+	public UserVO selectUser(int User_id);
+	
 	//공개형 프로필
 	//1) 닉네임, 프로필, 회원등급, 자기소개
 	public UserDTO selectPublicProfile(int user_id);

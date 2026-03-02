@@ -163,6 +163,13 @@
 		WHERE username = #{username}
 	</select>
 	
+	<!-- 마이페이지: 내 정보 조회  -->
+	<select id="selectUser" parameterType="int" resultType="org.joonzis.user.vo.UserVO">
+		SELECT username, brith_date, nickname, phone, email 
+		FROM TBL_USER
+		WHERE user_id = #{user_id}
+	</select>
+	
 	
 	<!-- 공개 프로필 조회: 닉네임, 프로필, 회원등급, 자기소개   -->
 	<select id="selectPublicProfile" parameterType="int" resultType="org.joonzis.user.dto.UserDTO">

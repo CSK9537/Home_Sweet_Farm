@@ -107,6 +107,10 @@ public class UserServiceImpl implements UserService{
 	public UserVO findByUsername(String username) {
 		return usermapper.findByUsername(username);
 	}
+	@Override
+	public UserVO selectUser(int User_id) {
+		return usermapper.selectUser(User_id);
+	}
 	
 	@Override
 	public UserDTO selectPublicProfile(int user_id) {
