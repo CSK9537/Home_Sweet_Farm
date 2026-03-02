@@ -397,6 +397,10 @@
   z-index: 9991;
 }
 
+.modal[hidden] {
+  display: none !important;
+}
+
 .modal-card {
   width: min(560px, calc(100vw - 30px));
   background: #f4f2ed;

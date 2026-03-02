@@ -55,6 +55,7 @@
 
   function openModal(el) {
     if (!el) return;
+    console.log("openModal called:", el.id);
     backdrop.hidden = false;
     el.hidden = false;
   }
@@ -66,12 +67,14 @@
   }
 
   document.addEventListener("click", function (e) {
-    var closeBtn = closest(e.target, "[data-modal-close]");
+	const t = e.target;
+    const closeBtn = t && t.closest ? t.closest("[data-modal-close]"): null;
     if (closeBtn) {
-      closeModal(closest(e.target, ".modal"));
+    	const modal = closeBtn.closest(".modal");
+      closeModal(modal);
       return;
     }
-    if (e.target === backdrop) {
+    if (t === backdrop) {
       for (var key in modals) {
         if (modals[key]) closeModal(modals[key]);
       }
