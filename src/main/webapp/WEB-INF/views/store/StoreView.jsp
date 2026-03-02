@@ -101,9 +101,9 @@
       <!-- 우측 플로팅(찜/장바구니) -->
       <div class="store-floating">
         <a class="store-floating__btn store-floating__btn--wish"
-           href="${pageContext.request.contextPath}/store/wishPage" title="찜목록">찜목록</a>
+           href="${pageContext.request.contextPath}/store/wishListPage" title="찜목록">찜목록</a>
         <a class="store-floating__btn store-floating__btn--cart"
-           href="${pageContext.request.contextPath}/store/cartPage" title="장바구니">장바구니</a>
+           href="${pageContext.request.contextPath}/store/wishListPage" title="장바구니">장바구니</a>
       </div>
 
       <div class="detail-top">

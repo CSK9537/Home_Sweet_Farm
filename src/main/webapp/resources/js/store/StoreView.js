@@ -460,14 +460,18 @@
         headers: { "Content-Type": "application/json" }
       })
       .then(function(response){
-        if(response.ok){
-          if(confirm("장바구니에 담았습니다. 장바구니로 이동하시겠습니까?")) location.href="/store/cartPage";
-        }else{
-          alert("장바구니에 담지 못했습니다.");
+        if(response.ok) showCustomToast("장바구니에 담겼습니다.","success");
+        else{
+          response.text().then(function(data){
+            console.error();
+            showCustomToast(`장바구니에 추가하지 못했습니다. : ${data}`, "error");
+          });
         }
       })
       .catch(function(err){
         console.error(err);
+        showCustomToast("장바구니에 담지 못했습니다.","error");
+
       });
     });
 
@@ -481,15 +485,17 @@
       })
       .then(function(response){
         if(response.ok){
-          if(confirm("찜목록에 추가했습니다. 찜목록으로 이동하시겠습니까?")) location.href="/store/wishPage";
+          showCustomToast("찜목록에 추가했습니다." , "success");
         }else{
           response.text().then(function(data){
-            alert(data);
+            console.error();
+            showCustomToast(`찜목록에 추가하지 못했습니다. : ${data}`, "error");
           });
         }
       })
       .catch(function(err){
         console.error(err);
+        showCustomToast("찜목록에 추가하지 못했습니다.", "error");
       });
     });
   });

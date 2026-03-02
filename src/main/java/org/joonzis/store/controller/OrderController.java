@@ -34,11 +34,12 @@ public class OrderController {
 	@Autowired
 	OrderService oService;
 	
-	// 특정 주문 내역 조회
+	// 특정 주문 내역 조회 (상세보기)
 	@GetMapping(
 			value = "/getDetail/{order_id}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<OrderDTO> getOrderDetail(@PathVariable("order_id")String order_id){
+		// REST API인 이유는 모달로 띄우는 것을 전제로 해서
 		return new ResponseEntity<OrderDTO>(oService.getOrderDetail(order_id), HttpStatus.OK);
 	}
 	
@@ -47,13 +48,13 @@ public class OrderController {
 			value = "/getList",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<OrderDTO>> getOrderListByUserId(HttpSession session){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
+		// session에서 user_id를 꺼내서 사용
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		List<OrderDTO> list = oService.getOrderListByUserId(user_id);
 		return new ResponseEntity<List<OrderDTO>>(list,HttpStatus.OK);
 	}
 	
-	// 상품 기준 주문 내역 리스트 조회
+	// 상품 기준 주문 내역 리스트 조회 (아마 관리자 계정 전용을 위해 추가해둔 기능)
 	@GetMapping(
 			value = "/getList/product_id/{product_id}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
@@ -70,8 +71,7 @@ public class OrderController {
 			HttpSession session,
 			@RequestBody Map<String, Object> map
 			){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		
 		int use_point = (int)map.get("use_point");
 		int order_amount = (int)map.get("order_amount");
@@ -97,8 +97,7 @@ public class OrderController {
 			value = "/confirm",
 			produces = "text/plain;charset=UTF-8")
 	public ResponseEntity<String> confirmOrder(@RequestBody Map<String, Object> map, HttpSession session){
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
+		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
 		String paymentKey = (String)map.get("paymentKey");
 		String orderId = (String)map.get("orderId");
 		int amount = Integer.parseInt(map.get("amount").toString());
