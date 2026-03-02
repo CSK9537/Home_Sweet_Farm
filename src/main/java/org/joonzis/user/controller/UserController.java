@@ -315,9 +315,25 @@ public class UserController {
 	
 	
 	/*
-	 * 프로필
+	 * 마이페이지, 프로필
 	 * */
-	//1)공개형 프로필
+	//1)마이페이지
+	@GetMapping("/myPage")
+	public String myPage(HttpSession session, Model model) {
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		if(loginUser == null) {
+			return "redirect:/login";
+		}
+		
+		UserVO myInfo = uservice.selectUser(loginUser.getUser_id());
+		model.addAttribute("myInfo", myInfo);
+		return "user/myPage";
+	}
+	
+	
+	
+	
+	//2)공개형 프로필
 	@GetMapping("/profile/{userId}") //url예시: http://localhost:8081/user/profile/65
 	public String publicProfile(@PathVariable int userId, Model model) {
 		// UserDTO profile =
