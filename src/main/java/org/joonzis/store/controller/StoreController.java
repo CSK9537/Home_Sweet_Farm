@@ -154,4 +154,17 @@ public class StoreController {
 		model.addAttribute("message", message);
 		return "/store/fail";
 	}
+	
+	// 주문목록 페이지로 이동
+	@GetMapping("/orderListPage")
+	public String orderListPage(Model model, HttpSession session) {
+		// 임시 권한처리
+		UserVO loginUser = ((UserVO)session.getAttribute("loginUser"));
+		if(loginUser == null) {
+			log.warn("로그인하지 않은 사용자");
+			return "redirect:/user/login";
+		}
+		
+		return "/store/orderList";
+	}
 }

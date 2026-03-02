@@ -50,6 +50,7 @@ public class OrderController {
 	public ResponseEntity<List<OrderDTO>> getOrderListByUserId(HttpSession session){
 		// session에서 user_id를 꺼내서 사용
 		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
+		log.error("세션에서 꺼낸 user_id의 값 : " + user_id);
 		List<OrderDTO> list = oService.getOrderListByUserId(user_id);
 		return new ResponseEntity<List<OrderDTO>>(list,HttpStatus.OK);
 	}
@@ -128,14 +129,15 @@ public class OrderController {
 	@PostMapping(
 			value = "/cancel",
 			produces = "text/plain;charset=UTF-8")
-	public ResponseEntity<String> cancelOrder(
-			@RequestBody String paymentKey,
-			@RequestBody String orderId,
-			@RequestBody String reason){
+	public ResponseEntity<String> cancelOrder(@RequestBody Map<String, String> data){
+		String paymentKey = data.get("paymentKey");
+		String orderId = data.get("orderId");
+		String reason = data.get("reason");
+		
 		int result = 0;
 		try {
 			result = oService.cancelOrder(paymentKey, reason, orderId);
-			if(result > 0) return new ResponseEntity<String>(HttpStatus.ACCEPTED);
+			if(result > 0) return new ResponseEntity<String>("success", HttpStatus.ACCEPTED);
 			else throw new RuntimeException("결제 취소가 이루어지지 않음");
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -192,7 +192,8 @@
 	<select id="getOrderList" resultMap="OrderDTO">
 		<include refid="OrderDTO"/>
 		<where>
-			<if test='type=="user" and type==null'>
+			AND o.status != 'READY'
+			<if test='type=="user" or type==null'>
 				AND o.user_id = #{data}
 			</if>
 			<if test='type=="product"'>
@@ -263,10 +264,12 @@
 	    WHERE order_id = #{order_id}
 	</update>
 	
+	<!-- CANCELED이 오타인가? 아무튼 취소된 상태라는 뜻 -->
 	<update id="updateCancelOrder">
 		UPDATE tbl_order
 		<set>
-			status='CANCLE'
+			status='CANCELED',
+			order_status='CANCEL'
 		</set>
 		<where>
 			order_id=#{order_id}

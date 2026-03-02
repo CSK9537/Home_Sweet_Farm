@@ -104,6 +104,8 @@
            href="${pageContext.request.contextPath}/store/wishListPage" title="찜목록">찜목록</a>
         <a class="store-floating__btn store-floating__btn--cart"
            href="${pageContext.request.contextPath}/store/wishListPage" title="장바구니">장바구니</a>
+           <a class="store-floating__btn store-floating__btn order"
+           href="${pageContext.request.contextPath}/store/orderListPage" title="주문목록">주문목록</a>
       </div>
 
       <div class="detail-top">
