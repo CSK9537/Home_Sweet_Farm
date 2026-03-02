@@ -49,6 +49,7 @@
 			authorized-client-service-ref="authorizedClientService">
 		</security:oauth2-login>
 		-->
+		<security:form-login login-page="/user/login"/>
 	</security:http>
 	
 	<!-- 사용자 인증 관리 -> 로그인 및 권한 검증 설정 -->

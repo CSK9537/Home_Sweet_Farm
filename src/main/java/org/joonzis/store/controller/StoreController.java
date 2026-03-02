@@ -10,6 +10,7 @@ import org.joonzis.user.vo.UserVO;
 import org.joonzis.store.service.ShoppingCartService;
 import org.joonzis.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -78,6 +79,25 @@ public class StoreController {
 		int user_id = 2;
 		model.addAttribute("list", cService.getWishListByUserId(user_id));
 		return "/store/wish";
+	}
+
+	// 찜목록+장바구니 통합 페이지로 이동
+//	@PreAuthorize("hasRole('ROLE_USER')")
+	@GetMapping("/wishListPage")
+	public String wishListCombined(Model model, HttpSession session) {
+		// 임시 권한처리
+		// 주석처리해둔 권한 확인 어노테이션을 사용하면, 자동으로 처리되니, try는 빼고 세션에서 user_id 가져오는 부분만 있으면 됨
+		UserVO loginUser = ((UserVO)session.getAttribute("loginUser"));
+		if(loginUser == null) {
+			log.warn("로그인하지 않은 사용자");
+			return "redirect:/user/login";
+		}
+		
+		int user_id = loginUser.getUser_id();
+		
+		model.addAttribute("wishList", cService.getWishListByUserId(user_id));
+		model.addAttribute("cartList", cService.getShoppingCartByUserId(user_id));
+		return "/store/wishList";
 	}
 	@GetMapping("/sale")
 	public String saleList(Model model) {
