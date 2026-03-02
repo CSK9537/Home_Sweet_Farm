@@ -13,14 +13,14 @@
 	<select id="searchBoardsByTitle" resultType="org.joonzis.community.vo.BoardVO">
 		<![CDATA[
 			SELECT * FROM tmp_board WHERE LOWER(title) LIKE LOWER('%' || #{q} || '%')
-			AND ROWNUM <= 12
+			AND ROWNUM <= 10
 		]]>
 	</select>
 	<!-- 내용 검색 -->
 	<select id="searchBoardsByContent" resultType="org.joonzis.community.vo.BoardVO">
 		<![CDATA[
 			SELECT * FROM tmp_board WHERE LOWER(content) LIKE LOWER('%' || #{q} || '%')
-			AND ROWNUM <= 12
+			AND ROWNUM <= 10
 		]]>
 	</select>
 	<!-- 작성자 검색 -->
@@ -31,7 +31,7 @@
 				WHERE LOWER(username) LIKE LOWER('%' || #{q} || '%')
 				OR LOWER(nickname) LIKE LOWER('%' || #{q} || '%')
 				OR LOWER(name) LIKE LOWER('%' || #{q} || '%'))
-				AND ROWNUM <= 12
+				AND ROWNUM <= 10
 		]]>
 	</select>
 	
@@ -41,7 +41,7 @@
 			SELECT plant_id, plant_name, plant_name_kor, plant_image, plant_searchcount
 			FROM tbl_plant
 			WHERE plant_name LIKE INITCAP('%' || #{q} || '%') OR plant_name_kor LIKE '%' || #{q} || '%'
-			AND ROWNUM <= 12
+			AND ROWNUM <= 10
 		]]>
 	</select>
 	
@@ -49,7 +49,7 @@
 	<select id="searchProducts" resultType="org.joonzis.store.vo.ProductVO">
 		<![CDATA[
 			SELECT * FROM tbl_product WHERE LOWER(product_name) LIKE LOWER('%' || #{q} || '%')
-			AND ROWNUM <= 12
+			AND ROWNUM <= 10
 		]]>
 	</select>
 </mapper>

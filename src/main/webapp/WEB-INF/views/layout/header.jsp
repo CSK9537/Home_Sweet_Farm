@@ -226,8 +226,8 @@
 	
 	          <details class="mnav__item">
 	            <summary>나의 식물</summary>
-	            <a href="#">추천 가이드</a>
 	            <a href="#">나의 식물 관리</a>
+	            <a href="#">추천 가이드</a>
 	          </details>
 	
 	          <a class="mnav__link" href="#">채팅</a>
