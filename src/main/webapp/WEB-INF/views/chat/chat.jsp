@@ -13,9 +13,15 @@
 
 		<body>
 			<header class="top-bar">
-				<div class="logo">사이트로고</div>
-				<div class="account">
-					<img src="https://via.placeholder.com/40" alt="프로필"> <span class="username">내계정</span>
+				<div class=top-bar-inner>
+					<div class="logo">
+						<a class="logo" href="/" aria-label="Home Sweet Farm">
+							<span class="logo__text">Home Sweet Farm</span>
+						</a>
+					</div>
+					<div class="account">
+						<img src="https://via.placeholder.com/40" alt="프로필"> <span class="username">내계정</span>
+					</div>
 				</div>
 			</header>
 			<div class="chat-container">

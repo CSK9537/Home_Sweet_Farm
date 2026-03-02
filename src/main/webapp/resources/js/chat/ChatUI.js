@@ -6,8 +6,8 @@ import { updateSearchCounter } from "./ChatSearch.js";
 // 채팅방 프리뷰 분기
 function makePreviewMessage(msg, type) {
 
-    if (type === "IMAGE") return "📷 사진";
-    if (type === "FILE") return "📎 파일";
+    if (type === "IMAGE") return "[이미지]";
+    if (type === "FILE") return "[파일]";
 
     if (!msg) return "";
 
