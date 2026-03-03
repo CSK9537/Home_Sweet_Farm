@@ -259,6 +259,7 @@
 }
 .store-floating__btn--wish { background: #f2f084; }
 .store-floating__btn--cart { background: #f6a3a3; }
+.store-floating__btn--order { background: whitesmoke; } /* 주문목록(나중에 더 이쁜 색으로 변경) */
 
 /* 반응형 */
 @media (max-width: 1024px) {

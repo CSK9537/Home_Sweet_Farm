@@ -62,24 +62,6 @@ public class StoreController {
 		model.addAttribute("topReview", sService.getTopReviewByProductId(product_id));
 		return "/store/StoreView";
 	}
-	
-	// 장바구니 확인 페이지 이동
-	@GetMapping("/cartPage")
-	public String cartList(Model model,HttpSession session) {
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
-		model.addAttribute("list",cService.getShoppingCartByUserId(user_id));
-		return "/store/cart";
-	}
-	
-	// 찜목록으로 이동
-	@GetMapping("/wishPage")
-	public String wishList(Model model, HttpSession session) {
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
-		model.addAttribute("list", cService.getWishListByUserId(user_id));
-		return "/store/wish";
-	}
 
 	// 찜목록+장바구니 통합 페이지로 이동
 //	@PreAuthorize("hasRole('ROLE_USER')")
@@ -153,5 +135,18 @@ public class StoreController {
 		model.addAttribute("code", code);
 		model.addAttribute("message", message);
 		return "/store/fail";
+	}
+	
+	// 주문목록 페이지로 이동
+	@GetMapping("/orderListPage")
+	public String orderListPage(Model model, HttpSession session) {
+		// 임시 권한처리
+		UserVO loginUser = ((UserVO)session.getAttribute("loginUser"));
+		if(loginUser == null) {
+			log.warn("로그인하지 않은 사용자");
+			return "redirect:/user/login";
+		}
+		
+		return "/store/orderList";
 	}
 }

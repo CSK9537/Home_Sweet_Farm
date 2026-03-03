@@ -55,7 +55,11 @@ public class WishController {
 			@PathVariable("product_id")int product_id,
 			@RequestParam(value="type",defaultValue = "plus")String type,
 			HttpSession session){
-		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
+		UserVO user = (UserVO)session.getAttribute("loginUser");
+		if(user == null) {
+			return new ResponseEntity<String>("403",HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		int user_id = user.getUser_id();
 		
 		int result;
 		if(type.equals("plus") || type.equals("")) {
@@ -120,7 +124,11 @@ public class WishController {
 	public ResponseEntity<String> addWishOrCart(
 			@PathVariable("product_id") int product_id,
 			HttpSession session){
-		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
+		UserVO user = (UserVO)session.getAttribute("loginUser");
+		if(user == null) {
+			return new ResponseEntity<String>("403",HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		int user_id = user.getUser_id();
 		try {
 			cService.addWishList(user_id, product_id);			
 		} catch (DuplicateKeyException e) {

@@ -196,6 +196,9 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	@Transactional // DB 업데이트와 API 호출의 정합성을 위해 추가
 	public int cancelOrder(String paymentKey, String reason, String order_id) throws Exception {
+		
+		
+		
 	    // 1. API 요청 설정
 	    HttpRequest request = HttpRequest.newBuilder()
 	            .uri(URI.create("https://api.tosspayments.com/v1/payments/" + paymentKey + "/cancel"))
@@ -213,8 +216,10 @@ public class OrderServiceImpl implements OrderService{
 	    if (response.statusCode() == 200) {
 	        // JSON 파싱
 	    	payment = objMapper.readValue(response.body(), PaymentDTO.class);
-	    	if(!payment.getCancels().getCancelStatus().equals("DONE"))
+	    	if(payment.getCancels() == null || payment.getCancels().isEmpty() || 
+	    	   !payment.getCancels().get(0).getCancelStatus().equals("DONE")) {
 	    		throw new RuntimeException("결제 취소가 아직 되지 않음");
+	    	}
 	        
 	        // 4. DB 상태 업데이트 (아까 만든 매퍼 활용)
 	        return oMapper.updateCancelOrder(order_id);

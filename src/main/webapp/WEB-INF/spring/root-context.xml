@@ -62,6 +62,7 @@
 	<!-- store -->
 	<mybatis-spring:scan base-package="org.joonzis.store.mapper"/>
 	<context:component-scan base-package="org.joonzis.store.service"/>
+	<context:component-scan base-package="org.joonzis.store.scheduler"/>
 	
 	<!-- user -->
 	<mybatis-spring:scan base-package="org.joonzis.user.mapper"/>
