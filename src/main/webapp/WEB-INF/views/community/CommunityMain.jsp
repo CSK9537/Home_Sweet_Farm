@@ -19,9 +19,9 @@
 
         <div class="community-top__center">
           <ul class="community-tabs" id="communityTabs">
-            <li class="tab-item" data-tab="free" data-move="<c:url value='#'/>">자유게시판</li>
+            <li class="tab-item" data-tab="free" data-move="<c:url value='/community/list?type=FREE'/>">자유게시판</li>
             <li class="tab-sep">||</li>
-            <li class="tab-item" data-tab="market" data-move="<c:url value='#'/>">벼룩시장</li>
+            <li class="tab-item" data-tab="market" data-move="<c:url value='/community/list?type=MARKET'/>">벼룩시장</li>
           </ul>
         </div>
 
