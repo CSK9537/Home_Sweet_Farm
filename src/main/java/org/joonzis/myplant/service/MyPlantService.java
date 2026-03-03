@@ -17,5 +17,4 @@ public interface MyPlantService {
 	// 나의 식물 삭제
 	public boolean remove(int myplant_id);
 	
-	public void insertMyPlant(String username, int plantId);
 }

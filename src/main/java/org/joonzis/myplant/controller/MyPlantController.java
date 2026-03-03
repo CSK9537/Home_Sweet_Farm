@@ -1,23 +1,21 @@
 package org.joonzis.myplant.controller;
 
-import java.security.Principal;
-import java.util.Map;
-
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.myplant.dto.MyPlantDTO;
 import org.joonzis.myplant.service.MyPlantService;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import lombok.extern.log4j.Log4j;
@@ -62,20 +60,20 @@ public class MyPlantController {
 		}
 		int user_id = uvo.getUser_id();
 		
-		// 3. DB에 넣을 데이터 조합 (DTO 활용)
+		// DB에 넣을 데이터
 		MyPlantDTO mpdto = new MyPlantDTO();
 		mpdto.setUser_id(user_id);             // 안전하게 세션에서 꺼낸 ID
 		mpdto.setPlant_id(plant_id);           // 사용자가 선택한 식물 ID
 		mpdto.setMyplant_name(plant_nickname); // 사용자가 입력한 닉네임
 		
-		// 4. DB에 INSERT 실행
+		// INSERT 실행
 		boolean result = mpservice.register(mpdto);
-		if(!result) {
-			rttr.addFlashAttribute("msg", "식물 등록이 실패했습니다.");
-			rttr.addFlashAttribute("msgType", "error");
-		}else {
+		if(result) {
 			rttr.addFlashAttribute("msg", "식물 등록이 성공했습니다.");
 			rttr.addFlashAttribute("msgType", "success");
+		}else {
+			rttr.addFlashAttribute("msg", "식물 등록이 실패했습니다.");
+			rttr.addFlashAttribute("msgType", "error");
 		}
 		return "redirect:/myplant";
 	}
@@ -94,10 +92,15 @@ public class MyPlantController {
 	}
 	
 	// 삭제
-	@PostMapping("/remove")
-	public String remove(int myplant_id) {
-		System.out.println("test");
-		return "redirect:/myplant";
+	@PostMapping("/remove/{myplant_id}")
+	@ResponseBody
+	public ResponseEntity<String> remove(@PathVariable("myplant_id") int myplant_id, HttpSession session) {
+		UserVO uvo = (UserVO) session.getAttribute("loginUser");
+		if (uvo == null) {
+			return ResponseEntity.status(401).body("로그인이 필요합니다.");
+		}
+		boolean result = mpservice.remove(myplant_id);
+		return result ? ResponseEntity.ok("success") : ResponseEntity.badRequest().body("fail");
 	}
 
 }
