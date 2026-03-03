@@ -9,10 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class MyPlantDTO {
+public class MyPlantMainDTO {
 	private int myplant_id;
-	private int user_id;
-	private int plant_id;
 	private String myplant_name;
 	private Date myplant_regdate;
+	private long day_passed;
+	private int plant_id;
+	private String plant_name;
+	private String plant_name_kor;
+	private String plant_image;
 }

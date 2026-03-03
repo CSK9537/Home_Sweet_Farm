@@ -4,10 +4,13 @@
 
 <mapper namespace="org.joonzis.myplant.mapper.MyPlantMapper">
 
-    <select id="myPlantMain" resultType="org.joonzis.myplant.dto.MyPlantDTO">
-        SELECT * FROM tbl_myplant
-        WHERE user_id = #{user_id}
-        ORDER BY myplant_regdate DESC
+    <select id="myPlantMain" resultType="org.joonzis.myplant.dto.MyPlantMainDTO">
+    	SELECT myplant_id, myplant_name, myplant_regdate,
+    		plant_id, plant_name, plant_name_kor, plant_image
+    	FROM tbl_myplant
+    	INNER JOIN tbl_plant USING(plant_id)
+    	WHERE user_id = #{user_id}
+    	ORDER BY myplant_regdate ASC
 	</select>
 	
     <select id="get" resultType="org.joonzis.myplant.dto.MyPlantDTO">

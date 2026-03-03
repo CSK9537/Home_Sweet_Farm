@@ -45,13 +45,13 @@
           <!-- List State -->
           <ul class="myplants-list">
             <c:forEach var="p" items="${myPlants}">
-              <li class="plant-item">
+              <li class="plant-item" data-plant-id="${p.myplant_id}">
 
                 <!-- 썸네일 -->
                 <div class="plant-item__thumb">
                   <c:choose>
-                    <c:when test="${not empty p.imageUrl}">
-                      <img class="plant-item__img" src="${p.imageUrl}" alt="${p.koreanName}" />
+                    <c:when test="${not empty p.plant_image}">
+                      <img class="plant-item__img" src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" />
                     </c:when>
                     <c:otherwise>
                        <img class="plant-item__img" src="${pageContext.request.contextPath}/resources/image/Default_Plant.jpg" alt="기본 식물 이미지" />
@@ -61,14 +61,16 @@
 
                 <!-- 이름/학명 -->
                 <div class="plant-item__info">
+                  
+                  <div class="plant-item__nickname">${p.myplant_name}</div>
+                  
                   <div class="plant-item__names">
                     <div class="plant-item__korean">
-                      <strong>${p.koreanName}식물이름</strong>
+                      <strong>${p.plant_name_kor}</strong>
                     </div>
-                    <div class="plant-item__latin">${p.latinName}식물학술명</div>
+                    <div class="plant-item__latin">${p.plant_name}</div>
                   </div>
 
-                  <div class="plant-item__nickname">${p.nickname}식물닉네임</div>
                 </div>
 
                 <!-- 상태 -->
@@ -78,19 +80,19 @@
                   <div class="status-grid">
                     <div class="status">
                       <img class="status__label" src="${pageContext.request.contextPath}/resources/image/light_50x50.png" alt="light" />
-                      <span class="status__value status__value--warn">${p.lux}100lux</span>
+                      <span class="status__value status__value--warn" id="realtimeLux_${p.myplant_id}">100lux</span>
                     </div>
                     <div class="status">
                       <img class="status__label" src="${pageContext.request.contextPath}/resources/image/humidity_50x50.png" alt="humidity" />
-                      <span class="status__value status__value--good">${p.humidity}100%RH</span>
+                      <span class="status__value status__value--good" id="realtimeHumi_${p.myplant_id}">100%RH</span>
                     </div>
                     <div class="status">
                       <img class="status__label" src="${pageContext.request.contextPath}/resources/image/temperature_50x50.png" alt="temperature" />
-                      <span class="status__value status__value--bad">${p.temperature}100℃</span>
+                      <span class="status__value status__value--bad" id="realtimeTemp_${p.myplant_id}">100℃</span>
                     </div>
                     <div class="status">
                       <img class="status__label" src="${pageContext.request.contextPath}/resources/image/soil_50x50.png" alt="soil" />
-                      <span class="status__value status__value--bad">${p.battery}100V</span>
+                      <span class="status__value status__value--bad" id="realtimeSoilMoist_${p.myplant_id}">100V</span>
                     </div>
                   </div>
                 </div>
@@ -98,13 +100,17 @@
                 <!-- 우측: 등록일 + 상세 -->
                 <div class="plant-item__actions">
                   <div class="plant-item__since">
-                    	등록일로부터 <strong>${p.daysSince}100</strong>일
+                    	등록일로부터 <strong>${p.day_passed}</strong>일
                   </div>
 
                   <a class="mp-btn mp-btn--primary mp-btn--block"
-                     href="${pageContext.request.contextPath}/my-plants/detail?id=${p.id}">
+                     href="${pageContext.request.contextPath}/myplant/info/${p.myplant_id}">
                     	상세 정보
                   </a>
+                  
+                  <p class="mp-btn mp-btn--primary mp-btn--block removeMyPlant">
+                    	삭제
+                  </p>
                 </div>
 
               </li>

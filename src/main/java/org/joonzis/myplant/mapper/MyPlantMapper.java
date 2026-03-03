@@ -3,10 +3,11 @@ package org.joonzis.myplant.mapper;
 import java.util.List;
 
 import org.joonzis.myplant.dto.MyPlantDTO;
+import org.joonzis.myplant.dto.MyPlantMainDTO;
 
 public interface MyPlantMapper {
 	// 나의 식물 전체 목록 출력
-	public List<MyPlantDTO> myPlantMain(int user_id);
+	public List<MyPlantMainDTO> myPlantMain(int user_id);
 	// 나의 식물 하나 출력
 	public MyPlantDTO get(int myplant_id);
 	// 나의 식물 추가

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,9 +32,14 @@ public class MyPlantController {
 	
 	// 메인 화면
 	@GetMapping("")
-	public String main(Model model, Principal principal) {
-		int user_id = 50;
-		// int userId = Integer.parseInt(principal.getName());
+	public String main(HttpSession session, Model model) {
+		UserVO uvo = (UserVO) session.getAttribute("loginUser");
+		if (uvo == null) {
+			// 로그인이 풀렸거나 비정상 접근이므로 로그인 페이지로 튕겨냅니다.
+			return "redirect:/login"; 
+		}
+		int user_id = uvo.getUser_id();
+		
 		model.addAttribute("myPlants", mpservice.getMyPlantMainList(user_id));
 		return "myplant/MyPlantMain";
 	}
@@ -74,29 +80,25 @@ public class MyPlantController {
 		return "redirect:/myplant";
 	}
 	
+	// 나의 식물 상세 정보
+	@GetMapping("/info/{myplant_id}")
+	public String view(@PathVariable("myplant_id") int myplant_id) {
+		return "myplant/MyPlantView";
+	}
+	
 	// 수정
 	@PostMapping("/modify")
-		public String modify(MyPlantDTO mpdto) {
+	public String modify(MyPlantDTO mpdto) {
 		mpservice.modify(mpdto);
 		return "redirect:/myplant";
 	}
 	
 	// 삭제
 	@PostMapping("/remove")
-		public String remove(int myplant_id) {
-		mpservice.remove(myplant_id);
+	public String remove(int myplant_id) {
+		System.out.println("test");
 		return "redirect:/myplant";
 	}
-	@PostMapping
-    public ResponseEntity<?> addMyPlant(@RequestBody Map<String, Integer> body,
-                                        Principal principal) {
 
-        int plantId = body.get("plantId");
-        String username = principal.getName();
-
-        mpservice.insertMyPlant(username, plantId);
-
-        return ResponseEntity.ok().build();
-    }
 }
 
