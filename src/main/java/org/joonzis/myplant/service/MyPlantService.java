@@ -3,6 +3,7 @@ package org.joonzis.myplant.service;
 import java.util.List;
 
 import org.joonzis.myplant.dto.MyPlantDTO;
+import org.joonzis.myplant.dto.MyPlantMainDTO;
 
 public interface MyPlantService {
 	// 나의 식물 전체 목록
