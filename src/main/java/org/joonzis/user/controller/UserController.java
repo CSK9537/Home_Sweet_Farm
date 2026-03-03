@@ -329,7 +329,7 @@ public class UserController {
 		
 		UserVO myInfo = uservice.selectUser(loginUser.getUser_id());
 		model.addAttribute("myInfo", myInfo);
-		return "user/myPage";
+		return "user/user_myPage";
 	}
 	
 	

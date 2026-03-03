@@ -481,3 +481,92 @@
     grid-template-columns: 1fr;
   }
 }
+/* 공통 설명 영역 */
+.grade-desc{
+  margin-top:12px;
+  font-size:14px;
+  color:#555;
+}
+
+.link-btn{
+  color:#4c6f5d;
+  font-weight:600;
+  text-decoration:none;
+}
+
+/* =====================
+   등급 진행바
+===================== */
+
+.grade-progress{
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:15px;
+  padding:0 10px;
+}
+
+.grade-line{
+  position:absolute;
+  top:18px;
+  left:10px;
+  right:10px;
+  height:4px;
+  background:#e5e5e5;
+  z-index:0;
+}
+
+.grade-step{
+  position:relative;
+  text-align:center;
+  z-index:1;
+}
+
+.grade-icon{
+  font-size:22px;
+}
+
+.grade-label{
+  margin-top:5px;
+  font-size:13px;
+  color:#666;
+}
+
+.grade-step.active .grade-label{
+  font-weight:700;
+  color:#000;
+}
+
+
+/* =====================
+   Q&A 등급
+===================== */
+
+.qna-progress{
+  position:relative;
+  margin-top:15px;
+  padding:0 10px;
+}
+
+.qna-line{
+  height:4px;
+  background:#e5e5e5;
+  margin-top:18px;
+}
+
+.qna-step{
+  position:absolute;
+  top:-5px;
+  left:40%;
+  text-align:center;
+}
+
+.qna-icon{
+  font-size:20px;
+}
+
+.qna-label{
+  font-size:12px;
+  margin-top:3px;
+}
