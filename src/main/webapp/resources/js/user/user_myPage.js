@@ -80,6 +80,17 @@
       }
     }
   });
+	//오른쪽 레이아웃 클릭 시 아바타 모달 열기
+	  var rightLayout = document.getElementById("rightLayout");
+	
+	  if (rightLayout && isOwner) {
+	    rightLayout.addEventListener("click", function (e) {
+	
+	      if (e.target.closest("a, button, input, textarea, select, label")) return;
+	
+	      openModal(modals.avatar);
+	    });
+	  }
 
   // 프로필: 등급 안내 / Q&A 레벨업
   var btnGradeGuide = document.getElementById("btnGradeGuide");

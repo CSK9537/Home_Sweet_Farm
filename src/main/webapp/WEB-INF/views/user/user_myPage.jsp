@@ -56,7 +56,7 @@
         </aside>
 
         <!-- RIGHT -->
-        <section class="mypage-right">
+        <section class="mypage-right" id="rightLayout">
           <!-- =======================
                1) 프로필 (공개)
           ======================== -->
@@ -175,17 +175,18 @@
 			        <div class="qna-line"></div>
 			
 			        <div class="qna-step active">
-			          <div class="qna-icon">🏅</div>
-			          <div class="qna-label">
-			            LV <c:out value="${empty profileStats.qnaLevel ? 1 : profileStats.qnaLevel}" />
-			          </div>
-			        </div>
-			      </div>
+					  <div class="qna-icon">🏅</div>
+					  <div class="qna-label">
+					    새싹등급 <span class="qna-lv">LV <c:out value="${empty profileStats.qnaLevel ? 1 : profileStats.qnaLevel}" /></span>
+					  </div>
+					</div>
 			
 			      <div class="grade-desc">
-			        현재 새싹등급(LV<c:out value="${empty profileStats.qnaLevel ? 1 : profileStats.qnaLevel}" />) 입니다<br/>
-			        <a class="link-btn" href="#">Q&amp;A 등급 올리기</a>
-			      </div>
+					  <div class="qna-desc-text">
+					    현재 새싹등급 (<span class="qna-lv">LV <c:out value="${empty profileStats.qnaLevel ? 1 : profileStats.qnaLevel}" /></span>) 입니다
+					  </div>
+					  <a class="link-btn qna-link" href="#">Q&amp;A 등급 올리기</a>
+				</div>
 			    </div>
 			
 			  </div>
