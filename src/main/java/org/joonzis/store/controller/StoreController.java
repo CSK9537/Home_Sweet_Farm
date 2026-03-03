@@ -1,6 +1,5 @@
 package org.joonzis.store.controller;
 
-import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -9,15 +8,33 @@ import org.joonzis.store.vo.ProductCategoryVO;
 import org.joonzis.user.vo.UserVO;
 import org.joonzis.store.service.ShoppingCartService;
 import org.joonzis.store.service.StoreService;
+import org.joonzis.store.vo.ProductVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaTypeFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import lombok.extern.log4j.Log4j;
 
@@ -29,6 +46,9 @@ public class StoreController {
 	StoreService sService;
 	@Autowired
 	ShoppingCartService cService;
+	
+	@Value("${hsf.upload.root:\\\\192.168.0.153\\\\projecthsf}")
+	private String uploadRoot;
 	
 	
 	// 메인화면
@@ -148,5 +168,92 @@ public class StoreController {
 		}
 		
 		return "/store/orderList";
+	}
+
+	// [관리자 전용] 상품 등록 페이지 이동
+	@GetMapping("/admin/product/form")
+	public String adminProductForm(Model model) {
+		model.addAttribute("categoryList", sService.selectListCategory());
+		model.addAttribute("tempKey", UUID.randomUUID().toString());
+		return "/store/AdminProductForm";
+	}
+
+	// [관리자 전용] 상품 이미지 임시 업로드
+	@PostMapping(
+			value = "/admin/product/uploadTemp",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> uploadTempProductImage(
+			@RequestParam("file") MultipartFile file,
+			@RequestParam("tempKey") String tempKey) {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			String savedName = sService.uploadTempProductImage(file, tempKey);
+			result.put("savedName", savedName);
+			result.put("status", "success");
+			return new ResponseEntity<>(result, HttpStatus.OK);
+		} catch (Exception e) {
+			result.put("status", "error");
+			return new ResponseEntity<>(result, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// [관리자 전용] 상품 최종 등록
+	@PostMapping(
+			value = "/admin/product/add",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> addProduct(
+			@RequestBody Map<String, Object> payload) {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			// Payload 데이터 파싱
+			ProductVO vo = new ProductVO();
+			vo.setCategory_id(Integer.parseInt(payload.get("category_id").toString()));
+			vo.setProduct_name(payload.get("product_name").toString());
+			vo.setProduct_price(Integer.parseInt(payload.get("product_price").toString()));
+			vo.setProduct_delivery_price(Integer.parseInt(payload.get("product_delivery_price").toString()));
+			vo.setProduct_remain(Integer.parseInt(payload.get("product_remain").toString()));
+			vo.setProduct_description_brief(payload.get("product_description_brief").toString());
+			vo.setProduct_description_detail(payload.get("product_description_detail").toString());
+			vo.setProduct_caution(payload.get("product_caution").toString());
+			vo.setProduct_sale(Integer.parseInt(payload.get("product_sale").toString()));
+
+			String tempKey = payload.get("tempKey").toString();
+
+			int productId = sService.registerProduct(vo, tempKey);
+
+			if (productId > 0) {
+				result.put("status", "success");
+				result.put("productId", productId);
+				return new ResponseEntity<>(result, HttpStatus.OK);
+			} else {
+				result.put("status", "error");
+				return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+			}
+		} catch (Exception e) {
+			log.error("Failed to register product", e);
+			result.put("status", "error");
+			return new ResponseEntity<>(result, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// 상품 이미지 스트리밍
+	@GetMapping("/display")
+	public ResponseEntity<Resource> display(@RequestParam("imgName") String imgName) throws IOException {
+		if (imgName.startsWith("/")) {
+			imgName = imgName.substring(1);
+		}
+		
+		Path filePath = Paths.get(uploadRoot, imgName).toAbsolutePath().normalize();
+		Resource resource = new UrlResource(filePath.toUri());
+		
+		if (!resource.exists()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		return ResponseEntity.ok()
+				.contentType(MediaTypeFactory.getMediaType(resource).orElse(MediaType.APPLICATION_OCTET_STREAM))
+				.body(resource);
 	}
 }

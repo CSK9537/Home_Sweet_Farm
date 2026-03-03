@@ -16,4 +16,6 @@ public class ProductReviewVO {
 	private String review_content;
 	private Date review_date;
 	private int review_rate;
+	private String review_title;
+	private String images;
 }
