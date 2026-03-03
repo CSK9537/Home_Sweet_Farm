@@ -151,6 +151,8 @@
 
     xhr.onload = function () {
       try {
+        console.log("xhr.status", xhr.status);
+        console.log(xhr.responseText);
         if (xhr.status >= 200 && xhr.status < 300) {
           var res = JSON.parse(xhr.responseText || "{}");
           if (res && res.url) {
