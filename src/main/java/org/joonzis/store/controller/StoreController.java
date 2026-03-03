@@ -62,24 +62,6 @@ public class StoreController {
 		model.addAttribute("topReview", sService.getTopReviewByProductId(product_id));
 		return "/store/StoreView";
 	}
-	
-	// 장바구니 확인 페이지 이동
-	@GetMapping("/cartPage")
-	public String cartList(Model model,HttpSession session) {
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
-		model.addAttribute("list",cService.getShoppingCartByUserId(user_id));
-		return "/store/cart";
-	}
-	
-	// 찜목록으로 이동
-	@GetMapping("/wishPage")
-	public String wishList(Model model, HttpSession session) {
-//		int user_id = ((UserVO)session.getAttribute("loginUser")).getUser_id();
-		int user_id = 2;
-		model.addAttribute("list", cService.getWishListByUserId(user_id));
-		return "/store/wish";
-	}
 
 	// 찜목록+장바구니 통합 페이지로 이동
 //	@PreAuthorize("hasRole('ROLE_USER')")
