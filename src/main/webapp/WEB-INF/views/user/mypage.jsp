@@ -3,7 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-<link rel="stylesheet" href="${ctx}/resources/css/user/mypage.css" />
+<link rel="stylesheet" href="${ctx}/resources/css/user/user_myPage.css" />
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
 
@@ -455,5 +455,5 @@
     </div>
   </div>
 
-<script src="${pageContext.request.contextPath}/resources/js/user/mypage.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/user/user_myPage.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />
