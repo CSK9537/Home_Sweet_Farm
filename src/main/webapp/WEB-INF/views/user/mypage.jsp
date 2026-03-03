@@ -2,13 +2,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<link rel="stylesheet" href="${ctx}/resources/css/user/MyPage.css" />
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<link rel="stylesheet" href="${ctx}/resources/css/user/mypage.css" />
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
 
 <div class="page-shell">
-  <div class="content-wrap">
     <div class="content-card mypage-card"
          data-ctx="${ctx}"
          data-profile-user-id="${profileUser.user_id}"
@@ -455,7 +454,6 @@
 
     </div>
   </div>
-</div>
 
-<script src="${ctx}/resources/js/user/MyPage.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/user/mypage.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

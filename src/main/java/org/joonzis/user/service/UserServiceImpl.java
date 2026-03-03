@@ -112,6 +112,7 @@ public class UserServiceImpl implements UserService{
 		return usermapper.selectUser(User_id);
 	}
 	
+	
 	@Override
 	public UserDTO selectPublicProfile(int user_id) {
 		UserDTO dto =

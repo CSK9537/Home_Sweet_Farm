@@ -1,4 +1,4 @@
-// mypage.js (ES5 호환)
+// myPage.js (ES5 호환)
 (function () {
   "use strict";
 
@@ -158,7 +158,7 @@
       if (!pickBtn) return;
 
       var plantId = pickBtn.getAttribute("data-plant-id");
-      fetch(ctx + "/mypage/api/interest-plant", {
+      fetch(ctx + "/myPage/api/interest-plant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plantId: plantId })
@@ -211,7 +211,7 @@
   if (btnSendCode) {
     btnSendCode.addEventListener("click", function () {
       var kind = modals.verify ? modals.verify.getAttribute("data-kind") : "";
-      fetch(ctx + "/mypage/api/verify/send", {
+      fetch(ctx + "/myPage/api/verify/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kind: kind })
@@ -232,7 +232,7 @@
       var code = (verifyCode && verifyCode.value ? verifyCode.value : "").trim();
       if (!code) return alert("인증번호를 입력하세요.");
 
-      fetch(ctx + "/mypage/api/verify/confirm", {
+      fetch(ctx + "/myPage/api/verify/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kind: kind, code: code })

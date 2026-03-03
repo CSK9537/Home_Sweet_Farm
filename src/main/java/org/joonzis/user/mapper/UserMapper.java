@@ -56,6 +56,7 @@ public interface UserMapper {
 	//1) 내 정보 조회
 	public UserVO selectUser(int User_id);
 	
+	
 	//공개형 프로필
 	//1) 닉네임, 프로필, 회원등급, 자기소개
 	public UserDTO selectPublicProfile(int user_id);
