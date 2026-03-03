@@ -197,6 +197,7 @@
 				AND p.product_id = #{data}
 			</if>
 		</where>
+		ORDER BY DESC order_date
 	</select>
 	
 	<select id="selectOrder" resultType="org.joonzis.store.vo.OrderVO">
