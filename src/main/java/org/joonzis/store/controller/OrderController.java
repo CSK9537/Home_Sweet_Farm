@@ -111,7 +111,7 @@ public class OrderController {
 			log.info("card : " + payment.getCard());
 			if(payment.getMethod().equals("카드"))paymentInfo = payment.getCard();
 			else if (payment.getMethod().equals("계좌이체"))paymentInfo = payment.getTransfer();
-			else if (payment.getMethod().equals("간편결제")) paymentInfo =payment.getCard();
+			else if (payment.getMethod().equals("간편결제")) paymentInfo = payment.getCard();
 			else throw new RuntimeException("지원하지 않는 결제 방식");
 			
 			oService.AfterPay(

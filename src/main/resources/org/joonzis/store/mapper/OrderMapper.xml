@@ -113,9 +113,6 @@
 		DELETE FROM tbl_order_product_list
 		WHERE 
 			order_id = #{order_id}
-			<if test="product_id != null">
-				AND product_id = #{product_id}
-			</if>
 	</delete>
 	
 	<sql id="OrderDTO">
@@ -275,4 +272,13 @@
 			order_id=#{order_id}
 		</where>
 	</update>
+	
+	<select id="getOrderIdWithoutOrderStateIsDone" resultType="String">
+		SELECT
+			order_id
+		FROM
+			tbl_order
+		WHERE
+			status != 'DONE'
+	</select>
 </mapper>

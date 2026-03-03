@@ -463,7 +463,11 @@
         if(response.ok) showCustomToast("장바구니에 담겼습니다.","success");
         else{
           response.text().then(function(data){
-            console.error();
+            // 403 에러는 로그인 페이지로 이동(임시, 시큐리티 추가 전)
+            if(data === "403"){
+              location.href = `/user/login`;
+              return;
+            }
             showCustomToast(`장바구니에 추가하지 못했습니다. : ${data}`, "error");
           });
         }
@@ -486,12 +490,15 @@
       .then(function(response){
         if(response.ok){
           showCustomToast("찜목록에 추가했습니다." , "success");
-        }else{
-          response.text().then(function(data){
-            console.error();
-            showCustomToast(`찜목록에 추가하지 못했습니다. : ${data}`, "error");
-          });
         }
+        response.text().then(function(data){
+          // 403 에러는 로그인 페이지로 이동(임시, 시큐리티 추가 전)
+          showCustomToast(`찜목록에 추가하지 못했습니다. : ${data}`, "error");
+          if(data === "403"){
+            location.href = `/user/login`;
+            return;
+          }
+        });
       })
       .catch(function(err){
         console.error(err);
