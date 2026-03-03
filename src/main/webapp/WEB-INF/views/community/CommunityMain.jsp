@@ -18,12 +18,16 @@
         </div>
 
         <div class="community-top__center">
-          <ul class="community-tabs" id="communityTabs">
-            <li class="tab-item" data-tab="free" data-move="<c:url value='/community/list?type=FREE'/>">자유게시판</li>
-            <li class="tab-sep">||</li>
-            <li class="tab-item" data-tab="market" data-move="<c:url value='/community/list?type=MARKET'/>">벼룩시장</li>
-          </ul>
-        </div>
+		  <ul class="community-tabs" id="communityTabs">
+		    <li>
+		      <a class="tab-item ${type eq 'FREE' ? 'is-active' : ''}" href="<c:url value='/community/list?type=FREE'/>">자유게시판</a>
+		    </li>
+		    <li class="tab-sep">||</li>
+		    <li>
+		      <a class="tab-item ${type eq 'MARKET' ? 'is-active' : ''}" href="<c:url value='/community/list?type=MARKET'/>">벼룩시장</a>
+		    </li>
+		  </ul>
+		</div>
 
         <div class="community-top__right">
           <a href="<c:url value='/community/form'/>" class="btn-write">글쓰기</a>
