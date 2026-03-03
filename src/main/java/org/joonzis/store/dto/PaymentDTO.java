@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -22,7 +24,7 @@ public class PaymentDTO {
 	private int totalAmount;
 	private String status;
 	private String requestedAt;
-	private CancelDTO cancels;
+	private List<CancelDTO> cancels;
 	private OrderCardVO card;
 	private OrderTransperVO transfer;
 	

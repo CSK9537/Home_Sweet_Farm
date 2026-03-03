@@ -11,20 +11,33 @@
 			r.review_date,
 			r.review_rate,
 			r.writer_id,
+			r.review_title,
+			r.images,
 			u.nickname
 		FROM tbl_product_review r
 		LEFT OUTER JOIN tbl_user u ON r.writer_id = u.user_id
 	</sql>
 
 	<insert id="insertProductReview">
-		INSERT INTO tbl_product_review
+		INSERT INTO tbl_product_review (
+			product_review_id,
+			product_id,
+			writer_id,
+			review_content,
+			review_date,
+			review_rate,
+			review_title,
+			images
+		)
 		VALUES (
 			product_review_seq.nextval,
 			#{product_id},
 			#{writer_id},
-			#{review_content},
+			#{review_content, jdbcType=CLOB},
 			sysdate,
-			#{review_rate}
+			#{review_rate},
+			#{review_title, jdbcType=VARCHAR},
+			#{images, jdbcType=VARCHAR}
 		)
 	</insert>
 
@@ -77,5 +90,25 @@
 			</if>
 		</where>
 		ORDER BY review_rate DESC, review_date DESC
+	</select>
+	<select id="getReviewListWithParams" resultType="org.joonzis.store.dto.ProductReviewDTO">
+		<include refid="ReviewDTO"/>
+		<where>
+			AND r.product_id = #{product_id}
+			<if test='filterRating != null and filterRating != "all"'>
+				AND r.review_rate = #{filterRating}
+			</if>
+			<if test='filterImage == "hasImage"'>
+				AND r.images IS NOT NULL AND r.images != ''
+			</if>
+		</where>
+		<choose>
+			<when test='sortBy == "oldest"'>
+				ORDER BY review_date ASC
+			</when>
+			<otherwise>
+				ORDER BY review_date DESC
+			</otherwise>
+		</choose>
 	</select>
 </mapper>

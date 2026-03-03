@@ -113,9 +113,6 @@
 		DELETE FROM tbl_order_product_list
 		WHERE 
 			order_id = #{order_id}
-			<if test="product_id != null">
-				AND product_id = #{product_id}
-			</if>
 	</delete>
 	
 	<sql id="OrderDTO">
@@ -192,13 +189,15 @@
 	<select id="getOrderList" resultMap="OrderDTO">
 		<include refid="OrderDTO"/>
 		<where>
-			<if test='type=="user" and type==null'>
+			AND o.status != 'READY'
+			<if test='type=="user" or type==null'>
 				AND o.user_id = #{data}
 			</if>
 			<if test='type=="product"'>
 				AND p.product_id = #{data}
 			</if>
 		</where>
+		ORDER BY DESC order_date
 	</select>
 	
 	<select id="selectOrder" resultType="org.joonzis.store.vo.OrderVO">
@@ -263,13 +262,24 @@
 	    WHERE order_id = #{order_id}
 	</update>
 	
+	<!-- CANCELED이 오타인가? 아무튼 취소된 상태라는 뜻 -->
 	<update id="updateCancelOrder">
 		UPDATE tbl_order
 		<set>
-			status='CANCLE'
+			status='CANCELED',
+			order_status='CANCEL'
 		</set>
 		<where>
 			order_id=#{order_id}
 		</where>
 	</update>
+	
+	<select id="getOrderIdWithoutOrderStateIsDone" resultType="String">
+		SELECT
+			order_id
+		FROM
+			tbl_order
+		WHERE
+			status != 'DONE'
+	</select>
 </mapper>

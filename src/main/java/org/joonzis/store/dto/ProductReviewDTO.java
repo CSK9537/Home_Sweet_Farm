@@ -16,4 +16,6 @@ public class ProductReviewDTO {
 	private int review_rate;
 	private int writer_id;
 	private String nickname;
+	private String review_title;
+	private String images;
 }
