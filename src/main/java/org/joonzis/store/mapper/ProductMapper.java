@@ -8,10 +8,12 @@ import org.joonzis.store.dto.ProductForAdminListDTO;
 import org.joonzis.store.dto.ProductForListDTO;
 import org.joonzis.store.dto.SearchProductDTO;
 import org.joonzis.store.vo.ProductCategoryVO;
+import org.joonzis.store.vo.ProductImageVO;
 import org.joonzis.store.vo.ProductVO;
 
 public interface ProductMapper {
 	public int insertProduct(ProductVO vo);
+	public int insertProductImage(ProductImageVO vo);
 	public ProductVO getProduct(int product_id);
 	public List<ProductVO> getProductList();
 	public int updateProduct(ProductVO vo);

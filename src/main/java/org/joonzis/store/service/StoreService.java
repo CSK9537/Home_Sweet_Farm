@@ -10,6 +10,7 @@ import org.joonzis.store.dto.SearchProductDTO;
 import org.joonzis.store.vo.ProductCategoryVO;
 import org.joonzis.store.vo.ProductReviewVO;
 import org.joonzis.store.vo.ProductVO;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface StoreService {
 	public int addNewProduct(ProductVO vo);
@@ -25,8 +26,9 @@ public interface StoreService {
 	public List<ProductForListDTO> getListOnHot();
 	
 	// 상품 리뷰 관련 비즈니스 로직
-	public int addProductReview(ProductReviewVO vo);
-	public List<ProductReviewDTO> getReviewListByProductId(int product_id);
+	public int addProductReview(ProductReviewVO vo, String tempKey);
+	public String uploadTempReviewImage(MultipartFile file, String tempKey);
+	public List<ProductReviewDTO> getReviewListByProductId(int product_id, String sortBy, String filterRating, String filterImage);
 	public List<ProductReviewDTO> getReviewListByUserId(int user_id);
 	public ProductReviewDTO getTopReviewByProductId(int product_id);
 	public int modifyProductReview(ProductReviewVO vo);
@@ -37,8 +39,11 @@ public interface StoreService {
 	public List<ProductForAdminListDTO> getAdminList();
 	public List<ProductForAdminListDTO> getAdminListByCategoryId(int category_id);
 	public List<ProductForAdminListDTO> getAdminListByPrice();
+	public int registerProduct(ProductVO vo, String tempKey);
+	public String uploadTempProductImage(MultipartFile file, String tempKey);
 	
 	// 검색
 	public List<ProductForListDTO> searchProduct(SearchProductDTO search);
 	public ProductCategoryVO getCategoryInfo(int category_id);
+	public List<ProductCategoryVO> selectListCategory();
 }

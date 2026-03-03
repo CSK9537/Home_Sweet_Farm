@@ -18,4 +18,6 @@ public interface ProductReviewMapper {
 	public List<ProductReviewDTO> getReviewOneOrList(
 			@Param("data")int param, 
 			@Param("type")String type);
+	
+	public List<ProductReviewDTO> getReviewListWithParams(java.util.Map<String, Object> params);
 }

@@ -65,7 +65,7 @@
                 <div class="product-card__thumb">
                   <c:choose>
                     <c:when test="${not empty p.thumbnail}">
-                      <img src="${pageContext.request.contextPath}/upload/${p.thumbnail}" alt="${p.product_name}" />
+                      <img src="${pageContext.request.contextPath}/store/display?imgName=${p.thumbnail}" alt="${p.product_name}" />
                     </c:when>
                     <c:otherwise>
                       <div class="thumb-dummy">상품 이미지</div>
@@ -110,7 +110,7 @@
                 <div class="product-card__thumb">
                   <c:choose>
                     <c:when test="${not empty p.thumbnail}">
-                      <img src="${pageContext.request.contextPath}/upload/${p.thumbnail}" alt="${p.product_name}" />
+                      <img src="${pageContext.request.contextPath}/store/display?imgName=${p.thumbnail}" alt="${p.product_name}" />
                     </c:when>
                     <c:otherwise>
                       <div class="thumb-dummy">상품 이미지</div>

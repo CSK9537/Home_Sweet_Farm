@@ -5,9 +5,12 @@
 <mapper namespace="org.joonzis.store.mapper.ProductMapper">
 
 	<insert id="insertProduct">
+		<selectKey keyProperty="product_id" resultType="int" order="BEFORE">
+			SELECT product_seq.nextval FROM dual
+		</selectKey>
 		INSERT INTO tbl_product
 		VALUES(
-			product_seq.nextval,
+			#{product_id},
 			#{category_id},
 			#{product_name},
 			#{product_price},
@@ -15,7 +18,21 @@
 			#{product_remain},
 			#{product_description_brief},
 			#{product_description_detail},
-			#{product_caution}
+			#{product_caution},
+			#{product_sale}
+		)
+	</insert>
+
+	<insert id="insertProductImage">
+		INSERT INTO tbl_product_image (file_id, product_id, original_name, saved_name, reg_date, file_size, is_thumbnail)
+		VALUES (
+			product_image_seq.nextval,
+			#{product_id},
+			#{original_name},
+			#{saved_name},
+			SYSDATE,
+			#{file_size},
+			#{is_thumbnail}
 		)
 	</insert>
 
@@ -78,7 +95,7 @@
 		    p.product_delivery_price, p.product_sale,
 		    COUNT(DISTINCT r.product_review_id) AS review_count,
 		    NVL(AVG(r.review_rate), 0) AS product_rate,
-		    MAX(i.saved_name) AS saved_name
+		    MAX(i.saved_name) AS thumbnail
 		
 		FROM tbl_product p
 		LEFT JOIN tbl_product_review r ON p.product_id = r.product_id
@@ -140,7 +157,6 @@
 		) stats ON p.product_id = stats.product_id
 		LEFT OUTER JOIN tbl_product_image i
 		    ON p.product_id = i.product_id
-		    AND i.is_thumbnail = 'N'
 		WHERE 
 		    p.product_id = #{product_id}
 	</select>
