@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.service.UserService;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,31 +125,6 @@ public class UserController {
 		result.put("success", true);
 		result.put("redirectUrl", "/");
 		return ResponseEntity.ok(result);
-	}
-
-	
-//	// 마이페이지 이동
-//	@GetMapping("/mypage")
-//	public String moveMypage(HttpSession session, Model model) {
-//		User loginUser = (User) session.getAttribute("loginUser");
-//		
-//		boolean isOwner = false;
-//		if(loginUser != null) {
-//			isOwner = true;
-//		}
-//		model.addAttribute("isOwner", isOwner);
-//		
-//		return "user/MyPage";
-//	}
-	
-	@GetMapping("/mypage")
-	public String moveMypage(HttpSession session, Model model) {
-
-		User loginUser = (User) session.getAttribute("loginUser");
-		boolean isOwner = (loginUser != null);
-		model.addAttribute("isOwner", isOwner);
-
-	    return "user/MyPage";
 	}
 	
 	// 로그아웃
@@ -317,8 +293,9 @@ public class UserController {
 	/*
 	 * 마이페이지, 프로필
 	 * */
-	//1)마이페이지
-	@GetMapping("/myPage")
+	
+	//1)마이페이지 이동
+	@GetMapping("/mypage")
 	public String myPage(HttpSession session, Model model) {
 		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
 		if(loginUser == null) {
@@ -327,17 +304,16 @@ public class UserController {
 		
 		UserVO myInfo = uservice.selectUser(loginUser.getUser_id());
 		model.addAttribute("myInfo", myInfo);
-		return "user/myPage";
+		return "user/mypage";
 	}
 	
 	
-	
-	
 	//2)공개형 프로필
-	@GetMapping("/profile/{userId}") //url예시: http://localhost:8081/user/profile/65
+	@GetMapping("/profile/{userId}") 
 	public String publicProfile(@PathVariable int userId, Model model) {
-		// UserDTO profile =
+		 UserDTO profile =
 		uservice.selectPublicProfile(userId);
+		 model.addAttribute("profile", profile);
 		return "userTest/publicProfile";
 		}
 	}
