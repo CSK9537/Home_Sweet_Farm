@@ -2,17 +2,16 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<link rel="stylesheet" href="${ctx}/resources/css/user/MyPage.css" />
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<link rel="stylesheet" href="${ctx}/resources/css/user/user_myPage.css" />
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
 
 <div class="page-shell">
-  <div class="content-wrap">
     <div class="content-card mypage-card"
          data-ctx="${ctx}"
          data-profile-user-id="${profileUser.user_id}"
-         data-is-owner="${isOwner}">
+         data-is-owner="${isOwner ? 'true' : 'false'}">
 
       <div class="mypage-layout">
         <!-- LEFT -->
@@ -147,7 +146,7 @@
                     </div>
 
                     <div class="grade-actions">
-                      <button type="button" class="link-btn" id="btnGradeGuide">등급 안내</button>
+                      <button type="button" class="link-btn" id="btnGradeGuide" hidden>등급 안내</button>
                       <c:if test="${isOwner}">
                         <a class="link-btn" href="${ctx}/mypage/verify/expert">전문가 인증하러가기</a>
                       </c:if>
@@ -455,7 +454,6 @@
 
     </div>
   </div>
-</div>
 
-<script src="${ctx}/resources/js/user/MyPage.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/user/user_myPage.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

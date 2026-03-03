@@ -9,11 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.service.UserService;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -123,13 +125,6 @@ public class UserController {
 		result.put("success", true);
 		result.put("redirectUrl", "/");
 		return ResponseEntity.ok(result);
-	}
-
-	
-	// 마이페이지 이동
-	@GetMapping("/mypage")
-	public String moveMypage() {
-		return "user/MyPage";
 	}
 	
 	// 로그아웃
@@ -296,13 +291,29 @@ public class UserController {
 	
 	
 	/*
-	 * 프로필
+	 * 마이페이지, 프로필
 	 * */
-	//1)공개형 프로필
-	@GetMapping("/profile/{userId}") //url예시: http://localhost:8081/user/profile/65
+	
+	//1)마이페이지 이동
+	@GetMapping("/mypage")
+	public String myPage(HttpSession session, Model model) {
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		if(loginUser == null) {
+			return "redirect:/login";
+		}
+		
+		UserVO myInfo = uservice.selectUser(loginUser.getUser_id());
+		model.addAttribute("myInfo", myInfo);
+		return "user/mypage";
+	}
+	
+	
+	//2)공개형 프로필
+	@GetMapping("/profile/{userId}") 
 	public String publicProfile(@PathVariable int userId, Model model) {
-		// UserDTO profile =
+		 UserDTO profile =
 		uservice.selectPublicProfile(userId);
+		 model.addAttribute("profile", profile);
 		return "userTest/publicProfile";
 		}
 	}
