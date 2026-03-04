@@ -274,7 +274,7 @@
         <button type="button" class="stats-tab" data-range="MONTHLY" role="tab" aria-selected="false">월별</button>
       </div>
 
-      <button type="button" class="stats-modal__close" onclick="calCancel()">닫기</button>
+      <button type="button" class="stats-modal__close">닫기</button>
     </header>
 
     <div class="stats-modal__body">
@@ -352,7 +352,7 @@
     </div>
   </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/myplant/MyPlantView.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/modal/ScheduleModal.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/modal/PhotoModal.js"></script>

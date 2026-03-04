@@ -40,13 +40,10 @@ public class MyPlantController {
 	@GetMapping("")
 	public String main(HttpSession session, Model model) {
 		UserVO uvo = (UserVO) session.getAttribute("loginUser");
-		if (uvo == null) {
-			// 로그인이 풀렸거나 비정상 접근이므로 로그인 페이지로 튕겨냅니다.
-			return "redirect:/login"; 
+		if (uvo != null) {
+			int user_id = uvo.getUser_id();
+			model.addAttribute("myPlants", mpservice.getMyPlantMainList(user_id));
 		}
-		int user_id = uvo.getUser_id();
-		
-		model.addAttribute("myPlants", mpservice.getMyPlantMainList(user_id));
 		return "myplant/MyPlantMain";
 	}
 	
@@ -132,6 +129,6 @@ public class MyPlantController {
 		boolean result = mpservice.remove(myplant_id);
 		return result ? ResponseEntity.ok("success") : ResponseEntity.badRequest().body("fail");
 	}
-
+	
 }
 
