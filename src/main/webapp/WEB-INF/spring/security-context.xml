@@ -27,6 +27,9 @@
 	    <property name="roleHierarchy" ref="roleHierarchy" />
 	</bean>
 
+	<!-- 정적 리소스(CSS, JS, Image 등)는 시큐리티 필터를 거치지 않도록 설정 -->
+	<security:http pattern="/resources/**" security="none"/>
+
 	<!-- HTTP 통신 보안 구성 요소 -> 통신에 관한 것들-->
 	<security:http auto-config="true" use-expressions="true">
 		<!-- 모든 사용자가 모든 경로에 접근 가능하도록 허용 (Permissive Mode) -->

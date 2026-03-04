@@ -1,4 +1,4 @@
-// mypage.js (ES5 호환)
+// myPage.js (ES5 호환)
 (function () {
   "use strict";
 
@@ -55,6 +55,7 @@
 
   function openModal(el) {
     if (!el) return;
+    console.log("openModal called:", el.id);
     backdrop.hidden = false;
     el.hidden = false;
   }
@@ -66,17 +67,30 @@
   }
 
   document.addEventListener("click", function (e) {
-    var closeBtn = closest(e.target, "[data-modal-close]");
+	const t = e.target;
+    const closeBtn = t && t.closest ? t.closest("[data-modal-close]"): null;
     if (closeBtn) {
-      closeModal(closest(e.target, ".modal"));
+    	const modal = closeBtn.closest(".modal");
+      closeModal(modal);
       return;
     }
-    if (e.target === backdrop) {
+    if (t === backdrop) {
       for (var key in modals) {
         if (modals[key]) closeModal(modals[key]);
       }
     }
   });
+	//오른쪽 레이아웃 클릭 시 아바타 모달 열기
+	  var rightLayout = document.getElementById("rightLayout");
+	
+	  if (rightLayout && isOwner) {
+	    rightLayout.addEventListener("click", function (e) {
+	
+	      if (e.target.closest("a, button, input, textarea, select, label")) return;
+	
+	      openModal(modals.avatar);
+	    });
+	  }
 
   // 프로필: 등급 안내 / Q&A 레벨업
   var btnGradeGuide = document.getElementById("btnGradeGuide");
@@ -155,7 +169,7 @@
       if (!pickBtn) return;
 
       var plantId = pickBtn.getAttribute("data-plant-id");
-      fetch(ctx + "/mypage/api/interest-plant", {
+      fetch(ctx + "/myPage/api/interest-plant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plantId: plantId })
@@ -208,7 +222,7 @@
   if (btnSendCode) {
     btnSendCode.addEventListener("click", function () {
       var kind = modals.verify ? modals.verify.getAttribute("data-kind") : "";
-      fetch(ctx + "/mypage/api/verify/send", {
+      fetch(ctx + "/myPage/api/verify/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kind: kind })
@@ -229,7 +243,7 @@
       var code = (verifyCode && verifyCode.value ? verifyCode.value : "").trim();
       if (!code) return alert("인증번호를 입력하세요.");
 
-      fetch(ctx + "/mypage/api/verify/confirm", {
+      fetch(ctx + "/myPage/api/verify/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kind: kind, code: code })
