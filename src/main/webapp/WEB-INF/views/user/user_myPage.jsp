@@ -331,12 +331,12 @@
           <!-- =======================
                6) 마이페이지(계정 주인만)
           ======================== -->
+          
           <c:if test="${isOwner}">
             <section id="secAccount" class="right-section">
               <header class="section-head">
                 <h2 class="section-title">마이페이지</h2>
               </header>
-
               <form id="accountForm" class="account-form" method="post" action="${ctx}/mypage/account/update">
                 <div class="form-row">
                   <label class="label">이름</label>
