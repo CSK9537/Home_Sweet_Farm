@@ -21,9 +21,9 @@
         SELECT
           B.BOARD_ID AS id,
           B.TITLE    AS title,
-          NVL(U.NICKNAME, U.USERID) AS writer,
+          NVL(U.NICKNAME, '익명') AS writer,
 
-          TO_CHAR(B.REG_DATE, 'YYYY-MM-DD') AS date,
+          TO_CHAR(B.REG_DATE, 'YYYY-MM-DD') AS regDate,
 
           NVL(B.VIEW_COUNT, 0) AS views,
           NVL(B.LIKE_COUNT, 0) AS likes,
@@ -41,7 +41,7 @@
               AND F.IS_ACTIVE = 'Y'
           ) AS thumbSavedName,
 
-          B.CONTENT AS content
+          B.CONTENT AS boardContent
         <include refid="BaseFrom"/>
 
         <!-- 타입 필터 -->

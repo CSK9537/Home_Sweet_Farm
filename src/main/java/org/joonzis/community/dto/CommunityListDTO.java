@@ -17,13 +17,13 @@ public class CommunityListDTO {
   private Integer price;
 
   private String writer;
-  private String date;    // yyyy-MM-dd
+  private String regDate;    // yyyy-MM-dd
 
   private int views;
   private int likes;
   private int comments;
 
-  private String content; // 미리보기 텍스트(HTML 제거/짧게)
+  private String boardContent; // 미리보기 텍스트(HTML 제거/짧게)
   
   private String boardType;
   private String tradeStatus;
