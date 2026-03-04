@@ -128,29 +128,6 @@ public class UserController {
 	}
 
 	
-//	// 마이페이지 이동
-//	@GetMapping("/mypage")
-//	public String moveMypage(HttpSession session, Model model) {
-//		User loginUser = (User) session.getAttribute("loginUser");
-//		
-//		boolean isOwner = false;
-//		if(loginUser != null) {
-//			isOwner = true;
-//		}
-//		model.addAttribute("isOwner", isOwner);
-//		
-//		return "user/MyPage";
-//	}
-	
-	@GetMapping("/mypage")
-	public String moveMypage(HttpSession session, Model model) {
-
-		User loginUser = (User) session.getAttribute("loginUser");
-		boolean isOwner = (loginUser != null);
-		model.addAttribute("isOwner", isOwner);
-
-	    return "user/MyPage";
-	}
 	
 	// 로그아웃
 	@GetMapping("/logout")
@@ -318,20 +295,16 @@ public class UserController {
 	/*
 	 * 마이페이지, 프로필
 	 * */
-	
-	//1)마이페이지 이동
 	@GetMapping("/mypage")
-	public String myPage(HttpSession session, Model model) {
-		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-		if(loginUser == null) {
-			return "redirect:/login";
-		}
-		
-		UserVO myInfo = uservice.selectUser(loginUser.getUser_id());
-		model.addAttribute("myInfo", myInfo);
-		return "user/user_myPage";
+	public String moveMypage(HttpSession session, Model model) {
+
+		User loginUser = (User) session.getAttribute("loginUser");
+		boolean isOwner = (loginUser != null);
+		model.addAttribute("isOwner", isOwner);
+
+	    return "user/MyPage";
 	}
-	
+
 	
 	
 	
