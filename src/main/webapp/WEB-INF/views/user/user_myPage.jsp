@@ -87,60 +87,10 @@
 			</c:choose></pre>
 			      </div>
 			    </div>
-			
-			    <!-- 활동내역 (JSP 단계: 더미) -->
+			    
+			    <!-- 회원 등급 -->
 			    <div class="box">
-			      <div class="box-title">활동내역</div>
-			      <div class="box-body scroll-box">
-			        <ul class="bullet">
-			          <li>활동 내역 1</li>
-			          <li>활동 내역 2</li>
-			          <li>활동 내역 3 (스크롤 방식)</li>
-			        </ul>
-			      </div>
-			    </div>
-			
-			    <!-- 주요 활동 분야 (JSP 단계: 더미) -->
-			    <div class="box">
-			      <div class="box-title">주요 활동 분야</div>
-			      <div class="box-body scroll-box">
-			        <ul class="bullet">
-			          <li>활동 분야 1</li>
-			          <li>활동 분야 2</li>
-			          <li>활동 분야 3 (스크롤 방식)</li>
-			        </ul>
-			      </div>
-			    </div>
-			
-			    <!-- 답변수 -->
-			    <div class="box">
-			      <div class="box-title">답변수</div>
-			      <div class="stats">
-			        <div class="stat">
-			          <div class="num">${empty profileStats.totalAnswers ? 0 : profileStats.totalAnswers}</div>
-			          <div class="label">전체 답변</div>
-			        </div>
-			        <div class="stat">
-			          <div class="num">${empty profileStats.totalViews ? 0 : profileStats.totalViews}</div>
-			          <div class="label">조회수</div>
-			        </div>
-			        <div class="stat">
-			          <div class="num">${empty profileStats.acceptedAnswers ? 0 : profileStats.acceptedAnswers}</div>
-			          <div class="label">채택 답변</div>
-			        </div>
-			      </div>
-			    </div>
-			
-			  </div>
-			
-			  <!-- =======================
-			       RIGHT COLUMN
-			  ======================== -->
-			  <div class="profile-col">
-			
-			    <!-- 나의 등급 -->
-			    <div class="box">
-			      <div class="box-title">나의 등급</div>
+			      <div class="box-title">회원 등급</div>
 			
 			      <div class="grade-progress">
 			        <div class="grade-line"></div>
@@ -166,32 +116,91 @@
 			        <a class="link-btn" href="#">전문가 인증하러 가기</a>
 			      </div>
 			    </div>
-			
-			    <!-- 나의 Q&A 등급 -->
+			    
+			    <!-- 답변수 -->
 			    <div class="box">
-			      <div class="box-title">나의 Q&amp;A 등급</div>
-			
-			      <div class="qna-progress">
-			        <div class="qna-line"></div>
-			
-			        <div class="qna-step active">
-					  <div class="qna-icon">🏅</div>
-					  <div class="qna-label">
-					    새싹등급 <span class="qna-lv">LV <c:out value="${empty profileStats.qnaLevel ? 1 : profileStats.qnaLevel}" /></span>
-					  </div>
-					</div>
-			
-			      <div class="grade-desc">
-					  <div class="qna-desc-text">
-					    현재 새싹등급 (<span class="qna-lv">LV <c:out value="${empty profileStats.qnaLevel ? 1 : profileStats.qnaLevel}" /></span>) 입니다
-					  </div>
-					  <a class="link-btn qna-link" href="#">Q&amp;A 등급 올리기</a>
-				</div>
+			      <div class="box-title">답변수</div>
+			      <div class="stats">
+			        <div class="stat">
+			          <div class="num">${empty profileUser.totalAnswers ? 0 : profileUser.totalAnswers}</div>
+			          <div class="label">전체 답변</div>
+			        </div>
+			        <div class="stat">
+			          <div class="num">${empty profileUser.totalViews ? 0 : profileUser.totalViews}</div>
+			          <div class="label">조회수</div>
+			        </div>
+			        <div class="stat">
+			          <div class="num">${empty profileUser.acceptedAnswers ? 0 : profileUser.acceptedAnswers}</div>
+			          <div class="label">채택 답변</div>
+			        </div>
+			      </div>
 			    </div>
-			
 			  </div>
 			
-			</div>
+			
+			  <!-- =======================
+			       RIGHT COLUMN
+			  ======================== -->
+			  <!-- 최근 작성한 글 -->
+				  <div class="right-column">
+				  	  <div class="box">
+					  <div class="box-title">최근 작성한 글</div>
+						  <div class="recent-posts">
+						  	<ul class="recent-list">
+						    <li>
+						      <a href="#">
+						        <div class="post-title">글 제목이 들어갑니다 (최대 1~2줄)</div>
+						        <div class="post-meta">커뮤니티 · 2026.03.04 · 조회 21</div>
+						      </a>
+						    </li>
+						
+						    <li>
+						      <a href="#">
+						        <div class="post-title">두 번째 글 제목 예시</div>
+						        <div class="post-meta">Q&amp;A · 2026.03.03 · 댓글 2</div>
+						      </a>
+						    </li>
+						
+						    <li>
+						      <a href="#">
+						        <div class="post-title">세 번째 글 제목 예시</div>
+						        <div class="post-meta">커뮤니티 · 2026.03.01 · 조회 5</div>
+						      </a>
+						    </li>
+						  </ul>
+						  </div>
+					  </div>	
+					  
+					  <!-- 최근 질문  -->
+				    <div class="box">
+					  <div class="box-title">최근 질문</div>
+						  <div class="recent-questions">
+						  	<ul class="recent-list">
+						    <li>
+						      <a href="#">
+						        <div class="post-title">글 제목이 들어갑니다 (최대 1~2줄)</div>
+						        <div class="post-meta">커뮤니티 · 2026.03.04 · 조회 21</div>
+						      </a>
+						    </li>
+						
+						    <li>
+						      <a href="#">
+						        <div class="post-title">두 번째 글 제목 예시</div>
+						        <div class="post-meta">Q&amp;A · 2026.03.03 · 댓글 2</div>
+						      </a>
+						    </li>
+						
+						    <li>
+						      <a href="#">
+						        <div class="post-title">세 번째 글 제목 예시</div>
+						        <div class="post-meta">커뮤니티 · 2026.03.01 · 조회 5</div>
+						      </a>
+						    </li>
+						  </ul>
+						  </div>
+					  </div>
+				  </div>
+				</div>
 
           <!-- =======================
                2) 작성글 (공개)
