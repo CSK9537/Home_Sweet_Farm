@@ -319,7 +319,7 @@ public class UserController {
 		boolean isOwner = (loginUser != null);
 		model.addAttribute("isOwner", isOwner);
 
-	    return "user/MyPage";
+	    return "user/user_myPage";
 	}
 
 	

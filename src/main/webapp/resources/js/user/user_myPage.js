@@ -12,28 +12,28 @@
   // -------------------------
   // Left navigation (section swap)
   // -------------------------
-  var navButtons = Array.prototype.slice.call(document.querySelectorAll(".js-nav"));
-  var sections = Array.prototype.slice.call(document.querySelectorAll(".right-section"));
+	  var navButtons = Array.prototype.slice.call(document.querySelectorAll(".js-nav"));
+	  var sections = Array.prototype.slice.call(document.querySelectorAll(".right-section"));
 
-  function showSection(sectionId) {
-    for (var i = 0; i < sections.length; i++) {
-      sections[i].classList.toggle("is-show", sections[i].id === sectionId);
-    }
-    for (var j = 0; j < navButtons.length; j++) {
-      navButtons[j].classList.toggle("is-active", navButtons[j].getAttribute("data-target") === sectionId);
-    }
-  }
+	  function showSection(sectionId) {
+	    for (var i = 0; i < sections.length; i++) {
+	      sections[i].classList.toggle("is-show", sections[i].id === sectionId);
+	    }
+	    for (var j = 0; j < navButtons.length; j++) {
+	      navButtons[j].classList.toggle("is-active", navButtons[j].getAttribute("data-target") === sectionId);
+	    }
+	  }
 
-  for (var k = 0; k < navButtons.length; k++) {
-    (function (btn) {
-      btn.addEventListener("click", function () {
-        showSection(btn.getAttribute("data-target"));
-      });
-    })(navButtons[k]);
-  }
+	  for (var k = 0; k < navButtons.length; k++) {
+	    (function (btn) {
+	      btn.addEventListener("click", function () {
+	        showSection(btn.getAttribute("data-target"));
+	      });
+	    })(navButtons[k]);
+	  }
 
-  showSection("secProfile");
-
+	  showSection("secProfile");
+ 
   // -------------------------
   // Modal helpers
   // -------------------------
