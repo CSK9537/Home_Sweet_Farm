@@ -115,7 +115,6 @@
                   </div>
                 </c:if>
 
-				<div class="postItem__overlayMeta">
                   <span>${p.writer}</span>
                   <span class="sep">|</span>
                   <span>${p.regDate}</span>

@@ -17,7 +17,7 @@ public class CommunityListDTO {
   private Integer price;
 
   private String writer;
-  private String date;    // yyyy-MM-dd
+  private String regDate;    // yyyy-MM-dd
 
   private int views;
   private int likes;
