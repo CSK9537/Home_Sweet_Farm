@@ -126,8 +126,6 @@ public class UserController {
 		result.put("redirectUrl", "/");
 		return ResponseEntity.ok(result);
 	}
-
-	
 	
 	// 로그아웃
 	@GetMapping("/logout")

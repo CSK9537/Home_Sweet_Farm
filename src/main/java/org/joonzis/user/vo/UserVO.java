@@ -35,4 +35,5 @@ public class UserVO {
 	private String phone;
 	
 	private String confirmPassword;//입력 확인비번(원문): DB 저장 안 함
+	private Date last_login_date; 	//마지막 로그인 날짜
 }
