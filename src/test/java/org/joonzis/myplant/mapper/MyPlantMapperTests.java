@@ -34,4 +34,17 @@ public class MyPlantMapperTests {
 //			log.error(e);
 //		}
 //	}
+	
+//	@Test
+//	public void getTest() {
+//		log.info("get Test...");
+//		try {
+//			MyPlantMainDTO dto = mpmapper.get(20);
+//			log.info(dto.getMyplant_name());
+//			log.info(dto.getPlant_name());
+//			log.info(dto.getPlant_name_kor());
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
 }

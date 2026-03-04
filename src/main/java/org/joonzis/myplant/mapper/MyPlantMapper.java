@@ -9,7 +9,7 @@ public interface MyPlantMapper {
 	// 나의 식물 전체 목록 출력
 	public List<MyPlantMainDTO> myPlantMain(int user_id);
 	// 나의 식물 하나 출력
-	public MyPlantDTO get(int myplant_id);
+	public MyPlantMainDTO get(int myplant_id);
 	// 나의 식물 추가
 	public int insert(MyPlantDTO mpdto);
 	// 나의 식물 수정

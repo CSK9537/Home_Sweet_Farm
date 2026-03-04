@@ -1,9 +1,15 @@
 package org.joonzis.myplant.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.myplant.dto.MyPlantDTO;
+import org.joonzis.myplant.dto.MyPlantMainDTO;
 import org.joonzis.myplant.service.MyPlantService;
+import org.joonzis.plant.dto.GuideDTO;
+import org.joonzis.plant.service.PlantService;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +33,8 @@ public class MyPlantController {
 	
 	@Autowired
 	private MyPlantService mpservice;
+	@Autowired
+	private PlantService pservice;
 	
 	// 메인 화면
 	@GetMapping("")
@@ -80,8 +88,30 @@ public class MyPlantController {
 	
 	// 나의 식물 상세 정보
 	@GetMapping("/info/{myplant_id}")
-	public String view(@PathVariable("myplant_id") int myplant_id) {
+	public String view(@PathVariable("myplant_id") int myplant_id, Model model) {
+		MyPlantMainDTO mpmdto = mpservice.get(myplant_id);
+		model.addAttribute("myplantinfo", mpmdto);
 		return "myplant/MyPlantView";
+	}
+	
+	// 나의 식물 가이드 정보
+	@GetMapping(value = "/guide/{plant_name:.+}", produces = "application/json; charset=UTF-8")
+	@ResponseBody
+	public Map<String, Object> getMyplantGuide(@PathVariable("plant_name") String plant_name){
+		
+		GuideDTO gdto = pservice.guideInfo(plant_name);
+		Map<String, Object> result = new HashMap<>();
+		
+		result.put("guide_watering_schedule", gdto.getGuide_watering_schedule());
+	    result.put("guide_watering_humiditylevel", gdto.getGuide_watering_humiditylevel());
+	    result.put("guide_sunlight_requirements", gdto.getGuide_sunlight_requirements());
+	    result.put("guide_sunlight_tolerance", gdto.getGuide_sunlight_tolerance());
+	    result.put("guide_temperature_imin", gdto.getGuide_temperature_imin());
+	    result.put("guide_temperature_imax", gdto.getGuide_temperature_imax());
+	    result.put("guide_temperature_tmin", gdto.getGuide_temperature_tmin());
+	    result.put("guide_temperature_tmax", gdto.getGuide_temperature_tmax());
+		
+		return result;
 	}
 	
 	// 수정

@@ -15,4 +15,5 @@ public class MyPlantDTO {
 	private int plant_id;
 	private String myplant_name;
 	private Date myplant_regdate;
+	private String myplant_image;
 }

@@ -1,5 +1,6 @@
 package org.joonzis.myplant.service;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -16,23 +17,32 @@ public class MyPlantServiceImpl implements MyPlantService {
 	@Autowired
 	private MyPlantMapper mpmapper;
 	
+	// 등록일 계산
+	private long calcDayPassed(Date rdate) {
+		LocalDate regdate = rdate.toLocalDate();
+		LocalDate today = LocalDate.now();
+		long day_passed = ChronoUnit.DAYS.between(regdate, today);
+		return day_passed;
+	}
+	
 	// 나의 식물 전체 목록
 	@Override
 	public List<MyPlantMainDTO> getMyPlantMainList(int user_id) {
 		List<MyPlantMainDTO> mpmdtolist = mpmapper.myPlantMain(user_id);
 		for(MyPlantMainDTO mpmdto : mpmdtolist) {
-			LocalDate regdate = mpmdto.getMyplant_regdate().toLocalDate();
-			LocalDate today = LocalDate.now();
-			long day_passed = ChronoUnit.DAYS.between(regdate, today);
-			mpmdto.setDay_passed(day_passed);
+			Date regdate = mpmdto.getMyplant_regdate();
+			mpmdto.setDay_passed(calcDayPassed(regdate));
 		};
 		return mpmdtolist;
 	}
 	
 	// 나의 식물 정보
 	@Override
-	public MyPlantDTO get(int myplant_id) {
-		return mpmapper.get(myplant_id);
+	public MyPlantMainDTO get(int myplant_id) {
+		MyPlantMainDTO mpmdto = mpmapper.get(myplant_id);
+		Date regdate = mpmdto.getMyplant_regdate();
+		mpmdto.setDay_passed(calcDayPassed(regdate));
+		return mpmdto;
 	}
 	
 	// 나의 식물 추가

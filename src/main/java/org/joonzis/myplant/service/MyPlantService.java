@@ -9,7 +9,7 @@ public interface MyPlantService {
 	// 나의 식물 전체 목록
 	public List<MyPlantMainDTO> getMyPlantMainList(int user_id);
 	// 나의 식물 정보
-	public MyPlantDTO get(int myplant_id);
+	public MyPlantMainDTO get(int myplant_id);
 	// 나의 식물 추가
 	public boolean register(MyPlantDTO mpdto);
 	// 나의 식물 수정

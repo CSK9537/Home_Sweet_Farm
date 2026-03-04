@@ -13,6 +13,7 @@ public class MyPlantMainDTO {
 	private int myplant_id;
 	private String myplant_name;
 	private Date myplant_regdate;
+	private String myplant_image;
 	private long day_passed;
 	private int plant_id;
 	private String plant_name;
