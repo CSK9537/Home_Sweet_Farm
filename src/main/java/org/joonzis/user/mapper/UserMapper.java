@@ -1,5 +1,7 @@
 package org.joonzis.user.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
@@ -72,4 +74,15 @@ public interface UserMapper {
 	//유저 닉네임 조회
     public String findNicknameById(@Param("user_id")int user_id);
     
+    // 로그인 이후 마지막 접속일 업데이트
+    public int updateLastLoginDate(int user_id);
+    
+    // 활성/비활성 계정으로 상태 변경
+    public int updateEnable(@Param("user_id")int user_id, @Param("enable")int enable);
+    
+    // 비활성 계정만 가져오기
+    public List<UserVO> selectUserListByEnable();
+    
+    // user_id의 리스트로 일괄 삭제
+    public int deletionUserByList(@Param("list")List<Integer> userIdList);
 }

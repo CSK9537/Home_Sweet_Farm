@@ -206,4 +206,33 @@
         WHERE user_id = #{user_id}
     </select>
 	
+	<update id="updateLastLoginDate">
+		UPDATE tbl_user
+		SET last_login_date = SYSDATE
+		WHERE user_id = #{user_id}
+	</update>
+	
+	<update id="updateEnable">
+		UPDATE tbl_user
+		SET enable = #{enable}
+		WHERE user_id=#{user_id}
+	</update>
+	
+	<select id="selectUserListByEnable" resultType="org.joonzis.user.vo.UserVO">
+		SELECT * FROM tbl_user
+		WHERE 
+			enable = 0
+			AND
+			<![CDATA[
+			last_login_date <= ADD_MONTH(SYSDATE, -12) 
+			]]>
+	</select>
+	
+	<delete id="deletionUserByList" parameterType="java.util.List">
+		DELETE FROM tbl_user
+		WHERE user_id IN
+		<foreach collection="list" item="user_id" open="(" separator="," close=")" >
+			#{user_id}
+		</foreach>
+	</delete>
 </mapper>

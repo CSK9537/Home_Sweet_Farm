@@ -69,7 +69,10 @@ public class UserServiceImpl implements UserService{
 	}
 	@Override
 	public UserVO login(String username, String password) {
-		return usermapper.login(username, password);
+		UserVO user = usermapper.login(username, password);
+		if(user != null)
+			usermapper.updateLastLoginDate(user.getUser_id());
+		return user;
 	}
 	@Override
 	public int delete(UserVO vo) {
@@ -127,4 +130,9 @@ public class UserServiceImpl implements UserService{
 		return dto;
 	}
 
+	
+	@Override
+	public int deletionUser(int user_id, int enable) {
+		return usermapper.updateEnable(user_id, enable);
+	}
 }

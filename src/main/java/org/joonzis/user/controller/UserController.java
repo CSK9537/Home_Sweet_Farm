@@ -105,6 +105,10 @@ public class UserController {
 		if (vo == null) {
 			result.put("success", false);
 			return ResponseEntity.ok(result);
+		} else if (vo.getEnable() == 0) {
+			log.error("비활성 상태의 계정의 로그인 시도!");
+			// 비활성 계정의 로그인 시도이므로, 휴면 계정을 해제하는 비즈니스 로직 적용 가능
+			result.put("enable", 0);
 		}
 		
 		// 로그인 성공 시
@@ -143,14 +147,29 @@ public class UserController {
 		return "redirect:/";
 	}
 	
-	// 회원 탈퇴
-	@PostMapping("/delete")//url 입력하면(즉, get방식으로 하면) 허용되지 않는 메소드(405)뜸
-	public String delete(UserVO vo, HttpSession session) {
+	// 회원 탈퇴 -> 논리적인 회원 탈퇴(enable 컬럼의 변경)
+	@PostMapping("/delete")
+	public String delete(
+			HttpSession session,
+			@RequestParam int enable) {
 		
-		uservice.delete(vo);
+		UserVO user = (UserVO)session.getAttribute("loginUser");
+		if(user == null) {
+			// 세션에서 유저 정보가 없는 경우 -> 로그인 안함
+			log.error("세션에 유저 정보가 없음 : 비정상적 접근일 수 있음");
+			return "redirect:user/login";
+		}
+		int user_id = user.getUser_id();
 		
-		session.invalidate();//탈퇴 후 세션 제거
-		
+		if(uservice.deletionUser(user_id, enable) < 1)
+			log.error("수정사항 없음 : 확인 필요");
+		else {
+			session.invalidate();
+		}
+		/*
+		 * UserDeletionScheduler가 일정 시간마다 자동으로 비활성 계정 중에서 1년 넘게 접속하지 않은 사용저 정보(계정)을 삭제함
+		 * 여기서는 enable의 변경만 이루어지도록 함
+		 * */
 		return "redirect:";
 	}
 	
@@ -296,7 +315,7 @@ public class UserController {
 	@GetMapping("/mypage")
 	public String moveMypage(HttpSession session, Model model) {
 
-		User loginUser = (User) session.getAttribute("loginUser");
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
 		boolean isOwner = (loginUser != null);
 		model.addAttribute("isOwner", isOwner);
 
@@ -314,4 +333,4 @@ public class UserController {
 		 model.addAttribute("profile", profile);
 		return "userTest/publicProfile";
 		}
-	}
+}

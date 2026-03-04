@@ -42,4 +42,7 @@ public interface UserService {
 	//1) 닉네임, 프로필, 회원등급, 자기소개
 	public UserDTO selectPublicProfile(int userId);
 	
+	/// 계정 활성 상태 변경
+	public int deletionUser(int user_id, int enable);
+	
 }
