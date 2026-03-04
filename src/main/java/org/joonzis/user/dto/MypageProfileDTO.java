@@ -5,6 +5,8 @@ import lombok.Data;
 import java.sql.Date;
 import java.util.List;
 
+import org.joonzis.community.dto.CommunityPostCardDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -17,7 +19,7 @@ public class MypageProfileDTO {
 	private String nickname;	// 사용자 닉네임
 	private String gradeName;	// 등급명
 	private String name;		// 사용자의 실명
-	private Date birth_date;	// 생일
+	private Date brith_date;	// 생일
 	private String intro;		// 자기소개
 	private List<String> aspect;// 관심사들
 	private String phone;		// 핸드폰 번호
@@ -26,4 +28,6 @@ public class MypageProfileDTO {
 	private Integer totalAnswers;// 총 답변 수
 	private Integer totalViews;	// 총 조회수
 	private Integer acceptedAnswers;// 채택된 답변 수
+	
+	private List<CommunityPostCardDTO> posts; // 최신 글
 }
