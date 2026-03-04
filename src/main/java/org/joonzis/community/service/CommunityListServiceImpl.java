@@ -73,7 +73,7 @@ public class CommunityListServiceImpl implements CommunityListService {
 
     for (CommunityListDTO p : list) {
       // content 미리보기
-      p.setBoardContent(stripHtmlAndCut(p.getBoardContent(), 120));
+      p.setContent(stripHtmlAndCut(p.getContent(), 120));
 
       // status (MARKET일 때만 의미)
       try {

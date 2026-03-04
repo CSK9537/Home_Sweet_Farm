@@ -5,13 +5,12 @@
 
 <mapper namespace="org.joonzis.community.mapper.CommunityListMapper">
 
-    <sql id="BaseFrom">
-	    FROM TBL_BOARD B
-	    JOIN TBL_USER U
-	      ON U.USER_ID = B.USER_ID
-	    WHERE B.IS_ACTIVE = 'Y'
-	      AND B.BOARD_TYPE NOT IN ('Q','A')
-	</sql>
+  <sql id="BaseFrom">
+    FROM TBL_BOARD B
+    JOIN TBL_USER U
+      ON U.USER_ID = B.USER_ID
+    WHERE B.IS_ACTIVE = 'Y'
+  </sql>
 
   <!-- 목록 -->
   <select id="selectCommunityList" parameterType="map" resultType="org.joonzis.community.dto.CommunityListDTO">
@@ -22,9 +21,9 @@
         SELECT
           B.BOARD_ID AS id,
           B.TITLE    AS title,
-          NVL(U.NICKNAME, '익명') AS writer,
+          NVL(U.NICKNAME, U.USERID) AS writer,
 
-          TO_CHAR(B.REG_DATE, 'YYYY-MM-DD') AS regDate,
+          TO_CHAR(B.REG_DATE, 'YYYY-MM-DD') AS date,
 
           NVL(B.VIEW_COUNT, 0) AS views,
           NVL(B.LIKE_COUNT, 0) AS likes,
@@ -42,7 +41,7 @@
               AND F.IS_ACTIVE = 'Y'
           ) AS thumbSavedName,
 
-          B.CONTENT AS boardContent
+          B.CONTENT AS content
         <include refid="BaseFrom"/>
 
         <!-- 타입 필터 -->

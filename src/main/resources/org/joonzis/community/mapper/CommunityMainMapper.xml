@@ -123,14 +123,17 @@
   </select>
   
   <!-- 특정 유저 작성글(마이페이지용) -->
-  <select id="selectMyPosts" parameterType="map" resultMap="CommunityPostCardMap">
-    SELECT *
-    FROM (
-      <include refid="BaseSelect"/>
-      AND TBL_BOARD.USER_ID = #{userId}
-      ORDER BY TBL_BOARD.REG_DATE DESC
-    )
-    WHERE ROWNUM &lt;= #{limit}
-  </select>
+    <select id="selectMyPosts"
+            parameterType="map"
+            resultMap="CommunityPostCardMap">
+
+        SELECT *
+        FROM (
+            <include refid="BaseSelect"/>
+            AND B.USER_ID = #{userId}
+            ORDER BY B.REG_DATE DESC
+        )
+        WHERE ROWNUM &lt;= #{limit}
+    </select>
 
 </mapper>
