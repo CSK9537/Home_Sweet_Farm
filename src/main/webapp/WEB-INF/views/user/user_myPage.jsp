@@ -435,25 +435,48 @@
             <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
           </div>
           <div class="modal-body">
-            <!-- DB/정책 문구를 서버에서 내려주고 싶으면 여기 바인딩 -->
-            <p class="muted">등급 기준/혜택 안내 내용을 표시합니다.</p>
-          </div>
-          <div class="modal-foot">
-            <button type="button" class="btn" data-modal-close>닫기</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Q&A 등급 올리기 모달 -->
-      <div class="modal" id="modalQna" role="dialog" aria-modal="true" aria-labelledby="modalQnaTitle" hidden>
-        <div class="modal-card">
-          <div class="modal-head">
-            <h3 id="modalQnaTitle">Q&amp;A 등급 올리기</h3>
-            <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
-          </div>
-          <div class="modal-body">
-            <p class="muted">등급 업 조건/미션 등을 표시하고, 수행 버튼을 제공할 수 있습니다.</p>
-            <button type="button" class="btn">미션 확인</button>
+           <div class="modal-body grade-guide">
+			  <h4>등급 안내</h4>
+			
+			  <div class="grade-box">
+			    <ol>
+			      <li>일반 회원</li>
+			      <li>고수 회원</li>
+			      <li>전문가 회원</li>
+			    </ol>
+			  </div>
+			
+			  <h4>1. 일반 회원</h4>
+			  <div class="grade-box">
+			    <ol>
+			      <li>가입 시 자동으로 부여됩니다.</li>
+			      <li>신규회원 / 게시글 조회만 가능</li>
+			    </ol>
+			  </div>
+			
+			  <h4>2. 고수 회원</h4>
+			  <div class="grade-box">
+			    <ol>
+			      <li>게시글 100개</li>
+			      <li>댓글 70개</li>
+			      <li>방문 수 10회</li>
+			      <li>답변 채택 기능 사용</li>
+			      <li>게시글 신고 시 가중치 부여</li>
+			    </ol>
+			  </div>
+			
+			  <h4>3. 전문가 회원</h4>
+			  <div class="grade-box">
+			    <ol>
+			      <li>관련 자격증 pdf 파일 제출 및 폼 작성 시, 검토 후 등업</li>
+			      <li>전문가 답변 작성 및 고정</li>
+			    </ol>
+			
+			    <div class="expert-link">
+			      <a href="#">전문가 인증하러 가기</a>
+			    </div>
+			  </div>
+			</div>
           </div>
           <div class="modal-foot">
             <button type="button" class="btn" data-modal-close>닫기</button>
@@ -482,7 +505,7 @@
         </div>
       </div>
 
-      <!-- 인증(휴대폰/이메일) 모달 -->
+      <!-- 인증(이메일) 모달 -->
       <div class="modal" id="modalVerify" role="dialog" aria-modal="true" aria-labelledby="modalVerifyTitle" hidden>
         <div class="modal-card">
           <div class="modal-head">
