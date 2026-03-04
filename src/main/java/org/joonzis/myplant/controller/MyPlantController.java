@@ -1,12 +1,15 @@
 package org.joonzis.myplant.controller;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.myplant.dto.MyPlantDTO;
 import org.joonzis.myplant.service.MyPlantService;
+import org.joonzis.plant.dto.PlantGuideDTO;
+import org.joonzis.plant.service.PlantService;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import lombok.extern.log4j.Log4j;
@@ -28,6 +32,8 @@ public class MyPlantController {
 	
 	@Autowired
 	private MyPlantService mpservice;
+	@Autowired
+	private PlantService pservice;
 	
 	// 메인 화면
 	@GetMapping("")
@@ -42,6 +48,11 @@ public class MyPlantController {
 	@GetMapping("/recommend")
 	public String recommend() {
 		return "myplant/MyPlantRecommend";
+	}
+	@GetMapping(value="/recommend/list", produces="application/json; charset=UTF-8")
+	@ResponseBody
+	public List<PlantGuideDTO> recommendList() {
+	    return pservice.selectPlantWithGuideList(10);
 	}
 	
 	// 나의 식물 추가

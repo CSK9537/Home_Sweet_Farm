@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.joonzis.plant.dto.GuideDTO;
 import org.joonzis.plant.dto.PlantDTO;
+import org.joonzis.plant.dto.PlantGuideDTO;
 import org.joonzis.plant.dto.SimplePlantDTO;
 import org.joonzis.plant.mapper.GuideMapper;
 import org.joonzis.plant.mapper.PlantMapper;
@@ -85,4 +86,11 @@ public class PlantServiceImpl implements PlantService{
 		int plant_id = plantId(plant_name);
 		return gmapper.getGuideInfo(plant_id);
 	}
+
+	@Override
+	public List<PlantGuideDTO> selectPlantWithGuideList(int limit) {
+		
+		return pmapper.selectPlantWithGuideList(limit);
+	}
+	
 }
