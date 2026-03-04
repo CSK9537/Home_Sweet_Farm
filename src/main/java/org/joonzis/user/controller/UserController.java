@@ -296,11 +296,11 @@ public class UserController {
 	@GetMapping("/mypage")
 	public String moveMypage(HttpSession session, Model model) {
 
-		User loginUser = (User) session.getAttribute("loginUser");
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
 		boolean isOwner = (loginUser != null);
 		model.addAttribute("isOwner", isOwner);
 
-	    return "user/MyPage";
+	    return "user/user_myPage";
 	}
 
 	
