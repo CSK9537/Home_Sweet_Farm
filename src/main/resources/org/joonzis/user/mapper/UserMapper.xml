@@ -241,7 +241,7 @@
 		<result property="nickname" column="nickname"/>
 		<result property="gradeName" column="grade"/>
 		<result property="name" column="name"/>
-		<result property="birth_date" column="brith_date"/>
+		<result property="brith_date" column="brith_date"/>
 		<result property="intro" column="intro"/>
 		<result property="phone" column="phone"/>
 		<result property="email" column="email"/>
@@ -251,39 +251,98 @@
 		<collection property="aspect" ofType="string">
 			<result column="hashtag_name"/>
 		</collection>
+		<collection property="posts" ofType="org.joonzis.community.dto.CommunityPostCardDTO">
+		    <id property="boardId"    column="BOARD_ID"/>
+		    <result property="title"      column="TITLE"/>
+		    <result property="userId"     column="USERID"/>
+		    <result property="thumbSrc"   column="THUMB_SRC"/>
+		    <result property="viewCount"  column="VIEW_COUNT"/>
+		    <result property="likeCount"  column="LIKE_COUNT"/>
+		    <result property="replyCount" column="REPLY_CNT"/>
+		    <result property="hashtags"   column="HASHTAGS"/>
+		</collection>
 	</resultMap>
-	
-	<select id="getProfileInfo" resultMap="mypageProfileDTO">
-		SELECT
-		    u.user_id,
-		    u.profile_filename,
-		    u.nickname,
-		    u.name,
-		    u.brith_date,
-		    u.intro,
-		    u.phone,
-		    u.email,
-		    g.grade,
-		    h.hashtag_name,
-		    NVL(b.totalanswers , 0) as totalAnswers,
-		    NVL(b.totalviews, 0) as totalViews,
-		    NVL(b.acceptedanswers ,0) as acceptedAnswers
-		FROM
-		    tbl_user u
-		    LEFT OUTER JOIN tbl_grade_list g ON u.grade_id=g.grade_id
-		    LEFT OUTER JOIN tbl_user_aspect a ON u.user_id = a.user_id
-		    LEFT OUTER JOIN tbl_hashtag_list h ON h.hashtag_id=a.hashtag_id
-		    LEFT OUTER JOIN (
-		        SELECT
-		            user_id,
-		            COUNT(CASE WHEN board_type='A' THEN 1 END) AS totalAnswers,
-		            SUM(view_count) as totalViews,
-		            COUNT(CASE WHEN is_selected ='Y' THEN 1 END) AS acceptedAnswers
-		        FROM
-		            tbl_board
-		        GROUP BY
-		            user_id
-		    ) b ON u.user_id = b.user_id
-		WHERE u.user_id = #{user_id}
-	</select>
+	  <sql id="PostsQuery">
+    SELECT
+      TBL_BOARD.user_id,
+      TBL_BOARD.BOARD_ID AS BOARD_ID,
+      TBL_BOARD.TITLE    AS TITLE,
+      NVL(TBL_USER.NICKNAME, '익명') AS AUTHOR,
+
+      NVL(TBL_BOARD.VIEW_COUNT, 0) AS VIEW_COUNT,
+      NVL(TBL_BOARD.LIKE_COUNT, 0) AS LIKE_COUNT,
+      NVL(TBL_BOARD.REPLY_CNT, 0)  AS REPLY_CNT,
+
+      ( SELECT MIN(TBL_BOARD_FILE.SAVED_NAME) 
+  		FROM TBL_BOARD_FILE 
+ 	 	WHERE TBL_BOARD_FILE.BOARD_ID = TBL_BOARD.BOARD_ID 
+  		AND TBL_BOARD_FILE.IS_THUMBNAIL = 'Y' 
+		) AS THUMB_SRC,
+
+      ( SELECT LISTAGG(TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_NAME, ',') WITHIN GROUP (ORDER BY TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_NAME) 
+          FROM TBL_BOARD_ASPECT 
+          JOIN TBL_BOARD_HASHTAG_LIST 
+            ON TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_ID = TBL_BOARD_ASPECT.BOARD_HASHTAG_ID 
+          WHERE TBL_BOARD_ASPECT.BOARD_ID = TBL_BOARD.BOARD_ID 
+          AND TBL_BOARD_HASHTAG_LIST.IS_ACTIVE = 'Y' 
+        ) AS HASHTAGS
+
+    FROM TBL_BOARD
+    JOIN TBL_USER
+      ON TBL_USER.USER_ID = TBL_BOARD.USER_ID
+    WHERE TBL_BOARD.IS_ACTIVE = 'Y'
+  </sql>
+<select id="getProfileInfo" resultMap="mypageProfileDTO">
+    SELECT
+        u.user_id,
+        u.profile_filename,
+        u.nickname,
+        u.name,
+        u.brith_date,
+        u.intro,
+        u.phone,
+        u.email,
+        g.grade,
+        h.hashtag_name,
+        NVL(b.totalAnswers, 0) AS totalAnswers,
+        NVL(b.totalViews, 0) AS totalViews,
+        NVL(b.acceptedAnswers, 0) AS acceptedAnswers,
+        pCard.BOARD_ID,
+        pCard.TITLE,
+        pCard.VIEW_COUNT,
+        pCard.LIKE_COUNT,
+        pCard.REPLY_CNT,
+        pCard.THUMB_SRC,
+        pCard.HASHTAGS
+    FROM
+        tbl_user u
+        LEFT OUTER JOIN tbl_grade_list g ON u.grade_id = g.grade_id
+        LEFT OUTER JOIN tbl_user_aspect a ON u.user_id = a.user_id
+        LEFT OUTER JOIN tbl_hashtag_list h ON h.hashtag_id = a.hashtag_id
+        LEFT OUTER JOIN (
+            SELECT
+                user_id,
+                COUNT(CASE WHEN board_type = 'A' THEN 1 END) AS totalAnswers,
+                SUM(view_count) AS totalViews,
+                COUNT(CASE WHEN is_selected = 'Y' THEN 1 END) AS acceptedAnswers
+            FROM
+                tbl_board
+            GROUP BY
+                user_id
+        ) b ON u.user_id = b.user_id
+        LEFT OUTER JOIN (
+            SELECT * FROM (
+                SELECT 
+                    PC.*, 
+                    ROW_NUMBER() OVER (ORDER BY PC.BOARD_ID DESC) as rnum 
+                FROM (
+                    <include refid="PostsQuery" />
+                ) PC
+                WHERE PC.USER_ID = #{user_id} -- PostsQuery 내부에 유저ID 컬럼이 있어야 함
+            ) 
+            WHERE rnum &lt;= 5
+        ) pCard ON u.user_id = pCard.USER_ID
+    WHERE 
+        u.user_id = #{user_id}
+</select>
 </mapper>
