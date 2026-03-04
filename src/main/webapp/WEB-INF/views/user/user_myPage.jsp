@@ -330,41 +330,83 @@
               <form id="accountForm" class="account-form" method="post" action="${ctx}/mypage/account/update">
                 <div class="form-row">
                   <label class="label">이름</label>
-                  <input type="text" value="<c:out value='${profileUser.name}'/>" disabled />
+                  <c:choose>
+                  	<c:when test=" ${empty profileUser.name}">
+                  		<input type="text" value="<c:out value='${profileUser.name}' default=''/>" disabled />
+                  	</c:when>
+                  	<c:otherwise>
+                  		<input type="text" value="<c:out value='${profileUser.name}'/>" disabled />                  	
+                  	</c:otherwise>
+                  </c:choose>
                 </div>
                 <div class="form-row">
                   <label class="label">생년월일</label>
-                  <input type="text" value="<c:out value='${profileUser.birth_date}'/>" disabled />
+                  <c:choose>
+                  	<c:when test=" ${empty profileUser.brith_date}">
+                  		<input type="text" value="<c:out value='${profileUser.brith_date}' default=''/>" disabled />
+                  	</c:when>
+                  	<c:otherwise>
+                  		<input type="text" value="<c:out value='${profileUser.brith_date}'/>" disabled />            	
+                  	</c:otherwise>
+                  </c:choose>
                 </div>
 
                 <div class="form-row">
                   <label class="label">닉네임</label>
+                  <c:choose>
+                  	<c:when test=" ${empty profileUser.nickname}">
+                  		<input type="text" name="nickname" value="<c:out value='${profileUser.nickname}' default=''/>"/>
+                  	</c:when>
+                  	<c:otherwise>
+                  		<input type="text" name="nickname" value="<c:out value='${profileUser.nickname}'/>" />            	
+                  	</c:otherwise>
+                  </c:choose>
                   <div class="input-actions">
-                    <input type="text" name="nickname" value="<c:out value='${profileUser.nickname}'/>" />
                     <button type="submit" class="btn">수정</button>
                   </div>
                 </div>
 
                 <div class="form-row">
                   <label class="label">관심식물</label>
+                  <c:choose>
+                  	<c:when test=" ${empty profileUser.aspect}">
+                  		<input type="text" value="<c:out value='${profileUser.aspect}' default=''/>" />
+                  	</c:when>
+                  	<c:otherwise>
+                  		<input type="text" value="<c:out value='${profileUser.aspect}'/>" />            	
+                  	</c:otherwise>
+                  </c:choose>
                   <div class="input-actions">
-                    <input type="text" value="<c:out value='${profileUser.aspect}'/>" readonly />
                     <button type="button" class="btn" id="btnInterestPlant">+</button>
                   </div>
                 </div>
 
                 <div class="form-row">
                   <label class="label">휴대전화</label>
+                  <c:choose>
+                  	<c:when test=" ${empty profileUser.phone}">
+                  		<input type="text" id="inpPhone" value="<c:out value='${profileUser.phone}' default=''/>"/>
+                  	</c:when>
+                  	<c:otherwise>
+                  		<input type="text" id="inpPhone" value="<c:out value='${profileUser.phone}'/>" />            	
+                  	</c:otherwise>
+                  </c:choose>
                   <div class="input-actions">
-                    <input type="text" value="<c:out value='${profileUser.phone}'/>" readonly id="inpPhone" />
                     <button type="button" class="btn btn-ghost" id="btnPhoneVerify">인증</button>
                   </div>
                 </div>
 
                 <div class="form-row">
                   <label class="label">이메일</label>
+                  <c:choose>
+                  	<c:when test=" ${empty profileUser.email}">
+                  		<input type="text" id="btnEmailVerify" value="<c:out value='${profileUser.email}' default=''/>"/>
+                  	</c:when>
+                  	<c:otherwise>
+                  		<input type="text" id="btnEmailVerify" value="<c:out value='${profileUser.email}'/>" />            	
+                  	</c:otherwise>
+                  </c:choose>
                   <div class="input-actions">
-                    <input type="text" value="<c:out value='${profileUser.email}'/>" readonly id="inpEmail" />
                     <button type="button" class="btn btn-ghost" id="btnEmailVerify">인증</button>
                   </div>
                 </div>
