@@ -318,6 +318,7 @@ public class UserController {
 		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
 		boolean isOwner = (loginUser != null);
 		model.addAttribute("isOwner", isOwner);
+		//model.addAttribute("profileUser", loginUser);
 
 	    return "user/user_myPage";
 	}
