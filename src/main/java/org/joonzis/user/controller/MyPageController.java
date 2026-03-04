@@ -44,6 +44,7 @@ public class MyPageController {
 		}
 		int user_id = user.getUser_id();
 		
+		
 		// 커뮤니티 서비스에 user_id를 파라미터로 요청 부분 추가 예정!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		
 		if(postList != null)

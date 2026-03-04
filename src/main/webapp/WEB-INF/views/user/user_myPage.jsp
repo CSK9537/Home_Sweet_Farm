@@ -89,7 +89,8 @@
 			    </div>
 			    
 			    <!-- 회원 등급 -->
-			    <div class="box">
+			    <div class="box grade-box" id="btnGrade" role="button"
+			    tabidex="0" aria-controls="modalGrade">
 			      <div class="box-title">회원 등급</div>
 			
 			      <div class="grade-progress">
@@ -201,7 +202,7 @@
 					  </div>
 				  </div>
 				</div>
-
+		</section>
           <!-- =======================
                2) 작성글 (공개)
           ======================== -->
@@ -218,7 +219,7 @@
             </header>
 
             <div class="list-wrap"
-                 data-api="${ctx}/mypage/api/posts"
+                 data-api="${ctx}/user/myPage/posts"
                  data-default-tab="all">
               <div class="list-head">
                 <div class="list-count">
@@ -249,7 +250,7 @@
             </header>
 
             <div class="list-wrap"
-                 data-api="${ctx}/mypage/api/comments"
+                 data-api="${ctx}/user/myPage/replys"
                  data-default-tab="all">
               <div class="list-head">
                 <div class="list-count">
@@ -281,7 +282,7 @@
               </header>
 
               <div class="list-wrap"
-                   data-api="${ctx}/mypage/api/questions"
+                   data-api="${ctx}/user/myPage/questions"
                    data-default-tab="all">
                 <div class="list-head">
                   <div class="list-count">
@@ -312,7 +313,7 @@
             </header>
 
             <div class="list-wrap"
-                 data-api="${ctx}/mypage/api/answers"
+                 data-api="${ctx}/user/myPage/answers"
                  data-default-tab="all">
               <div class="list-head">
                 <div class="list-count">
@@ -400,19 +401,16 @@
                   		<input type="text" id="inpPhone" value="<c:out value='${profileUser.phone}'/>" />            	
                   	</c:otherwise>
                   </c:choose>
-                  <div class="input-actions">
-                    <button type="button" class="btn btn-ghost" id="btnPhoneVerify">인증</button>
-                  </div>
                 </div>
 
                 <div class="form-row">
                   <label class="label">이메일</label>
                   <c:choose>
                   	<c:when test=" ${empty profileUser.email}">
-                  		<input type="text" id="btnEmailVerify" value="<c:out value='${profileUser.email}' default=''/>"/>
+                  		<input type="text" value="<c:out value='${profileUser.email}' default=''/>"/>
                   	</c:when>
                   	<c:otherwise>
-                  		<input type="text" id="btnEmailVerify" value="<c:out value='${profileUser.email}'/>" />            	
+                  		<input type="text" value="<c:out value='${profileUser.email}'/>" />            	
                   	</c:otherwise>
                   </c:choose>
                   <div class="input-actions">
@@ -422,8 +420,6 @@
               </form>
             </section>
           </c:if>
-
-        </section>
       </div>
 
       <!-- =======================
