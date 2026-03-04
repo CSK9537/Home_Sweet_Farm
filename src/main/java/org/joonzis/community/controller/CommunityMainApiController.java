@@ -54,10 +54,6 @@ public class CommunityMainApiController {
         }
     }
 
-    /**
-     * ✅ 전체보기 API (서버에서 최대 100개 제공)
-     * GET /community/main/more?kind=popular|hot|latest|qa&limit=100
-     */
     @GetMapping("/community/main/more")
     public List<CommunityPostCardDTO> more(
             HttpServletRequest req,

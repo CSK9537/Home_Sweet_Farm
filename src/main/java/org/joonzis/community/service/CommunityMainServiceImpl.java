@@ -45,4 +45,12 @@ public class CommunityMainServiceImpl implements CommunityMainService {
 
         return communityMainMapper.selectMorePosts(p);
     }
+    
+    @Override
+    public List<CommunityPostCardDTO> getMyPosts(int userId, int limit) {
+    	Map<String, Object> p = new HashMap<String, Object>();
+        p.put("userId", userId);
+        p.put("limit", limit);
+        return communityMainMapper.selectMyPosts(p);
+    }
 }
