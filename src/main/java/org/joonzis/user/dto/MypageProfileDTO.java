@@ -24,6 +24,7 @@ public class MypageProfileDTO {
 	private List<String> aspect;// 관심사들
 	private String phone;		// 핸드폰 번호
 	private String email;		// 이메일 주소
+	private String address;		//주소
 	
 	private Integer totalAnswers;// 총 답변 수
 	private Integer totalViews;	// 총 조회수

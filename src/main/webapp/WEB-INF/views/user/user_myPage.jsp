@@ -417,6 +417,21 @@
                     <button type="button" class="btn btn-ghost" id="btnEmailVerify">인증</button>
                   </div>
                 </div>
+                <!-- 주소 html 추가 -->
+                 <div class="form-row">
+                  <label class="label">주소</label>
+                  <c:choose>
+                     <c:when test=" ${empty profileUser.address}">
+                        <input type="text" value="<c:out value='${profileUser.address}' default=''/>"/>
+                     </c:when>
+                     <c:otherwise>
+                        <input type="text" value="<c:out value='${profileUser.address}'/>" />               
+                     </c:otherwise>
+                  </c:choose>
+                  <div class="input-actions">
+                    <button type="submit" class="btn">수정</button>
+                  </div>
+                </div>
               </form>
             </section>
           </c:if>
@@ -431,7 +446,7 @@
       <div class="modal" id="modalGrade" role="dialog" aria-modal="true" aria-labelledby="modalGradeTitle" hidden>
         <div class="modal-card">
           <div class="modal-head">
-            <h3 id="modalGradeTitle">등급 안내</h3>
+            <h3 id="modalGradeTitle">회원등급</h3>
             <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
           </div>
           <div class="modal-body">
