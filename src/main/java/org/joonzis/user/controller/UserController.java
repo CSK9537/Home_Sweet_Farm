@@ -9,12 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.joonzis.user.dto.MypageProfileDTO;
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.service.UserService;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -315,11 +317,18 @@ public class UserController {
 	@GetMapping("/mypage")
 	public String moveMypage(HttpSession session, Model model) {
 
-		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+		UserVO loginUser = ((UserVO)session.getAttribute("loginUser"));
+		if(loginUser == null) {
+			log.warn("로그인하지 않은 사용자");
+			return "redirect:/user/login";
+		}
+		int user_id = loginUser.getUser_id();
+		
+		MypageProfileDTO profileUser = uservice.getProfile(user_id);
+		
 		boolean isOwner = (loginUser != null);
 		model.addAttribute("isOwner", isOwner);
-		//model.addAttribute("profileUser", loginUser);
-
+		model.addAttribute("profileUser", profileUser);
 	    return "user/user_myPage";
 	}
 

@@ -1,5 +1,6 @@
 package org.joonzis.user.service;
 
+import org.joonzis.user.dto.MypageProfileDTO;
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
 
@@ -45,4 +46,6 @@ public interface UserService {
 	/// 계정 활성 상태 변경
 	public int deletionUser(int user_id, int enable);
 	
+	// 마이페이지 정보
+	public MypageProfileDTO getProfile(int userId);
 }
