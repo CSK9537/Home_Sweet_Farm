@@ -3,6 +3,7 @@ package org.joonzis.myplant.service;
 import java.util.List;
 
 import org.joonzis.myplant.dto.MyPlantDTO;
+import org.joonzis.myplant.dto.MyPlantMainDTO;
 import org.joonzis.myplant.mapper.MyPlantMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

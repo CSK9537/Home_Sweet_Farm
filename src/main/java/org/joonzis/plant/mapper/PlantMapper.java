@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import org.joonzis.plant.dto.PlantDTO;
+import org.joonzis.plant.dto.PlantGuideDTO;
 import org.joonzis.plant.dto.SimplePlantDTO;
 
 public interface PlantMapper {
@@ -19,4 +20,7 @@ public interface PlantMapper {
 	public int getPlantId(String plant_name);
 	// 식물 정보 출력(plant_id)
 	public PlantDTO getPlantInfo(int plant_id);
+	// 나의 식물 추천 가이드 목록
+	public  List<PlantGuideDTO> selectPlantWithGuideList(@Param("limit") int limit);
+	
 }
