@@ -1,5 +1,6 @@
 package org.joonzis.user.service;
 
+import org.joonzis.user.dto.MypageProfileDTO;
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
 

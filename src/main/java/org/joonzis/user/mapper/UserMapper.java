@@ -3,6 +3,7 @@ package org.joonzis.user.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+import org.joonzis.user.dto.MypageProfileDTO;
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
 
