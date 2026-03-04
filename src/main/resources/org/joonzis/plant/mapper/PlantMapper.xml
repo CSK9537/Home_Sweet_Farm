@@ -117,4 +117,29 @@
 	<select id="getPlantInfo" resultType="org.joonzis.plant.dto.PlantDTO">
 		SELECT * FROM tbl_plant WHERE plant_id = #{plant_id}
 	</select>
+	<!-- 나의 식물 추천가이드 리스트 쿼리  -->
+	<select id="selectPlantWithGuideList"
+        resultType="org.joonzis.plant.dto.PlantGuideDTO">
+
+	    SELECT *
+	    FROM (
+	        SELECT
+	            p.plant_id AS plantId,
+	            p.plant_name AS plantName,
+	            p.plant_image AS imageUrl,
+	
+	            g.GUIDE_WATERING_HUMIDITYLEVEL AS humidityLevel,
+	            g.GUIDE_SUNLIGHT_TOLERANCE AS sunlightTolerance,
+	            g.GUIDE_TEMPERATURE_IMIN AS tempMin,
+	            g.GUIDE_TEMPERATURE_IMAX AS tempMax
+	
+	        FROM tbl_plant p
+	        LEFT JOIN tbl_guide g
+	            ON p.plant_id = g.plant_id
+	        ORDER BY p.plant_searchcount DESC
+	    )
+	    WHERE ROWNUM &lt;= #{limit}
+	
+	</select>
+	
 </mapper>
