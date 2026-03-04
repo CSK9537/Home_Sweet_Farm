@@ -245,6 +245,7 @@
 		<result property="intro" column="intro"/>
 		<result property="phone" column="phone"/>
 		<result property="email" column="email"/>
+		<result property="address" column="address"/>
 		<result property="totalAnswers" column="totalAnswers"/>
 		<result property="totalViews" column="totalViews"/>
 		<result property="acceptedAnswers" column="acceptedAnswers"/>
@@ -313,6 +314,7 @@
         u.intro,
         u.phone,
         u.email,
+        u.address,
         g.grade,
         h.hashtag_name,
         NVL(b.totalAnswers, 0) AS totalAnswers,
