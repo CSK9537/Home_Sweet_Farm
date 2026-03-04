@@ -252,19 +252,30 @@
 			<result column="hashtag_name"/>
 		</collection>
 		<collection property="posts" ofType="org.joonzis.community.dto.CommunityPostCardDTO">
-		    <id property="boardId"    column="BOARD_ID"/>
-		    <result property="title"      column="TITLE"/>
-		    <result property="userId"     column="USERID"/>
-		    <result property="thumbSrc"   column="THUMB_SRC"/>
-		    <result property="viewCount"  column="VIEW_COUNT"/>
-		    <result property="likeCount"  column="LIKE_COUNT"/>
-		    <result property="replyCount" column="REPLY_CNT"/>
-		    <result property="hashtags"   column="HASHTAGS"/>
+		    <id property="boardId"    column="pBOARD_ID"/>
+		    <result property="title"      column="pTITLE"/>
+		    <result property="userId"     column="pUSERID"/>
+		    <result property="thumbSrc"   column="pTHUMB_SRC"/>
+		    <result property="viewCount"  column="pVIEW_COUNT"/>
+		    <result property="likeCount"  column="pLIKE_COUNT"/>
+		    <result property="replyCount" column="pREPLY_CNT"/>
+		    <result property="hashtags"   column="pHASHTAGS"/>
+		</collection>
+		<collection property="quests" ofType="org.joonzis.community.dto.CommunityPostCardDTO">
+		    <id property="boardId"    column="qBOARD_ID"/>
+		    <result property="title"      column="qTITLE"/>
+		    <result property="userId"     column="qUSERID"/>
+		    <result property="thumbSrc"   column="qTHUMB_SRC"/>
+		    <result property="viewCount"  column="qVIEW_COUNT"/>
+		    <result property="likeCount"  column="qLIKE_COUNT"/>
+		    <result property="replyCount" column="qREPLY_CNT"/>
+		    <result property="hashtags"   column="qHASHTAGS"/>
 		</collection>
 	</resultMap>
 	  <sql id="PostsQuery">
     SELECT
       TBL_BOARD.user_id,
+      TBL_BOARD.board_type,
       TBL_BOARD.BOARD_ID AS BOARD_ID,
       TBL_BOARD.TITLE    AS TITLE,
       NVL(TBL_USER.NICKNAME, '익명') AS AUTHOR,
@@ -307,13 +318,20 @@
         NVL(b.totalAnswers, 0) AS totalAnswers,
         NVL(b.totalViews, 0) AS totalViews,
         NVL(b.acceptedAnswers, 0) AS acceptedAnswers,
-        pCard.BOARD_ID,
-        pCard.TITLE,
-        pCard.VIEW_COUNT,
-        pCard.LIKE_COUNT,
-        pCard.REPLY_CNT,
-        pCard.THUMB_SRC,
-        pCard.HASHTAGS
+        pCard.BOARD_ID as pBOARD_ID,
+        pCard.TITLE as pTITLE, 
+        pCard.VIEW_COUNT as pVIEW_COUNT,
+        pCard.LIKE_COUNT as pLIKE_COUNT,
+        pCard.REPLY_CNT as pREPLY_CNT,
+        pCard.THUMB_SRC as pTHUMB_SRC,
+        pCard.HASHTAGS as pHASHTAGS,
+        qCard.BOARD_ID as qBOARD_ID,
+        qCard.TITLE as qTITLE,
+        qCard.VIEW_COUNT as qVIEW_COUNT,
+        qCard.LIKE_COUNT as qLIKE_COUNT,
+        qCard.REPLY_CNT as qREPLY_CNT,
+        qCard.THUMB_SRC as qTHUMB_SRC,
+        qCard.HASHTAGS as qHASHTAGS
     FROM
         tbl_user u
         LEFT OUTER JOIN tbl_grade_list g ON u.grade_id = g.grade_id
@@ -330,18 +348,25 @@
             GROUP BY
                 user_id
         ) b ON u.user_id = b.user_id
+-- 1. 일반 게시글 (최신 3개)
         LEFT OUTER JOIN (
             SELECT * FROM (
-                SELECT 
-                    PC.*, 
-                    ROW_NUMBER() OVER (ORDER BY PC.BOARD_ID DESC) as rnum 
-                FROM (
-                    <include refid="PostsQuery" />
-                ) PC
-                WHERE PC.USER_ID = #{user_id} -- PostsQuery 내부에 유저ID 컬럼이 있어야 함
-            ) 
-            WHERE rnum &lt;= 5
+                SELECT PC.*, ROW_NUMBER() OVER (ORDER BY PC.BOARD_ID DESC) as rnum 
+                FROM (<include refid="PostsQuery" />) PC
+                WHERE PC.USER_ID = #{user_id} 
+                  AND PC.BOARD_TYPE != 'Q' -- 질문글 제외 (혹은 특정 타입 지정)
+            ) WHERE rnum &lt;= 3
         ) pCard ON u.user_id = pCard.USER_ID
+
+        -- 2. 최신 질문글 (최신 3개)
+        LEFT OUTER JOIN (
+            SELECT * FROM (
+                SELECT QC.*, ROW_NUMBER() OVER (ORDER BY QC.BOARD_ID DESC) as q_rnum 
+                FROM (<include refid="PostsQuery" />) QC
+                WHERE QC.USER_ID = #{user_id} 
+                  AND QC.BOARD_TYPE = 'Q' -- 질문글만 필터링
+            ) WHERE q_rnum &lt;= 3
+        ) qCard ON u.user_id = qCard.USER_ID
     WHERE 
         u.user_id = #{user_id}
 </select>

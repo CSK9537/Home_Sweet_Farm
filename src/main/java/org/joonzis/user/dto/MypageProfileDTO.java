@@ -29,5 +29,6 @@ public class MypageProfileDTO {
 	private Integer totalViews;	// 총 조회수
 	private Integer acceptedAnswers;// 채택된 답변 수
 	
-	private List<CommunityPostCardDTO> posts; // 최신 글
+	private List<CommunityPostCardDTO> posts; // 최신 게시글
+	private List<CommunityPostCardDTO> quests; // 최신 질문글
 }
