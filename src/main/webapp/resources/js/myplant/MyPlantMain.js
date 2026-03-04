@@ -190,4 +190,64 @@ document.addEventListener('DOMContentLoaded', () => {
             element.classList.add('status__value--bad');  // 빨간색 (경고/위험)
         }
     }
+    
+ // 식물 삭제 로직
+    const plantListContainer = document.querySelector('.myplants-list');
+
+    if (plantListContainer) {
+        plantListContainer.addEventListener('click', (e) => {
+            // 클릭된 요소가 '삭제' 버튼인지 확인
+            if (e.target.classList.contains('removeMyPlant')) {
+                
+                // 최상위 식물 아이템(li)과 ID 가져오기
+                const plantItem = e.target.closest('.plant-item');
+                if (!plantItem) return; // 요소가 없으면 중단
+
+                const plantId = plantItem.dataset.plantId;
+
+                // 커스텀 알림창 띄우기
+                showCustomToast("정말 삭제하시겠습니까?", "warning", true)
+                    .then((result) => {
+                        // 사용자가 확인을 누르면 삭제 진행
+                        if (result && result.isConfirmed) {
+                            deleteMyPlant(plantId, plantItem);
+                        }
+                    });
+            }
+        });
+    }
+
+    function deleteMyPlant(plantId, plantItemElement) {
+        fetch(`/myplant/remove/${plantId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                // 필요 시 여기에 CSRF 토큰 등을 추가하세요
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // 서버 삭제 성공 시: 화면에서 해당 식물 요소 즉시 제거
+                plantItemElement.remove();
+                showCustomToast("성공적으로 삭제되었습니다.", "success");
+                
+                // 모든 식물이 삭제되었다면 '빈 상태' 화면으로 전환 (새로고침)
+                checkEmptyState(); 
+            } else {
+                showCustomToast("삭제에 실패했습니다. 다시 시도해 주세요.", "error");
+            }
+        })
+        .catch(error => {
+            console.error("삭제 요청 중 오류 발생:", error);
+            showCustomToast("서버 통신 중 문제가 발생했습니다.", "error");
+        });
+    }
+
+    function checkEmptyState() {
+        const remainingPlants = document.querySelectorAll('.plant-item');
+        if (remainingPlants.length === 0) {
+            // 요소가 하나도 없으면 페이지를 새로고침하여 JSP의 빈 화면(c:if 등)을 렌더링
+            location.reload(); 
+        }
+    }
 });
