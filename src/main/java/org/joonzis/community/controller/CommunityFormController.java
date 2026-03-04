@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import org.joonzis.community.dto.UploadResponseDTO;
 import org.joonzis.community.service.CommunityFormService;
 import org.joonzis.community.vo.BoardVO;
+import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.Resource;
@@ -39,12 +40,11 @@ public class CommunityFormController {
     private String uploadRoot;
 
     private int loginUserId(HttpSession session) {
-        Object v = session.getAttribute("user_id");
-        if (v instanceof Integer) return (Integer) v;
-        if (v instanceof String) {
-            try { return Integer.parseInt((String) v); } catch (Exception e) {}
-        }
-        return 0;
+        Object v = session.getAttribute("loginUser");
+        if(v instanceof UserVO)
+        	return ((UserVO)v).getUser_id();
+        else
+        	return 0;
     }
 
     // ====== 폼 진입 ======
@@ -65,7 +65,7 @@ public class CommunityFormController {
 
         // ===== edit 모드: 기존 게시글 로드 + 권한 체크 + boardType은 DB 기준 =====
         if ("edit".equalsIgnoreCase(mode)) {
-            if (uid <= 0) return "redirect:/login";
+            if (uid <= 0) return "redirect:/user/login";
             if (board_id == null) return "redirect:/community/main";
 
             BoardVO post = formService.getBoardById(board_id);
@@ -85,7 +85,9 @@ public class CommunityFormController {
     }
 
     // ====== 선업로드 ======
-    @PostMapping("/upload")
+    @PostMapping( 
+    		value= "/upload",
+    		produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<?> upload(
             @RequestParam("file") MultipartFile file,
@@ -156,7 +158,7 @@ public class CommunityFormController {
                         HttpServletRequest req) {
 
         int uid = loginUserId(session);
-        if (uid <= 0) return "redirect:/login";
+        if (uid <= 0) return "redirect:/user/login";
 
         board.setContent(contentHtml);
 
