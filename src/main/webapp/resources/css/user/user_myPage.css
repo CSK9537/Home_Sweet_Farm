@@ -449,6 +449,36 @@
   border-radius: 12px;
   border: 1px solid rgba(107, 123, 97, 0.35);
 }
+/*회원등급 모달*/
+.grade-guide h4{
+  margin-top:15px;
+  margin-bottom:6px;
+  font-weight:600;
+}
+
+.grade-box{
+  border:1px solid #ccc;
+  border-radius:6px;
+  padding:10px;
+  margin-bottom:10px;
+  background:#fafafa;
+}
+
+.grade-box ol{
+  margin:0;
+  padding-left:18px;
+}
+
+.expert-link{
+  text-align:right;
+  margin-top:5px;
+}
+
+.expert-link a{
+  font-size:13px;
+  color:#666;
+  text-decoration:none;
+}
 
 /* 인증 그리드 */
 .verify-grid {
