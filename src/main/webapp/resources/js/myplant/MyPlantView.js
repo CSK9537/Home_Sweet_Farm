@@ -317,4 +317,75 @@ document.addEventListener('DOMContentLoaded', () => {
             valueElement.classList.add('status__value--bad');   // 빨간색 (위험/오류)
         }
     }
+    
+    
+    // 다가오는 가장 가까운 일정 가져오기
+    var nextScheduleEl = document.getElementById("nextScheduleText");
+    if (nextScheduleEl) {
+      var myplant_id = nextScheduleEl.getAttribute("data-plant-id");
+      updateNextSchedule(myplant_id);
+    }
+    
+    function updateNextSchedule(myplant_id) {
+      var ctx = window.ctx || "";
+      var nextScheduleEl = document.getElementById("nextScheduleText");
+      if (!nextScheduleEl) return;
+
+      fetch(ctx + "/myplant/schedule/" + myplant_id)
+        .then(function(res) {
+          if (!res.ok) throw new Error("네트워크 응답 에러");
+          return res.json();
+        })
+        .then(function(data) {
+          // 1. 오늘 날짜 구하기 (YYYY-MM-DD)
+          var today = new Date();
+          var todayYmd = today.getFullYear() + "-" + 
+                         String(today.getMonth() + 1).padStart(2, '0') + "-" + 
+                         String(today.getDate()).padStart(2, '0');
+
+          // 2. 오늘 포함하여 이후의 일정만 필터링
+          var futureEvents = data.filter(function(e) {
+            return String(e.date) >= todayYmd;
+          });
+
+          // 3. 다가오는 일정이 없으면 기본 문구 출력
+          if (futureEvents.length === 0) {
+            nextScheduleEl.textContent = "등록된 일정이 없어요";
+            return;
+          }
+
+          // 4. 날짜순으로 오름차순 정렬 (가장 가까운 날짜가 0번 인덱스에 오도록)
+          futureEvents.sort(function(a, b) {
+            if (a.date < b.date) return -1;
+            if (a.date > b.date) return 1;
+            return 0;
+          });
+
+          // 5. 가장 가까운 날짜(nextDate)를 찾고, 해당 날짜와 동일한 모든 일정 추출 (중복 일정 표시용)
+          var nextDate = futureEvents[0].date;
+          var sameDateEvents = futureEvents.filter(function(e) {
+            return e.date === nextDate;
+          });
+
+          // 6. 이모지와 타이틀 텍스트 조합 (예: 💧 물주기, 🧪 영양제)
+          var TYPE_EMOJI = { water: "💧", nutri: "🧪", repot: "🪴" };
+          var titles = sameDateEvents.map(function(e) {
+            var emoji = TYPE_EMOJI[e.type] || "🗓️";
+            return emoji + " " + e.title;
+          }).join(", ");
+
+          // 7. 화면에 출력
+          nextScheduleEl.textContent = "다가오는 일정 : " + titles + " (" + nextDate + ")";
+        })
+        .catch(function(err) {
+          console.error("다가오는 일정 갱신 실패:", err);
+        });
+    }
+    
+    // 스케쥴 변동 감지
+    window.addEventListener("scheduleUpdated", function(e) {
+    	if (e.detail && e.detail.myplant_id) {
+    		updateNextSchedule(e.detail.myplant_id);
+    	}
+    });
 });

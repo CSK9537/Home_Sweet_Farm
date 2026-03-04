@@ -1,11 +1,14 @@
-/* schedule-modal.js (완성본 / ES5 호환)
+/* schedule-modal.js (실시간 서버 연동 버전 / 타입 안정성 강화 / 중복 방지 추가 / ES5 호환)
  * 요구사항 반영:
  * - 날짜칸 일정: 이모지 요약(+N)
- * - 하단 footer 버튼 제거(취소/저장은 MEMO 옆)
- * - 취소: 모달 오픈 시점(snapshot)으로 원복 후 닫기
- * - 저장: (TODO 서버 저장) 성공 시 snapshot 갱신 후 닫기
- * - 닫기(X), ESC: 취소와 동일 동작(저장 안 하면 DB 반영 X)
+ * - 취소/저장 스냅샷 로직 제거 (실시간 DB 반영)
+ * - 추가/삭제 시 즉시 서버 통신 (fetch)
+ * - 닫기(X), ESC: 모달 닫기
+ * - 서버 응답 데이터 타입 명시적 변환 적용
+ * - 동일 날짜 동일 타입(물주기 등) 중복 추가 방지
  */
+
+var ctx = window.ctx || ""; // JSP에서 선언된 Context Path
 
 var MONTH_EN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -18,57 +21,74 @@ var TYPE_EMOJI = {
 var MAX_CELL_MARKS = 4;
 
 var calState = {
-  plantId: null,
+  myplant_id: null, // Number
   viewDate: new Date(),
-  selected: null,
-  events: [],     // {id, plantId, date(yyyy-mm-dd), type, title}
-  snapshot: []    // 현재 plant의 오픈 시점 스냅샷(취소 기준)
+  selected: null, // String "YYYY-MM-DD"
+  events: []      // {id: Number, myplant_id: Number, date: String, type: String, title: String}
 };
 
 var dragPayload = null;
 
 function pad2(n){ return String(n).padStart(2,"0"); }
 function toYMD(d){ return d.getFullYear() + "-" + pad2(d.getMonth()+1) + "-" + pad2(d.getDate()); }
-function deepCopy(obj){ return JSON.parse(JSON.stringify(obj)); }
-
-function uid(){
-  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-  return String(Date.now()) + Math.random();
-}
 
 /* ===== open/close ===== */
-function openScheduleModal(plantId){
-  calState.plantId = plantId;
+function openScheduleModal(myplant_id){
+  calState.myplant_id = Number(myplant_id);
 
   var modal = document.getElementById("calModal");
   modal.setAttribute("aria-hidden","false");
-  document.body.style.overflow = "hidden";
 
   initMemoPalette();
 
-  // ✅ 취소 기준 스냅샷 저장(해당 plant만)
-  var plantEvents = calState.events.filter(function(e){ return e.plantId === calState.plantId; });
-  calState.snapshot = deepCopy(plantEvents);
+  fetch(ctx + "/myplant/schedule/" + calState.myplant_id)
+    .then(function(res) {
+      if (!res.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
+      return res.json();
+    })
+    .then(function(data) {
+      var formattedData = data.map(function(item) {
+        return {
+          id: Number(item.id),
+          myplant_id: Number(item.myplant_id),
+          date: String(item.date),
+          type: String(item.type),
+          title: String(item.title)
+        };
+      });
 
-  // 선택 날짜가 없으면 오늘로(원치 않으면 제거 가능)
-  if(!calState.selected){
-    calState.selected = toYMD(new Date());
-  }
-  var memoDateEl = document.getElementById("memoDate");
-  if(memoDateEl){
-    memoDateEl.textContent = calState.selected ? calState.selected : "날짜를 선택하세요";
-  }
+      var otherEvents = calState.events.filter(function(e){ return e.myplant_id !== calState.myplant_id; });
+      calState.events = otherEvents.concat(formattedData);
 
-  renderCalendar();
-  renderScheduleList();
+      if(!calState.selected){
+        calState.selected = toYMD(new Date());
+      }
+      var memoDateEl = document.getElementById("memoDate");
+      if(memoDateEl){
+        memoDateEl.textContent = calState.selected;
+      }
+
+      renderCalendar();
+      renderScheduleList();
+    })
+    .catch(function(err) {
+      console.error("일정 불러오기 에러:", err);
+      showCustomToast("일정을 불러오는데 실패했습니다.", "error");
+    });
 }
 
 function closeScheduleModal(){
   var modal = document.getElementById("calModal");
   modal.setAttribute("aria-hidden","true");
-  document.body.style.overflow = "";
   dragPayload = null;
   clearDropHighlight();
+  // 모달이 닫힐 때 전역 객체(window)에 커스텀 이벤트 발생시키기
+  if (calState.myplant_id) {
+    var event = new CustomEvent("scheduleUpdated", {
+      detail: { myplant_id: calState.myplant_id } // 전달할 데이터
+    });
+    window.dispatchEvent(event);
+  }
 }
 
 /* ===== top nav ===== */
@@ -81,55 +101,28 @@ function calNext(){
   renderCalendar();
 }
 function calToday(){
-	  var today = new Date();
+  var today = new Date();
 
-	  // 1️⃣ 월 이동
-	  calState.viewDate = new Date(today.getFullYear(), today.getMonth(), 1);
+  calState.viewDate = new Date(today.getFullYear(), today.getMonth(), 1);
 
-	  // 2️⃣ 오늘 날짜 선택
-	  var todayYmd = toYMD(today);
-	  calState.selected = todayYmd;
+  var todayYmd = toYMD(today);
+  calState.selected = todayYmd;
 
-	  // 3️⃣ 오른쪽 MEMO 날짜 표시 변경
-	  var memoDateEl = document.getElementById("memoDate");
-	  if(memoDateEl){
-	    memoDateEl.textContent = todayYmd;
-	  }
-
-	  // 4️⃣ 다시 렌더링
-	  renderCalendar();
-	  renderScheduleList();
-	}
-
-
-/* ===== cancel/save ===== */
-
-// 내부 원복(스냅샷 기준) - 기존 calReset을 “내부용”으로 의미 명확화
-function restoreFromSnapshot(){
-  // 다른 plant 이벤트는 유지, 현재 plant 이벤트만 snapshot으로 되돌림
-  calState.events = calState.events
-    .filter(function(e){ return e.plantId !== calState.plantId; })
-    .concat(deepCopy(calState.snapshot));
+  var memoDateEl = document.getElementById("memoDate");
+  if(memoDateEl){
+    memoDateEl.textContent = todayYmd;
+  }
 
   renderCalendar();
   renderScheduleList();
 }
 
-// ✅ 취소 버튼: 원복 후 닫기
+/* ===== cancel/save (실시간 처리로 인한 대체) ===== */
 function calCancel(){
-  restoreFromSnapshot();
   closeScheduleModal();
 }
 
-// ✅ 저장 버튼: (TODO 서버 저장) 성공 시 snapshot 갱신 후 닫기
 function calSave(){
-  // 1) 저장할 데이터(현재 plant)
-  var plantEvents = calState.events.filter(function(e){ return e.plantId === calState.plantId; });
-
-  // 2) TODO: 서버 저장(fetch/AJAX)
-  // 성공했다고 가정하고 snapshot 갱신
-  calState.snapshot = deepCopy(plantEvents);
-
   closeScheduleModal();
 }
 
@@ -141,16 +134,14 @@ function initMemoPalette(){
 
   var btns = palette.querySelectorAll(".memo-item");
   Array.prototype.forEach.call(btns, function(btn){
-    // click => add to selected date
     btn.addEventListener("click", function(){
       if(!calState.selected){
-        alert("먼저 캘린더에서 날짜를 선택하세요.");
+    	showCustomToast("먼저 캘린더에서 날짜를 선택하세요.", "warning");
         return;
       }
       addQuickSchedule(calState.selected, btn.dataset.type, btn.dataset.title);
     });
 
-    // drag start
     btn.addEventListener("dragstart", function(e){
       dragPayload = { type: btn.dataset.type, title: btn.dataset.title };
       e.dataTransfer.effectAllowed = "copy";
@@ -164,31 +155,88 @@ function initMemoPalette(){
   });
 }
 
-/* ===== add/delete event ===== */
+/* ===== add/delete event (서버 실시간 연동) ===== */
 function addQuickSchedule(dateYmd, type, title){
-  calState.events.push({
-    id: uid(),
-    plantId: calState.plantId,
-    date: dateYmd,
-    type: type,
-    title: title
+  // 💡 [추가된 부분] 해당 날짜에 같은 타입(물주기, 영양제 등)이 이미 존재하는지 검사
+  var isDuplicate = calState.events.some(function(e) {
+    return e.myplant_id === calState.myplant_id && 
+           e.date === String(dateYmd) && 
+           e.type === String(type);
   });
 
-  calState.selected = dateYmd;
+  if (isDuplicate) {
+	showCustomToast("이미 해당 날짜에 [" + title + "] 일정이 등록되어 있습니다.", "warning");
+    return; // 중복이면 함수 실행을 중단하고 서버 요청을 보내지 않음
+  }
 
-  var memoDateEl = document.getElementById("memoDate");
-  if(memoDateEl) memoDateEl.textContent = dateYmd;
+  var payload = {
+    myplant_id: Number(calState.myplant_id),
+    date: String(dateYmd),
+    type: String(type),
+    title: String(title)
+  };
 
-  renderCalendar();
-  renderScheduleList();
+  fetch(ctx + "/myplant/schedule", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(function(res) {
+    if(!res.ok) throw new Error("서버 저장 실패");
+    return res.json(); 
+  })
+  .then(function(savedEvent) {
+    var formattedEvent = {
+      id: Number(savedEvent.id),
+      myplant_id: Number(savedEvent.myplant_id),
+      date: String(savedEvent.date),
+      type: String(savedEvent.type),
+      title: String(savedEvent.title)
+    };
+
+    calState.events.push(formattedEvent);
+    calState.selected = String(dateYmd);
+
+    var memoDateEl = document.getElementById("memoDate");
+    if(memoDateEl) memoDateEl.textContent = calState.selected;
+
+    renderCalendar();
+    renderScheduleList();
+  })
+  .catch(function(err) {
+    console.error("일정 추가 에러:", err);
+    showCustomToast("일정 추가에 실패했습니다.", "error");
+  });
 }
 
-function deleteEvent(id){
-  calState.events = calState.events.filter(function(e){ return e.id !== id; });
-  renderCalendar();
-  renderScheduleList();
-}
+function deleteEvent(id) {
+  showCustomToast("해당 일정을 삭제하시겠습니까?", "warning", true)
+    .then(function(result) {
+      if (result.isConfirmed) {
+        var targetId = Number(id);
 
+        fetch(ctx + "/myplant/schedule/" + targetId, {
+          method: "DELETE"
+        })
+        .then(function(res) {
+          if(!res.ok) throw new Error("서버 삭제 실패");
+          return res.text();
+        })
+        .then(function(text) {
+          if(text === "success") {
+            // 삭제 성공 시 로컬 배열 제거 후 화면 갱신
+            calState.events = calState.events.filter(function(e){ return e.id !== targetId; });
+            renderCalendar();
+            renderScheduleList();
+          }
+        })
+        .catch(function(err) {
+          console.error("일정 삭제 에러:", err);
+          showCustomToast("일정 삭제에 실패했습니다.", "error");
+        });
+      }
+    });
+}
 /* ===== calendar ===== */
 function clearDropHighlight(){
   var els = document.querySelectorAll(".cal-cell--droppable");
@@ -198,13 +246,13 @@ function clearDropHighlight(){
 }
 
 function renderCalendar(){
-	var y = calState.viewDate.getFullYear();
-	var m = calState.viewDate.getMonth();
-	
-	var mk = document.getElementById("calMonthKr");
-	var me = document.getElementById("calMonthEn");
-	
-	if(mk) mk.textContent = y + "년 " + (m+1) + "월";
+  var y = calState.viewDate.getFullYear();
+  var m = calState.viewDate.getMonth();
+  
+  var mk = document.getElementById("calMonthKr");
+  var me = document.getElementById("calMonthEn");
+  
+  if(mk) mk.textContent = y + "년 " + (m+1) + "월";
 
   var grid = document.getElementById("calGrid");
   if(!grid) return;
@@ -230,18 +278,15 @@ function renderCalendar(){
       if(dow===6) cell.classList.add("cal-cell--sat");
       if(calState.selected === ymd) cell.classList.add("cal-cell--selected");
 
-      // day label
       var day = document.createElement("div");
       day.className = "cal-cell__day";
       day.textContent = d.getDate();
       cell.appendChild(day);
 
-      // events of the day
       var todays = calState.events.filter(function(e){
-        return e.plantId === calState.plantId && e.date === ymd;
+        return e.myplant_id === calState.myplant_id && e.date === ymd;
       });
 
-      // ✅ 이모지 요약(+N)
       if(todays.length > 0){
         var marks = document.createElement("div");
         marks.className = "cal-marks";
@@ -265,9 +310,8 @@ function renderCalendar(){
         cell.appendChild(marks);
       }
 
-      // click select
       cell.addEventListener("click", function(){
-        calState.selected = ymd;
+        calState.selected = String(ymd);
         var memoDateEl = document.getElementById("memoDate");
         if(memoDateEl) memoDateEl.textContent = ymd;
 
@@ -275,7 +319,6 @@ function renderCalendar(){
         renderScheduleList();
       });
 
-      // drag over / drop => add schedule to that day
       cell.addEventListener("dragover", function(e){
         e.preventDefault();
         cell.classList.add("cal-cell--droppable");
@@ -315,7 +358,7 @@ function renderScheduleList(){
   }
 
   var list = calState.events.filter(function(e){
-    return e.plantId === calState.plantId && e.date === calState.selected;
+    return e.myplant_id === calState.myplant_id && e.date === calState.selected;
   });
 
   if(list.length === 0){
@@ -344,7 +387,7 @@ document.addEventListener("keydown", function(e){
   if(e.key === "Escape"){
     var modal = document.getElementById("calModal");
     if(modal && modal.getAttribute("aria-hidden") === "false"){
-      calCancel(); // ✅ 저장 안 했으면 변경 취소하고 닫기
+      closeScheduleModal(); 
     }
   }
 });

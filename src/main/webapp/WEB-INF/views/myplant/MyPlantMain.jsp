@@ -13,7 +13,7 @@
         <h2 class="myplants__title">나의 식물</h2>
         <c:if test="${not empty sessionScope.loginUser}">
         <button class="mp-btn mp-btn--primary" type="button" id="openAddPlantModal" data-insert-open>
-		  	나의식물 추가
+		  	나의 식물 추가
 		</button>
 		</c:if>
       </div>

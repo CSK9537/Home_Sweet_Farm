@@ -127,12 +127,10 @@
               <!-- 상세일정 버튼 (기준 버튼) -->
               <button type="button"
                       class="btn btn--sm"
-                      onclick="openScheduleModal(${p.myplant_id});">
-                상세 일정
-              </button>
+                      onclick="openScheduleModal(${p.myplant_id});">상세 일정</button>
             </div>
 
-            <p class="plant-detail__schedule-next">
+            <p class="plant-detail__schedule-next" id="nextScheduleText" data-plant-id="${p.myplant_id}">
              	 등록된 일정이 없어요
             </p>
           </div>
@@ -181,11 +179,6 @@
         <div class="cal-side__head">
           <div class="cal-side__head-top">
             <div class="cal-side__title">Schedule</div>
-
-            <div class="cal-side__actions">
-              <button type="button" class="cal-btn cal-btn--ghost" onclick="calCancel()">취소</button>
-              <button type="button" class="cal-btn cal-btn--primary" onclick="calSave()">저장</button>
-            </div>
           </div>
 
           <div class="cal-side__date" id="memoDate">날짜를 선택하세요</div>
