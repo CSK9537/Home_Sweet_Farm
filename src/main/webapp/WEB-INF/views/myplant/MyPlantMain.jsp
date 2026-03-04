@@ -80,19 +80,19 @@
                   <div class="status-grid">
                     <div class="status">
                       <img class="status__label" src="${pageContext.request.contextPath}/resources/image/light_50x50.png" alt="light" />
-                      <span class="status__value status__value--warn" id="realtimeLux_${p.myplant_id}">100lux</span>
+                      <span class="status__value status__value--warn" id="realtimeLux_${p.myplant_id}">다소 낮음</span>
                     </div>
                     <div class="status">
                       <img class="status__label" src="${pageContext.request.contextPath}/resources/image/humidity_50x50.png" alt="humidity" />
-                      <span class="status__value status__value--good" id="realtimeHumi_${p.myplant_id}">100%RH</span>
+                      <span class="status__value status__value--good" id="realtimeHumi_${p.myplant_id}">적정</span>
                     </div>
                     <div class="status">
                       <img class="status__label" src="${pageContext.request.contextPath}/resources/image/temperature_50x50.png" alt="temperature" />
-                      <span class="status__value status__value--bad" id="realtimeTemp_${p.myplant_id}">100℃</span>
+                      <span class="status__value status__value--bad" id="realtimeTemp_${p.myplant_id}">매우 높음</span>
                     </div>
                     <div class="status">
                       <img class="status__label" src="${pageContext.request.contextPath}/resources/image/soil_50x50.png" alt="soil" />
-                      <span class="status__value status__value--bad" id="realtimeSoilMoist_${p.myplant_id}">100V</span>
+                      <span class="status__value status__value--bad" id="realtimeSoilMoist_${p.myplant_id}">매우 낮음</span>
                     </div>
                   </div>
                 </div>
