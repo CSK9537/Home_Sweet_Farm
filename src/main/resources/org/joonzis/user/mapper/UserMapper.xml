@@ -259,7 +259,7 @@
 		    <result property="thumbSrc"   column="pTHUMB_SRC"/>
 		    <result property="viewCount"  column="pVIEW_COUNT"/>
 		    <result property="likeCount"  column="pLIKE_COUNT"/>
-		    <result property="replyCount" column="pREPLY_CNT"/>
+		    <result property="replyCnt" column="pREPLY_CNT"/>
 		    <result property="hashtags"   column="pHASHTAGS"/>
 		</collection>
 		<collection property="quests" ofType="org.joonzis.community.dto.CommunityPostCardDTO">
@@ -269,7 +269,7 @@
 		    <result property="thumbSrc"   column="qTHUMB_SRC"/>
 		    <result property="viewCount"  column="qVIEW_COUNT"/>
 		    <result property="likeCount"  column="qLIKE_COUNT"/>
-		    <result property="replyCount" column="qREPLY_CNT"/>
+		    <result property="replyCnt" column="qREPLY_CNT"/>
 		    <result property="hashtags"   column="qHASHTAGS"/>
 		</collection>
 	</resultMap>
