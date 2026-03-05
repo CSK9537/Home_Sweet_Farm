@@ -2,7 +2,7 @@ import { chatState } from "./ChatState.js";
 import { loadMessages } from "./ChatMessage.js";
 
 export function jumpToMessage(msgId, keyword) {
-        document.querySelectorAll(".message-box .text-content").forEach(el => {
+    document.querySelectorAll(".message-box .text-content").forEach(el => {
         if (el.dataset.original) {
             el.textContent = el.dataset.original;
             delete el.dataset.original;
@@ -52,7 +52,7 @@ export function jumpToMessage(msgId, keyword) {
 // 검색 데이터 수 업데이트
 export function updateSearchCounter() {
 
-  const searchCounter = document.querySelector(".search-counter");
+    const searchCounter = document.querySelector(".search-counter");
 
     if (!chatState.search.searchMsgIds || chatState.search.searchMsgIds.length === 0) {
         searchCounter.textContent = "0 / 0";
@@ -64,14 +64,12 @@ export function updateSearchCounter() {
 }
 
 export function initSearchInput() {
-
     const searchInput = document.querySelector(".chat-search-box input");
     const searchTypeSelect = document.getElementById("searchType");
 
-        // 검색 타입
     searchInput.addEventListener("input", () => {
         const keyword = searchInput.value.trim();
-        const searchType = searchTypeSelect.value; // 'message' 또는 'user'
+        const searchType = searchTypeSelect.value;
 
         if (!keyword) {
             chatState.search.searchMsgIds = [];
@@ -85,18 +83,21 @@ export function initSearchInput() {
         chatState.search.currentSearchKeyword = keyword.toLowerCase();
         chatState.search.isSearchMode = true;
 
-        // 검색 API 호출 시 searchType 같이 넘기기
-        fetch(`/chat/rooms/search?user_id=${chatState.session.myUserId}&keyword=${encodeURIComponent(keyword)}&type=${searchType}`)
+        fetch(`/chat/rooms/search?keyword=${encodeURIComponent(keyword)}&type=${searchType}`)
             .then(res => {
-                console.log(res.headers.get('content-type')); // application/json인지 확인
+                const contentType = res.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new TypeError("서버에서 JSON이 아닌 응답이 왔습니다.");
+                }
                 return res.json();
             })
             .then(results => {
-                console.log(results);
+                console.log("[SEARCH RESULTS]", results);
                 const resultMap = new Map();
+
                 results.forEach(r => {
                     const roomId = r.room_id;
-                    const msgId = r.search_msg_id; // 메시지 검색일 때만 존재
+                    const msgId = r.search_msg_id;
                     if (!resultMap.has(roomId)) resultMap.set(roomId, []);
                     if (msgId) resultMap.get(roomId).push(msgId);
                 });
@@ -108,8 +109,6 @@ export function initSearchInput() {
                         item.style.display = "flex";
                         const msgIds = resultMap.get(roomId);
                         item.dataset.jump_msg_id = msgIds[0] || "";
-                        console.log(`room_id: ${roomId}, jumpMsgId: ${item.dataset.jump_msg_id}`);
-                        console.log("전체 검색 msgIds 배열:", msgIds);
                         item.dataset.search_msg_ids = JSON.stringify(msgIds);
                     } else {
                         item.style.display = "none";
@@ -117,12 +116,14 @@ export function initSearchInput() {
                         item.dataset.search_msg_ids = "[]";
                     }
                 });
+
                 if (chatState.session.currentRoomId && resultMap.has(chatState.session.currentRoomId)) {
                     chatState.search.searchMsgIds = resultMap.get(chatState.session.currentRoomId);
-                    chatState.search.currentSearchIndex = -1; // 아직 점프 안함
+                    chatState.search.currentSearchIndex = -1;
                 }
+                updateSearchCounter();
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error("검색 중 오류 발생:", err));
     });
 }
 

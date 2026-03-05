@@ -55,10 +55,9 @@ public class ChatController {
     public ResponseEntity<MsgVO> sendMessage(
             @RequestParam int receiver_id,
             @RequestParam String content,
-            @RequestParam(required = false)Integer testUser_id,
             HttpSession session
     ) {
-        int sender_id = getUserId(session, testUser_id);
+        int sender_id = getUserId(session);
 
         
         MsgVO msgVO = new MsgVO();
@@ -75,20 +74,9 @@ public class ChatController {
                            ", receiver=" + receiver_id +
                            ", content=" + content);
 
-        messagingTemplate.convertAndSend(
-                "/topic/room." + savedMsg.getRoom_id(),
-                savedMsg
-        );
-        
-        messagingTemplate.convertAndSend(
-        		"/topic/user." + receiver_id,
-        		savedMsg
-        );
-
-        	messagingTemplate.convertAndSend(
-        		"/topic/user." + sender_id,
-        		savedMsg
-        );
+        messagingTemplate.convertAndSend("/topic/room." + savedMsg.getRoom_id(),savedMsg);
+        messagingTemplate.convertAndSend("/topic/user." + receiver_id,savedMsg);
+        messagingTemplate.convertAndSend("/topic/user." + sender_id,savedMsg);
         	
         return ResponseEntity.ok(savedMsg);
     }
@@ -106,12 +94,11 @@ public class ChatController {
     	)
     	public List<MsgVO> getMessages(
     	        @PathVariable int room_id,
-                @RequestParam(required = false)Integer testUser_id,
                 @RequestParam(required = false, defaultValue = "0") int offset,
                 @RequestParam(required = false, defaultValue = "40") int size,
                 HttpSession session
     	) {
-    	    int user_id = getUserId(session, testUser_id);
+    	    int user_id = getUserId(session);
     	    int page = offset/size;
     	    return chatService.getMessages(user_id,  room_id, page, size);
     }
@@ -123,11 +110,8 @@ public class ChatController {
     		value = "/rooms", 
     		produces = "application/json"
     )
-    public List<ChatRoomDTO> getUserRooms(
-    		@RequestParam(required = false)Integer testUser_id,
-    		HttpSession session
-    	) {
-        int user_id = getUserId(session, testUser_id);
+    public List<ChatRoomDTO> getUserRooms(HttpSession session) {
+        int user_id = getUserId(session);
         return chatService.getUserRooms(user_id);
     }
 
@@ -139,25 +123,26 @@ public class ChatController {
     @PostMapping("/rooms/{room_id}/read")
     public ResponseEntity<Void> readMessage(
             @PathVariable int room_id,
-            @RequestParam(required = false)Integer testUser_id,
             HttpSession session
     ) {
-    	int user_id = getUserId(session, testUser_id);
-    	System.out.println("[DEBUG] readMessage 호출: user_id=" + user_id + ", room_id=" + room_id);
+    	int user_id = getUserId(session);
+    	System.out.println("readMessage 호출: user_id=" + user_id + ", room_id=" + room_id);
         chatService.readMessage(user_id, room_id);
         return ResponseEntity.ok().build();
     }
     
+    /**
+     * 마지막 읽은 메세지 ID 조회
+     */
     @GetMapping(
     		value = "/rooms/{room_id}/last-read", 
     		produces = "application/json; charset=UTF-8"
     )
     public ResponseEntity<Map<String, Long>> getLastRead(
             @PathVariable int room_id,
-            @RequestParam(required = false) Integer testUser_id,
             HttpSession session
     ) {
-        int user_id = getUserId(session, testUser_id);
+        int user_id = getUserId(session);
         Long lastReadMsgId = chatRoomUserMapper.findLastReadMsgId(user_id, room_id); // DB 조회
 
         return ResponseEntity.ok(Map.of("last_read_msg_id", lastReadMsgId));
@@ -169,29 +154,21 @@ public class ChatController {
     @PostMapping("/rooms")
     public ResponseEntity<Integer> createRoom(
             @RequestParam int target_user_id,
-            @RequestParam(required = false)Integer testUser_id,
             HttpSession session
     ) {
-        int user_id = getUserId(session, testUser_id);
+        int user_id = getUserId(session);
         int room_id = chatService.createRoom(user_id, target_user_id);
         return ResponseEntity.ok(room_id);
     }
     
-    private int getUserId(HttpSession session, Integer testUser_id) {
-        // 1. 테스트용 파라미터가 들어오면 우선 처리 (개발 단계 유지용)
-        if (testUser_id != null && testUser_id > 0) {
-            return testUser_id;
-        }
-
-        // 2. 실제 세션에서 loginUser 객체 꺼내기
-        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-
-        // 3. 만약 ChatPageController에서 넣어준 user_id가 있다면 그것도 확인
-        if (loginUser == null) {
+    private int getUserId(HttpSession session) {
+    	
+    	UserVO loginUser = (UserVO)session.getAttribute("loginUser");
+    	if (loginUser == null) {
             Integer userId = (Integer) session.getAttribute("user_id");
             if (userId != null) return userId;
             
-            throw new RuntimeException("로그인 세션 없음");
+            throw new RuntimeException("로그인 세션이 없습니다. 다시 로그인해주세요.");
         }
 
         return loginUser.getUser_id();
@@ -202,11 +179,12 @@ public class ChatController {
      */
     @GetMapping(value = "/rooms/search", produces = "application/json; charset=UTF-8")
     public List<RoomSearchResultDTO> searchRooms(
-            @RequestParam int user_id,
             @RequestParam String keyword,
-            @RequestParam String type) {
+            @RequestParam String type,
+            HttpSession session) {
 
-            return chatService.searchRooms(user_id, keyword, type);
+        int user_id = getUserId(session); 
+        return chatService.searchRooms(user_id, keyword, type);
     }
 
     /**
@@ -219,13 +197,12 @@ public class ChatController {
     public ResponseEntity<MsgVO> uploadFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam int room_id,
-            @RequestParam(required = false) Integer testUser_id,
             @RequestParam String msg_type,
             HttpSession session
     ) throws IOException {
 
         // 1. 업로드 유저
-        int sender_id = getUserId(session, testUser_id);
+        int sender_id = getUserId(session);
         // 2. 파일 저장
         String savedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         String dbPath = "/upload/files/" + savedName;

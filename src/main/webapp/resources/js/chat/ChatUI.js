@@ -1,5 +1,5 @@
 import { chatState } from "./ChatState.js";
-import { loadMessages } from "./ChatMessage.js";
+import { loadMessages, markAsRead } from "./ChatMessage.js";
 import { subscribeRoom } from "./ChatWebSocket.js";
 import { updateSearchCounter } from "./ChatSearch.js";
 
@@ -51,102 +51,79 @@ function formatChatTime(dateString) {
 export function loadChatRooms() {
     const chatListContainer = document.querySelector('.chat-items');
 
-    fetch(`/chat/rooms?testUser_id=${chatState.session.myUserId}`)
+    fetch(`/chat/rooms`)
         .then(async res => {
-
             const text = await res.text();
+            console.log("[DEBUG] 서버 원본 응답:", text);
 
-            console.log(" 서버 raw 응답 =", text);
+            // [추가] 서버가 XML을 던질 경우를 대비한 방어 로직
+            if (text.trim().startsWith('<')) {
+                console.warn("서버가 XML 데이터를 반환했습니다. JSON 변환을 시도하지 않습니다.");
+                return [];
+            }
 
             try {
                 return JSON.parse(text);
             } catch (e) {
-                console.error("JSON 파싱 실패");
+                console.error("JSON 파싱 실패:", e);
                 throw e;
             }
         })
         .then(rooms => {
             console.log("채팅방 데이터:", rooms);
-            chatListContainer.innerHTML = ""; // 기존 내용 초기화
+            chatListContainer.innerHTML = "";
 
             rooms.forEach(room => {
-
                 const item = document.createElement("div");
                 item.classList.add("chat-item");
                 item.dataset.room_id = room.room_id;
                 item.dataset.user_id = room.other_user_id;
 
                 item.innerHTML = `
-            <img src="https://via.placeholder.com/40" alt="유저">
-            <div class="info">
-            <div class="name">${room.other_user_name}</div>
-                <div class="last-msg">
-                    ${makePreviewMessage(room.last_msg, room.last_msg_type)}
-                </div>
-            </div>
-            <div class="right">
-                <div class="time">
-                    ${formatChatTime(room.created_at)}
-                </div>
-                ${room.unread_count > 0 ? `<div class="badge">${room.unread_count}</div>` : ``}
-            </div>
-            `;
+                    <img src="https://via.placeholder.com/40" alt="유저">
+                    <div class="info">
+                        <div class="name">${room.other_user_name}</div>
+                        <div class="last-msg">
+                            ${makePreviewMessage(room.last_msg, room.last_msg_type)}
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="time">
+                            ${formatChatTime(room.last_msg_at || room.created_at)}
+                        </div>
+                        ${room.unread_count > 0 ? `<div class="badge">${room.unread_count}</div>` : ``}
+                    </div>
+                `;
 
                 chatListContainer.appendChild(item);
 
-                // 클릭 이벤트
                 item.addEventListener('click', () => {
-                    chatState.scroll.jumpMsgId = item.dataset.jump_msg_id && item.dataset.jump_msg_id.trim() !== ""
-                        ? Number(item.dataset.jump_msg_id)
-                        : null;
-                    chatState.search.isSearchJump = chatState.scroll.jumpMsgId !== null;
-
-                    // 검색어 배열 적용
-                    if (item.dataset.search_msg_ids) {
-                        chatState.search.searchMsgIds = JSON.parse(item.dataset.search_msg_ids);
-                    } else {
-                        chatState.search.searchMsgIds = [];
-                    }
-                    chatState.search.currentSearchIndex = -1;
-                    updateSearchCounter();
-
-                    console.log("jumpMsgId =", chatState.scroll.jumpMsgId); // test
-
-                    if (chatState.session.currentRoomId === room.room_id && !chatState.search.isSearchJump) return;
-                    if (!chatState.socket.stompClient || !chatState.socket.stompClient.connected) return;
 
                     chatState.session.currentRoomId = room.room_id;
                     chatState.session.receiverId = room.other_user_id;
 
-                    // 기존 구독 끊기
                     if (chatState.socket.roomSubscription) chatState.socket.roomSubscription.unsubscribe();
-                    // 새 방 구독
                     subscribeRoom(chatState.session.currentRoomId);
 
-                    // 화면 전환
                     document.getElementById("empty-view").style.display = "none";
                     document.getElementById("chat-view").style.display = "flex";
 
-                    // 헤더 업데이트
                     const headerName = document.querySelector('.chat-header .name');
-                    const headerImg = document.querySelector('.chat-header img');
-                    const headerRole = document.querySelector('.chat-header .role');
-
                     if (headerName) headerName.innerText = room.other_user_name;
-                    if (headerImg) headerImg.src = "https://via.placeholder.com/40"; // 나중에 실제 이미지 적용
-                    if (headerRole) headerRole.innerText = "전문가"; // 나중에 role 정보 적용
 
-                    // 메시지 로드
                     loadMessages(chatState.session.currentRoomId, 0, 40, false, true)
-                        .then(() => loadChatRooms());
-                    const unreadCheckbox = document.getElementById("unread-only");
-                    if (unreadCheckbox.checked) item.style.display = "none";
+                        .then(() => {
+                            markAsRead(room.room_id);
+                            const badge = item.querySelector(".badge");
+                            if (badge) {
+                                badge.remove();
+                            }
+
+                        });
                 });
             });
         })
         .catch(err => console.error("채팅방 목록 로드 실패", err));
-
-
 }
 
 //채팅방 목록 실시간 업데이트
@@ -598,7 +575,6 @@ export function initPendingFilesModal() {
 function uploadFile(file, type) {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("testUser_id", chatState.session.myUserId);
     formData.append("room_id", chatState.session.currentRoomId);
     formData.append("msg_type", type);
 
@@ -606,20 +582,11 @@ function uploadFile(file, type) {
         method: "POST",
         body: formData
     })
-        .then(res => {
-            console.log("Status:", res.status, res.statusText);
-            return res.text();  // JSON 아님, raw text로 찍어보기
+        .then(res => res.json())
+        .then(data => {
+            console.log("[SUCCESS] 파일 업로드 완료:", data);
         })
-        .then(text => {
-            console.log("Raw response:", text);
-            try {
-                const data = JSON.parse(text);
-                console.log("Parsed JSON:", data);
-            } catch (e) {
-                console.error("JSON 파싱 실패:", e);
-            }
-        })
-        .catch(err => console.error("Fetch error:", err));
+        .catch(err => console.error("파일 업로드 에러:", err));
 }
 
 export function initImagePreviewModal() {

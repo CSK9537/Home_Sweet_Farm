@@ -4,12 +4,10 @@ import { loadChatRooms } from "./ChatUI.js";
 
 
 function createMessageRow(data) {
-
     const row = document.createElement("div");
     row.dataset.msg_id = data.msg_id;
-    console.log(data.msg_type, data);
 
-    const myId = Number(new URLSearchParams(location.search).get("testUser_id"));
+    const myId = chatState.session.myUserId;
     row.classList.add("message-row", "message", data.sender_id === myId ? "sent" : "received");
 
     return row;
@@ -18,7 +16,6 @@ function createMessageRow(data) {
 // DB에서 기존 메시지 불러오기
 export async function loadMessages(room_id, offset = 0, size = 40, prepend = false, firstLoad = false) {
     chatState.loading.isLoadingMessages = true;
-
     const container = document.getElementById("messages");
 
     if (!chatState.message.rooms[room_id]) chatState.message.rooms[room_id] = {};
@@ -36,7 +33,6 @@ export async function loadMessages(room_id, offset = 0, size = 40, prepend = fal
     }
     const roomState = chatState.message.rooms[room_id][chatState.session.myUserId];
 
-    // 첫 로드
     if (firstLoad) {
         container.innerHTML = "";
         roomState.appendedMsgSet.clear();
@@ -47,10 +43,11 @@ export async function loadMessages(room_id, offset = 0, size = 40, prepend = fal
     }
 
     try {
-        const res = await fetch(`/chat/rooms/${room_id}/messages?testUser_id=${chatState.session.myUserId}&offset=${offset}&size=${size}`);
+        const res = await fetch(`/chat/rooms/${room_id}/messages?offset=${offset}&size=${size}`);
         const list = await res.json();
+
         if (!list || list.length === 0) {
-            chatState.message.rooms[room_id][chatState.session.myUserId].hasMore = false;
+            roomState.hasMore = false;
             return;
         }
         roomState.loadedCount += list.length;
@@ -63,16 +60,13 @@ export async function loadMessages(room_id, offset = 0, size = 40, prepend = fal
 
         if (prepend) {
             container.prepend(fragment);
-            // 이전 메시지 불러올 때 scrollTop 보정
             container.scrollTop = prevScrollTop + (container.scrollHeight - prevScrollHeight);
         } else {
             container.appendChild(fragment);
-
             if (firstLoad || isScrollBottom()) {
                 container.scrollTop = container.scrollHeight;
             }
         }
-
     } catch (err) {
         console.error("메시지 로드 실패", err);
     } finally {
@@ -163,7 +157,6 @@ export function appendMessage(data, prepend = false, fragment = null) {
         else if (prepend) container.prepend(row);
         else container.appendChild(row);
 
-        // ✅ DOM에 붙인 후 Set 등록
         roomState.appendedMsgSet.add(msgId);
     }
 
@@ -177,35 +170,36 @@ export function appendMessage(data, prepend = false, fragment = null) {
 }
 
 export async function markAsRead(roomId, msgId = null) {
-    const lastMsgId = msgId || chatState.message.lastAppendedData?.msg_id;
-    if (!lastMsgId) return;
+    const lastMsgId = msgId || chatState.message.rooms[roomId]?.[chatState.session.myUserId]?.lastAppendedData?.msg_id;
+    
+    console.log("[DEBUG] markAsRead 호출:", { roomId, lastMsgId });
 
-    console.log("markAsRead 호출", { roomId, lastMsgId });
+    try {
+        await fetch(`/chat/rooms/${roomId}/read`, {
+            method: "POST"
+        });
 
+        if (chatState.message.rooms[roomId]?.[chatState.session.myUserId]) {
+            chatState.message.rooms[roomId][chatState.session.myUserId].lastReadMsgId = lastMsgId;
+        }
 
-    await fetch(`/chat/rooms/${roomId}/read`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            user_id: chatState.session.myUserId,
-            last_msg_id: lastMsgId
-        })
-    });
-
-    // 프론트 상태 갱신
-    chatState.message.rooms[roomId][chatState.session.myUserId].lastReadMsgId = lastMsgId;
-
-    const badge = document.querySelector(`#room-${roomId} .unread-count`);
-    if (badge) {
-        badge.style.display = "none";
-        badge.innerText = "";
+        const roomItem = document.querySelector(`.chat-item[data-room_id="${roomId}"]`);
+        if (roomItem) {
+            const badge = roomItem.querySelector(".badge");
+            if (badge) {
+                badge.remove();
+            }
+        }
+    } catch (err) {
+        console.error("읽음 처리 실패:", err);
     }
 }
 
 export function sendMessage() {
+    const sendBtn = document.querySelector(".btn-send");
+    if (!sendBtn) return;
 
-    document.querySelector(".btn-send").addEventListener("click", async () => {
-
+    sendBtn.addEventListener("click", async () => {
         const textarea = document.getElementById("chat-textarea");
         const content = textarea.value.trim();
 
@@ -213,7 +207,6 @@ export function sendMessage() {
 
         const params = new URLSearchParams({
             receiver_id: chatState.session.receiverId,
-            testUser_id: chatState.session.myUserId,
             content: content
         });
 
@@ -225,9 +218,11 @@ export function sendMessage() {
             body: params
         });
 
-        textarea.value = "";
-        const roomId = chatState.session.currentRoomId;
-        markAsRead(roomId);
+        if (res.ok) {
+            textarea.value = "";
+            const roomId = chatState.session.currentRoomId;
+            markAsRead(roomId);
+        }
     });
 }
 

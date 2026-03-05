@@ -4,12 +4,25 @@ import { updateRoomListRealtime } from "./ChatUI.js";
 import { isScrollBottom } from "./ChatScroll.js";
 
 // 웹소켓 연결
-export function connectWS() {
+export async function connectWS() {
+
+  if (!chatState.session.myUserId) {
+    try {
+      const response = await fetch('/user/me'); // UserController의 @GetMapping("/me") 호출
+      const user = await response.json();
+      chatState.session.myUserId = user.user_id;
+      console.log("세션으로부터 ID 획득:", chatState.session.myUserId);
+    } catch (e) {
+      console.error("로그인 정보 확인 실패:", e);
+      return; // ID 없으면 소켓 연결 진행 불가
+    }
+  }
+
   const socket = new SockJS("/ws-chat");
   chatState.socket.stompClient = Stomp.over(socket);
 
   chatState.socket.stompClient.connect({}, () => {
-    console.log("WS CONNECTED");
+    console.log("WS CONNECTED (User ID: " + chatState.session.myUserId + ")");
 
     // 개인 채널 구독
     subscribeUserChannel();
