@@ -330,7 +330,19 @@
       })
       .catch(function () {
         // 요구사항: 데이터 없으면 숨김 (API 실패도 동일 취급)
-        wrap.style.display = "none";
+        //wrap.style.display = "none";
+    	  var listEl = q(wrap, ".js-list");
+    	  var pagerEl = q(wrap, ".js-pager");
+    	  var emptyEl = q(wrap, ".js-empty");
+    	  var totalEl = q(wrap, ".js-total");
+
+    	  if (totalEl) totalEl.textContent = "0";
+    	  if (listEl) listEl.innerHTML = "";
+    	  if (pagerEl) pagerEl.innerHTML = "";
+    	  if (emptyEl) {
+    	    emptyEl.textContent = "표시할 데이터가 없습니다.";
+    	    emptyEl.style.display = "block";
+    	  } 
       });
   }
 
