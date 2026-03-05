@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 
-import org.joonzis.plant.dto.PlantDTO;
 import org.joonzis.plant.dto.SimplePlantDTO;
 import org.joonzis.plant.service.PlantService;
 import org.springframework.beans.factory.annotation.Autowired;

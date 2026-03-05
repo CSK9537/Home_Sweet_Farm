@@ -24,11 +24,6 @@ public class MyPlantScheduleServiceImpl implements MyPlantScheduleService {
 	}
 
 	@Override
-	public boolean modify(MyPlantScheduleDTO scdto) {
-		return scmapper.update(scdto) == 1;
-	}
-	
-	@Override
 	public boolean remove(int schedule_id) {
 		return scmapper.delete(schedule_id) == 1;
 	}

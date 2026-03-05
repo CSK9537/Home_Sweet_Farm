@@ -22,19 +22,15 @@
     </select>
 
     <insert id="insert">
-		<selectKey keyProperty="myplant_id" resultType="int" order="BEFORE">
-		    SELECT myplant_seq.NEXTVAL FROM dual
-		</selectKey>
         INSERT INTO tbl_myplant
         (myplant_id, user_id, plant_id, myplant_name, myplant_regdate)
         VALUES
         (myplant_seq.NEXTVAL, #{user_id}, #{plant_id}, #{myplant_name}, SYSDATE)
     </insert>
 
-    <update id="update">
+    <update id="updateMyPlantName">
         UPDATE tbl_myplant
-        SET myplant_name = #{myplant_name},
-            plant_id = #{plant_id}
+        SET myplant_name = #{myplant_name}
         WHERE myplant_id = #{myplant_id}
     </update>
     
@@ -53,13 +49,4 @@
         WHERE myplant_id = #{myplant_id}
     </delete>
     
-	<insert id="insertMyPlant">
-	    INSERT INTO tbl_myplant
-	    (myplant_id, user_id, plant_id, myplant_name)
-	    VALUES
-	    (myplant_seq.NEXTVAL,
-	     (SELECT user_id FROM tbl_user WHERE username = #{username}),
-	     #{plantId},
-	     #{myPlantName})
-	</insert>
 </mapper>

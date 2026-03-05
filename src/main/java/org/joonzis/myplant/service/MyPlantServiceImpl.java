@@ -57,16 +57,13 @@ public class MyPlantServiceImpl implements MyPlantService {
 		return result > 0;
 	}
 	
-	// 나의 식물 수정
+	// 나의 식물 이름 수정
 	@Override
-	public String modify(MyPlantDTO mpdto) {
-		int result = mpmapper.update(mpdto);
-		if(result > 0) {
-			return "success";
-		}else {
-			return "failure";
-		}
+	public boolean updateMyPlantName(int myplant_id, String myplant_name) {
+		int result = mpmapper.updateMyPlantName(myplant_id, myplant_name);
+		return result > 0;
 	}
+	
 	// 나의 식물 삭제
 	
 	private final String IMG_DIR = "\\\\192.168.0.153\\projecthsf\\myplant\\img\\";

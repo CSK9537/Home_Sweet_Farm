@@ -18,11 +18,11 @@ public class StatsResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Series {
-        // 프론트엔드의 METRICS key 값들과 정확히 일치해야 합니다.
+        // 프론트엔드의 METRICS key 값들과 일치
         private List<DataPoint> illumination;
         private List<DataPoint> temperature;
         private List<DataPoint> humidity;
-        private List<DataPoint> soil_moisture; // JSON 키 매핑을 위해 스네이크 케이스 유지
+        private List<DataPoint> soil_moisture;
     }
 
     @Data

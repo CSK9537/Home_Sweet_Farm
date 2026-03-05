@@ -1,7 +1,6 @@
 package org.joonzis.myplant.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -10,16 +9,17 @@ import org.joonzis.myplant.dto.MyPlantDTO;
 import org.joonzis.myplant.dto.MyPlantMainDTO;
 import org.joonzis.myplant.service.MyPlantService;
 import org.joonzis.plant.dto.GuideDTO;
-import org.joonzis.plant.dto.PlantGuideDTO;
 import org.joonzis.plant.service.PlantService;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -52,12 +52,6 @@ public class MyPlantController {
 	@GetMapping("/recommend")
 	public String recommend() {
 		return "myplant/MyPlantRecommend";
-	}
-
-	@GetMapping(value="/recommend/list", produces="application/json; charset=UTF-8")
-	@ResponseBody
-	public List<PlantGuideDTO> recommendList() {
-	    return pservice.selectPlantWithGuideList(10);
 	}
 	
 	// 나의 식물 추가
@@ -118,14 +112,27 @@ public class MyPlantController {
 		return result;
 	}
 	
-	// 수정
-	@PostMapping("/modify")
-	public String modify(MyPlantDTO mpdto) {
-		mpservice.modify(mpdto);
-		return "redirect:/myplant";
-	}
-	
-	
+	// 이름 수정
+	@ResponseBody
+    @PostMapping("/updateName")
+    public ResponseEntity<String> updateMyPlantName(@RequestBody Map<String, Object> payload) {
+        try {
+            // 1. 프론트엔드에서 보낸 JSON 데이터 추출
+            int myplantId = Integer.parseInt(payload.get("myplant_id").toString());
+            String newName = (String) payload.get("myplant_name");
+
+            // 2. 서비스 단 호출 (DB 업데이트)
+            mpservice.updateMyPlantName(myplantId, newName);
+
+            // 3. 성공 시 200 OK 응답
+            return ResponseEntity.ok("success");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 실패 시 500 에러 응답
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+        }
+    }
 	
 	// 삭제
 	@PostMapping("/remove/{myplant_id}")

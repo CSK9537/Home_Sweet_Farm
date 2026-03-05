@@ -51,7 +51,7 @@ public class MyPlantScheduleController {
 		return ResponseEntity.ok(result);
 	}
 
-	// 2. 단건 일정 추가 (드래그/클릭 시)
+	// 2. 일정 추가 (드래그/클릭 시)
 	@PostMapping(produces = "application/json; charset=UTF-8")
 	public ResponseEntity<Map<String, Object>> addSchedule(@RequestBody Map<String, Object> payload) {
 		
