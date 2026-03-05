@@ -177,7 +177,7 @@ public class CommunityFormController {
                        HttpServletRequest req) {
 
         int uid = loginUserId(session);
-        if (uid <= 0) return "redirect:/login";
+        if (uid <= 0) return "redirect:/user/login";
 
         board.setContent(contentHtml);
 
