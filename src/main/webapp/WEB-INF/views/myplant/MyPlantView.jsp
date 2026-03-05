@@ -11,6 +11,7 @@
 <div class="page-shell">
   <section class="content-wrap">
     <div class="content-card plant-detail">
+      <c:set var="p" value="${myplantinfo}" />
 
       <!-- 카드 내부 컨테이너 -->
       <div class="plant-detail__card">
@@ -19,8 +20,11 @@
         <div class="plant-detail__media">
           <div class="plant-detail__photo">
             <c:choose>
-              <c:when test="${not empty plant.imageUrl}">
-                <img class="plant-detail__img" src="${plant.imageUrl}" alt="${plant.koreanName}" />
+              <c:when test="${not empty p.myplant_image}">
+                <img class="plant-detail__img" src="/myplant/image/show?fileName=${p.myplant_image}" alt="${p.plant_name_kor}" />
+              </c:when>
+              <c:when test="${not empty p.plant_image}">
+                <img class="plant-detail__img" src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" />
               </c:when>
               <c:otherwise>
                 <img class="plant-detail__img plant-detail__img--default"
@@ -34,7 +38,7 @@
           <button type="button"
                   class="btn btn--photo plant-detail__photo-btn"
                   data-open-photo-modal
-                  data-plant-id="${plant.id}">
+                  data-plant-id="${p.myplant_id}">
             사진 등록/추가
           </button>
         </div>
@@ -44,15 +48,15 @@
 
           <!-- 상단: 닉네임/등록일 -->
           <div class="plant-detail__top">
-            <div class="plant-detail__nickname">${plant.nickname}식물 닉네임</div>
-            <div class="plant-detail__since">등록일로부터 ${plant.daysSince}100일</div>
+            <div class="plant-detail__nickname">${p.myplant_name}</div>
+            <div class="plant-detail__since">등록일로부터 ${p.day_passed}일</div>
           </div>
 
           <!-- 제목/설명 -->
           <div class="plant-detail__heading">
             <div class="plant-detail__name">
-              <div class="plant-detail__korean">${plant.koreanName}식물이름</div>
-              <div class="plant-detail__latin">${plant.latinName}식물학술명</div>
+              <div class="plant-detail__korean">${p.plant_name_kor}</div>
+              <div class="plant-detail__latin">${p.plant_name}</div>
             </div>
 
             <p class="plant-detail__desc">
@@ -60,7 +64,7 @@
             </p>
 
             <a class="plant-detail__guide-link"
-               href="${pageContext.request.contextPath}/guide/detail?name=${plant.koreanName}">
+               href="${pageContext.request.contextPath}/plant/guide/${p.plant_name}">
               → 관리 가이드로 이동
             </a>
           </div>
@@ -74,42 +78,42 @@
               <button type="button"
                       class="btn btn--sm"
                       data-open-stats-modal
-                      data-plant-id="${plant.id}">
+                      data-plant-id="${p.myplant_id}">
                 	통계 정보
               </button>
             </div>
 
-            <div class="status-grid">
+            <div class="status-grid" data-plant-id="${p.myplant_id}">
               <div class="status">
                 <span class="status__icon">
-                  <img src="${pageContext.request.contextPath}/resources/image/light_50x50.png" alt="빛" />
+                  <img src="${pageContext.request.contextPath}/resources/image/light_50x50.png" alt="light" />
                 </span>
-                <span class="status__value status__value--warn">${plant.lux}lux</span>
-                <span class="status__text">조금 어두워요</span>
+                <span class="status__value status__value--warn" id="realtimeLux_${p.myplant_id}">100lux</span>
+                <span class="status__text">다소 낮음</span>
               </div>
 
               <div class="status">
                 <span class="status__icon">
-                  <img src="${pageContext.request.contextPath}/resources/image/humidity_50x50.png" alt="습도" />
+                  <img src="${pageContext.request.contextPath}/resources/image/humidity_50x50.png" alt="humidity" />
                 </span>
-                <span class="status__value status__value--good">${plant.humidity}%RH</span>
-                <span class="status__text">적당해요</span>
+                <span class="status__value status__value--good" id="realtimeHumi_${p.myplant_id}">100%RH</span>
+                <span class="status__text">적정</span>
               </div>
 
               <div class="status">
                 <span class="status__icon">
-                  <img src="${pageContext.request.contextPath}/resources/image/temperature_50x50.png" alt="온도" />
+                  <img src="${pageContext.request.contextPath}/resources/image/temperature_50x50.png" alt="temperature" />
                 </span>
-                <span class="status__value status__value--bad">${plant.temperature}℃</span>
-                <span class="status__text">추워요</span>
+                <span class="status__value status__value--bad" id="realtimeTemp_${p.myplant_id}">100℃</span>
+                <span class="status__text">매우 높음</span>
               </div>
 
               <div class="status">
                 <span class="status__icon">
-                  <img src="${pageContext.request.contextPath}/resources/image/soil_50x50.png" alt="배터리" />
+                  <img src="${pageContext.request.contextPath}/resources/image/soil_50x50.png" alt="soil" />
                 </span>
-                <span class="status__value status__value--bad">${plant.battery}V</span>
-                <span class="status__text">말랐어요</span>
+                <span class="status__value status__value--bad" id="realtimeSoilMoist_${p.myplant_id}">100V</span>
+                <span class="status__text">매우 낮음</span>
               </div>
             </div>
           </div>
@@ -123,13 +127,11 @@
               <!-- 상세일정 버튼 (기준 버튼) -->
               <button type="button"
                       class="btn btn--sm"
-                      onclick="openScheduleModal(${plant.id});">
-                상세 일정
-              </button>
+                      onclick="openScheduleModal(${p.myplant_id});">상세 일정</button>
             </div>
 
-            <p class="plant-detail__schedule-next">
-              다음 일정 - <c:out value="${empty plant.nextSchedule ? '등록된 일정이 없어요' : plant.nextSchedule}" />
+            <p class="plant-detail__schedule-next" id="nextScheduleText" data-plant-id="${p.myplant_id}">
+             	 등록된 일정이 없어요
             </p>
           </div>
 
@@ -177,11 +179,6 @@
         <div class="cal-side__head">
           <div class="cal-side__head-top">
             <div class="cal-side__title">Schedule</div>
-
-            <div class="cal-side__actions">
-              <button type="button" class="cal-btn cal-btn--ghost" onclick="calCancel()">취소</button>
-              <button type="button" class="cal-btn cal-btn--primary" onclick="calSave()">저장</button>
-            </div>
           </div>
 
           <div class="cal-side__date" id="memoDate">날짜를 선택하세요</div>
@@ -207,7 +204,7 @@
   </div>
 </div>
 
-<!-- ===== poto Modal ===== -->
+<!-- ===== photo Modal ===== -->
 <div class="photo-modal" id="photoModal" aria-hidden="true">
   <div class="photo-modal__backdrop" data-close-photo-modal></div>
 
@@ -217,7 +214,7 @@
         <span class="photo-modal__icon" aria-hidden="true"></span>
         사진 등록/추가
       </div>
-      <button class="photo-modal__close" type="button" onclick="calCancel()">닫기</button>
+      <button class="photo-modal__close" type="button">닫기</button>
     </header>
 
     <div class="photo-modal__body">
@@ -225,8 +222,8 @@
             id="photoForm"
             method="post"
             enctype="multipart/form-data"
-            action="${pageContext.request.contextPath}/my-plants/photo/upload">
-        <input type="hidden" name="plantId" id="photoPlantId" value="${plant.id}" />
+            action="${pageContext.request.contextPath}/myplant/image/upload">
+        <input type="hidden" name="plantId" id="photoPlantId" value="${p.myplant_id}" />
 
         <div class="photo-grid" id="photoGrid">
           <label class="photo-add">
@@ -277,7 +274,7 @@
         <button type="button" class="stats-tab" data-range="MONTHLY" role="tab" aria-selected="false">월별</button>
       </div>
 
-      <button type="button" class="stats-modal__close" onclick="calCancel()">닫기</button>
+      <button type="button" class="stats-modal__close">닫기</button>
     </header>
 
     <div class="stats-modal__body">
@@ -355,7 +352,8 @@
     </div>
   </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/myplant/MyPlantView.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/modal/ScheduleModal.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/modal/PhotoModal.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/modal/StatsModal.js"></script>

@@ -177,9 +177,9 @@ public class UserController {
 	@GetMapping(value = "/checkId", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Map<String, Boolean> checkId(@RequestParam("username") String username) {
-		     boolean isDuplicate = uservice.isIdDuplicate(username.trim());
-		     return Collections.singletonMap("duplicate", isDuplicate);
-		    }
+		boolean isDuplicate = uservice.isIdDuplicate(username.trim());
+		return Collections.singletonMap("duplicate", isDuplicate);
+	}
 	
 	// 이메일 중복 확인
 	@PostMapping(value = "/checkEmail", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,6 +1,6 @@
 package org.joonzis.myplant.dto;
 
-import java.util.Date;
+import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

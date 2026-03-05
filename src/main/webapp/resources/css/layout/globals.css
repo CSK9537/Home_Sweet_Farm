@@ -52,6 +52,22 @@ a {
 	transform: scale(0.7); /* 1이 기본 크기, 0.8은 80% 크기로 축소 */
 }
 
+/* 버튼들을 감싸는 컨테이너의 상하 여백 제거 및 중앙 정렬 강제 */
+.swal2-toast .swal2-actions {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important; /* 수직 중앙 정렬 */
+    height: 100% !important;        /* 부모 높이에 꽉 채우기 */
+}
+
+/* 버튼들의 상하 마진 제거 */
+.swal2-toast .swal2-styled {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    align-self: center !important;  /* 스스로를 수직 중앙에 배치 */
+}
+
 /* 아이콘 애니메이션 차단 */
 .swal2-icon,
 .swal2-icon * {
