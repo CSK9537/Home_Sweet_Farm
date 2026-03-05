@@ -69,7 +69,7 @@ public class MyPlantServiceImpl implements MyPlantService {
 	}
 	// 나의 식물 삭제
 	
-	private final String UPLOAD_DIR = "\\\\192.168.0.153\\projecthsf\\myplant\\img\\";
+	private final String IMG_DIR = "\\\\192.168.0.153\\projecthsf\\myplant\\img\\";
 	
 	@Override
 	@Transactional
@@ -89,7 +89,7 @@ public class MyPlantServiceImpl implements MyPlantService {
 			// 4. DB 데이터가 정상적으로 삭제되었다면, 실제 물리적 이미지 파일 삭제 진행
 			if (result > 0 && savedFileName != null && !savedFileName.trim().isEmpty()) {
 				// 경로와 파일명을 합쳐서 전체 파일 경로 생성
-				String fullPath = UPLOAD_DIR + savedFileName;
+				String fullPath = IMG_DIR + savedFileName;
 				File targetFile = new File(fullPath);
 				
 				// 해당 경로에 파일이 실제로 존재하는지 확인 후 삭제
