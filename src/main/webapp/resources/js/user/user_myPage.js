@@ -103,7 +103,7 @@
   var plantEmpty = document.getElementById("plantEmpty");
 
   function searchPlants(keyword) {
-    var url = ctx + "/plant/api/search?keyword=" + encodeURIComponent(keyword);
+    var url = ctx + "/user/myPage/hashtag?keyword=" + encodeURIComponent(keyword);
     return fetch(url, { headers: { "Accept": "application/json" } })
       .then(function (res) {
         if (!res.ok) throw new Error("plant search failed");
@@ -122,16 +122,17 @@
 
     for (var i = 0; i < items.length; i++) {
       var p = items[i];
+      
+      var id = p.hashtag_id || p.HASHTAG_ID;
+      var name = p.hashtag_name || p.HASHTAG_NAME;
+      
       var li = document.createElement("li");
       li.className = "list-item";
       li.innerHTML =
-        '<div class="item-top">' +
-          '<div>' +
-            '<div><b>' + escapeHtml(p.plant_name_kor || p.plant_name_kr || "") + '</b></div>' +
-            '<div class="muted">' + escapeHtml(p.plant_name || p.plant_name_en || "") + '</div>' +
-          '</div>' +
-          '<button type="button" class="btn btn-ghost" data-plant-id="' + escapeHtml(p.plant_id) + '">선택</button>' +
-        '</div>';
+          '<div class="item-top">' +
+            '<div><b>' + escapeHtml(name || "") + '</b></div>' +
+            '<button type="button" class="btn btn-ghost" data-hashtag-id="' + escapeHtml(id) + '">선택</button>' +
+          '</div>';
       plantResult.appendChild(li);
     }
   }
@@ -150,25 +151,28 @@
   }
 
   if (plantResult) {
-    plantResult.addEventListener("click", function (e) {
-      var pickBtn = closest(e.target, "button[data-plant-id]");
-      if (!pickBtn) return;
+	  plantResult.addEventListener("click", function (e) {
+	    var pickBtn = closest(e.target, "button[data-hashtag-id]");
+	    if (!pickBtn) return;
 
-      var plantId = pickBtn.getAttribute("data-plant-id");
-      fetch(ctx + "/myPage/api/interest-plant", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plantId: plantId })
-      })
-        .then(function (res) {
-          if (!res.ok) throw new Error("save failed");
-          location.reload();
-        })
-        .catch(function () {
-          alert("관심사 저장에 실패했습니다.");
-        });
-    });
-  }
+	    var hashtagId = pickBtn.getAttribute("data-hashtag-id");
+
+	    fetch(ctx + "/user/myPage/aspect?hashtagId=" + encodeURIComponent(hashtagId), {
+	      method: "POST",
+	      headers: { "Accept": "application/json" }
+	    })
+	      .then(function (res) {
+	        if (!res.ok) throw new Error("save failed");
+	        return res.json();
+	      })
+	      .then(function () {
+	        location.reload();
+	      })
+	      .catch(function () {
+	        alert("관심사 저장에 실패했습니다.");
+	      });
+	  });
+	}
 
   // -------------------------
   // Verify modal (phone/email)
