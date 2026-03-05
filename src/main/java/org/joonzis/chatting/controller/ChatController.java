@@ -178,21 +178,23 @@ public class ChatController {
     }
     
     private int getUserId(HttpSession session, Integer testUser_id) {
-
-        if (testUser_id != null) {
-            System.out.println("[DEBUG] testUser_id 사용: " + testUser_id);
+        // 1. 테스트용 파라미터가 들어오면 우선 처리 (개발 단계 유지용)
+        if (testUser_id != null && testUser_id > 0) {
             return testUser_id;
         }
 
-        Integer userId = (Integer) session.getAttribute("user_id");
+        // 2. 실제 세션에서 loginUser 객체 꺼내기
+        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
 
-        if (userId == null) {
+        // 3. 만약 ChatPageController에서 넣어준 user_id가 있다면 그것도 확인
+        if (loginUser == null) {
+            Integer userId = (Integer) session.getAttribute("user_id");
+            if (userId != null) return userId;
+            
             throw new RuntimeException("로그인 세션 없음");
         }
 
-        System.out.println("[DEBUG] session user_id 사용: " + userId);
-
-        return userId;
+        return loginUser.getUser_id();
     }
     
     /**
