@@ -23,7 +23,7 @@
 		            DBMS_LOB.SUBSTR(B.CONTENT, 120, 1) AS preview,
 		            b.like_count as likeCount,
 		            (SELECT COUNT(*) FROM tbl_board a WHERE a.parent_id = b.board_id AND a.board_type='A') as answerCount,
-		            b.reg_date,
+		            b.reg_date as regDate,
 		            (SELECT MIN(h.hashtag_name) 
 		             FROM tbl_board_aspect asp 
 		             JOIN tbl_hashtag_list h ON h.hashtag_id = asp.board_hashtag_id 
@@ -57,11 +57,12 @@
 		        <choose>
 		            <when test='sortDir == "ASC" or sortDir == "asc"'> ASC </when>
 		            <otherwise> DESC </otherwise>
-		        </choose>
+		        </choose>,
+		        qna_id DESC
 		    ) X
 		    WHERE ROWNUM &lt;= #{endRow}
 		)
-		WHERE rn &gt; #{startRow}
+		WHERE rn &gt;= #{startRow}
 	</select>
 
 	<select id="selectQnaTagTopList" resultType="org.joonzis.qna.dto.TagTopListDTO">
@@ -98,4 +99,14 @@
 		</where>
 	</select>
 
+
+	<select id="getCountTodayQna" resultType="map">
+		SELECT
+		    COUNT(CASE WHEN board_type = 'Q' THEN 1 END) AS Q_COUNT,
+		    COUNT(CASE WHEN board_type = 'A' THEN 1 END) AS A_COUNT
+		FROM tbl_board
+		WHERE 
+		    board_type IN ('Q', 'A')
+		    AND reg_date &gt;= #{today}
+	</select>
 </mapper>
