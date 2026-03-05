@@ -102,57 +102,6 @@
     });
   }
 
-  // ===== (요청 4) 좋아요/답변/작성 정렬 =====
-  var sortState = { key: null, dir: 'asc' }; // dir: asc|desc
-
-  function toNumber(v) {
-    var n = parseFloat(v);
-    return isNaN(n) ? 0 : n;
-  }
-
-  function sortRows(key, dir) {
-    if (!table) return;
-
-    var rows = getBodyRows();
-    var arr = [];
-    for (var i = 0; i < rows.length; i++) arr.push(rows[i]);
-
-    arr.sort(function (a, b) {
-      var av = 0, bv = 0;
-
-      if (key === 'like') {
-        av = toNumber(a.getAttribute('data-like'));
-        bv = toNumber(b.getAttribute('data-like'));
-      } else if (key === 'answer') {
-        av = toNumber(a.getAttribute('data-answer'));
-        bv = toNumber(b.getAttribute('data-answer'));
-      } else if (key === 'created') {
-        av = toNumber(a.getAttribute('data-created'));
-        bv = toNumber(b.getAttribute('data-created'));
-      }
-
-      if (av === bv) return 0;
-      return (dir === 'asc') ? (av - bv) : (bv - av);
-    });
-
-    // headRow 다음에 body들을 재삽입
-    for (var j = 0; j < arr.length; j++) {
-      table.appendChild(arr[j]);
-    }
-
-    // 뷰 제한 다시 적용
-    applyLimit(currentView);
-  }
-
-  function resetSortBtnStyles() {
-    if (!headRow) return;
-    var btns = qsa('.sort-btn', headRow);
-    for (var i = 0; i < btns.length; i++) {
-      btns[i].classList.remove('asc');
-      btns[i].classList.remove('desc');
-    }
-  }
-
   if (headRow) {
     headRow.addEventListener('click', function (e) {
       var t = e.target;
@@ -164,18 +113,23 @@
       var key = t.getAttribute('data-key');
       if (!key) return;
 
-      // 토글
-      if (sortState.key === key) {
-        sortState.dir = (sortState.dir === 'asc') ? 'desc' : 'asc';
+      var q = getQueryObj();
+      var currentKey = q.sortKey || 'created';
+      var currentDir = q.sortDir || 'desc';
+
+      var newDir = 'desc';
+      if (currentKey === key) {
+        newDir = (currentDir === 'desc' ? 'asc' : 'desc');
       } else {
-        sortState.key = key;
-        sortState.dir = 'asc';
+        // 새로운 키를 누르면 기본적으로 desc(또는 해당 데이터 성격에 맞는 기본값)
+        newDir = 'desc';
       }
 
-      resetSortBtnStyles();
-      t.classList.add(sortState.dir);
+      q.sortKey = key;
+      q.sortDir = newDir;
+      q.page = '1';
 
-      sortRows(sortState.key, sortState.dir);
+      window.location.href = window.location.pathname + buildQuery(q);
     });
   }
 

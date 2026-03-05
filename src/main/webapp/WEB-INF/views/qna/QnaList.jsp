@@ -80,14 +80,20 @@
             <div class="cell">제목</div>
             <div class="cell">분야</div>
 
+            <c:set var="sk" value="${param.sortKey}" />
+            <c:set var="sd" value="${param.sortDir}" />
+
             <div class="cell">
-              <button type="button" class="sort-btn" data-key="like" aria-label="좋아요 정렬">좋아요</button>
+              <button type="button" class="sort-btn ${sk == 'like' ? 'active '.concat(sd) : ''}" 
+                      data-key="like" aria-label="좋아요 정렬">좋아요</button>
             </div>
             <div class="cell">
-              <button type="button" class="sort-btn" data-key="answer" aria-label="답변 정렬">답변</button>
+              <button type="button" class="sort-btn ${sk == 'answer' ? 'active '.concat(sd) : ''}" 
+                      data-key="answer" aria-label="답변 정렬">답변</button>
             </div>
             <div class="cell">
-              <button type="button" class="sort-btn" data-key="created" aria-label="작성일 정렬">작성</button>
+              <button type="button" class="sort-btn ${(empty sk or sk == 'created') ? 'active '.concat(empty sd ? 'desc' : sd) : ''}" 
+                      data-key="created" aria-label="작성일 정렬">작성</button>
             </div>
           </div>
 
@@ -122,7 +128,7 @@
       <!-- 하단 -->
       <div class="qna-bottom">
         <c:set var="curPage" value="${pageInfo.page}" />
-        <c:set var="totalPages" value="${pageInfo.totalPages}" />
+        <c:set var="totalPages" value="${pageInfo.totalPage}" />
 
         <div class="qna-pagination" id="qnaPagination"
              data-page="${curPage}" data-total="${totalPages}">
@@ -139,6 +145,12 @@
           <span class="qna-search__icon" aria-hidden="true"></span>
           <c:if test="${not empty param.category}">
             <input type="hidden" name="category" value="${param.category}">
+          </c:if>
+          <c:if test="${not empty param.sortKey}">
+            <input type="hidden" name="sortKey" value="${param.sortKey}">
+          </c:if>
+          <c:if test="${not empty param.sortDir}">
+            <input type="hidden" name="sortDir" value="${param.sortDir}">
           </c:if>
           <input class="qna-search__input" type="text" name="q"
                  placeholder="검색어를 입력하세요"
