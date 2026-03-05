@@ -1,6 +1,8 @@
 package org.joonzis.user.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -126,7 +128,7 @@ public class MyPageController {
 	/*
 	 * 마이페이지
 	 * */
-	//수정-닉네임, 주소
+	//마이페이지 수정-닉네임, 주소
 	@PostMapping("/update")
 	@ResponseBody
 	public String updateMypage(@RequestParam(required=false) String nickname, 
@@ -148,6 +150,36 @@ public class MyPageController {
 		return "ok";
 	}
 	
-	//수정-관심사
+	//마이페이지 수정-관심사 검색
+	@GetMapping("/hashtag")
+	@ResponseBody
+	public List<Map<String,Object>> search(@RequestParam String keyword){
+		return mpService.searchHashtag(keyword);
+	}
+	
+	//마이페이지 수정-관심사 선택(저장)
+	@PostMapping("/aspect")
+	@ResponseBody
+	public Map<String,Object> saveAspect(HttpSession session,
+										@RequestParam("hashtagId") int hashtagId){
+		Map<String, Object> res = new HashMap<>();
+
+	    
+		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+	    if (loginUser == null) {
+	        res.put("ok", false);
+	        res.put("msg", "no-session");
+	        return res;
+	    }
+
+	    int userId = loginUser.getUser_id();
+
+	    // 1) 중복이면 0, 새로 추가면 1 반환하도록 구현 추천
+	    int inserted = mpService.insertUserAspect(userId, hashtagId);
+
+	    res.put("ok", true);
+	    res.put("inserted", inserted); // 1=추가됨, 0=이미있음(무시)
+	    return res;	
+	}
 	
 }

@@ -17,4 +17,24 @@
 		</set>
 		WHERE user_id = #{user_id}
 	</update>
+	
+	<!-- 마이페이지 수정-관심사  -->
+	<select id="searchHashtag" parameterType="string" resultType="map">
+		SELECT
+        hashtag_id,
+        hashtag_name
+	    FROM tbl_hashtag_list
+	    WHERE hashtag_name LIKE '%' || #{keyword} || '%'
+	    ORDER BY hashtag_name
+	</select>
+	<!-- 마이페이지 수정-관심사 선택(저장)-->
+	<!-- merge 사용 이유: 데이터가 있으면  아무것도 안 하고 있으면 insert-->
+	<update id="insertUserAspect" >
+		  MERGE INTO tbl_user_aspect t
+		  USING (SELECT #{userId} AS user_id, #{hashtagId} AS hashtag_id FROM dual) s
+		  ON (t.user_id = s.user_id AND t.hashtag_id = s.hashtag_id)
+		  WHEN NOT MATCHED THEN
+		  INSERT (user_id, hashtag_id) VALUES (s.user_id, s.hashtag_id)
+	</update>
+	
 </mapper>

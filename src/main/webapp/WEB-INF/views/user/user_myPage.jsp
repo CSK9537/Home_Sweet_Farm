@@ -505,7 +505,8 @@
           </div>
         </div>
       </div>
-
+      
+   
       <!-- 인증(이메일) 모달 -->
       <div class="modal" id="modalVerify" role="dialog" aria-modal="true" aria-labelledby="modalVerifyTitle" hidden>
         <div class="modal-card">
@@ -527,6 +528,8 @@
           </div>
         </div>
       </div>
+      
+      
 
       <!-- 프로필 이미지 크게보기 모달(주인만) -->
       <c:if test="${isOwner}">
