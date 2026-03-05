@@ -36,9 +36,9 @@
         <div class="qna-cat__header">
           <div class="qna-cat__title">분야</div>
           <div class="qna-cat__today">
-            <span>오늘의 새 질문 <strong><c:out value="${todayNewQuestionCnt}"></c:out></strong></span>
+            <span>오늘의 새 질문 <strong>10,025</strong></span>
             <span class="dot">|</span>
-            <span>오늘의 답변 <strong><c:out value="${todayNewAnswerCnt}"></c:out></strong></span>
+            <span>오늘의 답변 <strong>29,905</strong></span>
           </div>
         </div>
 
@@ -109,14 +109,14 @@
                 <span class="title-text"><c:out value="${q.title}"/></span>
                 <span class="preview-text"><c:out value="${q.preview}"/></span>
                 <span class="meta-line">
-                  <span class="meta-tag">#<c:out value="${q.tagName }"/></span>
+                  <span class="meta-tag">#<c:out value="${q.tagName}"/></span>
                   <span class="meta-like">좋아요 <c:out value="${q.likeCount}"/></span>
                   <span class="meta-ans">답변 <c:out value="${q.answerCount}"/></span>
                   <span class="meta-date"><c:out value="${q.createdAtLabel}"/></span>
                 </span>
               </div>
 
-              <div class="cell cell-cat"><c:out value="${empty q.tagName ? '-' : q.tagName }"/></div>
+              <div class="cell cell-cat"><c:out value="${q.tagName}"/></div>
               <div class="cell cell-like"><c:out value="${q.likeCount}"/></div>
               <div class="cell cell-ans"><c:out value="${q.answerCount}"/></div>
               <div class="cell cell-date"><c:out value="${q.createdAtLabel}"/></div>
