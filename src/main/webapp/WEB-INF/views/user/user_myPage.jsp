@@ -79,7 +79,9 @@
 			
 			    <!-- 자기소개 -->
 			    <div class="box">
-			      <div class="box-title">자기소개</div>
+			      <div class="box-title">자기소개
+			      <button class="btn-edit">수정</button>
+			      </div>
 			      <div class="box-body scroll-box">
 			        <pre class="pre-text"><c:choose>
 			  <c:when test="${not empty profileUser.intro}"><c:out value="${profileUser.intro}" /></c:when>
@@ -87,60 +89,11 @@
 			</c:choose></pre>
 			      </div>
 			    </div>
-			
-			    <!-- 활동내역 (JSP 단계: 더미) -->
-			    <div class="box">
-			      <div class="box-title">활동내역</div>
-			      <div class="box-body scroll-box">
-			        <ul class="bullet">
-			          <li>활동 내역 1</li>
-			          <li>활동 내역 2</li>
-			          <li>활동 내역 3 (스크롤 방식)</li>
-			        </ul>
-			      </div>
-			    </div>
-			
-			    <!-- 주요 활동 분야 (JSP 단계: 더미) -->
-			    <div class="box">
-			      <div class="box-title">주요 활동 분야</div>
-			      <div class="box-body scroll-box">
-			        <ul class="bullet">
-			          <li>활동 분야 1</li>
-			          <li>활동 분야 2</li>
-			          <li>활동 분야 3 (스크롤 방식)</li>
-			        </ul>
-			      </div>
-			    </div>
-			
-			    <!-- 답변수 -->
-			    <div class="box">
-			      <div class="box-title">답변수</div>
-			      <div class="stats">
-			        <div class="stat">
-			          <div class="num">${empty profileStats.totalAnswers ? 0 : profileStats.totalAnswers}</div>
-			          <div class="label">전체 답변</div>
-			        </div>
-			        <div class="stat">
-			          <div class="num">${empty profileStats.totalViews ? 0 : profileStats.totalViews}</div>
-			          <div class="label">조회수</div>
-			        </div>
-			        <div class="stat">
-			          <div class="num">${empty profileStats.acceptedAnswers ? 0 : profileStats.acceptedAnswers}</div>
-			          <div class="label">채택 답변</div>
-			        </div>
-			      </div>
-			    </div>
-			
-			  </div>
-			
-			  <!-- =======================
-			       RIGHT COLUMN
-			  ======================== -->
-			  <div class="profile-col">
-			
-			    <!-- 나의 등급 -->
-			    <div class="box">
-			      <div class="box-title">나의 등급</div>
+			    
+			    <!-- 회원 등급 -->
+			    <div class="box grade-box" id="btnGrade" role="button"
+			    tabidex="0" aria-controls="modalGrade">
+			      <div class="box-title">회원 등급</div>
 			
 			      <div class="grade-progress">
 			        <div class="grade-line"></div>
@@ -166,33 +119,71 @@
 			        <a class="link-btn" href="#">전문가 인증하러 가기</a>
 			      </div>
 			    </div>
-			
-			    <!-- 나의 Q&A 등급 -->
+			    
+			    <!-- 답변수 -->
 			    <div class="box">
-			      <div class="box-title">나의 Q&amp;A 등급</div>
-			
-			      <div class="qna-progress">
-			        <div class="qna-line"></div>
-			
-			        <div class="qna-step active">
-					  <div class="qna-icon">🏅</div>
-					  <div class="qna-label">
-					    새싹등급 <span class="qna-lv">LV <c:out value="${empty profileStats.qnaLevel ? 1 : profileStats.qnaLevel}" /></span>
-					  </div>
-					</div>
-			
-			      <div class="grade-desc">
-					  <div class="qna-desc-text">
-					    현재 새싹등급 (<span class="qna-lv">LV <c:out value="${empty profileStats.qnaLevel ? 1 : profileStats.qnaLevel}" /></span>) 입니다
-					  </div>
-					  <a class="link-btn qna-link" href="#">Q&amp;A 등급 올리기</a>
-				</div>
+			      <div class="box-title">답변수</div>
+			      <div class="stats">
+			        <div class="stat">
+			          <div class="num">${empty profileUser.totalAnswers ? 0 : profileUser.totalAnswers}</div>
+			          <div class="label">전체 답변</div>
+			        </div>
+			        <div class="stat">
+			          <div class="num">${empty profileUser.totalViews ? 0 : profileUser.totalViews}</div>
+			          <div class="label">조회수</div>
+			        </div>
+			        <div class="stat">
+			          <div class="num">${empty profileUser.acceptedAnswers ? 0 : profileUser.acceptedAnswers}</div>
+			          <div class="label">채택 답변</div>
+			        </div>
+			      </div>
 			    </div>
-			
 			  </div>
 			
-			</div>
-
+			
+			  <!-- =======================
+			       RIGHT COLUMN
+			  ======================== -->
+			  <!-- 최근 작성한 글 -->
+				  <div class="right-column">
+				  	  <div class="box">
+					  <div class="box-title">최근 작성한 글</div>
+						  <div class="recent-posts">
+						  	<ul class="recent-list">
+							 <c:forEach var="p" items="${profileUser.posts}" varStatus="s">
+							  	<li>
+								    <a href="${p.moveUrl}">
+								       <div class="post-title"><c:out value='${p.title}'/></div>
+								       <div class="post-meta">커뮤니티  · 조회<c:out value='${p.viewCount}'/>
+								        						· 댓글<c:out value='${p.replyCount}'/>
+								       </div>
+								    </a>
+							    </li>
+							 </c:forEach>
+						  	</ul>
+						  </div>
+					  </div>	  
+					  <!-- 최근 질문  -->
+				    <div class="box">
+					  <div class="box-title">최근 질문</div>
+						  <div class="recent-questions">
+						  	<ul class="recent-list">
+						  	<c:forEach var="q" items="${profileUser.quests}" varStatus="s">
+							  	<li>
+							      <a href="${q.moveUrl}">
+							        <div class="post-title"><c:out value='${q.title}'/></div>
+							        <div class="post-meta">Q&A · 조회<c:out value='${q.viewCount}'/>
+								        						· 댓글<c:out value='${q.replyCount}'/>
+								    </div>
+							      </a>
+							    </li>
+							 </c:forEach>
+						  </ul>
+						  </div>
+					  </div>
+				  </div>
+				</div>
+		</section>
           <!-- =======================
                2) 작성글 (공개)
           ======================== -->
@@ -209,7 +200,7 @@
             </header>
 
             <div class="list-wrap"
-                 data-api="${ctx}/mypage/api/posts"
+                 data-api="${ctx}/user/myPage/posts"
                  data-default-tab="all">
               <div class="list-head">
                 <div class="list-count">
@@ -240,7 +231,7 @@
             </header>
 
             <div class="list-wrap"
-                 data-api="${ctx}/mypage/api/comments"
+                 data-api="${ctx}/user/myPage/replys"
                  data-default-tab="all">
               <div class="list-head">
                 <div class="list-count">
@@ -272,7 +263,7 @@
               </header>
 
               <div class="list-wrap"
-                   data-api="${ctx}/mypage/api/questions"
+                   data-api="${ctx}/user/myPage/questions"
                    data-default-tab="all">
                 <div class="list-head">
                   <div class="list-count">
@@ -303,7 +294,7 @@
             </header>
 
             <div class="list-wrap"
-                 data-api="${ctx}/mypage/api/answers"
+                 data-api="${ctx}/user/myPage/answers"
                  data-default-tab="all">
               <div class="list-head">
                 <div class="list-count">
@@ -321,58 +312,110 @@
           <!-- =======================
                6) 마이페이지(계정 주인만)
           ======================== -->
+          
           <c:if test="${isOwner}">
             <section id="secAccount" class="right-section">
               <header class="section-head">
                 <h2 class="section-title">마이페이지</h2>
               </header>
-
               <form id="accountForm" class="account-form" method="post" action="${ctx}/mypage/account/update">
                 <div class="form-row">
                   <label class="label">이름</label>
-                  <input type="text" value="<c:out value='${profileUser.name}'/>" disabled />
+                  <c:choose>
+                  	<c:when test=" ${empty profileUser.name}">
+                  		<input type="text" value="<c:out value='${profileUser.name}' default=''/>" disabled />
+                  	</c:when>
+                  	<c:otherwise>
+                  		<input type="text" value="<c:out value='${profileUser.name}'/>" disabled />                  	
+                  	</c:otherwise>
+                  </c:choose>
                 </div>
                 <div class="form-row">
                   <label class="label">생년월일</label>
-                  <input type="text" value="<c:out value='${profileUser.birth_date}'/>" disabled />
+                  <c:choose>
+                  	<c:when test=" ${empty profileUser.brith_date}">
+                  		<input type="text" value="<c:out value='${profileUser.brith_date}' default=''/>" disabled />
+                  	</c:when>
+                  	<c:otherwise>
+                  		<input type="text" value="<c:out value='${profileUser.brith_date}'/>" disabled />            	
+                  	</c:otherwise>
+                  </c:choose>
                 </div>
 
                 <div class="form-row">
                   <label class="label">닉네임</label>
+                  <c:choose>
+                  	<c:when test=" ${empty profileUser.nickname}">
+                  		<input type="text" name="nickname" value="<c:out value='${profileUser.nickname}' default=''/>"/>
+                  	</c:when>
+                  	<c:otherwise>
+                  		<input type="text" name="nickname" value="<c:out value='${profileUser.nickname}'/>" />            	
+                  	</c:otherwise>
+                  </c:choose>
                   <div class="input-actions">
-                    <input type="text" name="nickname" value="<c:out value='${profileUser.nickname}'/>" />
                     <button type="submit" class="btn">수정</button>
                   </div>
                 </div>
 
                 <div class="form-row">
-                  <label class="label">관심식물</label>
+                  <label class="label">관심사</label>
+                  <c:choose>
+                  	<c:when test=" ${empty profileUser.aspect}">
+                  		<input type="text" value="<c:out value='${profileUser.aspect}' default=''/>" />
+                  	</c:when>
+                  	<c:otherwise>
+                  		<input type="text" value="<c:out value='${profileUser.aspect}'/>" />            	
+                  	</c:otherwise>
+                  </c:choose>
                   <div class="input-actions">
-                    <input type="text" value="<c:out value='${profileUser.aspect}'/>" readonly />
                     <button type="button" class="btn" id="btnInterestPlant">+</button>
                   </div>
                 </div>
 
                 <div class="form-row">
                   <label class="label">휴대전화</label>
-                  <div class="input-actions">
-                    <input type="text" value="<c:out value='${profileUser.phone}'/>" readonly id="inpPhone" />
-                    <button type="button" class="btn btn-ghost" id="btnPhoneVerify">인증</button>
-                  </div>
+                  <c:choose>
+                  	<c:when test=" ${empty profileUser.phone}">
+                  		<input type="text" id="inpPhone" value="<c:out value='${profileUser.phone}' default=''/>"/>
+                  	</c:when>
+                  	<c:otherwise>
+                  		<input type="text" id="inpPhone" value="<c:out value='${profileUser.phone}'/>" />            	
+                  	</c:otherwise>
+                  </c:choose>
                 </div>
 
                 <div class="form-row">
                   <label class="label">이메일</label>
+                  <c:choose>
+                  	<c:when test=" ${empty profileUser.email}">
+                  		<input type="text" value="<c:out value='${profileUser.email}' default=''/>"/>
+                  	</c:when>
+                  	<c:otherwise>
+                  		<input type="text" value="<c:out value='${profileUser.email}'/>" />            	
+                  	</c:otherwise>
+                  </c:choose>
                   <div class="input-actions">
-                    <input type="text" value="<c:out value='${profileUser.email}'/>" readonly id="inpEmail" />
                     <button type="button" class="btn btn-ghost" id="btnEmailVerify">인증</button>
+                  </div>
+                </div>
+                <!-- 주소 html 추가 -->
+                 <div class="form-row">
+                  <label class="label">주소</label>
+                  <c:choose>
+                     <c:when test=" ${empty profileUser.address}">
+                        <input type="text" value="<c:out value='${profileUser.address}' default=''/>"/>
+                     </c:when>
+                     <c:otherwise>
+                        <input type="text" value="<c:out value='${profileUser.address}'/>" />               
+                     </c:otherwise>
+                  </c:choose>
+                  <div class="input-actions">
+                    <button type="submit" class="btn">수정</button>
                   </div>
                 </div>
               </form>
             </section>
           </c:if>
-
-        </section>
       </div>
 
       <!-- =======================
@@ -384,12 +427,52 @@
       <div class="modal" id="modalGrade" role="dialog" aria-modal="true" aria-labelledby="modalGradeTitle" hidden>
         <div class="modal-card">
           <div class="modal-head">
-            <h3 id="modalGradeTitle">등급 안내</h3>
+            <h3 id="modalGradeTitle">회원등급</h3>
             <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
           </div>
           <div class="modal-body">
-            <!-- DB/정책 문구를 서버에서 내려주고 싶으면 여기 바인딩 -->
-            <p class="muted">등급 기준/혜택 안내 내용을 표시합니다.</p>
+           <div class="modal-body grade-guide">
+			  <h4>등급 안내</h4>
+			
+			  <div class="grade-box">
+			    <ol>
+			      <li>일반 회원</li>
+			      <li>고수 회원</li>
+			      <li>전문가 회원</li>
+			    </ol>
+			  </div>
+			
+			  <h4>1. 일반 회원</h4>
+			  <div class="grade-box">
+			    <ol>
+			      <li>가입 시 자동으로 부여됩니다.</li>
+			      <li>신규회원 / 게시글 조회만 가능</li>
+			    </ol>
+			  </div>
+			
+			  <h4>2. 고수 회원</h4>
+			  <div class="grade-box">
+			    <ol>
+			      <li>게시글 100개</li>
+			      <li>댓글 70개</li>
+			      <li>방문 수 10회</li>
+			      <li>답변 채택 기능 사용</li>
+			      <li>게시글 신고 시 가중치 부여</li>
+			    </ol>
+			  </div>
+			
+			  <h4>3. 전문가 회원</h4>
+			  <div class="grade-box">
+			    <ol>
+			      <li>관련 자격증 pdf 파일 제출 및 폼 작성 시, 검토 후 등업</li>
+			      <li>전문가 답변 작성 및 고정</li>
+			    </ol>
+			
+			    <div class="expert-link">
+			      <a href="#">전문가 인증하러 가기</a>
+			    </div>
+			  </div>
+			</div>
           </div>
           <div class="modal-foot">
             <button type="button" class="btn" data-modal-close>닫기</button>
@@ -397,36 +480,19 @@
         </div>
       </div>
 
-      <!-- Q&A 등급 올리기 모달 -->
-      <div class="modal" id="modalQna" role="dialog" aria-modal="true" aria-labelledby="modalQnaTitle" hidden>
-        <div class="modal-card">
-          <div class="modal-head">
-            <h3 id="modalQnaTitle">Q&amp;A 등급 올리기</h3>
-            <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
-          </div>
-          <div class="modal-body">
-            <p class="muted">등급 업 조건/미션 등을 표시하고, 수행 버튼을 제공할 수 있습니다.</p>
-            <button type="button" class="btn">미션 확인</button>
-          </div>
-          <div class="modal-foot">
-            <button type="button" class="btn" data-modal-close>닫기</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 관심식물 추가 모달 -->
+      <!-- 관심사 추가 모달 -->
       <div class="modal" id="modalPlant" role="dialog" aria-modal="true" aria-labelledby="modalPlantTitle" hidden>
         <div class="modal-card">
           <div class="modal-head">
-            <h3 id="modalPlantTitle">관심식물 선택</h3>
+            <h3 id="modalPlantTitle">관심사 선택</h3>
             <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
           </div>
           <div class="modal-body">
             <div class="plant-search">
-              <input type="text" id="plantKeyword" placeholder="식물명 검색" />
+              <input type="text" id="plantKeyword" placeholder="관심사 검색" />
               <button type="button" class="btn" id="btnPlantSearch">검색</button>
             </div>
-            <ul class="list" id="plantResult" aria-label="관심식물 검색 결과"></ul>
+            <ul class="list" id="plantResult" aria-label="관심사 검색 결과"></ul>
             <div class="empty" id="plantEmpty">검색 결과가 없습니다.</div>
           </div>
           <div class="modal-foot">
@@ -435,7 +501,7 @@
         </div>
       </div>
 
-      <!-- 인증(휴대폰/이메일) 모달 -->
+      <!-- 인증(이메일) 모달 -->
       <div class="modal" id="modalVerify" role="dialog" aria-modal="true" aria-labelledby="modalVerifyTitle" hidden>
         <div class="modal-card">
           <div class="modal-head">

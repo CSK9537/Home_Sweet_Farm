@@ -1,6 +1,7 @@
 package org.joonzis.user.service;
 
 
+import org.joonzis.user.dto.MypageProfileDTO;
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.mapper.UserMapper;
 import org.joonzis.user.vo.UserVO;
@@ -129,10 +130,14 @@ public class UserServiceImpl implements UserService{
 		
 		return dto;
 	}
-
 	
 	@Override
 	public int deletionUser(int user_id, int enable) {
 		return usermapper.updateEnable(user_id, enable);
+	}
+	
+	@Override
+	public MypageProfileDTO getProfile(int userId) {
+		return usermapper.getProfileInfo(userId);
 	}
 }

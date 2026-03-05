@@ -3,6 +3,7 @@ package org.joonzis.user.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+import org.joonzis.user.dto.MypageProfileDTO;
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
 
@@ -85,4 +86,6 @@ public interface UserMapper {
     
     // user_id의 리스트로 일괄 삭제
     public int deletionUserByList(@Param("list")List<Integer> userIdList);
+    // 마이페이지용 DTO 조회
+    public MypageProfileDTO getProfileInfo(int user_id);
 }

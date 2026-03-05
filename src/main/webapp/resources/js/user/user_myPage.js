@@ -33,14 +33,13 @@
   }
 
   showSection("secProfile");
-
+ 
   // -------------------------
   // Modal helpers
   // -------------------------
   var backdrop = document.getElementById("modalBackdrop");
   var modals = {
     grade: document.getElementById("modalGrade"),
-    qna: document.getElementById("modalQna"),
     plant: document.getElementById("modalPlant"),
     verify: document.getElementById("modalVerify"),
     avatar: document.getElementById("modalAvatar")
@@ -80,29 +79,16 @@
       }
     }
   });
-	//오른쪽 레이아웃 클릭 시 아바타 모달 열기
-	  var rightLayout = document.getElementById("rightLayout");
-	
-	  if (rightLayout && isOwner) {
-	    rightLayout.addEventListener("click", function (e) {
-	
-	      if (e.target.closest("a, button, input, textarea, select, label")) return;
-	
-	      openModal(modals.avatar);
-	    });
-	  }
-
-  // 프로필: 등급 안내 / Q&A 레벨업
-  var btnGradeGuide = document.getElementById("btnGradeGuide");
-  if (btnGradeGuide) btnGradeGuide.addEventListener("click", function () { openModal(modals.grade); });
-
-  var btnQnaLevelUp = document.getElementById("btnQnaLevelUp");
-  if (btnQnaLevelUp) btnQnaLevelUp.addEventListener("click", function () { openModal(modals.qna); });
 
   // 프로필 이미지 크게보기 (주인만)
   var btnAvatar = document.getElementById("btnAvatar");
   if (btnAvatar && isOwner) btnAvatar.addEventListener("click", function () { openModal(modals.avatar); });
 
+  //프로필: 회원등급 안내
+  var btnGradeGuide = document.getElementById("btnGrade");
+  if (btnGradeGuide) btnGradeGuide.addEventListener("click", function () { openModal(modals.grade); });
+  
+  
   // -------------------------
   // Account: interest plant modal
   // -------------------------
@@ -190,29 +176,21 @@
   var modalVerifyTitle = document.getElementById("modalVerifyTitle");
   var verifyDesc = document.getElementById("verifyDesc");
   var verifyTarget = document.getElementById("verifyTarget");
-  var btnPhoneVerify = document.getElementById("btnPhoneVerify");
   var btnEmailVerify = document.getElementById("btnEmailVerify");
   var inpPhone = document.getElementById("inpPhone");
   var inpEmail = document.getElementById("inpEmail");
 
   function openVerify(kind) {
     if (!isOwner) return;
-    if (kind === "phone") {
-      if (modalVerifyTitle) modalVerifyTitle.textContent = "휴대전화 인증";
-      if (verifyDesc) verifyDesc.textContent = "휴대전화 번호로 인증번호를 발송합니다.";
-      if (verifyTarget) verifyTarget.value = inpPhone ? (inpPhone.value || "") : "";
-    } else {
       if (modalVerifyTitle) modalVerifyTitle.textContent = "이메일 인증";
       if (verifyDesc) verifyDesc.textContent = "이메일로 인증번호를 발송합니다.";
       if (verifyTarget) verifyTarget.value = inpEmail ? (inpEmail.value || "") : "";
-    }
+    
     if (modals.verify) modals.verify.setAttribute("data-kind", kind);
     openModal(modals.verify);
   }
 
-  if (btnPhoneVerify && isOwner) btnPhoneVerify.addEventListener("click", function () { openVerify("phone"); });
   if (btnEmailVerify && isOwner) btnEmailVerify.addEventListener("click", function () { openVerify("email"); });
-  if (inpPhone) inpPhone.addEventListener("click", function () { if (isOwner) openVerify("phone"); });
   if (inpEmail) inpEmail.addEventListener("click", function () { if (isOwner) openVerify("email"); });
 
   var btnSendCode = document.getElementById("btnSendCode");
