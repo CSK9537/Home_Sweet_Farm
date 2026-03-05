@@ -17,6 +17,9 @@ public interface PlantService {
 	public PlantDTO plantInfo(String plant_name);
 	// 관리가이드 DB에서 데이터 출력
 	public GuideDTO guideInfo(String plant_name);
+	// 식물 랜덤 이미지주소 50개
+	public List<String> plantImagesByRandom();
+	
 	// 나의 식물 추천가이드 목록
 	public List<PlantGuideDTO> selectPlantWithGuideList(int limit);
 }

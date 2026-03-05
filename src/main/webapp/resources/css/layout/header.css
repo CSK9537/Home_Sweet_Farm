@@ -373,7 +373,8 @@ a{ color: inherit; text-decoration: none; }
   font-size: 13px;
   transition: transform .12s ease, font-weight .12s ease;
 }
-.gnb__item:hover .gnb__link{
+.gnb__item:hover .gnb__link,
+.gnb__link.active {
   font-weight:700;
   text-decoration: underline;
   text-underline-offset: 6px;
@@ -407,7 +408,9 @@ a{ color: inherit; text-decoration: none; }
   color: var(--point);
   font-size: 12px;
 }
-.subbar__link:hover{
+.subbar__link:hover,
+.subbar__link.active {
+  font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -594,7 +597,8 @@ a{ color: inherit; text-decoration: none; }
     padding: 10px 10px;
     border-radius: 12px;
   }
-  .mnav__link:hover{
+  .mnav__link:hover,
+  .mnav__link.active {
     background: var(--soft);
     font-weight:700;
     text-decoration: underline;
@@ -612,18 +616,24 @@ a{ color: inherit; text-decoration: none; }
     padding: 10px 10px;
     border-radius: 12px;
   }
+  
   .mnav__item > summary::-webkit-details-marker{ display:none; }
-  .mnav__item[open] > summary{
+  
+  .mnav__item[open] > summary,
+  .mnav__item > summary.active {
     font-weight:700;
     text-decoration: underline;
     text-underline-offset: 4px;
   }
+  
   .mnav__item a{
     display:block;
     padding: 8px 18px;
     border-radius: 10px;
   }
-  .mnav__item a:hover{
+  
+  .mnav__item a:hover,
+  .mnav__item a.active {
     background: var(--soft);
     font-weight:700;
     text-decoration: underline;

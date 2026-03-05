@@ -396,4 +396,49 @@ document.addEventListener("DOMContentLoaded", () => {
   mnav.querySelectorAll("a").forEach((a) => {
     a.addEventListener("click", closeMnav);
   });
+  
+  //=============================================================
+  // [Active Menu] 현재 URL 경로를 확인하여 헤더 메뉴 활성화 표시
+  // ============================================================
+  const currentPath = window.location.pathname;
+
+  // 1. 데스크탑 메뉴 활성화 처리
+  const desktopLinks = document.querySelectorAll(".gnb__link, .subbar__link");
+  desktopLinks.forEach(link => {
+    const href = link.getAttribute("href");
+    
+    // href가 유효하고, 임시 링크(#)나 메인(/)이 아니며, 현재 경로가 href로 시작하는 경우
+    // ex) currentPath가 "/plant/detail" 일 때, href가 "/plant" 이면 매칭됨
+    if (href && href !== "/" && href !== "#" && currentPath.startsWith(href)) {
+      link.classList.add("active"); // 본인에게 active 부여
+
+      // 만약 서브메뉴(.subbar__link)가 선택되었다면, 부모 대분류(.gnb__link)도 같이 활성화
+      const parentItem = link.closest(".gnb__item");
+      if (parentItem) {
+        const mainLink = parentItem.querySelector(".gnb__link");
+        if (mainLink) mainLink.classList.add("active");
+      }
+    }
+  });
+
+  // 2. 모바일 햄버거 메뉴 활성화 처리
+  const mobileLinks = document.querySelectorAll(".mnav__list a");
+  mobileLinks.forEach(link => {
+    const href = link.getAttribute("href");
+    
+    if (href && href !== "/" && href !== "#" && currentPath.startsWith(href)) {
+      link.classList.add("active"); // 본인에게 active 부여
+
+      // 서브메뉴(details 안의 a 태그)인 경우
+      const parentDetails = link.closest("details.mnav__item");
+      if (parentDetails) {
+        // 모바일 메뉴를 열었을 때 해당 아코디언이 열려 있도록 처리
+        parentDetails.open = true; 
+        
+        // 부모 대분류(summary) 제목도 활성화 색상 적용
+        const summary = parentDetails.querySelector("summary");
+        if (summary) summary.classList.add("active");
+      }
+    }
+  });
 });
