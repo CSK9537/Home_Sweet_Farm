@@ -28,7 +28,7 @@
             </button>
 
             <div class="left-profile-meta">
-              <div class="nickname"><c:out value="${profileUser.nickname}" /></div>
+              <div class="nickname" id="leftNickname"><c:out value="${profileUser.nickname}" /></div>
               <div class="grade"><c:out value="${profileUser.gradeName}" /></div>
               <a class="chat-link" href="${ctx}/chat/room?targetUserId=${profileUser.user_id}">채팅하기</a>
             </div>

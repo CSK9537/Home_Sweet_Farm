@@ -470,6 +470,10 @@
 	    	    //변경된 값 저장
 	    	    nicknameInput.dataset.original = newNick;
 	    	    
+	    	    //왼쪽 닉네임도 즉시 반영
+	    	    var leftNickEl = document.querySelector("#leftNickname");
+	    	    if(leftNickEl)
+	    	    	leftNickEl.textContent = newNick;
 	    	  } else {
 	    	    nickMsg.textContent = "닉네임 수정 실패";
 	    	    nickMsg.className = "form-msg error";
