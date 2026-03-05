@@ -152,7 +152,7 @@
 								    <a href="${p.moveUrl}">
 								       <div class="post-title"><c:out value='${p.title}'/></div>
 								       <div class="post-meta">커뮤니티  · 조회<c:out value='${p.viewCount}'/>
-								        						· 댓글<c:out value='${p.replyCount}'/>
+								        						· 댓글<c:out value='${p.replyCnt}'/>
 								       </div>
 								    </a>
 							    </li>
@@ -170,7 +170,7 @@
 							      <a href="${q.moveUrl}">
 							        <div class="post-title"><c:out value='${q.title}'/></div>
 							        <div class="post-meta">Q&A · 조회<c:out value='${q.viewCount}'/>
-								        						· 댓글<c:out value='${q.replyCount}'/>
+								        						· 댓글<c:out value='${q.replyCnt}'/>
 								    </div>
 							      </a>
 							    </li>

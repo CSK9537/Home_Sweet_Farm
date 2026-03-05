@@ -123,8 +123,10 @@ public class MyPageController {
 		else
 			return new ResponseEntity<List<CommunityPostCardDTO>>(HttpStatus.OK);
 	}
-	
-	//마이페이지 수정-닉네임, 주소
+	/*
+	 * 마이페이지
+	 * */
+	//수정-닉네임, 주소
 	@PostMapping("/update")
 	@ResponseBody
 	public String updateMypage(@RequestParam(required=false) String nickname, 
@@ -145,4 +147,7 @@ public class MyPageController {
 		
 		return "ok";
 	}
+	
+	//수정-관심사
+	
 }

@@ -165,7 +165,7 @@
           location.reload();
         })
         .catch(function () {
-          alert("관심식물 저장에 실패했습니다.");
+          alert("관심사 저장에 실패했습니다.");
         });
     });
   }
