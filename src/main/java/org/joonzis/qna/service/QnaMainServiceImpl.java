@@ -89,7 +89,7 @@ public class QnaMainServiceImpl implements QnaMainService {
         LocalDateTime now = LocalDateTime.now();
         for (QnaWaitingDTO q : waitingList) {
             q.setAgo(toAgo(now, q.getRegDate()));
-            q.setNew(isNew(now, q.getRegDate()));
+            q.setIsNew(isNew(now, q.getRegDate()));
         }
 
         model.addAttribute("waitingList", waitingList);

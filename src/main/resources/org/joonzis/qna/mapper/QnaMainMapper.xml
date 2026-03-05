@@ -7,8 +7,8 @@
 
   <!--
     전제:
-    - 질문: TBL_BOARD (BOARD_TYPE='QNA', PARENT_ID IS NULL)
-    - 답변: TBL_BOARD (BOARD_TYPE='QNA', PARENT_ID = 질문 BOARD_ID)
+    - 질문: TBL_BOARD (BOARD_TYPE='Q', PARENT_ID IS NULL)
+    - 답변: TBL_BOARD (BOARD_TYPE='A', PARENT_ID = 질문 BOARD_ID)
     - 채택: 답변글의 IS_SELECTED='Y'
   -->
 
@@ -27,7 +27,7 @@
         JOIN TBL_USER U
           ON U.USER_ID = A.USER_ID
         WHERE A.IS_ACTIVE = 'Y'
-          AND A.BOARD_TYPE = 'QNA'
+          AND A.BOARD_TYPE = 'Q'
           AND A.PARENT_ID IS NOT NULL
           AND NVL(A.IS_SELECTED, 'N') = 'Y'
         GROUP BY U.USER_ID, NVL(U.NICKNAME, U.USERNAME), U.PROFILE_FILENAME
@@ -42,7 +42,7 @@
     SELECT COUNT(*)
     FROM TBL_BOARD B
     WHERE B.IS_ACTIVE = 'Y'
-      AND B.BOARD_TYPE = 'QNA'
+      AND B.BOARD_TYPE = 'Q'
       AND B.PARENT_ID IS NULL
   </select>
 
@@ -62,11 +62,11 @@
             FROM TBL_BOARD A
             WHERE A.PARENT_ID = B.BOARD_ID
               AND A.IS_ACTIVE = 'Y'
-              AND A.BOARD_TYPE = 'QNA'
+              AND A.BOARD_TYPE = 'Q'
           ) AS answers
         FROM TBL_BOARD B
         WHERE B.IS_ACTIVE = 'Y'
-          AND B.BOARD_TYPE = 'QNA'
+          AND B.BOARD_TYPE = 'Q'
           AND B.PARENT_ID IS NULL
         ORDER BY NVL(B.VIEW_COUNT, 0) DESC, B.BOARD_ID DESC
       ) X
@@ -80,14 +80,14 @@
     SELECT COUNT(*)
     FROM TBL_BOARD B
     WHERE B.IS_ACTIVE = 'Y'
-      AND B.BOARD_TYPE = 'QNA'
+      AND B.BOARD_TYPE = 'Q'
       AND B.PARENT_ID IS NULL
       AND (
         SELECT COUNT(*)
         FROM TBL_BOARD A
         WHERE A.PARENT_ID = B.BOARD_ID
           AND A.IS_ACTIVE = 'Y'
-          AND A.BOARD_TYPE = 'QNA'
+          AND A.BOARD_TYPE = 'A'
       ) = 0
   </select>
 
@@ -107,7 +107,7 @@
             FROM TBL_BOARD A
             WHERE A.PARENT_ID = B.BOARD_ID
               AND A.IS_ACTIVE = 'Y'
-              AND A.BOARD_TYPE = 'QNA'
+              AND A.BOARD_TYPE = 'A'
           ) AS answerCnt
         FROM TBL_BOARD B
         LEFT JOIN TBL_USER U
@@ -115,14 +115,14 @@
         LEFT JOIN TBL_CATEGORY C
           ON C.CATEGORY_ID = B.CATEGORY_ID
         WHERE B.IS_ACTIVE = 'Y'
-          AND B.BOARD_TYPE = 'QNA'
+          AND B.BOARD_TYPE = 'Q'
           AND B.PARENT_ID IS NULL
           AND (
             SELECT COUNT(*)
             FROM TBL_BOARD A
             WHERE A.PARENT_ID = B.BOARD_ID
               AND A.IS_ACTIVE = 'Y'
-              AND A.BOARD_TYPE = 'QNA'
+              AND A.BOARD_TYPE = 'A'
           ) = 0
 
         <choose>
