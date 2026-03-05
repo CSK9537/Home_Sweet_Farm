@@ -124,6 +124,8 @@ public class MyPlantController {
 		return "redirect:/myplant";
 	}
 	
+	
+	
 	// 삭제
 	@PostMapping("/remove/{myplant_id}")
 	@ResponseBody
