@@ -155,7 +155,8 @@
               </button>
             </c:if>
           </div>
-
+          
+          <!-- 작성자 본인에게만 표시 -->
           <div class="cv-post-actions__right">
             <c:if test="${loginUserId == board.user_id}">
               <button type="button" class="cv-btn cv-btn-ghost" id="btnBoardEdit">수정</button>
