@@ -1,6 +1,7 @@
 package org.joonzis.myplant.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -9,6 +10,7 @@ import org.joonzis.myplant.dto.MyPlantDTO;
 import org.joonzis.myplant.dto.MyPlantMainDTO;
 import org.joonzis.myplant.service.MyPlantService;
 import org.joonzis.plant.dto.GuideDTO;
+import org.joonzis.plant.dto.PlantGuideDTO;
 import org.joonzis.plant.service.PlantService;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,11 +55,11 @@ public class MyPlantController {
 		return "myplant/MyPlantRecommend";
 	}
 
-//	@GetMapping(value="/recommend/list", produces="application/json; charset=UTF-8")
-//	@ResponseBody
-//	public List<PlantGuideDTO> recommendList() {
-//	    return pservice.selectPlantWithGuideList(10);
-//	}
+	@GetMapping(value="/recommend/list", produces="application/json; charset=UTF-8")
+	@ResponseBody
+	public List<PlantGuideDTO> recommendList() {
+	    return pservice.selectPlantWithGuideList(10);
+	}
 	
 	// 나의 식물 추가
 	@PostMapping("/register")
