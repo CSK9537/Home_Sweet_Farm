@@ -9,10 +9,10 @@
 
   var charts = {}; 
   var METRICS = [
-    { key: "illumination", label: "조도", canvasId: "chart-illumination", detailBodySel: '[data-detail-body="illumination"]' },
-    { key: "temperature",  label: "온도", canvasId: "chart-temperature",  detailBodySel: '[data-detail-body="temperature"]' },
-    { key: "humidity",     label: "습도", canvasId: "chart-humidity",     detailBodySel: '[data-detail-body="humidity"]' },
-    { key: "soil_moisture",label: "토양 수분", canvasId: "chart-soil",    detailBodySel: '[data-detail-body="soil_moisture"]' }
+    { key: "illumination", label: "조도", canvasId: "chart-illumination", detailBodySel: '[data-detail-body="illumination"]', suffix: "%" },
+    { key: "temperature",  label: "온도", canvasId: "chart-temperature",  detailBodySel: '[data-detail-body="temperature"]', suffix: "℃" },
+    { key: "humidity",     label: "습도", canvasId: "chart-humidity",     detailBodySel: '[data-detail-body="humidity"]', suffix: "%" },
+    { key: "soil_moisture",label: "토양 수분", canvasId: "chart-soil",    detailBodySel: '[data-detail-body="soil_moisture"]', suffix: "%" }
   ];
 
   var myplant_id = null;
@@ -79,17 +79,27 @@
     }
     return out;
   }
+  
+  function findMetric(metricKey) {
+    for (var i = 0; i < METRICS.length; i++) {
+      if (METRICS[i].key === metricKey) return METRICS[i];
+    }
+    return null;
+  }
 
   function ensureChart(metricKey, canvas) {
     if (charts[metricKey]) return charts[metricKey];
 
+    var metric = findMetric(metricKey);
+    var suffix = metric ? (metric.suffix || "") : "";
+    
     var ctx = canvas.getContext("2d");
     var c = new Chart(ctx, {
       type: "line",
       data: {
         labels: [],
         datasets: [{
-          label: metricKey,
+          label: metric ? metric.label : metricKey,
           data: [],
           tension: 0.35,
           pointRadius: 0,
@@ -99,28 +109,47 @@
         }]
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { enabled: true } },
-        scales: {
-          x: { grid: { display: false }, ticks: { maxTicksLimit: 8 } },
-          y: { grid: { color: "rgba(0,0,0,.08)" }, ticks: { maxTicksLimit: 5 } }
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { 
+            legend: { display: false }, 
+            tooltip: { 
+              enabled: true,
+              // 마우스를 올렸을 때 나오는 툴팁 단위
+              callbacks: {
+                label: function(context) {
+                  var val = context.parsed.y;
+                  if (val === null) return "데이터 없음";
+                  return context.dataset.label + ": " + val + suffix;
+                }
+              }
+            } 
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { maxTicksLimit: 8 } },
+            y: { 
+              grid: { color: "rgba(0,0,0,.08)" }, 
+              ticks: { 
+                maxTicksLimit: 5,
+                // Y축 숫자에 단위를 붙여주는 콜백 함수
+                callback: function(value) {
+                  return value + suffix;
+                }
+              } 
+            }
+          }
         }
-      }
-    });
+      });
 
     charts[metricKey] = c;
     return c;
   }
 
   function renderDetail(metricKey, points) {
-    var metric = null;
-    for (var m = 0; m < METRICS.length; m++) {
-      if (METRICS[m].key === metricKey) {
-        metric = METRICS[m]; break;
-      }
-    }
+	var metric = findMetric(metricKey);
     if (!metric) return;
+    
+    var suffix = metric.suffix || "";
 
     var body = modal.querySelector(metric.detailBodySel);
     if (!body) return;
@@ -132,12 +161,12 @@
       var p = points[i];
       var row = document.createElement("div");
       row.className = "row"; // CSS에서 .row { display: flex; justify-content: space-between; } 등으로 제어
-
+      
       var left = document.createElement("span");
       left.textContent = fmtTime(p.t); 
 
       var right = document.createElement("span");
-      right.textContent = (p && p.v !== undefined && p.v !== null) ? String(p.v) : "-";
+      right.textContent = (p && p.v !== undefined && p.v !== null) ? String(p.v) + suffix : "-";
 
       row.appendChild(left);
       row.appendChild(right);

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.joonzis.myplant.mapper.MyPlantImageMapper">
+	<update id="updateImgAddr">
+		UPDATE tbl_myplant SET myplant_image = #{dbSaveString}
+		WHERE myplant_id = #{myplant_id}
+	</update>
+	
+	<select id="getImgAddr" resultType="string">
+		SELECT myplant_image FROM tbl_myplant 
+		WHERE myplant_id = #{myplant_id}
+	</select>
+</mapper>

@@ -39,10 +39,10 @@ public class MyPlantStatisticsServiceImpl implements MyPlantStatisticsService{
             String timeString = entry.getKey().toString();
             List<MyPlantStatisticsDTO> group = entry.getValue();
 
-            Double avgIllum = calculateAverage(group, MyPlantStatisticsDTO::getIllumination);
+            Double avgIllum = calculatePercentageAverage(group, MyPlantStatisticsDTO::getIllumination);
             Double avgTemp  = calculateAverage(group, MyPlantStatisticsDTO::getTemperature);
             Double avgHum   = calculateAverage(group, MyPlantStatisticsDTO::getHumidity);
-            Double avgSoil  = calculateAverage(group, MyPlantStatisticsDTO::getSoil_moisture);
+            Double avgSoil  = calculatePercentageAverage(group, MyPlantStatisticsDTO::getSoil_moisture);
 
             illuminationList.add(new StatsResponseDTO.DataPoint(timeString, avgIllum));
             temperatureList.add(new StatsResponseDTO.DataPoint(timeString, avgTemp));
@@ -56,6 +56,7 @@ public class MyPlantStatisticsServiceImpl implements MyPlantStatisticsService{
         return new StatsResponseDTO(series);
     }
 
+	// 평균 계산 헬퍼
     private Double calculateAverage(List<MyPlantStatisticsDTO> group, ToIntFunction<MyPlantStatisticsDTO> extractor) {
     	double sum = 0;
         int count = 0;
@@ -69,8 +70,23 @@ public class MyPlantStatisticsServiceImpl implements MyPlantStatisticsService{
         // count가 0일 경우(그룹에 데이터가 없을 경우) null 반환, 아니면 소수점 첫째 자리까지 반올림
         return count == 0 ? null : Math.round((sum / count) * 10.0) / 10.0;
     }
+    
+    // 퍼센트 계산 헬퍼
+    private Double calculatePercentageAverage(List<MyPlantStatisticsDTO> group, ToIntFunction<MyPlantStatisticsDTO> extractor) {
+        double sum = 0;
+        int count = 0;
+        
+        for (MyPlantStatisticsDTO dto : group) {
+            int val = extractor.applyAsInt(dto);
+            double percentage = ((1023.0 - val) / 1023.0) * 100.0;
+            sum += percentage;
+            count++;
+        }
+        
+        return count == 0 ? null : Math.round((sum / count) * 10.0) / 10.0;
+    }
 
-    // Date 객체를 LocalDateTime으로 안전하게 변환하는 헬퍼 메서드
+    // LocalDateTime 변환 헬퍼
     private LocalDateTime convertToLocalDateTime(Date date) {
         if (date instanceof java.sql.Timestamp) {
             return ((java.sql.Timestamp) date).toLocalDateTime();
@@ -78,6 +94,7 @@ public class MyPlantStatisticsServiceImpl implements MyPlantStatisticsService{
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
+    // 시간 단위
     private LocalDateTime truncateTime(LocalDateTime time, String range) {
         if (time == null) return null;
         switch (range.toUpperCase()) {

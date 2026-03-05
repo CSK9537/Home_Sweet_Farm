@@ -21,7 +21,7 @@
           <div class="plant-detail__photo">
             <c:choose>
               <c:when test="${not empty p.myplant_image}">
-                <img class="plant-detail__img" src="${p.myplant_image}" alt="${p.plant_name_kor}" />
+                <img class="plant-detail__img" src="/myplant/image/show?fileName=${p.myplant_image}" alt="${p.plant_name_kor}" />
               </c:when>
               <c:when test="${not empty p.plant_image}">
                 <img class="plant-detail__img" src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" />
@@ -214,7 +214,7 @@
         <span class="photo-modal__icon" aria-hidden="true"></span>
         사진 등록/추가
       </div>
-      <button class="photo-modal__close" type="button" onclick="calCancel()">닫기</button>
+      <button class="photo-modal__close" type="button">닫기</button>
     </header>
 
     <div class="photo-modal__body">
@@ -222,8 +222,8 @@
             id="photoForm"
             method="post"
             enctype="multipart/form-data"
-            action="${pageContext.request.contextPath}/my-plants/photo/upload">
-        <input type="hidden" name="plantId" id="photoPlantId" value="${plant.id}" />
+            action="${pageContext.request.contextPath}/myplant/image/upload">
+        <input type="hidden" name="plantId" id="photoPlantId" value="${p.myplant_id}" />
 
         <div class="photo-grid" id="photoGrid">
           <label class="photo-add">

@@ -50,6 +50,9 @@
                 <!-- 썸네일 -->
                 <div class="plant-item__thumb">
                   <c:choose>
+                    <c:when test="${not empty p.myplant_image}">
+                      <img class="plant-item__img" src="/myplant/image/show?fileName=${p.myplant_image}" alt="${p.plant_name_kor}" />
+                    </c:when>
                     <c:when test="${not empty p.plant_image}">
                       <img class="plant-item__img" src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" />
                     </c:when>
