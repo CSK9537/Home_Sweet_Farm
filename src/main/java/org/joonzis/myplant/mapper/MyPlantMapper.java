@@ -15,7 +15,13 @@ public interface MyPlantMapper {
 	public int insert(MyPlantDTO mpdto);
 	// 나의 식물 수정
 	public int update(MyPlantDTO mpdto);
+	
 	// 나의 식물 삭제
+	// 나의 식물 상태 데이터 삭제
+	public void deleteMyPlantStatistics(int myplant_id);
+	// 나의 식물 일정 삭제
+	public void deleteMyPlantSchedule(int myplant_id);
+	// 나의 식물(메인테이블) 삭제
 	public int delete(int myplant_id);
 	
 	public void insertMyPlant(String username, int plantId);

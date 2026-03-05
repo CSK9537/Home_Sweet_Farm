@@ -1,6 +1,5 @@
 package org.joonzis.myplant.mapper;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
