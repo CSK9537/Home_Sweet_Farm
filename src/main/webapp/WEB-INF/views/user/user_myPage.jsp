@@ -148,55 +148,34 @@
 					  <div class="box-title">최근 작성한 글</div>
 						  <div class="recent-posts">
 						  	<ul class="recent-list">
-						    <li>
-						      <a href="#">
-						        <div class="post-title">글 제목이 들어갑니다 (최대 1~2줄)</div>
-						        <div class="post-meta">커뮤니티 · 2026.03.04 · 조회 21</div>
-						      </a>
-						    </li>
-						
-						    <li>
-						      <a href="#">
-						        <div class="post-title">두 번째 글 제목 예시</div>
-						        <div class="post-meta">Q&amp;A · 2026.03.03 · 댓글 2</div>
-						      </a>
-						    </li>
-						
-						    <li>
-						      <a href="#">
-						        <div class="post-title">세 번째 글 제목 예시</div>
-						        <div class="post-meta">커뮤니티 · 2026.03.01 · 조회 5</div>
-						      </a>
-						    </li>
-						  </ul>
+							 <c:forEach var="p" items="${profileUser.posts}" varStatus="s">
+							  	<li>
+								    <a href="${p.moveUrl}">
+								       <div class="post-title"><c:out value='${p.title}'/></div>
+								       <div class="post-meta">커뮤니티  · 조회<c:out value='${p.viewCount}'/>
+								        						· 댓글<c:out value='${p.replyCount}'/>
+								       </div>
+								    </a>
+							    </li>
+							 </c:forEach>
+						  	</ul>
 						  </div>
-					  </div>	
-					  
+					  </div>	  
 					  <!-- 최근 질문  -->
 				    <div class="box">
 					  <div class="box-title">최근 질문</div>
 						  <div class="recent-questions">
 						  	<ul class="recent-list">
-						    <li>
-						      <a href="#">
-						        <div class="post-title">글 제목이 들어갑니다 (최대 1~2줄)</div>
-						        <div class="post-meta">커뮤니티 · 2026.03.04 · 조회 21</div>
-						      </a>
-						    </li>
-						
-						    <li>
-						      <a href="#">
-						        <div class="post-title">두 번째 글 제목 예시</div>
-						        <div class="post-meta">Q&amp;A · 2026.03.03 · 댓글 2</div>
-						      </a>
-						    </li>
-						
-						    <li>
-						      <a href="#">
-						        <div class="post-title">세 번째 글 제목 예시</div>
-						        <div class="post-meta">커뮤니티 · 2026.03.01 · 조회 5</div>
-						      </a>
-						    </li>
+						  	<c:forEach var="q" items="${profileUser.quests}" varStatus="s">
+							  	<li>
+							      <a href="${q.moveUrl}">
+							        <div class="post-title"><c:out value='${q.title}'/></div>
+							        <div class="post-meta">Q&A · 조회<c:out value='${q.viewCount}'/>
+								        						· 댓글<c:out value='${q.replyCount}'/>
+								    </div>
+							      </a>
+							    </li>
+							 </c:forEach>
 						  </ul>
 						  </div>
 					  </div>
@@ -377,7 +356,7 @@
                 </div>
 
                 <div class="form-row">
-                  <label class="label">관심식물</label>
+                  <label class="label">관심사</label>
                   <c:choose>
                   	<c:when test=" ${empty profileUser.aspect}">
                   		<input type="text" value="<c:out value='${profileUser.aspect}' default=''/>" />
@@ -499,19 +478,19 @@
         </div>
       </div>
 
-      <!-- 관심식물 추가 모달 -->
+      <!-- 관심사 추가 모달 -->
       <div class="modal" id="modalPlant" role="dialog" aria-modal="true" aria-labelledby="modalPlantTitle" hidden>
         <div class="modal-card">
           <div class="modal-head">
-            <h3 id="modalPlantTitle">관심식물 선택</h3>
+            <h3 id="modalPlantTitle">관심사 선택</h3>
             <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
           </div>
           <div class="modal-body">
             <div class="plant-search">
-              <input type="text" id="plantKeyword" placeholder="식물명 검색" />
+              <input type="text" id="plantKeyword" placeholder="관심사 검색" />
               <button type="button" class="btn" id="btnPlantSearch">검색</button>
             </div>
-            <ul class="list" id="plantResult" aria-label="관심식물 검색 결과"></ul>
+            <ul class="list" id="plantResult" aria-label="관심사 검색 결과"></ul>
             <div class="empty" id="plantEmpty">검색 결과가 없습니다.</div>
           </div>
           <div class="modal-foot">
