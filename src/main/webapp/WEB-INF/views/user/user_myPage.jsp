@@ -79,7 +79,9 @@
 			
 			    <!-- 자기소개 -->
 			    <div class="box">
-			      <div class="box-title">자기소개</div>
+			      <div class="box-title">자기소개
+			      <button class="btn-edit">수정</button>
+			      </div>
 			      <div class="box-body scroll-box">
 			        <pre class="pre-text"><c:choose>
 			  <c:when test="${not empty profileUser.intro}"><c:out value="${profileUser.intro}" /></c:when>
