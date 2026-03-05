@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
 
+import lombok.RequiredArgsConstructor;
+
 @RequestMapping("/qna")
 @Controller
 @RequiredArgsConstructor
