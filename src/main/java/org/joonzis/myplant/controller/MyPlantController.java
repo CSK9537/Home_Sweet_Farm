@@ -52,11 +52,12 @@ public class MyPlantController {
 	public String recommend() {
 		return "myplant/MyPlantRecommend";
 	}
-	@GetMapping(value="/recommend/list", produces="application/json; charset=UTF-8")
-	@ResponseBody
-	public List<PlantGuideDTO> recommendList() {
-	    return pservice.selectPlantWithGuideList(10);
-	}
+
+//	@GetMapping(value="/recommend/list", produces="application/json; charset=UTF-8")
+//	@ResponseBody
+//	public List<PlantGuideDTO> recommendList() {
+//	    return pservice.selectPlantWithGuideList(10);
+//	}
 	
 	// 나의 식물 추가
 	@PostMapping("/register")
