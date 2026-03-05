@@ -8,7 +8,7 @@
 }
 
 /* ===== modal base ===== */
-.stats-modal{ position:fixed; inset:0; display:none; z-index:999999; }
+.stats-modal{ position:fixed; inset:0; display:none; z-index:9999; }
 .stats-modal[aria-hidden="false"]{ display:block; }
 .stats-modal__backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.35); }
 

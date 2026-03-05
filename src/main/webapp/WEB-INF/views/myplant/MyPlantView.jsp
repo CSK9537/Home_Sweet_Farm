@@ -236,31 +236,26 @@
             action="${pageContext.request.contextPath}/myplant/image/upload">
         <input type="hidden" name="plantId" id="photoPlantId" value="${p.myplant_id}" />
 
-        <div class="photo-grid" id="photoGrid">
+        <div class="photo-upload-area" id="photoGrid">
+          
           <label class="photo-add">
             <input type="file"
                    id="photoInput"
-                   name="files"
+                   name="file"
                    accept="image/*"
-                   multiple
                    hidden />
-            <div class="photo-add__inner">
+            
               <div class="photo-add__badge">+</div>
               <div class="photo-add__text">사진 추가</div>
               <div class="photo-add__sub">JPG/PNG/GIF · 최대 10MB</div>
-            </div>
           </label>
+
         </div>
 
         <div class="photo-meta">
           <div class="photo-meta__left">
             <div class="photo-meta__hint">선택한 사진은 미리보기 후 전송됩니다.</div>
             <div class="photo-meta__hint2">권장: 정사각형(1:1) 또는 세로 사진</div>
-          </div>
-
-          <div class="photo-progress" aria-hidden="true">
-            <div class="photo-progress__bar"><span id="photoProgressBar"></span></div>
-            <div class="photo-progress__txt" id="photoProgressTxt">0%</div>
           </div>
         </div>
 

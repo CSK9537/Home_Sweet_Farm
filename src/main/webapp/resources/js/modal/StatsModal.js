@@ -26,12 +26,13 @@
     modal.setAttribute("aria-hidden", "true");
   }
 
+  // [최적화] ES5 호환 및 속도가 더 빠른 네이티브 slice 문자열 처리
   function pad2(n) { 
-    return String(n).padStart(2, "0"); 
+    return ("0" + n).slice(-2); 
   }
 
   function setActiveTab(range) {
-    for (var i = 0; i < tabs.length; i++) {
+    for (var i = 0, len = tabs.length; i < len; i++) {
       var t = tabs[i];
       if (t.getAttribute("data-range") === range) {
         t.classList.add("is-active");
@@ -55,43 +56,37 @@
     );
   }
 
-  /* 백엔드에서 넘어온 데이터를 바탕으로 X축 라벨 생성 */
-  function buildLabels(points) {
-    var out = [];
-    for (var i = 0; i < points.length; i++) {
-      var d = new Date(points[i].t);
-      if (currentRange === "HOURLY") {
-        out.push(pad2(d.getHours()) + ":00"); 
-      } else if (currentRange === "DAILY") {
-        out.push((d.getMonth() + 1) + "/" + pad2(d.getDate()));
-      } else {
-        out.push(d.getFullYear() + "-" + pad2(d.getMonth() + 1));
-      }
-    }
-    return out;
-  }
+  // [최적화] 데이터 순회 병합: 라벨 추출과 데이터 추출을 한 번의 루프에서 해결 (O(2N) -> O(N))
+  function updateChartData(chart, points, range) {
+    var labels = [];
+    var data = [];
 
-  function buildData(points) {
-    var out = [];
-    for (var i = 0; i < points.length; i++) {
+    for (var i = 0, len = points.length; i < len; i++) {
       var p = points[i];
-      out.push((p && p.v !== undefined && p.v !== null) ? p.v : null);
+      var d = new Date(p.t);
+
+      // 1. 라벨 생성 로직
+      if (range === "HOURLY") {
+        labels.push(pad2(d.getHours()) + ":00"); 
+      } else if (range === "DAILY") {
+        labels.push((d.getMonth() + 1) + "/" + pad2(d.getDate()));
+      } else {
+        labels.push(d.getFullYear() + "-" + pad2(d.getMonth() + 1));
+      }
+
+      // 2. 데이터 추출 로직
+      data.push((p && p.v !== undefined && p.v !== null) ? p.v : null);
     }
-    return out;
-  }
-  
-  function findMetric(metricKey) {
-    for (var i = 0; i < METRICS.length; i++) {
-      if (METRICS[i].key === metricKey) return METRICS[i];
-    }
-    return null;
+
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = data;
   }
 
-  function ensureChart(metricKey, canvas) {
-    if (charts[metricKey]) return charts[metricKey];
+  // [최적화] findMetric 함수 제거 -> 순회 시 metric 객체 자체를 파라미터로 넘겨 탐색 비용 소거
+  function ensureChart(metric, canvas) {
+    if (charts[metric.key]) return charts[metric.key];
 
-    var metric = findMetric(metricKey);
-    var suffix = metric ? (metric.suffix || "") : "";
+    var suffix = metric.suffix || "";
     
     var ctx = canvas.getContext("2d");
     var c = new Chart(ctx, {
@@ -99,13 +94,13 @@
       data: {
         labels: [],
         datasets: [{
-          label: metric ? metric.label : metricKey,
+          label: metric.label,
           data: [],
           tension: 0.35,
           pointRadius: 0,
           borderWidth: 2,
           fill: false,
-          spanGaps: true // 데이터가 비어있어도 끊기지 않고 연결
+          spanGaps: true
         }]
       },
       options: {
@@ -115,7 +110,6 @@
             legend: { display: false }, 
             tooltip: { 
               enabled: true,
-              // 마우스를 올렸을 때 나오는 툴팁 단위
               callbacks: {
                 label: function(context) {
                   var val = context.parsed.y;
@@ -131,7 +125,6 @@
               grid: { color: "rgba(0,0,0,.08)" }, 
               ticks: { 
                 maxTicksLimit: 5,
-                // Y축 숫자에 단위를 붙여주는 콜백 함수
                 callback: function(value) {
                   return value + suffix;
                 }
@@ -141,26 +134,24 @@
         }
       });
 
-    charts[metricKey] = c;
+    charts[metric.key] = c;
     return c;
   }
 
-  function renderDetail(metricKey, points) {
-	var metric = findMetric(metricKey);
-    if (!metric) return;
-    
-    var suffix = metric.suffix || "";
-
+  function renderDetail(metric, points) {
     var body = modal.querySelector(metric.detailBodySel);
     if (!body) return;
 
     body.innerHTML = "";
     
-    // 테이블 내역 최신순 렌더링 (가장 최근 데이터가 맨 위로)
+    var suffix = metric.suffix || "";
+    // [최적화] DocumentFragment를 사용해 DOM 리플로우를 단 1회로 최소화
+    var docFrag = document.createDocumentFragment();
+    
     for (var i = points.length - 1; i >= 0; i--) { 
       var p = points[i];
       var row = document.createElement("div");
-      row.className = "row"; // CSS에서 .row { display: flex; justify-content: space-between; } 등으로 제어
+      row.className = "row";
       
       var left = document.createElement("span");
       left.textContent = fmtTime(p.t); 
@@ -170,8 +161,11 @@
 
       row.appendChild(left);
       row.appendChild(right);
-      body.appendChild(row);
+      docFrag.appendChild(row);
     }
+    
+    // 조립된 내용을 단 한 번 실제 DOM에 부착
+    body.appendChild(docFrag);
   }
 
   /* 서버에서 데이터 패치 */
@@ -193,26 +187,25 @@
       })
       .catch(function (e) {
         console.error("[stats] fetch failed:", e);
-        // 에러 시 빈 차트 적용
         applyData({ series: { illumination: [], temperature: [], humidity: [], soil_moisture: [] } });
       });
   }
 
   /* 서버에서 온 데이터를 차트와 테이블에 적용 */
   function applyData(data) {
-    for (var i = 0; i < METRICS.length; i++) {
+    for (var i = 0, len = METRICS.length; i < len; i++) {
       var m = METRICS[i];
       var points = (data && data.series && data.series[m.key]) ? data.series[m.key] : [];
 
       var canvas = document.getElementById(m.canvasId);
       if (!canvas) continue;
 
-      var chart = ensureChart(m.key, canvas);
-      chart.data.labels = buildLabels(points);
-      chart.data.datasets[0].data = buildData(points);
+      // [최적화] 객체 자체를 전달하고, 라벨과 데이터를 한 번에 업데이트
+      var chart = ensureChart(m, canvas);
+      updateChartData(chart, points, currentRange);
       chart.update();
 
-      renderDetail(m.key, points);
+      renderDetail(m, points);
     }
   }
 
@@ -220,45 +213,45 @@
    * 이벤트 바인딩
    * ======================= */
   
-  // 모달 열기
-  for (var i = 0; i < openBtns.length; i++) {
-    openBtns[i].addEventListener("click", function () {
-      myplant_id = this.getAttribute("data-plant-id");
-      currentRange = "HOURLY";
-      setActiveTab(currentRange);
-      openModal();
-      loadStats(currentRange);
-    });
+  // [최적화] 이벤트 핸들러를 외부 함수로 분리하여 다중 생성 방지
+  function handleOpenBtnClick() {
+    myplant_id = this.getAttribute("data-plant-id");
+    currentRange = "HOURLY";
+    setActiveTab(currentRange);
+    openModal();
+    loadStats(currentRange);
   }
 
-  // 닫기 버튼들
+  function handleTabClick() {
+    currentRange = this.getAttribute("data-range");
+    setActiveTab(currentRange);
+    loadStats(currentRange);
+  }
+
+  for (var i = 0, openLen = openBtns.length; i < openLen; i++) {
+    openBtns[i].addEventListener("click", handleOpenBtnClick);
+  }
+
+  for (var t = 0, tabLen = tabs.length; t < tabLen; t++) {
+    tabs[t].addEventListener("click", handleTabClick);
+  }
+
   closeBtn.addEventListener("click", function (e) {
     if (e && e.preventDefault) e.preventDefault();
     closeModal();
   });
 
-  // 모달 배경 클릭 닫기
   if (backdrop) {
     backdrop.addEventListener("click", closeModal);
   }
 
-  // ESC 키 닫기
   window.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") {
       closeModal();
     }
   });
 
-  // 탭 변경
-  for (var t = 0; t < tabs.length; t++) {
-    tabs[t].addEventListener("click", function () {
-      currentRange = this.getAttribute("data-range");
-      setActiveTab(currentRange);
-      loadStats(currentRange);
-    });
-  }
-
-  // 상세 정보 토글
+  // 상세 정보 토글 (이벤트 위임 유지)
   modal.addEventListener("click", function (e) {
     var target = e.target;
     while (target && target !== modal) {
