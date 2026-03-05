@@ -1,6 +1,7 @@
 import { chatState } from "./ChatState.js";
 import { jumpToMessage, updateSearchCounter } from "./ChatSearch.js";
 import { loadChatRooms } from "./ChatUI.js";
+import { isScrollBottom } from "./ChatScroll.js";
 
 
 function createMessageRow(data) {
@@ -32,6 +33,10 @@ export async function loadMessages(room_id, offset = 0, size = 40, prepend = fal
         };
     }
     const roomState = chatState.message.rooms[room_id][chatState.session.myUserId];
+    if (prepend && !roomState.hasMore) {
+        chatState.loading.isLoadingMessages = false;
+        return;
+    }
 
     if (firstLoad) {
         container.innerHTML = "";
@@ -46,25 +51,69 @@ export async function loadMessages(room_id, offset = 0, size = 40, prepend = fal
         const res = await fetch(`/chat/rooms/${room_id}/messages?offset=${offset}&size=${size}`);
         const list = await res.json();
 
-        if (!list || list.length === 0) {
+        if (!list || list.length < size) {
             roomState.hasMore = false;
-            return;
         }
+
+        if (!list || list.length === 0) {return;}
+
+        list.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
         roomState.loadedCount += list.length;
 
         const fragment = document.createDocumentFragment();
-        const prevScrollTop = container.scrollTop;
-        const prevScrollHeight = container.scrollHeight;
+        if (prepend) {
+            const firstDateBox = container.querySelector(".chat-date-box");
+            const newestMsgInListMeta = prepareMessageMeta(list[list.length - 1]);
 
-        list.forEach(msg => appendMessage(msg, prepend, fragment));
+            if (firstDateBox && firstDateBox.textContent === newestMsgInListMeta.dateStr) {
+                firstDateBox.remove();
+            }
+        }
+
+        let lastInBatchDate = null;
+        list.forEach(msg => {
+            const { dateStr } = prepareMessageMeta(msg);
+
+            if (lastInBatchDate !== dateStr) {
+                const dateBox = document.createElement("div");
+                dateBox.className = "chat-date-box";
+                dateBox.textContent = dateStr;
+                fragment.appendChild(dateBox);
+                lastInBatchDate = dateStr;
+            }
+
+            appendMessage(msg, prepend, fragment);
+        });
+
+        const isAtTop = container.scrollTop === 0;
+        const oldScrollHeight = container.scrollHeight;
+        const oldScrollTop = container.scrollTop;
 
         if (prepend) {
             container.prepend(fragment);
-            container.scrollTop = prevScrollTop + (container.scrollHeight - prevScrollHeight);
+
+            const newScrollHeight = container.scrollHeight;
+            container.scrollTop = (newScrollHeight - oldScrollHeight) + oldScrollTop;
+
+            requestAnimationFrame(() => {
+                container.scrollTop = (container.scrollHeight - oldScrollHeight) + oldScrollTop;
+            });
         } else {
             container.appendChild(fragment);
             if (firstLoad || isScrollBottom()) {
                 container.scrollTop = container.scrollHeight;
+                const images = container.querySelectorAll('.chat-thumbnail');
+                let loadedImages = 0;
+                if (images.length > 0) {
+                    images.forEach(img => {
+                        img.onload = () => {
+                            loadedImages++;
+                            if (loadedImages === images.length) {
+                                container.scrollTop = container.scrollHeight;
+                            }
+                        };
+                    });
+                }
             }
         }
     } catch (err) {
@@ -79,6 +128,9 @@ export function appendMessage(data, prepend = false, fragment = null) {
 
     const roomId = data.room_id;
     const myId = chatState.session.myUserId;
+    const container = document.getElementById("messages");
+    const msgId = Number(data.msg_id);
+    const { timeStr, currentTime } = prepareMessageMeta(data);
 
     if (!chatState.message.rooms[roomId]) chatState.message.rooms[roomId] = {};
     if (!chatState.message.rooms[roomId][myId]) {
@@ -88,6 +140,7 @@ export function appendMessage(data, prepend = false, fragment = null) {
             lastMessageTime: null,
             lastTimeStr: null,
             lastDateKey: null,
+            firstDateKey: null,
             lastImageContainer: null,
             lastFileContainer: null,
             lastAppendedData: null,
@@ -96,38 +149,7 @@ export function appendMessage(data, prepend = false, fragment = null) {
     }
 
     const roomState = chatState.message.rooms[roomId][myId];
-    const msgId = Number(data.msg_id);
-    const container = document.getElementById("messages");
 
-    if (prepend && !roomState.lastAppendedData) {
-        const firstRow = container.querySelector(".message-row");
-        if (firstRow) {
-            const firstMsgId = Number(firstRow.dataset.msg_id);
-            const existingData = {
-                msg_id: firstMsgId,
-                group_id: firstRow.querySelector(".time")?.innerText.match(/\(#(\d+)\)/)?.[1],
-                sender_id: firstRow.classList.contains("sent")
-                    ? chatState.session.myUserId
-                    : null
-            };
-            roomState.lastAppendedData = existingData;
-        }
-    }
-
-    if (prepend) {
-        if (roomState.appendedMsgSet.has(msgId) || container.querySelector(`[data-msg_id='${msgId}']`)) {
-            console.log("중복 메시지 차단 (DOM + Set 기준, prepend)", msgId);
-            return;
-        }
-    } else {
-        // 새 메시지 append 시
-        if (roomState.appendedMsgSet.has(msgId) || container.querySelector(`[data-msg_id='${msgId}']`)) {
-            console.log("중복 메시지 차단 (DOM + Set 기준, append)", msgId);
-            return;
-        }
-    }
-
-    const { dateStr, timeStr, currentTime } = prepareMessageMeta(data);
     const box = document.createElement("div");
     box.classList.add("message-box");
 
@@ -153,10 +175,12 @@ export function appendMessage(data, prepend = false, fragment = null) {
         timeEl.innerText = `${timeStr} (#${data.group_id})`;
         row.appendChild(timeEl);
 
-        if (fragment) fragment.appendChild(row);
-        else if (prepend) container.prepend(row);
-        else container.appendChild(row);
-
+        if (fragment) {
+            fragment.appendChild(row);
+        } else {
+            if (prepend) container.prepend(row);
+            else container.appendChild(row);
+        }
         roomState.appendedMsgSet.add(msgId);
     }
 
@@ -165,13 +189,14 @@ export function appendMessage(data, prepend = false, fragment = null) {
     roomState.lastSenderId = data.sender_id;
     roomState.lastMessageTime = currentTime;
     roomState.lastTimeStr = timeStr;
-    roomState.lastDateKey = dateStr;
     roomState.lastAppendedData = data;
+    roomState.appendedMsgSet.add(msgId);
+
 }
 
 export async function markAsRead(roomId, msgId = null) {
     const lastMsgId = msgId || chatState.message.rooms[roomId]?.[chatState.session.myUserId]?.lastAppendedData?.msg_id;
-    
+
     console.log("[DEBUG] markAsRead 호출:", { roomId, lastMsgId });
 
     try {
@@ -195,21 +220,15 @@ export async function markAsRead(roomId, msgId = null) {
     }
 }
 
-export function sendMessage() {
-    const sendBtn = document.querySelector(".btn-send");
-    if (!sendBtn) return;
+export async function sendMessage(content) {
+    if (!content || !chatState.session.receiverId) return;
 
-    sendBtn.addEventListener("click", async () => {
-        const textarea = document.getElementById("chat-textarea");
-        const content = textarea.value.trim();
+    const params = new URLSearchParams({
+        receiver_id: chatState.session.receiverId,
+        content: content
+    });
 
-        if (!content || !chatState.session.receiverId) return;
-
-        const params = new URLSearchParams({
-            receiver_id: chatState.session.receiverId,
-            content: content
-        });
-
+    try {
         const res = await fetch("/chat/messages", {
             method: "POST",
             headers: {
@@ -219,11 +238,12 @@ export function sendMessage() {
         });
 
         if (res.ok) {
-            textarea.value = "";
             const roomId = chatState.session.currentRoomId;
             markAsRead(roomId);
         }
-    });
+    } catch (err) {
+        console.error("메시지 전송 실패:", err);
+    }
 }
 
 function prepareMessageMeta(data) {
@@ -278,8 +298,19 @@ function renderFile(box, data, sameGroup, roomState) {
 
 function renderImage(box, data, sameGroup, roomState) {
     const img = document.createElement("img");
-    img.src = `/chat/files/${encodeURIComponent(data.saved_name)}`;
+    const fileName = data.saved_name || data.content;
+    if (fileName) {
+        img.src = `/chat/files/${encodeURIComponent(fileName)}`;
+    } else {
+        img.src = "https://via.placeholder.com/150?text=No+Image";
+    }
+
     img.classList.add("chat-thumbnail");
+
+    // 로딩 실패 시 대신 표시할 아이콘
+    img.onerror = () => {
+        img.src = "https://via.placeholder.com/150?text=Load+Error";
+    };
 
     let imageContainer;
 
@@ -323,3 +354,31 @@ function updateImageLayout(container) {
     }
     container.classList.remove("loading");
 }
+
+document.querySelector(".btn-send")?.addEventListener("click", () => {
+    const textarea = document.getElementById("chat-textarea");
+    const content = textarea.value.trim();
+    if (content) {
+        sendMessage(content);
+        textarea.value = "";
+    }
+});
+
+const chatInput = document.querySelector(".chat-textarea textarea");
+chatInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        if (event.isComposing) return;
+
+        if (event.shiftKey) {
+            return;
+        } else {
+            event.preventDefault();
+
+            const message = event.target.value.trim();
+            if (message.length > 0) {
+                sendMessage(message);
+                event.target.value = "";
+            }
+        }
+    }
+});

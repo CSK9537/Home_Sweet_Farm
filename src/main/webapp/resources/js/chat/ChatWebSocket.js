@@ -56,90 +56,70 @@ export function reconnectWS() {
 }
 
 // 방 구독 함수
-export function subscribeRoom(room_id) {
+export function subscribeRoom(roomId) {
+    if (!chatState.socket.stompClient) return;
 
+    console.log(`[WS] 채팅방 구독 시작: ${roomId}`);
+    chatState.socket.roomSubscription = chatState.socket.stompClient.subscribe(
+        `/topic/room.${roomId}`,
+        (tick) => {
+            const msg = JSON.parse(tick.body);
+            const container = document.getElementById("messages");
+            const newMsgBtn = document.getElementById("new-msg-btn"); 
 
-  if (chatState.socket.roomSubscription) {
-    chatState.socket.roomSubscription.unsubscribe();
-  }
-  console.log("Subscribing to room:", "/topic/room." + room_id);
-  chatState.socket.roomSubscription = chatState.socket.stompClient.subscribe(
-    "/topic/room." + room_id,
-    (msg) => {
-      console.log("WS received:", msg.body);
-      if (chatState.loading.isLoadingMessages) return;
-      const data = JSON.parse(msg.body);
+            const wasAtBottom = isScrollBottom(); 
+            const isMyMsg = msg.sender_id === chatState.session.myUserId;
 
-      console.log("subscribeRoom 콜백", {
-        currentRoomId: chatState.session.currentRoomId,
-        msgRoomId: data.room_id,
-        senderId: data.sender_id,
-        myId: chatState.session.myUserId
-      });
+            appendMessage(msg);
 
-      if (chatState.loading.isLoadingMessages || chatState.message.appendedMsgSet.has(Number(data.msg_id))) {
-        return;
-      }
+            if (!isMyMsg) {
+                markAsRead(roomId, msg.msg_id);
+            }
 
-      const container = document.getElementById("messages");
-      const wasAtBottom =
-        Math.abs(container.scrollHeight - container.clientHeight - container.scrollTop) < 150;
+            if (isMyMsg || wasAtBottom) {
+                container.scrollTop = container.scrollHeight;
+                if (newMsgBtn) newMsgBtn.style.display = "none";
+            } else {
+                if (newMsgBtn) newMsgBtn.style.display = "block";
+            }
 
-      appendMessage(data);
-      const myId = chatState.session.myUserId;
-      const currentRoomId = chatState.session.currentRoomId;
+            if (msg.msg_type === 'IMAGE' || msg.msg_type === 'FILE_IMAGE') {
+                const lastMsgBox = container.lastElementChild;
+                const img = lastMsgBox ? lastMsgBox.querySelector('img') : null;
 
-      // 내가 보고 있는 방이면 read 처리
-      if (data.room_id === currentRoomId && data.sender_id !== myId) {
-        markAsRead(data.room_id, data.msg_id);
-      }
-
-      if (data.sender_id === chatState.session.myUserId || wasAtBottom) {
-        requestAnimationFrame(() => {
-          container.scrollTop = container.scrollHeight;
-        });
-      } else {
-        const newMsgBtn = document.getElementById("new-msg-btn");
-        if (newMsgBtn) newMsgBtn.style.display = "block";
-      }
-    }
-  );
-  console.log("SUBSCRIBED TO ROOM", room_id);
+                if (img) {
+                    img.onload = () => {
+                        if (isMyMsg || isScrollBottom()) {
+                            container.scrollTop = container.scrollHeight;
+                        }
+                    };
+                }
+            }
+        }
+    );
 }
 
 // 유저 구독 함수
 export function subscribeUserChannel() {
-  chatState.socket.stompClient.subscribe(
-    "/topic/user." + chatState.session.myUserId,
-    (msg) => {
-      let data;
-      try {
-        data = JSON.parse(msg.body);
+    chatState.socket.stompClient.subscribe(
+        "/topic/user." + chatState.session.myUserId,
+        (msg) => {
+            try {
+                const data = JSON.parse(msg.body);
+                if (!data.room_id) return;
 
-        // 필수 필드 확인
-        if (!data.room_id || !data.sender_id) {
-          console.warn(" 잘못된 payload:", data);
-          return; // 필수 값 없으면 처리 중단
+                console.log("실시간 개인 알림 수신:", data);
+
+                if (chatState.session.currentRoomId === data.room_id) {
+                    if (data.sender_id !== chatState.session.myUserId) {
+                        markAsRead(data.room_id, data.msg_id);
+                    }
+                }
+                updateRoomListRealtime(data);
+
+            } catch (err) {
+                console.error("실시간 메시지 처리 실패:", err);
+            }
         }
-
-        // sender_name 없으면 fallback
-        if (!data.sender_name) {
-          data.sender_name = "유저";
-        }
-
-      } catch (err) {
-        console.error(" 실시간 메시지 JSON 파싱 실패:", err, msg.body);
-        return;
-      }
-
-      console.log(" 실시간 메시지 payload 확인:", data);
-
-      // 안전하게 채팅방 UI 갱신
-      try {
-        updateRoomListRealtime(data);
-      } catch (err) {
-        console.error(" 채팅방 UI 갱신 중 에러:", err, data);
-      }
-    }
-  );
+    );
 }

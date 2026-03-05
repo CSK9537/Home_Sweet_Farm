@@ -150,16 +150,19 @@ export function updateRoomListRealtime(msg) {
         item.classList.add("chat-item");
         item.dataset.room_id = roomId;
 
-        item.innerHTML = `
-            <img src="https://via.placeholder.com/40">
-            <div class="info">
-                <div class="name">${msg.sender_name || "유저"}</div>
-                    <div class="last-msg">
-                        ${makePreviewMessage(msg.content, msg.msg_type)}
-                    </div>
-            </div>
-        `;
+        const imgSrc = (msg.msg_type === 'IMAGE')
+            ? `/chat/files/${msg.content}`
+            : `https://via.placeholder.com/40`;
 
+        item.innerHTML = `
+        <img src="${imgSrc}" class="chat-thumbnail-list">
+        <div class="info">
+            <div class="name">${msg.sender_name || "유저"}</div>
+            <div class="last-msg">
+                ${makePreviewMessage(msg.content, msg.msg_type)}
+            </div>
+        </div>
+    `;
         chatListContainer.prepend(item);
     }
 
@@ -174,6 +177,16 @@ export function updateRoomListRealtime(msg) {
     const timeEl = item.querySelector(".time");
     if (timeEl) {
         timeEl.innerText = formatChatTime(msg.created_at);
+    }
+
+    // 현재 보고 있는 채팅방일 시  unread배지 제거
+    if (isCurrentRoom) {
+        const badge = item.querySelector(".badge");
+        if (badge) badge.remove();
+
+        if (chatState.message.roomUnreadGroupMap[roomId]) {
+            chatState.message.roomUnreadGroupMap[roomId].clear();
+        }
     }
 
     // unread 카운트
