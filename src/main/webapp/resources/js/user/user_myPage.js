@@ -406,4 +406,117 @@
       .split('"').join("&quot;")
       .split("'").join("&#039;");
   }
+ //-------------------------
+  // 마이페이지-닉네임, 주소 수정
+ // -------------------------
+  var btnNick = document.querySelector("#nicknameUpdateBtn");
+  var btnAddr = document.querySelector("#addressUpdateBtn");
+  var nicknameInput = document.querySelector("#nicknameInput");
+  var addressInput = document.querySelector("#addressInput");
+  var nickMsg = document.querySelector("#nicknameMsg");
+  var originalNick = nicknameInput.dataset.original;
+  var originalAddr = addressInput.dataset.original;
+  
+  function mypageUpdate(payload) {
+	  // payload: {nickname:"", address:""} 중 필요한 것만 넣어서 보냄
+	  var body = Object.keys(payload)
+	    .map(function(k){
+	      return encodeURIComponent(k) + "=" + encodeURIComponent(payload[k]);
+	    })
+	    .join("&");
+
+	  return fetch(ctx + "/user/myPage/update", {
+	    method: "POST",
+	    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+	    body: body
+	  }).then(function(res){ return res.text(); });
+	}
+
+	// 닉네임 버튼
+	if (btnNick) {
+	  btnNick.addEventListener("click", function(){
+		  
+		  var newNick = nicknameInput.value.trim();
+		  
+		  if(newNick === ""){
+			  nickMsg.textContent = "닉네임을 수정해주세요";
+			  nickMsg.style.color = "red"; 
+		  }
+		  else if(newNick === originalNick){
+			  nickMsg.textContent = "다른 닉네임으로 수정해주세요";
+			  nickMsg.className = "form-msg error";
+			  nickMsg.style.color = "red";
+			  return;
+		  }
+		  mypageUpdate({ nickname: newNick })
+	      .then(function(t){ 
+
+	    	  if ((t || "").trim() === "ok") {
+	    	    nickMsg.textContent = "닉네임 수정 완료";
+	    	    nickMsg.className = "form-msg success";
+	    	    nickMsg.style.color = "green";
+	    	    //변경된 값 저장
+	    	    nicknameInput.dataset.original = newNick;
+	    	    
+	    	  } else {
+	    	    nickMsg.textContent = "닉네임 수정 실패";
+	    	    nickMsg.className = "form-msg error";
+	    	    nickMsg.style.color = "red";
+	    	  }
+	    	});
+	  	}); 
+	}
+	//닉네임 수정 후 메시지 사라짐
+	nicknameInput.addEventListener("input",
+	 function(){
+		if(nickMsg){
+		nickMsg.textContent = "";
+    	nickMsg.className = "form-msg";
+		}
+	});
+
+	// 주소 버튼
+	if (btnAddr) {
+	  btnAddr.addEventListener("click", function(){
+		  
+		  var newAddr = addressInput.value.trim();
+		  
+		  if(newAddr === ""){
+			  addressMsg.textContent = "주소를 수정해주세요";
+			  addressMsg.style.color = "red"; 
+		  }
+		  else if(newAddr === originalAddr){
+			  addressMsg.textContent = "다른 주소로 수정해주세요";
+			  addressMsg.className = "form-msg error";
+			  addressMsg.style.color = "red";
+			  return;
+		  }
+		  mypageUpdate({ address: addressInput.value })
+	      .then(function(t){
+	    	  if ((t || "").trim() === "ok") {
+	    		  addressMsg.textContent = "주소 수정 완료";
+	    		  addressMsg.className = "form-msg success";
+	    		  addressMsg.style.color = "green";
+		    	    //변경된 값 저장
+	    		  addressInput.dataset.original = newAddr;
+		    	    
+		    	  } else {
+		    		addressMsg.textContent = "주소 수정 실패";
+		    		addressMsg.className = "form-msg error";
+		    		addressMsg.style.color = "red";
+		    	  }
+	      });
+	  });
+	}
+	//주소 수정 후 메시지 사라짐
+	addressInput.addEventListener("input",
+	 function(){
+		if(addressMsg){
+			addressMsg.textContent = "";
+			addressMsg.className = "form-msg";
+		}
+	});
+  
+ 
+  
 })();
