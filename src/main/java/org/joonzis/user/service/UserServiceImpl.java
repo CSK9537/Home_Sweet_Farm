@@ -135,6 +135,7 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public int deletionUser(int user_id, int enable) {
 		return usermapper.updateEnable(user_id, enable);
+	}
 	@Override
 	public MypageProfileDTO getProfile(int userId) {
 		return usermapper.getProfileInfo(userId);
