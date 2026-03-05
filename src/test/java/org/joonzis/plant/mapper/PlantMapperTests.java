@@ -136,4 +136,19 @@ public class PlantMapperTests {
 //			log.error(e);
 //		}
 //	}
+	
+//	@Test
+//	public void getPlantImagesByRandomTest() {
+//		log.info("Get Plant Images By Random Test...");
+//		
+//		try {
+//			List<String> list = pmapper.getPlantImagesByRandom();
+//			for(String url : list) {
+//				log.info(url);
+//			}
+//			log.info("success!!!");
+//		} catch (Exception e) {
+//			log.error(e);
+//		}
+//	}
 }

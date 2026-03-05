@@ -117,6 +117,16 @@
 	<select id="getPlantInfo" resultType="org.joonzis.plant.dto.PlantDTO">
 		SELECT * FROM tbl_plant WHERE plant_id = #{plant_id}
 	</select>
+	
+	<!-- 식물 이미지 주소목록 50개 -->
+	<select id="getPlantImagesByRandom" resultType="string">
+		<![CDATA[
+			SELECT plant_image
+			FROM (SELECT plant_image FROM tbl_plant ORDER BY dbms_random.value)
+			WHERE rownum <= 50
+		]]>
+	</select>
+
 	<!-- 나의 식물 추천가이드 리스트 쿼리  -->
 	<select id="selectPlantWithGuideList"
         resultType="org.joonzis.plant.dto.PlantGuideDTO">

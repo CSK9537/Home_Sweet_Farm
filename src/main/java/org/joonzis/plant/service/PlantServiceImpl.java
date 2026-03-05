@@ -87,6 +87,12 @@ public class PlantServiceImpl implements PlantService{
 		return gmapper.getGuideInfo(plant_id);
 	}
 
+	// 식물 랜덤 이미지주소 50개
+	@Override
+	public List<String> plantImagesByRandom() {
+		return pmapper.getPlantImagesByRandom();
+	}
+	
 	@Override
 	public List<PlantGuideDTO> selectPlantWithGuideList(int limit) {
 		

@@ -20,6 +20,10 @@ public interface PlantMapper {
 	public int getPlantId(String plant_name);
 	// 식물 정보 출력(plant_id)
 	public PlantDTO getPlantInfo(int plant_id);
+	
+	// 식물 이미지 주소목록 50개
+	public List<String> getPlantImagesByRandom();
+	
 	// 나의 식물 추천 가이드 목록
 	public  List<PlantGuideDTO> selectPlantWithGuideList(@Param("limit") int limit);
 	

@@ -1,11 +1,15 @@
 package org.joonzis.common.controller;
 
+import java.util.List;
+
 import org.joonzis.plant.service.PlantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j;
 
@@ -22,6 +26,14 @@ public class CommonController {
 	}
 	@RequestMapping("/")
 	public String main(Model model) {
+		List<String> plantImagesList = pservice.plantImagesByRandom();
+		ObjectMapper omapper = new ObjectMapper();
+		try {
+			String plantImages = omapper.writeValueAsString(plantImagesList);
+            model.addAttribute("plantImages", plantImages);
+		} catch (Exception e) {
+			model.addAttribute("plantImages", "[]");
+		}
 		model.addAttribute("popularPlants", pservice.plantListByRank(3));
 		return "main";
 	}

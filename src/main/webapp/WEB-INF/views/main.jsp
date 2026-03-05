@@ -11,35 +11,50 @@
     <section class="content-card main-content">
 
       <!-- HERO -->
-      <section class="hero">
+        <c:choose>
+        <c:when test="${empty sessionScope.loginUser}">
+        <section class="hero">
         <h2 class="hero__title">
           	Home Sweet Farm 에 어서오세요.<br/>
           	식물집사로 거듭나기 위한 정보들을 얻어가세요.
         </h2>
-
+        
         <div class="hero__grid">
-          <!-- 좌: 이미지 슬라이드 자리 -->
           <article class="hero-slide" aria-label="식물 사진 슬라이드">
             <div class="hero-slide__media">
               <img class="hero-slide__img" src="${pageContext.request.contextPath}/resources/image/Default_Plant.jpg" alt="default plant" />
             </div>
-            <button class="hero-slide__arrow hero-slide__arrow--prev" aria-label="이전 사진">
-			  &#10094;
-			</button>
-			
-			<button class="hero-slide__arrow hero-slide__arrow--next" aria-label="다음 사진">
-			  &#10095;
-			</button>
           </article>
 
-          <!-- 우: 추천 가이드 이동 -->
           <a class="hero-cta" href="/myplant/recommend" role="button">
 		            아직 반려식물이 없으신가요?<br/>
 		            추천 받으시고 키워보세요.<br/><br/>
             <span class="hero-cta__link">추천가이드로 이동</span>
           </a>
         </div>
-      </section>
+        </section>
+        </c:when>
+        <c:otherwise>
+        <section class="hero">
+		  <h2 class="hero__title">
+			반갑습니다, ${sessionScope.loginUser.username}님!<br/>
+	      </h2>
+	      <div class="hero__grid">
+          <article class="hero-slide" aria-label="식물 사진 슬라이드">
+            <div class="hero-slide__media">
+              <img class="hero-slide__img" src="${pageContext.request.contextPath}/resources/image/Default_Plant.jpg" alt="default plant" />
+            </div>
+          </article>
+	      <a class="hero-cta" href="/myplant" role="button">
+	                   곧 어떤 식물의 일정이 다가올지<br/>
+	                   내 식물들의 대략적인 상태 출력<br/><br/>
+	        <span class="hero-cta__link">나의 식물 관리하기</span>
+	      </a>
+	      </div>
+	    </section>
+	    </c:otherwise>
+        </c:choose>
+      
 
       <!-- SECTIONS -->
       <section class="sections">
@@ -196,5 +211,7 @@
       </section>
     </section>
   </div>
-  <%@ include file="/WEB-INF/views/layout/footer.jsp" %>
 </div>
+<%@ include file="/WEB-INF/views/layout/footer.jsp" %>
+<script> window.plantImages = ${plantImages != null ? plantImages : '[]'}; </script>
+<script src="${pageContext.request.contextPath}/resources/js/main.js"></script>
