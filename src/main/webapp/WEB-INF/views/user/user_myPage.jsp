@@ -63,11 +63,6 @@
           <section id="secProfile" class="right-section is-show">
             <header class="section-head">
               <h2 class="section-title">프로필</h2>
-              <div class="section-actions">
-                <c:if test="${isOwner}">
-                  <a class="btn btn-ghost" href="${ctx}/mypage/profile/edit">수정</a>
-                </c:if>
-              </div>
             </header>
 
             <div class="profile-grid">
@@ -80,7 +75,9 @@
 			    <!-- 자기소개 -->
 			    <div class="box">
 			      <div class="box-title">자기소개
-			      <button class="btn-edit">수정</button>
+			      <c:if test="${isOwner}">
+                  	<button class="btn-edit">수정</button>
+                  </c:if>
 			      </div>
 			      <div class="box-body scroll-box">
 			        <pre class="pre-text"><c:choose>
@@ -318,7 +315,7 @@
               <header class="section-head">
                 <h2 class="section-title">마이페이지</h2>
               </header>
-              <form id="accountForm" class="account-form" method="post" action="${ctx}/mypage/account/update">
+              <form id="accountForm" class="account-form" method="post" action="${ctx}/user/mypage/update">
                 <div class="form-row">
                   <label class="label">이름</label>
                   <c:choose>
@@ -346,15 +343,19 @@
                   <label class="label">닉네임</label>
                   <c:choose>
                   	<c:when test=" ${empty profileUser.nickname}">
-                  		<input type="text" name="nickname" value="<c:out value='${profileUser.nickname}' default=''/>"/>
+                  		<input id = "nicknameInput" type="text" name="nickname" value="<c:out value='${profileUser.nickname}' default=''/>"/>
                   	</c:when>
                   	<c:otherwise>
-                  		<input type="text" name="nickname" value="<c:out value='${profileUser.nickname}'/>" />            	
+                  		<input id = "nicknameInput" type="text" name="nickname" 
+                  		value="<c:out value='${profileUser.nickname}'/>"
+                  		data-original="<c:out value='${profileUser.nickname}'/>" />            	
                   	</c:otherwise>
                   </c:choose>
                   <div class="input-actions">
-                    <button type="submit" class="btn">수정</button>
+                    <button type="button" class="btn" id="nicknameUpdateBtn">수정</button>
                   </div>
+                  <!-- 메시지 영역  -->
+                  <div class="form-msg"><p id="nicknameMsg"></p></div>
                 </div>
 
                 <div class="form-row">
@@ -403,15 +404,19 @@
                   <label class="label">주소</label>
                   <c:choose>
                      <c:when test=" ${empty profileUser.address}">
-                        <input type="text" value="<c:out value='${profileUser.address}' default=''/>"/>
+                        <input id = "addressInput" type="text" value="<c:out value='${profileUser.address}' default=''/>"/>
                      </c:when>
                      <c:otherwise>
-                        <input type="text" value="<c:out value='${profileUser.address}'/>" />               
+                        <input id = "addressInput" type="text" 
+                        value="<c:out value='${profileUser.address}'/>"
+                        data-original="<c:out value='${profileUser.address}'/>" />               
                      </c:otherwise>
                   </c:choose>
                   <div class="input-actions">
-                    <button type="submit" class="btn">수정</button>
+                    <button type="button" class="btn" id="addressUpdateBtn">수정</button>
                   </div>
+                   <!-- 메시지 영역  -->
+                  <div class="form-msg"><p id="addressMsg"></p></div>
                 </div>
               </form>
             </section>
@@ -524,23 +529,32 @@
       </div>
 
       <!-- 프로필 이미지 크게보기 모달(주인만) -->
-      <div class="modal" id="modalAvatar" role="dialog" aria-modal="true" aria-labelledby="modalAvatarTitle" hidden>
-        <div class="modal-card">
-          <div class="modal-head">
-            <h3 id="modalAvatarTitle">프로필 이미지</h3>
-            <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
-          </div>
-          <div class="modal-body center">
-            <img id="avatarLarge"
-                 src="<c:out value='${empty profileUser.profile ? (ctx.concat("/resources/img/default_profile.png")) : profileUser.profile}'/>"
-                 alt="프로필 이미지 크게 보기" />
-          </div>
-          <div class="modal-foot">
-            <button type="button" class="btn" data-modal-close>닫기</button>
-          </div>
-        </div>
-      </div>
-
+      <c:if test="${isOwner}">
+	      <div class="modal" id="modalAvatar" role="dialog" aria-modal="true" aria-labelledby="modalAvatarTitle" hidden>
+	        <div class="modal-card">
+	          <div class="modal-head">
+	            <h3 id="modalAvatarTitle">프로필 이미지</h3>
+	            <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
+	          </div>
+	          <div class="modal-body center">
+	            <img id="avatarLarge"
+	                 src="<c:out value='${empty profileUser.profile ? (ctx.concat("/resources/img/default_profile.png")) : profileUser.profile}'/>"
+	                 alt="프로필 이미지 크게 보기" />
+	              <!-- 이미지 선택 -->
+			      <div class="avatar-actions" style="margin-top:12px;">
+			        <label class="btn" for="avatarFile">이미지 선택</label>
+			        <input type="file" id="avatarFile" accept="image/*" hidden>
+			        <div class="help-text" style="margin-top:6px; font-size:12px; opacity:.7;">
+			        </div>
+			      </div>
+	          </div>
+	          <div class="modal-foot">
+	          	<button type="button" class="btn primary" id="btnAvatarSave">저장</button>
+	            <button type="button" class="btn" data-modal-close>닫기</button>
+	          </div>
+	        </div>
+	      </div>
+	</c:if>
     </div>
   </div>
 

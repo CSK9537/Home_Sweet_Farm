@@ -4,4 +4,17 @@
 
 <mapper namespace="org.joonzis.user.mapper.MypageMapper">
 	
+	<!-- 마이페이지 수정-닉네임, 주소  -->
+	<update id="updateMypage" parameterType="org.joonzis.user.vo.UserVO">
+		UPDATE TBL_USER
+		<set>
+		    <if test="nickname != null and nickname != ''">
+		        nickname = #{nickname},
+		    </if>
+		    <if test="address != null and address != ''">
+		        address = #{address},
+		    </if>
+		</set>
+		WHERE user_id = #{user_id}
+	</update>
 </mapper>

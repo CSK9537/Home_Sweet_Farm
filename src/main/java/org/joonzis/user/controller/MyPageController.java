@@ -14,7 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.log4j.Log4j;
@@ -119,5 +122,27 @@ public class MyPageController {
 			return new ResponseEntity<List<CommunityPostCardDTO>>(answerList, HttpStatus.OK);
 		else
 			return new ResponseEntity<List<CommunityPostCardDTO>>(HttpStatus.OK);
+	}
+	
+	//마이페이지 수정-닉네임, 주소
+	@PostMapping("/update")
+	@ResponseBody
+	public String updateMypage(@RequestParam(required=false) String nickname, 
+								@RequestParam(required=false) String address,
+								HttpSession session) {
+		
+		UserVO loginUser = (UserVO)session.getAttribute("loginUser");
+		if(loginUser == null) return "no-session";
+		
+		int userId = loginUser.getUser_id();
+		
+		UserVO vo = new UserVO();
+		vo.setUser_id(userId);
+		vo.setNickname(nickname);
+		vo.setAddress(address);
+		
+		mpService.updateMypage(vo);
+		
+		return "ok";
 	}
 }
