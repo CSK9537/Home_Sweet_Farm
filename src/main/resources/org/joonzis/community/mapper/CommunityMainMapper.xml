@@ -5,7 +5,7 @@
 
 <mapper namespace="org.joonzis.community.mapper.CommunityMainMapper">
 
-  <!-- (옵션) 세션 확인 -->
+  <!-- 세션 확인 -->
   <select id="selectSessionInfo" resultType="map">
     SELECT USER AS LOGIN_USER,
            SYS_CONTEXT('USERENV','CURRENT_SCHEMA') AS CURRENT_SCHEMA,
@@ -15,7 +15,7 @@
     FROM dual
   </select>
 
-  <!-- (옵션) BOARD_ID 스모크 테스트 -->
+  <!-- BOARD_ID 스모크 테스트 -->
   <select id="selectBoardIdSmoke" resultType="int">
     SELECT TBL_BOARD.BOARD_ID
     FROM TBL_BOARD
@@ -45,24 +45,25 @@
       NVL(TBL_BOARD.LIKE_COUNT, 0) AS LIKE_COUNT,
       NVL(TBL_BOARD.REPLY_CNT, 0)  AS REPLY_CNT,
 
-      ( SELECT MIN(TBL_BOARD_FILE.SAVED_NAME) 
-  		FROM TBL_BOARD_FILE 
- 	 	WHERE TBL_BOARD_FILE.BOARD_ID = TBL_BOARD.BOARD_ID 
-  		AND TBL_BOARD_FILE.IS_THUMBNAIL = 'Y' 
-		) AS THUMB_SRC,
+      ( SELECT MIN(TBL_BOARD_FILE.SAVED_NAME)
+        FROM TBL_BOARD_FILE
+        WHERE TBL_BOARD_FILE.BOARD_ID = TBL_BOARD.BOARD_ID
+          AND TBL_BOARD_FILE.IS_THUMBNAIL = 'Y'
+      ) AS THUMB_SRC,
 
-      ( SELECT LISTAGG(TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_NAME, ',') WITHIN GROUP (ORDER BY TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_NAME) 
-          FROM TBL_BOARD_ASPECT 
-          JOIN TBL_BOARD_HASHTAG_LIST 
-            ON TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_ID = TBL_BOARD_ASPECT.BOARD_HASHTAG_ID 
-          WHERE TBL_BOARD_ASPECT.BOARD_ID = TBL_BOARD.BOARD_ID 
-          AND TBL_BOARD_HASHTAG_LIST.IS_ACTIVE = 'Y' 
-        ) AS HASHTAGS
+      ( SELECT LISTAGG(TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_NAME, ',') WITHIN GROUP (ORDER BY TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_NAME)
+          FROM TBL_BOARD_ASPECT
+          JOIN TBL_BOARD_HASHTAG_LIST
+            ON TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_ID = TBL_BOARD_ASPECT.BOARD_HASHTAG_ID
+          WHERE TBL_BOARD_ASPECT.BOARD_ID = TBL_BOARD.BOARD_ID
+            AND TBL_BOARD_HASHTAG_LIST.IS_ACTIVE = 'Y'
+      ) AS HASHTAGS
 
     FROM TBL_BOARD
     JOIN TBL_USER
       ON TBL_USER.USER_ID = TBL_BOARD.USER_ID
     WHERE TBL_BOARD.IS_ACTIVE = 'Y'
+      AND TBL_BOARD.BOARD_TYPE NOT IN ('Q','A')
   </sql>
 
   <!-- 인기글 -->
@@ -122,17 +123,14 @@
   </select>
   
   <!-- 특정 유저 작성글(마이페이지용) -->
-    <select id="selectMyPosts"
-            parameterType="map"
-            resultMap="CommunityPostCardMap">
-
-        SELECT *
-        FROM (
-            <include refid="BaseSelect"/>
-            AND B.USER_ID = #{userId}
-            ORDER BY B.REG_DATE DESC
-        )
-        WHERE ROWNUM &lt;= #{limit}
-    </select>
+  <select id="selectMyPosts" parameterType="map" resultMap="CommunityPostCardMap">
+    SELECT *
+    FROM (
+      <include refid="BaseSelect"/>
+      AND TBL_BOARD.USER_ID = #{userId}
+      ORDER BY TBL_BOARD.REG_DATE DESC
+    )
+    WHERE ROWNUM &lt;= #{limit}
+  </select>
 
 </mapper>

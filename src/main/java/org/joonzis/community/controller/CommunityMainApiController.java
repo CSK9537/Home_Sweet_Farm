@@ -43,7 +43,7 @@ public class CommunityMainApiController {
     // ✅ 상세 이동 URL 조립 (컨트롤러와 동일 규칙)
     private String buildMoveUrl(HttpServletRequest req, int boardId) {
         String ctx = req.getContextPath();
-        return ctx + "/community/detail?board_id=" + boardId;
+        return ctx + "/community/view?board_id=" + boardId;
     }
 
     private void decorate(HttpServletRequest req, List<CommunityPostCardDTO> list) {

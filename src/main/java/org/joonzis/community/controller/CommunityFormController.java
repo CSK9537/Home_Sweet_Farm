@@ -73,9 +73,9 @@ public class CommunityFormController {
 
             boolean isOwner = formService.isOwner(board_id, uid);
 
-            model.addAttribute("post", post);                 // ✅ JSP에서 post.xxx 로 사용
-            model.addAttribute("isOwner", isOwner);           // ✅ JSP에서 작성자 여부 제어
-            model.addAttribute("boardType", post.getBoard_type()); // ✅ DB 기준으로 자동 세팅
+            model.addAttribute("post", post);
+            model.addAttribute("isOwner", isOwner);
+            model.addAttribute("boardType", post.getBoard_type());
             return "community/CommunityForm";
         }
 
@@ -163,7 +163,7 @@ public class CommunityFormController {
         board.setContent(contentHtml);
 
         int boardId = formService.write(board, uid, tempKey, attachFiles, tagsCsv);
-        return "redirect:" + req.getContextPath() + "/community/detail?board_id=" + boardId;
+        return "redirect:" + req.getContextPath() + "/community/view?board_id=" + boardId;
     }
 
     // ====== 글 수정 ======
@@ -182,6 +182,6 @@ public class CommunityFormController {
         board.setContent(contentHtml);
 
         int boardId = formService.edit(board, uid, tempKey, attachFiles, tagsCsv);
-        return "redirect:" + req.getContextPath() + "/community/detail?board_id=" + boardId;
+        return "redirect:" + req.getContextPath() + "/community/view?board_id=" + boardId;
     }
 }
