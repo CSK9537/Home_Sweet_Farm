@@ -8,6 +8,10 @@ import org.joonzis.chatting.dto.RoomSearchResultDTO;
 import org.joonzis.chatting.vo.MsgVO;
 
 public interface MsgMapper {
+	
+	//시퀀스
+	long nextMsgSeq();
+	
 	// 메세지 데이터 삽입
 	int insert(MsgVO vo);
 	
