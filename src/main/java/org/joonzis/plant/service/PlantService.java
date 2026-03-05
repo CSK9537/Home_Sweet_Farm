@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.joonzis.plant.dto.GuideDTO;
 import org.joonzis.plant.dto.PlantDTO;
+import org.joonzis.plant.dto.PlantGuideDTO;
 import org.joonzis.plant.dto.SimplePlantDTO;
 
 public interface PlantService {
@@ -16,4 +17,6 @@ public interface PlantService {
 	public PlantDTO plantInfo(String plant_name);
 	// 관리가이드 DB에서 데이터 출력
 	public GuideDTO guideInfo(String plant_name);
+	// 나의 식물 추천가이드 목록
+	public List<PlantGuideDTO> selectPlantWithGuideList(int limit);
 }

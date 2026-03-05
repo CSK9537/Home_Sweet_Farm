@@ -31,6 +31,14 @@ public class MsgServiceImpl implements MsgService{
         if (msgVO.getIs_active() == null) {
             msgVO.setIs_active("Y");
         }
+        
+        Long nextMsgId = msgMapper.nextMsgSeq();
+        msgVO.setMsg_id(nextMsgId);
+
+        if ("TEXT".equals(msgVO.getMsg_type())) {
+            msgVO.setGroup_id(nextMsgId);
+        }
+
 
         msgMapper.insert(msgVO);
         return msgVO;

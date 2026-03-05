@@ -5,6 +5,7 @@ import java.util.List;
 import org.joonzis.myplant.dto.MyPlantDTO;
 import org.joonzis.myplant.dto.MyPlantMainDTO;
 
+
 public interface MyPlantMapper {
 	// 나의 식물 전체 목록 출력
 	public List<MyPlantMainDTO> myPlantMain(int user_id);

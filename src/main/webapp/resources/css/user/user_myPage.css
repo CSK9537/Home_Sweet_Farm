@@ -397,6 +397,10 @@
   z-index: 9991;
 }
 
+.modal[hidden] {
+  display: none !important;
+}
+
 .modal-card {
   width: min(560px, calc(100vw - 30px));
   background: #f4f2ed;
@@ -476,4 +480,136 @@
   .form-row {
     grid-template-columns: 1fr;
   }
+}
+/* 공통 설명 영역 */
+.grade-desc{
+  margin-top:12px;
+  font-size:14px;
+  color:#555;
+}
+
+.link-btn{
+  color:#4c6f5d;
+  font-weight:600;
+  text-decoration:none;
+}
+
+/* =====================
+   등급 진행바
+===================== */
+
+.grade-progress{
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:15px;
+  padding:0 10px;
+}
+
+.grade-line{
+  position:absolute;
+  top:18px;
+  left:10px;
+  right:10px;
+  height:4px;
+  background:#e5e5e5;
+  z-index:0;
+}
+
+.grade-step{
+  position:relative;
+  text-align:center;
+  z-index:1;
+}
+
+.grade-icon{
+  font-size:22px;
+}
+
+.grade-label{
+  margin-top:5px;
+  font-size:13px;
+  color:#666;
+}
+
+.grade-step.active .grade-label{
+  font-weight:700;
+  color:#000;
+}
+
+
+/* Q&A 카드 내부 정렬 */
+.qna-progress{
+  position: relative;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+/* 기존 라인은 살리되 너무 튀면 연하게 */
+.qna-line{
+  height: 2px;
+  background: #e9ecef;
+  border-radius: 999px;
+  margin: 18px 0 0 0;
+}
+
+/* 핵심: step을 flex로 만들어서 아이콘+텍스트 정렬 */
+.qna-step{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: -14px;   /* 라인 위로 살짝 올려서 '라인 위에 뱃지' 느낌 */
+  padding: 10px 12px;
+  width: fit-content;
+
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+}
+
+.qna-icon{
+  font-size: 28px;
+  line-height: 1;
+}
+
+.qna-label{
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+  line-height: 1.2;
+}
+
+.qna-lv{
+  font-weight: 800;
+}
+
+/* 아래 설명/링크 영역도 정렬 */
+.grade-desc{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding-top: 10px;
+  border-top: 1px solid #f3f3f3;
+}
+
+.qna-desc-text{
+  font-size: 13px;
+  color: #666;
+}
+
+/* 링크 버튼을 Q&A 쪽에서만 예쁘게 */
+.link-btn.qna-link{
+  font-size: 13px;
+  font-weight: 600;
+  color: #2f9e44;           /* 초록 포인트 */
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.link-btn.qna-link:hover{
+  text-decoration: underline;
 }

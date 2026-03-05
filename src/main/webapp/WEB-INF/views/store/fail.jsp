@@ -16,8 +16,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const message = urlParams.get("message");
 
     console.log(code, message);
-    alert(message);
-    location.href = "/store/cartPage";
+    showCustomToast(message, "error");
+    location.href = "/store/orderListPage";
 
 });
 </script><jsp:include page="/WEB-INF/views/layout/footer.jsp" />

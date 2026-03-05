@@ -142,8 +142,8 @@
     try { return JSON.parse(text); } catch(e){ return []; }
   }
 
-  function starText(rate){
-    var r = parseFloat(rate || 0);
+  function starText(review_rate){
+    var r = parseFloat(review_rate || 0);
     var full = Math.round(r);
     var s = "";
     for(var i=1;i<=5;i++) s += (i<=full ? "★" : "☆");
@@ -163,14 +163,30 @@
   function renderReviewCard(r){
     var verified = r.verified ? '<span class="badge-verified">인증된 구매자</span>' : '';
     var imgsHtml = '';
-    if(r.images && r.images.length){
+    
+    var images = r.images;
+    if(typeof images === 'string'){
+      images = images ? images.split(',') : [];
+    } else if (Array.isArray(images) && images.length === 1 && images[0] && images[0].indexOf(',') !== -1) {
+      // JSP에서 ["path1,path2"] 형태로 넘어오는 경우 대응
+      images = images[0].split(',');
+    }
+    
+    if(images && images.length){
       var hasAny = false;
-      for(var k=0;k<r.images.length;k++){ if(r.images[k]){ hasAny = true; break; } }
+      for(var k=0;k<images.length;k++){ if(images[k]){ hasAny = true; break; } }
       if(hasAny){
         imgsHtml += '<div class="review-card__imgs">';
-        for(var i=0;i<r.images.length;i++){
-          if(!r.images[i]) continue;
-          imgsHtml += '<img class="review-img" src="'+ escHtml(r.images[i]) +'" alt="리뷰 이미지" />';
+        for(var i=0;i<images.length;i++){
+          var src = images[i];
+          if(!src) continue;
+          
+          // 이미 절대 경로(http)가 아니면 display 엔드포인트 사용
+          if(src.indexOf('http') === -1){
+            src = "/store/review/display?imgName=" + encodeURIComponent(src);
+          }
+          
+          imgsHtml += '<img class="review-img" src="'+ escHtml(src) +'" alt="리뷰 이미지" />';
         }
         imgsHtml += '</div>';
       }
@@ -180,16 +196,16 @@
       + '<article class="review-card">'
       +   '<div class="review-card__head">'
       +     '<div>'
-      +       '<div class="review-card__title">'+ escHtml(r.title || '리뷰') +'</div>'
+      +       '<div class="review-card__title">'+ escHtml(r.review_title || '리뷰') +'</div>'
       +       '<div class="review-card__meta">'
       +         '<span>'+ escHtml(r.nickname || '') +'</span>'
-      +         '<span>'+ escHtml(r.date || '') +'</span>'
+      +         '<span>'+ escHtml(r.review_date || '') +'</span>'
       +         verified
       +       '</div>'
       +     '</div>'
-      +     '<div class="review-card__rate">'+ starText(r.rate) +' <span style="margin-left:6px;">★ '+ escHtml(r.rate || '0.0') +'</span></div>'
+      +     '<div class="review-card__rate">'+ starText(r.review_rate) +' <span style="margin-left:6px;">★ '+ escHtml(r.review_rate || '0.0') +'</span></div>'
       +   '</div>'
-      +   '<div class="review-card__body">'+ escHtml(r.content || '') +'</div>'
+      +   '<div class="review-card__body">'+ escHtml(r.review_content || '') +'</div>'
       +   imgsHtml
       +   '<div class="review-card__helpful">'
       +     '<span>도움이 되었나요?</span>'
@@ -204,45 +220,74 @@
     return parseInt(String(yyyyMMdd).replace(/-/g,""), 10) || 0;
   }
 
-  function applyFilterSort(){
+  function fetchAndRenderReviews(){
     var ratingSel = qs("filterRating");
     var imgSel = qs("filterImage");
-    var sortSel = qs("sortSelect");
+    var sortSel = qs("sortBy"); // JSP ID와 일치시킴
 
-    var minRate = (ratingSel && ratingSel.value !== "all") ? parseInt(ratingSel.value, 10) : 0;
-    var imgOnly = (imgSel && imgSel.value === "only");
-    var sort = (sortSel ? sortSel.value : "latest");
+    var rating = ratingSel ? ratingSel.value : "all";
+    var img = imgSel ? imgSel.value : "all";
+    var sort = sortSel ? sortSel.value : "latest";
+    var productId = qs("reviewTitle").getAttribute("product_id");
 
-    // 필터
-    var tmp = [];
-    for(var i=0;i<allReviews.length;i++){
-      var r = allReviews[i];
-      var rateNum = parseFloat(r.rate || 0);
+    var url = "/store/review/get/product/" + productId 
+            + "?sortBy=" + sort 
+            + "&filterRating=" + rating 
+            + "&filterImage=" + img;
 
-      if(minRate && rateNum < minRate) continue;
+    fetch(url)
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        allReviews = data;
+        viewReviews = data; // 서버에서 정렬/필터링 완료됨
+        
+        updateReviewStats(allReviews); // 통계 수치 업데이트
 
-      if(imgOnly){
-        var ok = false;
-        if(r.images && r.images.length){
-          for(var k=0;k<r.images.length;k++){
-            if(r.images[k]) { ok = true; break; }
-          }
-        }
-        if(!ok) continue;
-      }
+        var list = qs("reviewFeedList");
+        if(list) list.innerHTML = "";
+        cursor = 0;
+        appendNext();
+      })
+      .catch(function(err){
+        console.error("Failed to fetch reviews:", err);
+      });
+  }
 
-      tmp.push(r);
+  function updateReviewStats(reviews){
+    var counts = { 1:0, 2:0, 3:0, 4:0, 5:0 };
+    var total = reviews.length;
+    
+    for(var i=0; i<reviews.length; i++){
+      var r = parseInt(reviews[i].review_rate || 0, 10);
+      if(counts[r] !== undefined) counts[r]++;
     }
 
-    // 정렬
-    tmp.sort(function(a,b){
-      var da = parseDateNum(a.date);
-      var db = parseDateNum(b.date);
-      if(sort === "oldest") return da - db;
-      return db - da; // latest
-    });
-
-    viewReviews = tmp;
+    var rows = document.querySelectorAll(".review-dist__row");
+    // rows[0] = 5 star, rows[1] = 4 star ...
+    for(var star=5; star>=1; star--){
+      var idx = 5 - star;
+      if(!rows[idx]) continue;
+      
+      var count = counts[star];
+      var percent = total > 0 ? (count / total * 100) : 0;
+      
+      var numLabel = rows[idx].querySelector(".review-dist__num");
+      var fillBar = rows[idx].querySelector(".review-dist__fill");
+      
+      if(numLabel) numLabel.innerText = count;
+      if(fillBar) fillBar.style.width = percent + "%";
+    }
+    
+    // 평균 평점 및 개수 텍스트 업데이트 (Aside 영역)
+    var asideRate = qs(".review-aside__rate-num");
+    var asideCount = qs(".review-aside__count");
+    if(asideRate || asideCount){
+        var sum = 0;
+        for(var i=0; i<reviews.length; i++) sum += parseFloat(reviews[i].review_rate || 0);
+        var avg = total > 0 ? (sum / total).toFixed(1) : "0.0";
+        if(asideRate) asideRate.innerText = avg;
+        if(asideCount) asideCount.innerText = total + "개의 리뷰";
+    }
   }
 
   function appendNext(){
@@ -261,12 +306,7 @@
   }
 
   function resetAndRender(){
-    var list = qs("reviewFeedList");
-    if(list) list.innerHTML = "";
-
-    cursor = 0;
-    applyFilterSort();
-    appendNext();
+    fetchAndRenderReviews();
   }
 
   function bindInfiniteScroll(){
@@ -283,7 +323,7 @@
   function bindFilterSortEvents(){
     var ratingSel = qs("filterRating");
     var imgSel = qs("filterImage");
-    var sortSel = qs("sortSelect");
+    var sortSel = qs("sortBy");
 
     function onChange(){
       resetAndRender();
@@ -301,6 +341,7 @@
 
     var jsonEl = qs("reviewJson");
     if(jsonEl){
+      // 초기 데이터 로딩 (전체보기 시 새로고침하므로 비워두거나 서버에서 가져옴)
       allReviews = safeParseJson(jsonEl.text || jsonEl.innerText || "[]");
     }
 
@@ -342,11 +383,23 @@
     var closeBtn = qs("btnCloseWriteReview");
     var cancelBtn = qs("btnCancelWriteReview");
     var submitBtn = qs("btnSubmitReview");
+    
+    var reviewTempKey = "";
+
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
 
     if(openBtn){
       openBtn.onclick = function(){
         closeModal("reviewModal");
         openModal("writeReviewModal");
+        reviewTempKey = generateUUID(); // 모달 열릴 때마다 새로운 키 생성
+        qs("imgPreview").innerHTML = ""; // 프리뷰 초기화
+        qs("reviewImages").value = ""; // 파일 선택기 초기화
       };
     }
     if(dim) dim.onclick = function(){ closeModal("writeReviewModal"); };
@@ -367,16 +420,17 @@
       setStar(0);
     }
 
-    // 이미지 미리보기
+    // 이미지 미리보기 및 즉시 업로드
     var file = qs("reviewImages");
     var preview = qs("imgPreview");
     if(file && preview){
       file.onchange = function(){
-        preview.innerHTML = "";
         var files = file.files;
         if(!files || !files.length) return;
+        
         for(var i=0;i<files.length;i++){
           (function(f){
+            // 1. 미리보기 표시
             var reader = new FileReader();
             reader.onload = function(ev){
               var img = document.createElement("img");
@@ -384,12 +438,29 @@
               preview.appendChild(img);
             };
             reader.readAsDataURL(f);
+            
+            // 2. 서버에 즉시 전송 (Ajax 선업로드)
+            var formData = new FormData();
+            formData.append("file", f);
+            formData.append("tempKey", reviewTempKey);
+            
+            fetch("/store/review/uploadTemp", {
+              method: "POST",
+              body: formData
+            })
+            .then(function(res){ return res.json(); })
+            .then(function(data){
+              console.log("Upload success:", data);
+            })
+            .catch(function(err){
+              console.error("Upload failed:", err);
+            });
           })(files[i]);
         }
       };
     }
 
-    // 등록(뷰단용 검증만)
+    // 등록
     if(submitBtn){
       submitBtn.onclick = function(){
         var box = qs("starInput");
@@ -399,8 +470,39 @@
         if(starVal <= 0){ alert("평점은 필수입니다."); return; }
         if(!terms){ alert("리뷰 작성 조항에 동의해주세요."); return; }
 
-        alert("뷰단 확인용: 등록 완료(서버 연동 전)");
-        closeModal("writeReviewModal");
+        var productId = qs("reviewTitle").getAttribute("product_id");
+        var reviewTitle = qs("reviewTitle").value;
+        var reviewContent = qs("reviewContent").value;
+
+        fetch("/store/review/add/product/" + productId, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            review_title: reviewTitle,
+            review_content: reviewContent,
+            review_rate: starVal,
+            tempKey: reviewTempKey
+          })
+        })
+        .then(function(response){
+          if(response.ok){
+            showCustomToast("리뷰가 등록되었습니다.", "success");
+            closeModal("writeReviewModal");
+          } else {
+            response.text().then(function(data){
+              showCustomToast(`리뷰 등록에 실패했습니다. : ${data}`, "error");
+              if(data === "403"){
+                closeModal("writeReviewModal");
+                location.href = `/user/login`;
+              }
+            });
+          }
+        })
+        .catch(function(err){
+          console.error(err);
+          showCustomToast("리뷰 등록에 실패했습니다.", "error");
+          closeModal("writeReviewModal");
+        });
       };
     }
   }
@@ -463,7 +565,11 @@
         if(response.ok) showCustomToast("장바구니에 담겼습니다.","success");
         else{
           response.text().then(function(data){
-            console.error();
+            // 403 에러는 로그인 페이지로 이동(임시, 시큐리티 추가 전)
+            if(data === "403"){
+              location.href = `/user/login`;
+              return;
+            }
             showCustomToast(`장바구니에 추가하지 못했습니다. : ${data}`, "error");
           });
         }
@@ -486,12 +592,15 @@
       .then(function(response){
         if(response.ok){
           showCustomToast("찜목록에 추가했습니다." , "success");
-        }else{
-          response.text().then(function(data){
-            console.error();
-            showCustomToast(`찜목록에 추가하지 못했습니다. : ${data}`, "error");
-          });
         }
+        response.text().then(function(data){
+          // 403 에러는 로그인 페이지로 이동(임시, 시큐리티 추가 전)
+          showCustomToast(`찜목록에 추가하지 못했습니다. : ${data}`, "error");
+          if(data === "403"){
+            location.href = `/user/login`;
+            return;
+          }
+        });
       })
       .catch(function(err){
         console.error(err);

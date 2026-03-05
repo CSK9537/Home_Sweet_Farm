@@ -104,6 +104,8 @@
            href="${pageContext.request.contextPath}/store/wishListPage" title="찜목록">찜목록</a>
         <a class="store-floating__btn store-floating__btn--cart"
            href="${pageContext.request.contextPath}/store/wishListPage" title="장바구니">장바구니</a>
+           <a class="store-floating__btn store-floating__btn order"
+           href="${pageContext.request.contextPath}/store/orderListPage" title="주문목록">주문목록</a>
       </div>
 
       <div class="detail-top">
@@ -122,7 +124,7 @@
                       <img id="mainImage" class="gallery__main" src="${firstImg}" alt="<c:out value='${product.product_name}'/>" />
                     </c:when>
                     <c:otherwise>
-                      <img id="mainImage" class="gallery__main" src="${pageContext.request.contextPath}/upload/${firstImg}" alt="<c:out value='${product.product_name}'/>" />
+                      <img id="mainImage" class="gallery__main" src="${pageContext.request.contextPath}/store/display?imgName=${firstImg}" alt="<c:out value='${product.product_name}'/>" />
                     </c:otherwise>
                   </c:choose>
                 </c:when>
@@ -147,8 +149,8 @@
                         </button>
                       </c:when>
                       <c:otherwise>
-                        <button type="button" class="thumb ${st.index==0 ? 'thumb--active' : ''}" data-src="${pageContext.request.contextPath}/upload/${img}">
-                          <img src="${pageContext.request.contextPath}/upload/${img}" alt="썸네일 ${st.index+1}" />
+                        <button type="button" class="thumb ${st.index==0 ? 'thumb--active' : ''}" data-src="${pageContext.request.contextPath}/store/display?imgName=${img}">
+                          <img src="${pageContext.request.contextPath}/store/display?imgName=${img}" alt="썸네일 ${st.index+1}" />
                         </button>
                       </c:otherwise>
                     </c:choose>
@@ -195,6 +197,21 @@
                           </c:if>
                         </div>
                         <div class="review-preview__content"><c:out value="${topReview.review_content}" /></div>
+                        <c:if test="${not empty topReview.images}">
+                          <div class="review-preview__imgs">
+                            <c:forEach var="img" items="${fn:indexOf(topReview.images, ',') > -1 ? fn:split(topReview.images, ',') : topReview.images}">
+                              <c:set var="src" value="${img}" />
+                              <c:choose>
+                                <c:when test="${fn:startsWith(src, 'http')}">
+                                  <img class="review-img" src="${src}" alt="리뷰 이미지" />
+                                </c:when>
+                                <c:otherwise>
+                                  <img class="review-img" src="${pageContext.request.contextPath}/store/review/display?imgName=${src}" alt="리뷰 이미지" />
+                                </c:otherwise>
+                              </c:choose>
+                            </c:forEach>
+                          </div>
+                        </c:if>
                       </div>
                     </c:when>
                     <c:otherwise>
@@ -267,13 +284,13 @@
             <div class="product-mini js-card" data-href="${pageContext.request.contextPath}/store/product/detail?product_id=${p.product_id}">
               <div class="product-mini__thumb">
                 <c:choose>
-                  <c:when test="${not empty p.saved_name}">
+                  <c:when test="${not empty p.thumbnail}">
                     <c:choose>
-                      <c:when test="${fn:startsWith(p.saved_name,'http')}">
-                        <img src="${p.saved_name}" alt="${p.product_name}" />
+                      <c:when test="${fn:startsWith(p.thumbnail,'http')}">
+                        <img src="${p.thumbnail}" alt="${p.product_name}" />
                       </c:when>
                       <c:otherwise>
-                        <img src="${pageContext.request.contextPath}/upload/${p.saved_name}" alt="${p.product_name}" />
+                        <img src="${pageContext.request.contextPath}/store/display?imgName=${p.thumbnail}" alt="${p.product_name}" />
                       </c:otherwise>
                     </c:choose>
                   </c:when>
@@ -305,13 +322,13 @@
             <div class="product-mini js-card" data-href="${pageContext.request.contextPath}/store/product/detail?product_id=${p.product_id}">
               <div class="product-mini__thumb">
                 <c:choose>
-                  <c:when test="${not empty p.saved_name}">
+                  <c:when test="${not empty p.thumbnail}">
                     <c:choose>
-                      <c:when test="${fn:startsWith(p.saved_name,'http')}">
-                        <img src="${p.saved_name}" alt="${p.product_name}" />
+                      <c:when test="${fn:startsWith(p.thumbnail,'http')}">
+                        <img src="${p.thumbnail}" alt="${p.product_name}" />
                       </c:when>
                       <c:otherwise>
-                        <img src="${pageContext.request.contextPath}/upload/${p.saved_name}" alt="${p.product_name}" />
+                        <img src="${pageContext.request.contextPath}/store/display?imgName=${p.thumbnail}" alt="${p.product_name}" />
                       </c:otherwise>
                     </c:choose>
                   </c:when>
@@ -451,16 +468,32 @@
                 <c:forEach var="r" items="${reviewList}" varStatus="st">
                 {
                   "nickname": "<c:out value='${r.nickname}'/>",
-                  "rate": "<c:out value='${r.review_rate}'/>",
-                  "date": "<fmt:formatDate value='${r.review_date}' pattern='yyyy-MM-dd'/>",
-                  "title": "<c:out value='${empty r.review_title ? "리뷰" : r.review_title}'/>",
-                  "content": "<c:out value='${r.review_content}'/>",
+                  "review_rate": "<c:out value='${r.review_rate}'/>",
+                  "review_date": "<fmt:formatDate value='${r.review_date}' pattern='yyyy-MM-dd'/>",
+                  "review_title": "<c:out value='${empty r.review_title ? "리뷰" : r.review_title}'/>",
+                  "review_content": "<c:out value='${r.review_content}'/>",
                   "verified": <c:out value='${empty r.verified ? "false" : r.verified}'/>,
                   "helpful": <c:out value='${empty r.helpful ? 0 : r.helpful}'/>,
                   "images": [
-                    <c:forEach var="img" items="${r.images}" varStatus="st2">
-                      "<c:out value='${img}'/>"<c:if test="${!st2.last}">,</c:if>
-                    </c:forEach>
+                    <c:choose>
+                      <c:when test="${not empty r.images}">
+                        <c:set var="imgItems" value="${fn:indexOf(r.images, ',') > -1 ? fn:split(r.images, ',') : r.images}" />
+                        <c:choose>
+                          <c:when test="${fn:contains(r.images, ',') || r.images.getClass().simpleName == 'String'}">
+                            <%-- String인 경우 split 처리 --%>
+                            <c:forEach var="img" items="${fn:split(r.images, ',')}" varStatus="st2">
+                              "<c:out value='${img}'/>"<c:if test="${!st2.last}">,</c:if>
+                            </c:forEach>
+                          </c:when>
+                          <c:otherwise>
+                            <%-- List인 경우 그대로 (더미 데이터 등) --%>
+                            <c:forEach var="img" items="${r.images}" varStatus="st2">
+                              "<c:out value='${img}'/>"<c:if test="${!st2.last}">,</c:if>
+                            </c:forEach>
+                          </c:otherwise>
+                        </c:choose>
+                      </c:when>
+                    </c:choose>
                   ]
                 }<c:if test="${!st.last}">,</c:if>
                 </c:forEach>
@@ -518,7 +551,7 @@
 
             <div class="form-row">
               <div class="form-label">제목</div>
-              <input type="text" id="reviewTitle" placeholder="예) 가성비 좋아요" />
+              <input type="text" id="reviewTitle" placeholder="예) 가성비 좋아요" product_id="${product.product_id}"/>
             </div>
 
             <div class="form-row">

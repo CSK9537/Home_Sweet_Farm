@@ -11,55 +11,39 @@
 		r.room_id,
 
 		CASE
-		WHEN r.user1_id = #{user_id}
-		THEN
-		r.user2_id
-		ELSE r.user1_id
+			WHEN r.user1_id = #{user_id}
+			THEN r.user2_id
+			ELSE r.user1_id
 		END AS other_user_id,
 
-		u.nickname AS
-		other_user_name,
+		u.nickname AS other_user_name,
 
 		m.content AS last_msg,
 		m.msg_type AS last_msg_type,
 		m.created_at AS created_at,
 
-		(
-		SELECT COUNT(
-	    DISTINCT
-	       CASE
-	           WHEN msg.msg_type = 'TEXT'
-	               THEN TO_CHAR(msg.msg_id)
-	           ELSE
-	               msg.sender_id
-	               || '_' ||
-	               TO_CHAR(msg.created_at,'YYYYMMDDHH24MISS')
-	       END
-		)
-		FROM tbl_msg msg
-		JOIN tbl_chat_room_user cru
-		ON
-		cru.room_id = msg.room_id
-		WHERE cru.room_id = r.room_id
-		AND cru.user_id
-		= #{user_id}
-		AND msg.sender_id != #{user_id}
-		AND msg.msg_id >
-		NVL(cru.last_read_msg_id,0)
-		) AS unread_count
+		 (
+		  	SELECT COUNT(DISTINCT msg.group_id)
+		    FROM tbl_msg msg
+		    WHERE msg.room_id = r.room_id
+		    	AND msg.sender_id != #{user_id}
+		    	AND msg.msg_id > NVL(cru.last_read_msg_id,0)
+		    	AND msg.is_active = 'Y'
+		  ) AS unread_count
 
 		FROM tbl_room r
 
-		JOIN
-		tbl_user u
-		ON u.user_id =
-		CASE
-		WHEN r.user1_id = #{user_id}
-		THEN
-		r.user2_id
-		ELSE r.user1_id
+		JOIN tbl_chat_room_user cru
+			ON cru.room_id = r.room_id
+			AND cru.user_id = #{user_id}
+			
+		JOIN tbl_user u
+			ON u.user_id =
+				CASE
+					WHEN r.user1_id = #{user_id}
+					THEN r.user2_id
+					ELSE r.user1_id
 		END
-
 
 		LEFT JOIN (
 			SELECT *
@@ -76,12 +60,10 @@
 		) m
 		ON m.room_id = r.room_id
 
-		WHERE r.user1_id =
-		#{user_id}
-		OR r.user2_id = #{user_id}
+		WHERE r.user1_id = #{user_id}
+			OR r.user2_id = #{user_id}
 
-		ORDER BY m.created_at DESC NULLS LAST,
-         m.msg_id DESC
+		ORDER BY m.created_at DESC NULLS LAST, m.msg_id DESC
 
 	</select>
 
@@ -94,6 +76,23 @@
 			END
 		FROM tbl_room
 		WHERE room_id = #{room_id}
+	</select>
+	
+	<select id="findMaxGroupId" resultType="long">
+	    SELECT MAX(group_id) 
+	    FROM tbl_msg 
+	    WHERE room_id = #{room_id}
+	</select>
+	
+	<select id="selectMessagesWithPaging" resultType="org.joonzis.chatting.vo.MsgVO">
+	    SELECT * FROM (
+	        SELECT m.*, ROW_NUMBER() OVER (ORDER BY m.msg_id DESC) rn
+	        FROM tbl_msg m
+	        WHERE m.room_id = #{room_id}
+	          AND m.is_active = 'Y'
+	    )
+	    <![CDATA[WHERE rn > #{offset} AND rn <= #{offset} + #{size}]]>
+	    ORDER BY msg_id ASC
 	</select>
 
 

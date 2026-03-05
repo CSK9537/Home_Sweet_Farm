@@ -19,6 +19,7 @@ public class MsgVO {
 	private String original_name;		// 파일 원본명
 	private String saved_name;			// 파일 저장명(UUID)
 	private String file_path;			// 파일 경로
-	private Date created_at;	// 작성 시간
-	private String is_active;				// 메세지 활성화/비활성화
+	private Date created_at;			// 작성 시간
+	private String is_active;			// 메세지 활성화/비활성화
+	private Long group_id;				// 메세지 그룹 아이디
 }

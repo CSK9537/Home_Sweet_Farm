@@ -24,6 +24,9 @@
 		<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@192.168.0.153:1521:XE"></property>
 		<property name="username" value="scott"></property>
 		<property name="password" value="tiger"></property>
+		<!-- <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:XE"></property>
+		<property name="username" value="HSF"></property>
+		<property name="password" value="1234"></property> -->
 	</bean>
 
 	<!-- HikariCP configuration -->
@@ -62,10 +65,12 @@
 	<!-- store -->
 	<mybatis-spring:scan base-package="org.joonzis.store.mapper"/>
 	<context:component-scan base-package="org.joonzis.store.service"/>
+	<context:component-scan base-package="org.joonzis.store.scheduler"/>
 	
 	<!-- user -->
 	<mybatis-spring:scan base-package="org.joonzis.user.mapper"/>
 	<context:component-scan base-package="org.joonzis.user.service"/>
+	<context:component-scan base-package="org.joonzis.user.scheduler"/>
 	
 	<!-- plant -->
 	<mybatis-spring:scan base-package="org.joonzis.plant.mapper"/>

@@ -53,4 +53,6 @@ public interface OrderMapper {
 
 	// 결제 취소(API 호출, DB에 Update)
 	public int updateCancelOrder(@Param("order_id")String order);
+	
+	public List<String> getOrderIdWithoutOrderStateIsDone();
 }

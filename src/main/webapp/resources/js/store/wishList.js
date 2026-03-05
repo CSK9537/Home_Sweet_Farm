@@ -240,9 +240,7 @@ function newOrder(){
   const totalPrice = totalPriceEl ? parseInt(totalPriceEl.textContent.replace(/[^0-9]/g, '')) : 0;
   
   const products = [];
-  // wishContainer나 cartContainer 내부의 요소를 구분해야 함
   document.querySelectorAll('#cartListContainer .product-card').forEach(card => {
-    // 수량 조절 버튼(+ 또는 -)을 통해 product_id를 유추하거나 id 구조 사용
     const countEl = card.querySelector('strong[id^="product_count_"]');
     if (countEl) {
       const productId = countEl.id.replace('product_count_', '');
@@ -259,22 +257,66 @@ function newOrder(){
     return;
   }
 
-  const deliveryAddr = prompt("배송지를 입력해주세요.", "서울시 장안구...");
-  if (!deliveryAddr) return;
+  // 배송지 입력 모달 열기
+  openDeliveryModal(function(deliveryAddr) {
+    const orderInfo = {
+      use_point: 0,
+      order_amount : totalPrice,
+      accumulate_point : Math.floor(totalPrice * 0.01),
+      delivery_addr : deliveryAddr,
+      products : products 
+    };
 
-  const orderInfo = {
-   use_point: 0,
-   order_amount : totalPrice,
-   accumulate_point : Math.floor(totalPrice * 0.01),
-   delivery_addr : deliveryAddr,
-   products : products 
-  }
-
-  requestOrderReady(orderInfo, function(orderId) {
-    startTossPayment('CARD', {
-        amount: orderInfo.order_amount,
-        orderId: orderId,
-        orderName: products.length > 1 ? `${products.length}건 상품 주문` : "상품 주문"
+    requestOrderReady(orderInfo, function(orderId) {
+      startTossPayment('CARD', {
+          amount: orderInfo.order_amount,
+          orderId: orderId,
+          orderName: products.length > 1 ? `${products.length}건 상품 주문` : "상품 주문"
+      });
     });
   });
+}
+
+function openDeliveryModal(callback) {
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  
+  let html = "";
+  html += '<div class="modal-content modal-content--small">';
+  html += '  <div class="modal-header">';
+  html += '    <span class="modal-title">배송지 입력</span>';
+  html += '    <span class="modal-close">&times;</span>';
+  html += '  </div>';
+  html += '  <div class="modal-body">';
+  html += '    <p class="modal-desc">상품을 배송받으실 주소를 입력해주세요.</p>';
+  html += '    <textarea id="deliveryAddrText" class="modal-textarea" placeholder="도로명 주소 또는 지번 주소를 입력해주세요."></textarea>';
+  html += '    <div class="modal-footer">';
+  html += '      <button type="button" class="btn-confirm-modal">결제하기</button>';
+  html += '      <button type="button" class="btn-close-modal">닫기</button>';
+  html += '    </div>';
+  html += '  </div>';
+  html += '</div>';
+
+  overlay.innerHTML = html;
+  document.body.appendChild(overlay);
+  document.body.classList.add("modal-open");
+
+  const closeFn = function() {
+    overlay.remove();
+    document.body.classList.remove("modal-open");
+  };
+
+  overlay.querySelector(".modal-close").onclick = closeFn;
+  overlay.querySelector(".btn-close-modal").onclick = closeFn;
+  overlay.onclick = function(e) { if (e.target === overlay) closeFn(); };
+
+  overlay.querySelector(".btn-confirm-modal").onclick = function() {
+    const addr = document.getElementById("deliveryAddrText").value.trim();
+    if (!addr) {
+      showCustomToast("배송지를 입력해주세요.", "warning");
+      return;
+    }
+    closeFn();
+    if (callback) callback(addr);
+  };
 }

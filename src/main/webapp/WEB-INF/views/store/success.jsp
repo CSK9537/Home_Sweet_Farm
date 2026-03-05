@@ -21,16 +21,16 @@ document.addEventListener("DOMContentLoaded", function() {
         confirmPayment(paymentKey, orderId, parseInt(amount))
             .then(isSuccess => {
                 if (isSuccess) {
-                    alert("결제가 최종 승인되었습니다!");
+                    showCustomToast("결제가 최종 승인되었습니다!", "success");
                     // 주문 완료 페이지로 이동하거나 UI 업데이트
-                    location.href = "/store"; //일단은 메인페이지로 이동, 나중에 주문 내역 페이지가 생기면 그쪽으로 변경
+                    location.href = "/store/orderListPage"; //일단은 메인페이지로 이동, 나중에 주문 내역 페이지가 생기면 그쪽으로 변경
                 } else {
-                    alert("결제 승인 중 오류가 발생했습니다.");
-                    location.href = "/store/order/cart"; //결제 승인 실패 시 장바구니로 이동
+                    showCustomToast("결제 승인 중 오류가 발생했습니다.", "error");
+                    location.href = "/store/orderListPage"; //결제 승인 실패 시 장바구니로 이동
                 }
             });
     } else {
-        alert("비정상적인 접근입니다.");
+        showCustomToast("비정상적인 접근입니다.", "error");
         location.href = "/store"; //비정상적인 접근 시 메인페이지로 이동
     }
 });

@@ -11,7 +11,6 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.joonzis.chatting.dto.ChatMessageDTO;
 import org.joonzis.chatting.dto.ChatRoomDTO;
 import org.joonzis.chatting.dto.RoomSearchResultDTO;
 import org.joonzis.chatting.mapper.ChatRoomMapper;
@@ -105,13 +104,16 @@ public class ChatController {
     	    value = "/rooms/{room_id}/messages",
     	    produces = "application/json; charset=UTF-8"
     	)
-    	public List<ChatMessageDTO> getMessages(
+    	public List<MsgVO> getMessages(
     	        @PathVariable int room_id,
                 @RequestParam(required = false)Integer testUser_id,
+                @RequestParam(required = false, defaultValue = "0") int offset,
+                @RequestParam(required = false, defaultValue = "40") int size,
                 HttpSession session
     	) {
     	    int user_id = getUserId(session, testUser_id);
-    	    return chatService.getMessages(user_id, room_id);
+    	    int page = offset/size;
+    	    return chatService.getMessages(user_id,  room_id, page, size);
     }
 
     /**
@@ -176,21 +178,23 @@ public class ChatController {
     }
     
     private int getUserId(HttpSession session, Integer testUser_id) {
-
-        if (testUser_id != null) {
-            System.out.println("[DEBUG] testUser_id 사용: " + testUser_id);
+        // 1. 테스트용 파라미터가 들어오면 우선 처리 (개발 단계 유지용)
+        if (testUser_id != null && testUser_id > 0) {
             return testUser_id;
         }
 
-        Integer userId = (Integer) session.getAttribute("user_id");
+        // 2. 실제 세션에서 loginUser 객체 꺼내기
+        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
 
-        if (userId == null) {
+        // 3. 만약 ChatPageController에서 넣어준 user_id가 있다면 그것도 확인
+        if (loginUser == null) {
+            Integer userId = (Integer) session.getAttribute("user_id");
+            if (userId != null) return userId;
+            
             throw new RuntimeException("로그인 세션 없음");
         }
 
-        System.out.println("[DEBUG] session user_id 사용: " + userId);
-
-        return userId;
+        return loginUser.getUser_id();
     }
     
     /**
@@ -217,13 +221,11 @@ public class ChatController {
             @RequestParam int room_id,
             @RequestParam(required = false) Integer testUser_id,
             @RequestParam String msg_type,
-            @RequestParam String upload_group_id,
             HttpSession session
     ) throws IOException {
 
         // 1. 업로드 유저
         int sender_id = getUserId(session, testUser_id);
-        int receiver_id = chatRoomMapper.selectOtherUserId(room_id, sender_id);
         // 2. 파일 저장
         String savedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         String dbPath = "/upload/files/" + savedName;
@@ -246,32 +248,20 @@ public class ChatController {
         msg.setFile_path(dbPath);
 //        msg.setFile_size(file.getSize());
         msg.setIs_active("Y");
-        msg.setCreated_at(new Date());
 
         // 4. DB 저장
-        msgService.sendMessage(msg);
+        long group_id = chatService.getNextGroupId(room_id);
+        MsgVO savedMsg = chatService.sendFileMessage(sender_id, room_id, msg, group_id);
         
-        // 5. DTO 변환
-        ChatMessageDTO dto = new ChatMessageDTO();
+        messagingTemplate.convertAndSend("/topic/room." + room_id, savedMsg);
 
-        dto.setMsg_id(msg.getMsg_id());
-        dto.setRoom_id(msg.getRoom_id());
-        dto.setSender_id(msg.getSender_id());
-        dto.setContent(msg.getContent());
-        dto.setMsg_type(msg.getMsg_type());
-        dto.setOriginal_name(msg.getOriginal_name());
-        dto.setSaved_name(msg.getSaved_name());
-        dto.setFile_path(msg.getFile_path());
-        dto.setCreated_at(msg.getCreated_at());
-//        dto.setFile_size(msg.setFile_size(file_size));
-        dto.setUpload_group_id(upload_group_id);
-
-        // 6. WebSocket 전송
-        messagingTemplate.convertAndSend("/topic/room." + room_id, dto);
-        messagingTemplate.convertAndSend("/topic/user." + receiver_id, dto);
-        messagingTemplate.convertAndSend("/topic/user." + sender_id, dto);
-
-        return ResponseEntity.ok(msg);
+        return ResponseEntity.ok(savedMsg);
+    }
+    
+    @GetMapping("/rooms/upload/test")
+    public String testUpload() {
+        System.out.println("[DEBUG] /rooms/upload/test 호출됨");
+        return "OK";
     }
     
 
