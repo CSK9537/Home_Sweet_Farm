@@ -357,6 +357,7 @@ a{text-decoration: none; }
 
 .message-box .text-content {
     white-space: pre-wrap;
+    word-break: break-all;
 }
 
 .highlight-search {
@@ -390,6 +391,9 @@ a{text-decoration: none; }
 /* 썸네일 공통 */
 .chat-thumbnail {
     width: 100%;
+    max-width: 300px;
+    min-height: 150px;
+    background-color: #f0f0f0;
     object-fit: cover;
     border-radius: 12px;
     cursor: pointer;
@@ -404,7 +408,10 @@ a{text-decoration: none; }
 
 /* 2개 이상일 때만 정사각 비율 유지 */
 .multi-image .chat-thumbnail {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1 / 1 !important;
+    min-height: 0;
+    width: 100%;
+    object-fit: cover;
 }
 
 .chat-thumbnail:hover {
@@ -556,17 +563,29 @@ a{text-decoration: none; }
 
 .message-row.received .file-link,
 .message-row.sent .file-link {
-    display: block;
-    align-items: center;
-    max-width: 220px;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 8px 12px;
+    display: block;          /* flex 대신 block으로 설정하여 width 제어를 확실하게 함 */
+    width: 240px;           /* 모든 파일 박스 너비 통일 */
+    max-width: 100%;
+    box-sizing: border-box;
+    
+    padding: 10px 15px;
     border-radius: 10px;
     font-size: 14px;
     text-decoration: none;
+    
+    /* 🚩 말줄임표 핵심 설정 */
+    white-space: nowrap;    /* 줄바꿈 금지 */
+    overflow: hidden;       /* 넘치는 부분 숨김 */
+    text-overflow: ellipsis;/* ... 표시 */
+}
+
+/* 파일 이름 텍스트가 잘리도록 내부 설정 */
+.message-row.received .file-link span,
+.message-row.sent .file-link span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
 }
 
 /* ===============================
@@ -660,6 +679,8 @@ a{text-decoration: none; }
 
 /* 상대 메시지 박스 스타일 */
 .message-row.received .message-box {
+    width: fit-content;
+    min-width: 0;
     background-color: #fff;
     border: 2px solid #6B715D;
     border-radius: 0 15px 15px 15px;
@@ -677,6 +698,8 @@ a{text-decoration: none; }
     border: 2px solid #ccc;
     color: #FFFFFF;
     border-radius: 15px 0 15px 15px;
+    width: fit-content;
+    min-width: 0;
     /* 우상단 각지게 */
 }
 

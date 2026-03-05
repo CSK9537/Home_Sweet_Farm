@@ -32,7 +32,7 @@
 					<div class="chat-list-header">
 						<div class="chat-list-tabs">
 							<div class="tab active" id="tab-all">전체보기</div>
-							<div class="tab" id="tab-search">검색하기</div>
+							<div class="tab" id="tab-search" style="pointer-events: none; opacity: 0.5;">검색하기</div>
 						</div>
 					</div>
 

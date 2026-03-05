@@ -7,6 +7,26 @@ export function isScrollBottom() {
     return container.scrollHeight - container.scrollTop - container.clientHeight < 50;
 }
 
+//새 메시지가 왔을 때 스크롤을 내릴지, 버튼을 보여줄지 결정하는 함수
+export function shouldScrollOrShowButton(data) {
+    const container = document.getElementById("messages");
+    const newMsgBtn = document.getElementById("new-msg-btn");
+    if (!container || !newMsgBtn) return;
+
+    const myId = chatState.session.myUserId;
+    const isMyMsg = data.sender_id === myId;
+    const isBottom = isScrollBottom();
+
+    if (isMyMsg || isBottom) {
+        // 내가 보낸 메시지거나, 이미 바닥 근처라면 강제 스크롤
+        container.scrollTop = container.scrollHeight;
+        newMsgBtn.style.display = "none";
+    } else {
+        // 스크롤이 한참 위에 있는데 남이 보낸 메시지라면 버튼 표시
+        newMsgBtn.style.display = "block";
+    }
+}
+
 export function handleNewMessageButton() {
     const newMsgBtn = document.getElementById("new-msg-btn"); // 새로운 메세지 버튼
     const container = document.getElementById("messages");
