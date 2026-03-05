@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.joonzis.qna.mapper.QnaListMapper">
+
+  <!--
+    전제:
+    - 질문: TBL_BOARD (BOARD_TYPE='Q', PARENT_ID IS NULL)
+    - 답변: TBL_BOARD (BOARD_TYPE='A', PARENT_ID = 질문 BOARD_ID)
+    - 채택: 답변글의 IS_SELECTED='Y'
+  -->
+
+	<select id="selectQnaTopList" resultType="org.joonzis.qna.dto.QnaListDTO" parameterType="map">
+		SELECT *
+		FROM (
+		    SELECT X.* , ROWNUM as rn
+		    FROM (
+		        SELECT
+		            b.board_id as qna_id,
+		            b.title,
+		            DBMS_LOB.SUBSTR(B.CONTENT, 120, 1) AS preview,
+		            b.like_count as likeCount,
+		            (SELECT COUNT(*) FROM tbl_board a WHERE a.parent_id = b.board_id AND a.board_type='A') as answerCount,
+		            b.reg_date,
+		            (SELECT MIN(h.hashtag_name) 
+		             FROM tbl_board_aspect asp 
+		             JOIN tbl_hashtag_list h ON h.hashtag_id = asp.board_hashtag_id 
+		             WHERE asp.board_id = b.board_id) as tagName
+		        FROM
+		            tbl_board b
+		        <where>
+		        	b.board_type = 'Q'
+		        	<if test='tagName != null and tagName != "" '>
+		        	AND EXISTS(
+		        		SELECT 1
+		        		FROM tbl_board_aspect asp
+		        		JOIN tbl_hashtag_list h ON h.hashtag_id=asp.board_hashtag_id
+		        		WHERE asp.board_id = b.board_id
+		        			AND h.hashtag_name =#{tagName}
+		        	)
+		        	</if>
+		        </where>
+		        ORDER BY
+		        <choose>
+		            <when test='sortKey == "like"'>
+		                likeCount
+		            </when>
+		            <when test='sortKey == "answer"'>
+		                answerCount
+		            </when>
+		            <otherwise>
+		                b.reg_date
+		            </otherwise>
+		        </choose>
+		        <choose>
+		            <when test='sortDir == "ASC" or sortDir == "asc"'> ASC </when>
+		            <otherwise> DESC </otherwise>
+		        </choose>
+		    ) X
+		    WHERE ROWNUM &lt;= #{endRow}
+		)
+		WHERE rn &gt; #{startRow}
+	</select>
+
+	<select id="selectQnaTagTopList" resultType="org.joonzis.qna.dto.TagTopListDTO">
+		SELECT x.*,ROWNUM
+		FROM
+		    (SELECT
+		        a.board_hashtag_id,
+		        COUNT(a.board_hashtag_id) as tagCount,
+		        h.hashtag_name as tagName
+		    FROM tbl_board_aspect a
+		        LEFT OUTER JOIN tbl_hashtag_list h ON a.board_hashtag_id=h.hashtag_id
+		    GROUP BY
+		        a.board_hashtag_id,
+		        h.hashtag_id,
+		        h.hashtag_name
+		    ORDER BY tagCount DESC) x
+		WHERE ROWNUM &lt;= 15
+	</select>
+
+	<select id="getCountQnaList" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		FROM tbl_board b
+		<where>
+			b.board_type = 'Q'
+			<if test="tagName != null and tagName != ''">
+				AND EXISTS(
+					SELECT 1
+					FROM tbl_board_aspect asp
+					JOIN tbl_hashtag_list h ON h.hashtag_id = asp.board_hashtag_id
+					WHERE asp.board_id = b.board_id
+						AND h.hashtag_name = #{tagName}
+				)
+			</if>
+		</where>
+	</select>
+
+</mapper>

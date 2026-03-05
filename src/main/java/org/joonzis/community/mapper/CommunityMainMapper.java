@@ -16,4 +16,7 @@ public interface CommunityMainMapper {
 
     // 전체보기용(최대 100)
     List<CommunityPostCardDTO> selectMorePosts(Map<String, Object> param);
+    
+    // 특정 유저 작성글
+    List<CommunityPostCardDTO> selectMyPosts(Map<String, Object> param);
 }

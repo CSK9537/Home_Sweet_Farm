@@ -40,7 +40,7 @@ public class CommunityMainController {
     private String buildMoveUrl(HttpServletRequest req, int boardId) {
         String ctx = req.getContextPath();
         // 상세 페이지 URL 규칙(프로젝트에 맞게 수정)
-        return ctx + "/community/detail?board_id=" + boardId;
+        return ctx + "/community/view?board_id=" + boardId;
     }
 
     private void decorate(HttpServletRequest req, List<CommunityPostCardDTO> list) {

@@ -12,9 +12,11 @@ public class CommunityPostCardDTO {
 	private String title;
 	private String userId;
 	private String thumbSrc;    // 썸네일 URL (없으면 프론트에서 DEFAULT_POST_IMG 처리 가능)
+	private String thumbUrl;
+	private String imgUrl;
 	private int viewCount;
 	private int likeCount;
-	private int replyCount;
+	private int replyCnt;
 	private String hashtags;    // "태그1,태그2" 처럼 합쳐진 문자열
 	private String moveUrl;     // 컨트롤러에서 contextPath 붙여 완성
 }

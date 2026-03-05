@@ -13,20 +13,47 @@
 
       <!-- 상단 네비 -->
       <div class="cv-top-actions">
-        <button type="button" class="cv-top-btn" id="btnPrev">이전글</button>
-        <button type="button" class="cv-top-btn" id="btnNext">다음글</button>
+        <button type="button" class="cv-top-btn" id="btnPrev"
+                data-id="${not empty prev ? prev.board_id : ''}"
+                ${empty prev ? "disabled='disabled'" : ""}>이전글</button>
+
+        <button type="button" class="cv-top-btn" id="btnNext"
+                data-id="${not empty next ? next.board_id : ''}"
+                ${empty next ? "disabled='disabled'" : ""}>다음글</button>
+
         <button type="button" class="cv-top-btn" id="btnList">목록</button>
       </div>
 
       <!-- 게시글 -->
       <div class="cv-post">
 
-        <div class="cv-breadcrumb">
-          <span class="cv-category">${category.category_name}</span>
-          <span class="cv-sep">&gt;</span>
-        </div>
+		<div class="cv-breadcrumb">
+		  <!-- 1) 카테고리(대분류) : 카테고리 메인으로 -->
+		  <a class="cv-bc-link"
+		     href="${pageContext.request.contextPath}/category/main">
+		    카테고리
+		  </a>
+		
+		  <span class="cv-sep">&gt;</span>
+		
+		  <!-- 2) 보더타입 : 목록으로 (type 파라미터 유지) -->
+		  <a class="cv-bc-link"
+   			id="boardTypeLink"
+			data-board-type="${board.board_type}"
+			href="${pageContext.request.contextPath}/community/list?type=${board.board_type}">
+			</a>
+		
+		  <span class="cv-sep">&gt;</span>
+		
+		  <!-- 3) 카테고리네임 : 현재 글이 속한 카테고리(보더타입 내 필터로 목록 이동도 가능) -->
+		  <span class="cv-category">
+		    ${category.category_name}
+		  </span>
+		</div>
 
-        <h1 class="cv-title">${board.title}</h1>
+        <div class="cv-title-row">
+          <h1 class="cv-title">${board.title}</h1>
+        </div>
 
         <div class="cv-meta">
           <div class="cv-writer">
@@ -38,6 +65,8 @@
               <div class="cv-writer-line">
                 <a href="javascript:void(0)"
                    class="js-user-trigger cv-nick"
+                   data-user_id="${board.user_id}"
+                   data-nickname="${board.writer}"
                    data-user-id="${board.user_id}"
                    data-user-nick="${board.writer}">
                   ${board.writer}
@@ -46,25 +75,37 @@
 
               <div class="cv-date-line">
                 <span class="cv-date">
-                  <fmt:formatDate value="${board.reg_date}" pattern="yyyy.MM.dd HH:mm" />
+                  	작성 <fmt:formatDate value="${board.reg_date}" pattern="yyyy.MM.dd" />
                 </span>
 
                 <c:if test="${not empty board.update_date}">
-                  <span class="cv-dot">•</span>
+                  <span class="cv-dot">||</span>
                   <span class="cv-updated">
-                   	 수정 <fmt:formatDate value="${board.update_date}" pattern="yyyy.MM.dd HH:mm" />
+                    	수정 <fmt:formatDate value="${board.update_date}" pattern="yyyy.MM.dd" />
                   </span>
                 </c:if>
               </div>
             </div>
           </div>
 
+          <!-- 좋아요/댓글 클릭 가능 -->
           <div class="cv-stats">
-            <span>조회 ${board.view_cnt}</span>
-            <span class="cv-bar">|</span>
-            <span>좋아요 ${board.like_cnt}</span>
-            <span class="cv-bar">|</span>
-            <span>댓글 ${board.reply_cnt}</span>
+            <span>조회 <span id="viewCnt">${board.view_cnt}</span></span>
+            <span class="cv-bar">||</span>
+
+            <button type="button"
+                    class="cv-stat-btn"
+                    id="btnLikeStat"
+                    data-board-id="${board.board_id}"
+                    ${liked ? "disabled='disabled'" : ""}>
+              	좋아요 <span id="likeCntStat">${board.like_cnt}</span>
+            </button>
+
+            <span class="cv-bar">||</span>
+
+            <button type="button" class="cv-stat-btn" id="btnReplyStat">
+              	댓글 <span id="replyCntStat">${board.reply_cnt}</span>
+            </button>
           </div>
         </div>
 
@@ -91,14 +132,27 @@
           </div>
         </c:if>
 
-        <!-- ✅ 하단 버튼: (좌)목록+신고 / (우)수정+삭제 -->
+        <!-- 하단 버튼 -->
         <div class="cv-post-actions">
           <div class="cv-post-actions__left">
+            <!-- (수정) ID 중복 제거 + 좋아요 버튼 연결 -->
+            <button type="button"
+                    class="cv-btn cv-btn-ghost cv-like-btn"
+                    id="btnLikeBottom"
+                    data-board-id="${board.board_id}"
+                    ${liked ? "disabled='disabled'" : ""}>
+              	좋아요 <span id="likeCntBottom">${board.like_cnt}</span>
+            </button>
+
             <button type="button" class="cv-btn cv-btn-ghost" id="btnBoardList">목록</button>
 
-            <!-- 작성자 본인이면 신고 숨김, 타인이면 표시 -->
             <c:if test="${loginUserId != board.user_id}">
-              <button type="button" class="cv-btn cv-btn-ghost cv-report-btn" id="btnBoardReport">신고</button>
+              <button type="button"
+                      class="cv-btn cv-btn-ghost cv-report-btn"
+                      id="btnBoardReport"
+                      data-board-id="${board.board_id}">
+                	신고
+              </button>
             </c:if>
           </div>
 
@@ -110,6 +164,9 @@
           </div>
         </div>
       </div>
+
+      <!-- 댓글 작성/목록: (수정) 이동 타겟 id 부여 -->
+      <div id="replySection"></div>
 
       <!-- 댓글 작성 -->
       <div class="cv-comment-write">
@@ -146,6 +203,8 @@
                   <div class="cv-comment-head">
                     <a href="javascript:void(0)"
                        class="js-user-trigger cv-nick"
+                       data-user_id="${r.user_id}"
+                       data-nickname="${r.writer}"
                        data-user-id="${r.user_id}"
                        data-user-nick="${r.writer}">
                       ${r.writer}
@@ -179,7 +238,6 @@
                     </button>
                   </div>
 
-                  <!-- 대댓글 영역 -->
                   <div class="cv-replies js-replies" style="display:none;">
                     <ul class="cv-reply-list"></ul>
 
@@ -190,7 +248,6 @@
                   </div>
                 </div>
 
-                <!-- ⋮ 메뉴(원댓글) -->
                 <div class="cv-pop cv-cmt-pop js-more-pop" style="display:none;">
                   <button type="button" class="cv-pop-item js-edit">수정</button>
                   <button type="button" class="cv-pop-item cv-pop-danger js-delete">삭제</button>
@@ -216,6 +273,9 @@
 
       <input type="hidden" id="board_id" value="${board.board_id}" />
       <input type="hidden" id="loginUserId" value="${loginUserId}" />
+      <input type="hidden" id="prev_id" value="${not empty prev ? prev.board_id : ''}" />
+      <input type="hidden" id="next_id" value="${not empty next ? next.board_id : ''}" />
+
     </div>
   </div>
 </div>

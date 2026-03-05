@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.joonzis.community.mapper.CommunityListMapper">
+
+    <sql id="BaseFrom">
+	    FROM TBL_BOARD B
+	    JOIN TBL_USER U
+	      ON U.USER_ID = B.USER_ID
+	    WHERE B.IS_ACTIVE = 'Y'
+	      AND B.BOARD_TYPE NOT IN ('Q','A')
+	</sql>
+
+  <!-- 목록 -->
+  <select id="selectCommunityList" parameterType="map" resultType="org.joonzis.community.dto.CommunityListDTO">
+    SELECT *
+    FROM (
+      SELECT ROWNUM AS RN, X.*
+      FROM (
+        SELECT
+          B.BOARD_ID AS id,
+          B.TITLE    AS title,
+          NVL(U.NICKNAME, '익명') AS writer,
+
+          TO_CHAR(B.REG_DATE, 'YYYY-MM-DD') AS regDate,
+
+          NVL(B.VIEW_COUNT, 0) AS views,
+          NVL(B.LIKE_COUNT, 0) AS likes,
+          NVL(B.REPLY_CNT, 0)  AS comments,
+
+          B.BOARD_TYPE   AS boardType,
+          B.TRADE_STATUS AS tradeStatus,
+          B.PRICE        AS price,
+
+          (
+            SELECT MIN(F.SAVED_NAME)
+            FROM TBL_BOARD_FILE F
+            WHERE F.BOARD_ID = B.BOARD_ID
+              AND F.IS_THUMBNAIL = 'Y'
+              AND F.IS_ACTIVE = 'Y'
+          ) AS thumbSavedName,
+
+          B.CONTENT AS boardContent
+        <include refid="BaseFrom"/>
+
+        <!-- 타입 필터 -->
+        <if test="boardTypes != null and boardTypes.size() > 0">
+          AND B.BOARD_TYPE IN
+          <foreach collection="boardTypes" item="t" open="(" close=")" separator=",">
+            #{t}
+          </foreach>
+        </if>
+
+        <!-- 검색 -->
+        <if test="q != null and q != ''">
+          AND (
+            UPPER(B.TITLE) LIKE '%' || UPPER(#{q}) || '%'
+            OR UPPER(B.CONTENT) LIKE '%' || UPPER(#{q}) || '%'
+          )
+        </if>
+
+        ORDER BY B.REG_DATE DESC
+      ) X
+      WHERE ROWNUM &lt;= #{endRow}
+    )
+    WHERE RN &gt;= #{startRow}
+  </select>
+
+  <!-- 총 개수 -->
+  <select id="countCommunityList" parameterType="map" resultType="int">
+    SELECT COUNT(*)
+    <include refid="BaseFrom"/>
+
+    <if test="boardTypes != null and boardTypes.size() > 0">
+      AND B.BOARD_TYPE IN
+      <foreach collection="boardTypes" item="t" open="(" close=")" separator=",">
+        #{t}
+      </foreach>
+    </if>
+
+    <if test="q != null and q != ''">
+      AND (
+        UPPER(B.TITLE) LIKE '%' || UPPER(#{q}) || '%'
+        OR UPPER(B.CONTENT) LIKE '%' || UPPER(#{q}) || '%'
+      )
+    </if>
+  </select>
+
+</mapper>

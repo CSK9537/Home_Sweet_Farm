@@ -73,7 +73,7 @@
                         <!-- thumbSrc(더미/실데이터 공통 호환) -->
                         <c:set var="thumbSrc"
                                value="${not empty p.thumbSrc ? p.thumbSrc : (not empty p.thumbUrl ? p.thumbUrl : (not empty p.imgUrl ? p.imgUrl : DEFAULT_POST_IMG))}" />
-
+						
                         <div class="card js-card" data-move="${p.moveUrl}">
                           <div class="card-thumb">
                             <img src="${thumbSrc}" alt=""
@@ -82,10 +82,10 @@
 
                           <div class="card-body">
                             <div class="card-title">${p.title}</div>
-                            <div class="card-author">${p.author}</div>
+                            <div class="card-author">${p.userId}</div>
 
                             <div class="card-meta">
-                              <span>댓글 ${p.replyCount}</span>
+                              <span>댓글 ${p.replyCnt}</span>
                               <span class="meta-sep">|</span>
                               <span>조회수 ${p.viewCount}</span>
                               <span class="meta-sep">|</span>
@@ -154,10 +154,10 @@
 
                           <div class="card-body">
                             <div class="card-title">${p.title}</div>
-                            <div class="card-author">${p.author}</div>
+                            <div class="card-author">${p.userId}</div>
 
                             <div class="card-meta">
-                              <span>댓글 ${p.replyCount}</span>
+                              <span>댓글 ${p.replyCnt}</span>
                               <span class="meta-sep">|</span>
                               <span>조회수 ${p.viewCount}</span>
                               <span class="meta-sep">|</span>
@@ -226,10 +226,10 @@
 
                           <div class="card-body">
                             <div class="card-title">${p.title}</div>
-                            <div class="card-author">${p.author}</div>
+                            <div class="card-author">${p.userId}</div>
 
                             <div class="card-meta">
-                              <span>댓글 ${p.replyCount}</span>
+                              <span>댓글 ${p.replyCnt}</span>
                               <span class="meta-sep">|</span>
                               <span>조회수 ${p.viewCount}</span>
                               <span class="meta-sep">|</span>

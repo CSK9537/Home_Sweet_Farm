@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.joonzis.qna.mapper.QnaMainMapper">
+
+  <!--
+    전제:
+    - 질문: TBL_BOARD (BOARD_TYPE='Q', PARENT_ID IS NULL)
+    - 답변: TBL_BOARD (BOARD_TYPE='A', PARENT_ID = 질문 BOARD_ID)
+    - 채택: 답변글의 IS_SELECTED='Y'
+  -->
+
+  <!-- 1) 채택왕 -->
+  <select id="selectTopUsers" parameterType="int" resultType="org.joonzis.qna.dto.QnaTopUserDTO">
+    SELECT *
+    FROM (
+      SELECT ROWNUM AS RN, X.*
+      FROM (
+        SELECT
+          U.USER_ID AS userId,
+          NVL(U.NICKNAME, U.USERNAME) AS name,
+          U.PROFILE_FILENAME AS img,
+          COUNT(*) AS point
+        FROM TBL_BOARD A
+        JOIN TBL_USER U
+          ON U.USER_ID = A.USER_ID
+        WHERE A.IS_ACTIVE = 'Y'
+          AND A.BOARD_TYPE = 'Q'
+          AND A.PARENT_ID IS NOT NULL
+          AND NVL(A.IS_SELECTED, 'N') = 'Y'
+        GROUP BY U.USER_ID, NVL(U.NICKNAME, U.USERNAME), U.PROFILE_FILENAME
+        ORDER BY COUNT(*) DESC, U.USER_ID ASC
+      ) X
+      WHERE ROWNUM &lt;= #{limit}
+    )
+  </select>
+
+  <!-- 2) FAQ(많이 물어보는 QnA) -->
+  <select id="countFaqQuestions" resultType="int">
+    SELECT COUNT(*)
+    FROM TBL_BOARD B
+    WHERE B.IS_ACTIVE = 'Y'
+      AND B.BOARD_TYPE = 'Q'
+      AND B.PARENT_ID IS NULL
+  </select>
+
+  <select id="selectFaqTopList" parameterType="map" resultType="org.joonzis.qna.dto.QnaFaqDTO">
+    SELECT *
+    FROM (
+      SELECT ROWNUM AS RN, X.*
+      FROM (
+        SELECT
+          B.BOARD_ID AS id,
+          B.TITLE AS title,
+          -- CONTENT가 CLOB일 가능성 방어 (DBMS_LOB.SUBSTR)
+          DBMS_LOB.SUBSTR(B.CONTENT, 120, 1) AS preview,
+          NVL(B.VIEW_COUNT, 0) AS views,
+          (
+            SELECT COUNT(*)
+            FROM TBL_BOARD A
+            WHERE A.PARENT_ID = B.BOARD_ID
+              AND A.IS_ACTIVE = 'Y'
+              AND A.BOARD_TYPE = 'Q'
+          ) AS answers
+        FROM TBL_BOARD B
+        WHERE B.IS_ACTIVE = 'Y'
+          AND B.BOARD_TYPE = 'Q'
+          AND B.PARENT_ID IS NULL
+        ORDER BY NVL(B.VIEW_COUNT, 0) DESC, B.BOARD_ID DESC
+      ) X
+      WHERE ROWNUM &lt;= #{endRow}
+    )
+    WHERE RN &gt;= #{startRow}
+  </select>
+
+  <!-- 3) 답변을 기다리는 질문 -->
+  <select id="countWaitingQuestions" resultType="int">
+    SELECT COUNT(*)
+    FROM TBL_BOARD B
+    WHERE B.IS_ACTIVE = 'Y'
+      AND B.BOARD_TYPE = 'Q'
+      AND B.PARENT_ID IS NULL
+      AND (
+        SELECT COUNT(*)
+        FROM TBL_BOARD A
+        WHERE A.PARENT_ID = B.BOARD_ID
+          AND A.IS_ACTIVE = 'Y'
+          AND A.BOARD_TYPE = 'A'
+      ) = 0
+  </select>
+
+  <select id="selectWaitingList" parameterType="map" resultType="org.joonzis.qna.dto.QnaWaitingDTO">
+    SELECT *
+    FROM (
+      SELECT ROWNUM AS RN, X.*
+      FROM (
+        SELECT
+          B.BOARD_ID AS id,
+          B.TITLE AS title,
+          NVL(C.CATEGORY_NAME, '-') AS category,
+          NVL(U.NICKNAME, U.USERNAME) AS author,
+          B.REG_DATE AS regDate,
+          (
+            SELECT COUNT(*)
+            FROM TBL_BOARD A
+            WHERE A.PARENT_ID = B.BOARD_ID
+              AND A.IS_ACTIVE = 'Y'
+              AND A.BOARD_TYPE = 'A'
+          ) AS answerCnt
+        FROM TBL_BOARD B
+        LEFT JOIN TBL_USER U
+          ON U.USER_ID = B.USER_ID
+        LEFT JOIN TBL_CATEGORY C
+          ON C.CATEGORY_ID = B.CATEGORY_ID
+        WHERE B.IS_ACTIVE = 'Y'
+          AND B.BOARD_TYPE = 'Q'
+          AND B.PARENT_ID IS NULL
+          AND (
+            SELECT COUNT(*)
+            FROM TBL_BOARD A
+            WHERE A.PARENT_ID = B.BOARD_ID
+              AND A.IS_ACTIVE = 'Y'
+              AND A.BOARD_TYPE = 'A'
+          ) = 0
+
+        <choose>
+          <!-- QnaMain.js에서 오래된순 option value="view" 로 내려옴 -->
+          <when test="waitingSort != null and waitingSort == 'view'">
+            ORDER BY B.REG_DATE ASC, B.BOARD_ID ASC
+          </when>
+          <otherwise>
+            ORDER BY B.REG_DATE DESC, B.BOARD_ID DESC
+          </otherwise>
+        </choose>
+      ) X
+      WHERE ROWNUM &lt;= #{endRow}
+    )
+    WHERE RN &gt;= #{startRow}
+  </select>
+
+</mapper>

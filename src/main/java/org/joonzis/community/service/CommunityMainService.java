@@ -9,4 +9,5 @@ public interface CommunityMainService {
 	Map<String, Object> dbCheck();
     Map<String, List<CommunityPostCardDTO>> getRails(int railLimit);
     List<CommunityPostCardDTO> getMore(String kind, int limit);
+    List<CommunityPostCardDTO> getMyPosts(int userId, int limit);
 }

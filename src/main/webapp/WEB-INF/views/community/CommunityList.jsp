@@ -115,10 +115,10 @@
                   </div>
                 </c:if>
 
-                <div class="postItem__overlayMeta">
+				<div class="postItem__overlayMeta">
                   <span>${p.writer}</span>
                   <span class="sep">|</span>
-                  <span>${p.date}</span>
+                  <span>${p.regDate}</span>
                 </div>
 
                 <div class="postItem__overlayStats">
@@ -153,7 +153,7 @@
 
               <div class="postItem__meta">
                 <span class="label">등록날짜</span>
-                <span class="value">${p.date}</span>
+                <span class="value">${p.regDate}</span>
                 <span class="sep">|</span>
                 <span class="value">조회수 ${p.views}</span>
                 <span class="sep">|</span>
@@ -162,7 +162,7 @@
                 <span class="value">댓글 ${p.comments}</span>
               </div>
 
-              <div class="postItem__content">${p.content}</div>
+              <div class="postItem__content">${p.boardContent}</div>
             </div>
 
           </a>

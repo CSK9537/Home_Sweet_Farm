@@ -2,56 +2,46 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
 <mapper namespace="org.joonzis.community.mapper.CommunityViewMapper">
 
-  <!-- 1) 조회수 증가 -->
-  <update id="increaseViewCount" parameterType="int">
+  <update id="increaseViewCount">
     UPDATE TBL_BOARD
-    SET VIEW_COUNT = NVL(VIEW_COUNT, 0) + 1
-    WHERE BOARD_ID = #{boardId}
+       SET VIEW_COUNT = NVL(VIEW_COUNT, 0) + 1
+     WHERE BOARD_ID = #{board_id}
   </update>
 
-  <!-- 2) 게시글 + 작성자 + 댓글수/좋아요/조회수 -->
-  <select id="selectBoard" parameterType="int"
-          resultType="org.joonzis.community.dto.CommunityViewDTO">
+  <select id="selectBoard" resultType="org.joonzis.community.dto.CommunityViewDTO">
     SELECT
       B.BOARD_ID    AS board_id,
       B.USER_ID     AS user_id,
       B.CATEGORY_ID AS category_id,
+      B.BOARD_TYPE  AS board_type,
       B.TITLE       AS title,
       B.CONTENT     AS content,
-
       NVL(U.NICKNAME, '익명') AS writer,
-
       NVL(B.VIEW_COUNT, 0) AS view_cnt,
       NVL(B.LIKE_COUNT, 0) AS like_cnt,
       NVL(B.REPLY_CNT, 0)  AS reply_cnt,
-
       B.REG_DATE    AS reg_date,
       B.UPDATE_DATE AS update_date
     FROM TBL_BOARD B
     LEFT JOIN TBL_USER U
       ON U.USER_ID = B.USER_ID
-    WHERE B.BOARD_ID = #{boardId}
+    WHERE B.BOARD_ID = #{board_id}
       AND NVL(B.IS_ACTIVE, 'Y') = 'Y'
   </select>
 
-  <!-- 3) 카테고리 -->
-  <select id="selectCategory" parameterType="int"
-          resultType="org.joonzis.community.vo.CategoryVO">
+  <select id="selectCategory" resultType="org.joonzis.community.vo.CategoryVO">
     SELECT
       CATEGORY_ID   AS category_id,
       CATEGORY_NAME AS category_name,
       IS_ACTIVE     AS is_active
     FROM TBL_CATEGORY
-    WHERE CATEGORY_ID = #{categoryId}
+    WHERE CATEGORY_ID = #{category_id}
       AND NVL(IS_ACTIVE, 'Y') = 'Y'
   </select>
 
-  <!-- 4) 첨부파일(다운로드 링크는 JSP에서 /community/file/download?file_id= 로 사용) -->
-  <select id="selectFiles" parameterType="int"
-          resultType="org.joonzis.community.vo.BoardFileVO">
+  <select id="selectFiles" resultType="org.joonzis.community.vo.BoardFileVO">
     SELECT
       FILE_ID       AS file_id,
       BOARD_ID      AS board_id,
@@ -66,31 +56,89 @@
       REG_DATE      AS reg_date,
       UPDATED_AT    AS updated_at
     FROM TBL_BOARD_FILE
-    WHERE BOARD_ID = #{boardId}
+    WHERE BOARD_ID = #{board_id}
       AND NVL(IS_ACTIVE, 'Y') = 'Y'
     ORDER BY FILE_ID ASC
   </select>
 
-  <!-- 5) 원댓글만(대댓글은 추후 AJAX로 불러오는 구조로 확장 권장) -->
-  <select id="selectRootReplies" parameterType="int"
-          resultType="org.joonzis.community.dto.CommunityReplyDTO">
+  <select id="selectRootReplies" resultType="org.joonzis.community.dto.CommunityReplyDTO">
     SELECT
       R.REPLY_ID        AS reply_id,
       R.BOARD_ID        AS board_id,
       R.USER_ID         AS user_id,
       R.PARENT_REPLY_ID AS parent_reply_id,
       R.CONTENT         AS content,
-
       NVL(U.NICKNAME, '익명') AS writer,
       NVL(R.LIKE_CNT, 0)      AS like_cnt,
       R.REG_DATE              AS reg_date
     FROM TBL_REPLY R
     LEFT JOIN TBL_USER U
       ON U.USER_ID = R.USER_ID
-    WHERE R.BOARD_ID = #{boardId}
+    WHERE R.BOARD_ID = #{board_id}
       AND R.PARENT_REPLY_ID IS NULL
       AND NVL(R.IS_ACTIVE, 'Y') = 'Y'
     ORDER BY R.REPLY_ID DESC
   </select>
+
+  <!-- 이전글: 더 작은 BOARD_ID 중 가장 가까운 글 -->
+  <select id="selectPrev" resultType="org.joonzis.community.dto.CommunityViewDTO">
+    SELECT *
+    FROM (
+      SELECT
+        B.BOARD_ID AS board_id,
+        B.TITLE    AS title
+      FROM TBL_BOARD B
+      WHERE NVL(B.IS_ACTIVE,'Y')='Y'
+        AND B.BOARD_ID &lt; #{board_id}
+      ORDER BY B.BOARD_ID DESC
+    )
+    WHERE ROWNUM = 1
+  </select>
+
+  <!-- 다음글: 더 큰 BOARD_ID 중 가장 가까운 글 -->
+  <select id="selectNext" resultType="org.joonzis.community.dto.CommunityViewDTO">
+    SELECT *
+    FROM (
+      SELECT
+        B.BOARD_ID AS board_id,
+        B.TITLE    AS title
+      FROM TBL_BOARD B
+      WHERE NVL(B.IS_ACTIVE,'Y')='Y'
+        AND B.BOARD_ID &gt; #{board_id}
+      ORDER BY B.BOARD_ID ASC
+    )
+    WHERE ROWNUM = 1
+  </select>
+
+  <!-- 좋아요 -->
+  <select id="countBoardLike" resultType="int">
+    SELECT COUNT(*)
+    FROM TBL_BOARD_LIKE
+    WHERE BOARD_ID = #{board_id}
+      AND USER_ID = #{user_id}
+  </select>
+
+  <insert id="insertBoardLike">
+    INSERT INTO TBL_BOARD_LIKE (LIKE_ID, BOARD_ID, USER_ID, REG_DATE)
+    VALUES (SEQ_BOARD_LIKE.NEXTVAL, #{board_id}, #{user_id}, SYSDATE)
+  </insert>
+
+  <update id="increaseLikeCount">
+    UPDATE TBL_BOARD
+       SET LIKE_COUNT = NVL(LIKE_COUNT, 0) + 1
+     WHERE BOARD_ID = #{board_id}
+  </update>
+
+  <select id="selectLikeCount" resultType="int">
+    SELECT NVL(LIKE_COUNT, 0)
+    FROM TBL_BOARD
+    WHERE BOARD_ID = #{board_id}
+  </select>
+
+  <!-- 신고(간단 버전: 테이블이 없다면 추가 필요) -->
+  <insert id="insertReport">
+    INSERT INTO TBL_REPORT (REPORT_ID, BOARD_ID, USER_ID, REASON, REG_DATE)
+    VALUES (SEQ_REPORT.NEXTVAL, #{board_id}, #{user_id}, #{reason}, SYSDATE)
+  </insert>
 
 </mapper>
