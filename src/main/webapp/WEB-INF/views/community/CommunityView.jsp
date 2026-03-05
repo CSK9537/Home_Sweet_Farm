@@ -91,17 +91,20 @@
           </div>
         </c:if>
 
-        <!-- ✅ 하단 버튼: (좌)목록+신고 / (우)수정+삭제 -->
+        <!-- 하단 버튼 -->
+        <!-- 타인에게만 표시 -->
         <div class="cv-post-actions">
           <div class="cv-post-actions__left">
+            <button type="button" class="cv-btn cv-btn-ghost" id="btnBoardLiek">좋아요</button>
             <button type="button" class="cv-btn cv-btn-ghost" id="btnBoardList">목록</button>
 
-            <!-- 작성자 본인이면 신고 숨김, 타인이면 표시 -->
+            <!-- 작성자 본인이면 숨김, 타인이면 표시 -->
             <c:if test="${loginUserId != board.user_id}">
               <button type="button" class="cv-btn cv-btn-ghost cv-report-btn" id="btnBoardReport">신고</button>
             </c:if>
           </div>
-
+          
+          <!-- 작성자 본인에게만 표시 -->
           <div class="cv-post-actions__right">
             <c:if test="${loginUserId == board.user_id}">
               <button type="button" class="cv-btn cv-btn-ghost" id="btnBoardEdit">수정</button>

@@ -15,35 +15,36 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class CommunityViewServiceImpl implements CommunityViewService{
+public class CommunityViewServiceImpl implements CommunityViewService {
+
 	private final CommunityViewMapper communityViewMapper;
 
 	@Override
 	@Transactional
-	public void increaseViewCount(int boardId) {
-	    communityViewMapper.increaseViewCount(boardId);
+	public void increaseViewCount(int board_id) {
+		communityViewMapper.increaseViewCount(board_id);
 	}
 
 	@Override
-	public CommunityViewDTO getBoard(int boardId) {
-	  return communityViewMapper.selectBoard(boardId);
+	public CommunityViewDTO getBoard(int board_id) {
+		return communityViewMapper.selectBoard(board_id);
 	}
 
 	@Override
-	public CategoryVO getCategory(Integer categoryId) {
-	   if (categoryId == null) return null;
-	   return communityViewMapper.selectCategory(categoryId);
+	public CategoryVO getCategory(Integer category_id) {
+		if (category_id == null) return null;
+		return communityViewMapper.selectCategory(category_id);
 	}
 
 	@Override
-	public List<BoardFileVO> getFiles(int boardId) {
-	   List<BoardFileVO> list = communityViewMapper.selectFiles(boardId);
-	   return list == null ? Collections.emptyList() : list;
+	public List<BoardFileVO> getFiles(int board_id) {
+		List<BoardFileVO> list = communityViewMapper.selectFiles(board_id);
+		return (list == null) ? Collections.emptyList() : list;
 	}
 
 	@Override
-	public List<CommunityReplyDTO> getRootReplies(int boardId) {
-	   List<CommunityReplyDTO> list = communityViewMapper.selectRootReplies(boardId);
-	   return list == null ? Collections.emptyList() : list;
+	public List<CommunityReplyDTO> getRootReplies(int board_id) {
+		List<CommunityReplyDTO> list = communityViewMapper.selectRootReplies(board_id);
+		return (list == null) ? Collections.emptyList() : list;
 	}
 }

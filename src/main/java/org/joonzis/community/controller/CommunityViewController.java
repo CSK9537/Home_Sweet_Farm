@@ -1,6 +1,7 @@
 package org.joonzis.community.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -25,49 +26,51 @@ public class CommunityViewController {
 	private final CommunityViewService communityViewService;
 
 	@GetMapping("/view")
-	public String view(@RequestParam("board_id") int boardId, Model model, HttpSession session) {
+	public String view(@RequestParam("board_id") int board_id, Model model, HttpSession session) {
 
-		// 로그인 유저 id 세팅 (프로젝트 세션 구조를 모르는 상태라 최대한 안전하게 처리)
-	    Integer loginUserId = extractLoginUserId(session);
-	    model.addAttribute("loginUserId", loginUserId);
+		// 로그인 유저 id (프로젝트 세션 구조가 케이스별로 섞여있을 수 있어서 안전 처리)
+		Integer loginUserId = extractLoginUserId(session);
+		model.addAttribute("loginUserId", loginUserId);
 
-	    // 조회수 증가
-	    communityViewService.increaseViewCount(boardId);
+		// 1) 게시글 존재 여부 먼저 확인
+		CommunityViewDTO board = communityViewService.getBoard(board_id);
+		if (board == null) {
+			return "redirect:/community/main";
+		}
 
-	    // 게시글 + 작성자
-	    CommunityViewDTO board = communityViewService.getBoard(boardId);
-	    if (board == null) {
-	      // 없으면 목록으로 (원하면 404 페이지로 바꿔도 됨)
-	      return "redirect:/community/main";
-	    }
+		// 2) 조회수 증가 (존재 확인 후)
+		communityViewService.increaseViewCount(board_id);
 
-	    // 카테고리
-	    CategoryVO category = communityViewService.getCategory(board.getCategory_id());
+		// 3) 증가된 값까지 반영해서 다시 조회 (화면 view_cnt가 1 증가된 값으로 보이게)
+		board = communityViewService.getBoard(board_id);
 
-	    // 첨부파일
-	    List<BoardFileVO> fileList = communityViewService.getFiles(boardId);
+		// 카테고리
+		CategoryVO category = communityViewService.getCategory(board.getCategory_id());
 
-	    // 댓글(원댓글만: parent_reply_id IS NULL)
-	    List<CommunityReplyDTO> replyList = communityViewService.getRootReplies(boardId);
+		// 첨부파일
+		List<BoardFileVO> fileList = communityViewService.getFiles(board_id);
 
-	    model.addAttribute("board", board);
-	    model.addAttribute("category", category);
-	    model.addAttribute("fileList", fileList);
-	    model.addAttribute("replyList", replyList);
+		// 댓글(원댓글만)
+		List<CommunityReplyDTO> replyList = communityViewService.getRootReplies(board_id);
 
-	    return "community/CommunityView"; // /WEB-INF/views/community/CommunityView.jsp
+		model.addAttribute("board", board);
+		model.addAttribute("category", category);
+		model.addAttribute("fileList", fileList);
+		model.addAttribute("replyList", replyList);
+
+		return "community/CommunityView";
 	}
 
 	private Integer extractLoginUserId(HttpSession session) {
-	    Object v = session.getAttribute("loginUserId");
-	    if (v instanceof Integer) return (Integer) v;
+		Object v = session.getAttribute("loginUserId");
+		if (v instanceof Integer) return (Integer) v;
 
-	    // 흔히 쓰는 케이스들 (프로젝트에 맞게 하나로 정리 추천)
-	    Object user = session.getAttribute("loginUser");
-	    if (user instanceof java.util.Map) {
-	      Object id = ((java.util.Map<?, ?>) user).get("user_id");
-	      if (id instanceof Number) return ((Number) id).intValue();
-	    }
-	    return 0; // 비로그인
+		Object user = session.getAttribute("loginUser");
+		if (user instanceof Map) {
+			Object id = ((Map<?, ?>) user).get("user_id"); // DB 컬럼명 유지: user_id
+			if (id instanceof Number) return ((Number) id).intValue();
+		}
+
+		return 0; // 비로그인
 	}
 }

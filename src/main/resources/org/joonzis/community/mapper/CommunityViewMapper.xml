@@ -6,14 +6,14 @@
 <mapper namespace="org.joonzis.community.mapper.CommunityViewMapper">
 
   <!-- 1) 조회수 증가 -->
-  <update id="increaseViewCount" parameterType="int">
+  <update id="increaseViewCount">
     UPDATE TBL_BOARD
-    SET VIEW_COUNT = NVL(VIEW_COUNT, 0) + 1
-    WHERE BOARD_ID = #{boardId}
+       SET VIEW_COUNT = NVL(VIEW_COUNT, 0) + 1
+     WHERE BOARD_ID = #{board_id}
   </update>
 
-  <!-- 2) 게시글 + 작성자 + 댓글수/좋아요/조회수 -->
-  <select id="selectBoard" parameterType="int"
+  <!-- 2) 게시글 + 작성자 -->
+  <select id="selectBoard"
           resultType="org.joonzis.community.dto.CommunityViewDTO">
     SELECT
       B.BOARD_ID    AS board_id,
@@ -33,24 +33,24 @@
     FROM TBL_BOARD B
     LEFT JOIN TBL_USER U
       ON U.USER_ID = B.USER_ID
-    WHERE B.BOARD_ID = #{boardId}
+    WHERE B.BOARD_ID = #{board_id}
       AND NVL(B.IS_ACTIVE, 'Y') = 'Y'
   </select>
 
   <!-- 3) 카테고리 -->
-  <select id="selectCategory" parameterType="int"
+  <select id="selectCategory"
           resultType="org.joonzis.community.vo.CategoryVO">
     SELECT
       CATEGORY_ID   AS category_id,
       CATEGORY_NAME AS category_name,
       IS_ACTIVE     AS is_active
     FROM TBL_CATEGORY
-    WHERE CATEGORY_ID = #{categoryId}
+    WHERE CATEGORY_ID = #{category_id}
       AND NVL(IS_ACTIVE, 'Y') = 'Y'
   </select>
 
-  <!-- 4) 첨부파일(다운로드 링크는 JSP에서 /community/file/download?file_id= 로 사용) -->
-  <select id="selectFiles" parameterType="int"
+  <!-- 4) 첨부파일 -->
+  <select id="selectFiles"
           resultType="org.joonzis.community.vo.BoardFileVO">
     SELECT
       FILE_ID       AS file_id,
@@ -66,13 +66,13 @@
       REG_DATE      AS reg_date,
       UPDATED_AT    AS updated_at
     FROM TBL_BOARD_FILE
-    WHERE BOARD_ID = #{boardId}
+    WHERE BOARD_ID = #{board_id}
       AND NVL(IS_ACTIVE, 'Y') = 'Y'
     ORDER BY FILE_ID ASC
   </select>
 
-  <!-- 5) 원댓글만(대댓글은 추후 AJAX로 불러오는 구조로 확장 권장) -->
-  <select id="selectRootReplies" parameterType="int"
+  <!-- 5) 원댓글만 -->
+  <select id="selectRootReplies"
           resultType="org.joonzis.community.dto.CommunityReplyDTO">
     SELECT
       R.REPLY_ID        AS reply_id,
@@ -87,7 +87,7 @@
     FROM TBL_REPLY R
     LEFT JOIN TBL_USER U
       ON U.USER_ID = R.USER_ID
-    WHERE R.BOARD_ID = #{boardId}
+    WHERE R.BOARD_ID = #{board_id}
       AND R.PARENT_REPLY_ID IS NULL
       AND NVL(R.IS_ACTIVE, 'Y') = 'Y'
     ORDER BY R.REPLY_ID DESC

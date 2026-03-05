@@ -8,13 +8,14 @@ import org.joonzis.community.vo.BoardFileVO;
 import org.joonzis.community.vo.CategoryVO;
 
 public interface CommunityViewService {
-	void increaseViewCount(int boardId);
 
-	CommunityViewDTO getBoard(int boardId);
+	void increaseViewCount(int board_id);
 
-	CategoryVO getCategory(Integer categoryId);
+	CommunityViewDTO getBoard(int board_id);
 
-	List<BoardFileVO> getFiles(int boardId);
-	
-	List<CommunityReplyDTO> getRootReplies(int boardId);
+	CategoryVO getCategory(Integer category_id);
+
+	List<BoardFileVO> getFiles(int board_id);
+
+	List<CommunityReplyDTO> getRootReplies(int board_id);
 }
