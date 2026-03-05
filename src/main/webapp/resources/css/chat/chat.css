@@ -366,26 +366,45 @@ a{text-decoration: none; }
     margin: 0;
 }
 
-/* 이미지 묶음 */
+/* 이미지 묶음 공통 */
 .image-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
-
-    width: 260px;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
-/* 썸네일 */
+/* 이미지가 2개 이상일 때 (기존 방식) */
+.image-grid.multi-image {
+    grid-template-columns: repeat(2, 1fr);
+    width: 260px; /* 2열 배열 시 전체 너비 */
+}
+
+/* 이미지가 1개일 때 */
+.image-grid.single-image {
+    display: block; /* 그리드 해제 */
+    width: 200px;   /* 한 개일 때 권장 너비 */
+    max-width: 100%;
+}
+
+/* 썸네일 공통 */
 .chat-thumbnail {
     width: 100%;
-    aspect-ratio: 1 / 1;
-
     object-fit: cover;
-    flex-shrink: 0;
     border-radius: 12px;
     cursor: pointer;
     display: block;
-    flex: none
+}
+
+/* 1개일 때는 정사각 비율 해제 (선택 사항) */
+.single-image .chat-thumbnail {
+    aspect-ratio: auto; 
+    max-height: 300px;
+}
+
+/* 2개 이상일 때만 정사각 비율 유지 */
+.multi-image .chat-thumbnail {
+    aspect-ratio: 1 / 1;
 }
 
 .chat-thumbnail:hover {
@@ -1035,6 +1054,13 @@ body.modal-open .modal {
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    opacity: 0;
+    transition: .2s;
+    z-index: 10;
+}
+
+.image-modal-content:hover .download-btn {
+    opacity: 1;
 }
 
 .download-btn:hover {

@@ -137,18 +137,16 @@ export function loadChatRooms() {
                     if (headerRole) headerRole.innerText = "전문가"; // 나중에 role 정보 적용
 
                     // 메시지 로드
-                    loadMessages(chatState.session.currentRoomId);
-                    fetch(`/chat/rooms/${chatState.session.currentRoomId}/read?testUser_id=${chatState.session.myUserId}`, {
-                        method: "POST"
-                    });
-                    const badge = item.querySelector(".badge");
-                    if (badge) badge.remove();
+                    loadMessages(chatState.session.currentRoomId, 0, 40, false, true)
+                        .then(() => loadChatRooms());
                     const unreadCheckbox = document.getElementById("unread-only");
                     if (unreadCheckbox.checked) item.style.display = "none";
                 });
             });
         })
         .catch(err => console.error("채팅방 목록 로드 실패", err));
+
+
 }
 
 //채팅방 목록 실시간 업데이트
@@ -204,7 +202,7 @@ export function updateRoomListRealtime(msg) {
     // unread 카운트
     if (!isCurrentRoom && msg.sender_id !== chatState.session.myUserId) {
 
-        const groupId = msg.upload_group_id || msg.msg_id;
+        const groupId = msg.group_id || msg.msg_id;
         const roomKey = String(roomId);
 
         if (!chatState.message.roomUnreadGroupMap[roomKey]) {
@@ -482,7 +480,7 @@ export function initPendingFilesModal() {
         container.appendChild(fileContainer);
 
         uploadBtn.disabled = false;
-        uploadBtn.style.background = "#4CAF50";
+        uploadBtn.style.background = "#6B715D";
     }
 
     function handleFileSelect(files) {
@@ -510,10 +508,9 @@ export function initPendingFilesModal() {
 
     function uploadSelectedFiles() {
 
-        const uploadGroupId = crypto.randomUUID();
         currentFiles.forEach(file => {
             const type = currentModalType;
-            uploadFile(file, type, uploadGroupId);
+            uploadFile(file, type);
         });
         currentFiles = [];
         renderFileList();
@@ -598,22 +595,31 @@ export function initPendingFilesModal() {
 }
 
 // 실제 업로드 함수
-function uploadFile(file, type, group_id) {
+function uploadFile(file, type) {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("testUser_id", chatState.session.myUserId);
-    formData.append("receiver_id", chatState.session.receiverId);
     formData.append("room_id", chatState.session.currentRoomId);
     formData.append("msg_type", type);
-    formData.append("upload_group_id", group_id);
 
-    fetch("/chat/rooms/upload", {
+    fetch(`/chat/rooms/upload`, {
         method: "POST",
         body: formData
     })
-        .then(res => res.json())
-        .then(msg => console.log("업로드 성공", msg))
-        .catch(err => console.error(err));
+        .then(res => {
+            console.log("Status:", res.status, res.statusText);
+            return res.text();  // JSON 아님, raw text로 찍어보기
+        })
+        .then(text => {
+            console.log("Raw response:", text);
+            try {
+                const data = JSON.parse(text);
+                console.log("Parsed JSON:", data);
+            } catch (e) {
+                console.error("JSON 파싱 실패:", e);
+            }
+        })
+        .catch(err => console.error("Fetch error:", err));
 }
 
 export function initImagePreviewModal() {
