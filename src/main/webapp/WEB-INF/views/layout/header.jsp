@@ -181,7 +181,7 @@
 	        </li>
 	
 	        <li class="gnb__sep">||</li>
-	        <li class="gnb__item"><a class="gnb__link" href="#">채팅</a></li>
+	        <li class="gnb__item"><a class="gnb__link" href="/chat">채팅</a></li>
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
