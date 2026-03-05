@@ -1,5 +1,3 @@
-/* 공용 레이아웃은 ContentLayout.css 사용 */
-
 .community-view{ width:100%; border-radius:12px; box-sizing:border-box; }
 
 /* 상단 네비 버튼 */
@@ -9,6 +7,7 @@
   padding:10px 14px; border-radius:10px; cursor:pointer; font-size:14px;
 }
 .cv-top-btn:hover{ background:#efebe3; }
+.cv-top-btn:disabled{ opacity:.55; cursor:not-allowed; }
 
 /* 게시글 */
 .cv-post{
@@ -18,8 +17,39 @@
 .cv-breadcrumb{ display:flex; align-items:center; gap:8px; margin-bottom:6px; }
 .cv-category{ color:#2f7d32; font-weight:700; font-size:14px; }
 .cv-sep{ color:#7b7b7b; font-size:13px; }
+
+/* (추가) 제목 + 우측 액션 */
+.cv-title-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
 .cv-title{ margin:0; font-size:28px; letter-spacing:-0.5px; color:#1f1f1f; }
 
+.cv-title-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:0 0 auto;
+  margin-top:4px;
+}
+.cv-title-action{
+  border:1px solid #cfcac0;
+  background:#fbfaf7;
+  color:#2a2a2a;
+  padding:8px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:13px;
+  text-decoration:none;
+  line-height:1;
+  white-space:nowrap;
+}
+.cv-title-action:hover{ background:#efebe3; }
+.cv-title-action:disabled{ opacity:.55; cursor:not-allowed; }
+
+/* 메타 */
 .cv-meta{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; margin-top:14px; }
 .cv-writer{ display:flex; align-items:center; gap:12px; }
 
@@ -40,8 +70,20 @@
 .cv-date-line{ display:flex; align-items:center; gap:8px; color:#6a6a6a; font-size:13px; }
 .cv-dot{ color:#c2bdb2; }
 
-.cv-stats{ color:#6a6a6a; font-size:13px; white-space:nowrap; }
+/* (수정) 통계 버튼 */
+.cv-stats{ color:#6a6a6a; font-size:13px; white-space:nowrap; display:flex; align-items:center; }
 .cv-bar{ margin:0 8px; color:#c2bdb2; }
+
+.cv-stat-btn{
+  border:0;
+  background:transparent;
+  color:#6a6a6a;
+  cursor:pointer;
+  padding:0;
+  font-size:13px;
+}
+.cv-stat-btn:hover{ text-decoration:underline; }
+.cv-stat-btn:disabled{ opacity:.55; cursor:not-allowed; text-decoration:none; }
 
 .cv-divider{ height:1px; background:#d9d4c8; margin:16px 0; }
 .cv-content{ min-height:220px; color:#222; font-size:15px; line-height:1.7; white-space:pre-line; }
@@ -59,6 +101,7 @@
   padding:10px 14px; border-radius:10px; cursor:pointer; font-size:14px;
 }
 .cv-btn:hover{ background:#efebe3; }
+.cv-btn:disabled{ opacity:.55; cursor:not-allowed; }
 .cv-btn-primary{ border-color:#2f7d32; background:#2f7d32; color:#fff; }
 .cv-btn-primary:hover{ background:#276a2a; }
 .cv-btn-ghost{ background:#f7f5f0; }
@@ -80,9 +123,6 @@
   align-items:center;
   gap:10px;
 }
-
-/* (목록 옆) 신고 버튼은 기본 버튼 톤 그대로 */
-.cv-report-btn{}
 
 /* 댓글 작성 */
 .cv-comment-write{
@@ -157,7 +197,7 @@
 .cv-pop{
   background:#ffffff; border:1px solid #d9d4c8; border-radius:12px;
   box-shadow:0 10px 24px rgba(0,0,0,0.08);
-  overflow:hidden; min-width:180px; z-index:1000;
+  overflow:hidden; min-width:180px; z-index:9999;
 }
 .cv-pop-item{
   width:100%; text-align:left; border:0; background:#fff;
@@ -166,14 +206,18 @@
 .cv-pop-item:hover{ background:#f3f1ea; }
 .cv-pop-danger{ color:#d9534f; }
 
-/* fixed로 띄워 스크롤 영향 제거 */
-.cv-user-pop{ position:fixed; min-width:200px; }
-.cv-cmt-pop{ position:fixed; min-width:120px; }
+/* (수정) 유저 팝업은 absolute: 유저네임 아래 정확히 */
+.cv-user-pop{ position:absolute; min-width:200px; }
+
+/* 댓글 ⋮ 메뉴도 absolute로 위치 지정(버튼 아래) */
+.cv-cmt-pop{ position:absolute; min-width:120px; }
 
 .cv-loading,.cv-end{ text-align:center; padding:12px 0; color:#7a7a7a; font-size:13px; }
 
 @media (max-width:767px){
   .cv-title{ font-size:22px; }
+  .cv-title-row{ flex-direction:column; align-items:flex-start; }
+  .cv-title-actions{ margin-top:10px; }
   .cv-meta{ flex-direction:column; align-items:flex-start; }
   .cv-post-actions{ flex-direction:column; align-items:stretch; }
   .cv-post-actions__left, .cv-post-actions__right{ justify-content:flex-end; }

@@ -15,10 +15,20 @@ public interface CommunityViewMapper {
 	int increaseViewCount(@Param("board_id") int board_id);
 
 	CommunityViewDTO selectBoard(@Param("board_id") int board_id);
-
 	CategoryVO selectCategory(@Param("category_id") int category_id);
-
 	List<BoardFileVO> selectFiles(@Param("board_id") int board_id);
-
 	List<CommunityReplyDTO> selectRootReplies(@Param("board_id") int board_id);
+
+	// 이전/다음글
+	CommunityViewDTO selectPrev(@Param("board_id") int board_id);
+	CommunityViewDTO selectNext(@Param("board_id") int board_id);
+
+	// 좋아요
+	int countBoardLike(@Param("board_id") int board_id, @Param("user_id") int user_id);
+	int insertBoardLike(@Param("board_id") int board_id, @Param("user_id") int user_id);
+	int increaseLikeCount(@Param("board_id") int board_id);
+	int selectLikeCount(@Param("board_id") int board_id);
+
+	// 신고
+	int insertReport(@Param("board_id") int board_id, @Param("user_id") int user_id, @Param("reason") String reason);
 }
