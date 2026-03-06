@@ -7,14 +7,14 @@
 }
 
 /* ===== Modal base ===== */
-.photo-modal{ position:fixed; inset:0; display:none; z-index:999999; font-family:inherit; }
+.photo-modal{ position:fixed; inset:0; display:none; z-index:9999; font-family:inherit; }
 .photo-modal[aria-hidden="false"]{ display:block; }
 
 .photo-modal__backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.35); }
 
 .photo-modal__panel{
   position:relative;
-  width:min(980px, calc(100vw - 40px));
+  width: min(460px, calc(100vw - 40px));
   max-height: calc(100vh - 40px);
   margin: 20px auto;
   background: var(--paper);
@@ -47,11 +47,11 @@
 
 .photo-modal__body{ padding: 18px; overflow:auto; }
 
-/* ===== Grid ===== */
-.photo-grid{
-  display:grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+
+.photo-upload-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 16px;
 }
 
@@ -85,19 +85,19 @@
 }
 
 /* ===== Add tile ===== */
-.photo-add{
-  background: rgba(255,255,255,.6);
-  border: 2px dashed rgba(107,123,97,.35);
+.photo-add {
+  background: transparent; 
+  border: 2px dashed rgba(107, 123, 97, 0.35); 
   border-radius: var(--radius);
-  cursor:pointer;
+  cursor: pointer;
   min-height: 170px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding: 12px;
+  width: 100%;
+  display: flex;
+  color: var(--brand);
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center;
 }
-
-.photo-add__inner{ text-align:center; color: var(--brand); }
 
 .photo-add__badge{
   width:42px; height:42px;
@@ -109,12 +109,111 @@
   font-size:24px;
   font-weight:900;
   margin-bottom:8px;
+  color: var(--brand);
 }
 
 .photo-add__text{ font-weight:800; }
 .photo-add__sub{ margin-top:4px; font-size:12px; opacity:.8; }
 
-/* ===== Meta / progress ===== */
+
+/* =========================================
+   1. Drag & Drop Feedback
+   ========================================= */
+/* 드래그 요소가 들어왔을 때 .photo-add 영역의 스타일이 변하도록 설정 */
+#photoGrid.is-dragover .photo-add {
+  background-color: rgba(107, 123, 97, 0.08); 
+  border-color: var(--brand);                 
+}
+
+#photoGrid.is-dragover * {
+  pointer-events: none;
+}
+
+/* .photo-add 기본 스타일 (transition 추가하여 부드럽게 변하도록) */
+.photo-add {
+  background: transparent; 
+  border: 2px dashed rgba(107, 123, 97, 0.35); 
+  border-radius: var(--radius);
+  cursor: pointer;
+  min-height: 170px;
+  width: 100%;
+  display: flex;
+  color: var(--brand);
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center;
+  /* 상태 변화가 부드럽게 일어나도록 애니메이션 효과 추가 */
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease; 
+}
+
+/* =========================================
+   2. 미리보기 사진 크기 및 디자인 고정
+   ========================================= */
+.photo-card {
+  position: relative;
+  width: 100%;
+  max-width: 250px;    /* 모달 안에서 예쁘게 보일 최대 가로 크기 */
+  aspect-ratio: 1 / 1; /* 정사각형 비율 강제 유지 (세로 사진이어도 정사각형 박스 안에 담김) */
+  margin: 0 auto;      /* 모달 가운데 정렬 */
+  border-radius: 8px;  
+  overflow: hidden;    /* 둥근 모서리 바깥으로 나가는 이미지 숨김 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 살짝 떠 있는 듯한 고급스러운 그림자 */
+}
+
+.photo-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 이미지가 찌그러지지 않고 영역에 꽉 차게 잘림 */
+  display: block;
+}
+
+/* 미리보기 삭제 (X) 버튼 스타일링 */
+.photo-card__remove {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.photo-card__remove:hover {
+  background-color: rgba(220, 53, 69, 0.9); /* 마우스 올렸을 때 빨간색으로 변경 */
+}
+
+/* =========================================
+   3. 미리보기 사진이 있을 때 드래그 앤 드롭 피드백
+   ========================================= */
+
+/* 드래그 요소가 들어왔을 때 기존 사진(photo-card)의 변화 */
+#photoGrid.is-dragover .photo-card {
+  transform: scale(1.02);
+  border: 2px dashed var(--brand); /* 브랜드 컬러 점선 테두리 */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); /* 그림자를 조금 더 진하게 */
+}
+
+/* 기존 사진 위에 반투명 오버레이 띄우기 */
+#photoGrid.is-dragover .photo-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(107, 123, 97, 0.4); 
+  z-index: 10;
+  pointer-events: none; 
+}
+
+
+/* ===== Meta ===== */
 .photo-meta{
   display:flex;
   align-items:center;
@@ -128,31 +227,6 @@
 
 .photo-meta__hint{ color: rgba(0,0,0,.65); font-size:13px; }
 .photo-meta__hint2{ color: rgba(0,0,0,.55); font-size:12px; margin-top:4px; }
-
-.photo-progress{
-  min-width: 240px;
-  display:flex;
-  align-items:center;
-  gap: 10px;
-}
-
-.photo-progress__bar{
-  flex:1;
-  height: 14px;
-  border-radius: 999px;
-  background: rgba(107,123,97,.18);
-  overflow:hidden;
-}
-
-.photo-progress__bar span{
-  display:block;
-  height:100%;
-  width:0%;
-  background: var(--brand);
-  border-radius: 999px;
-}
-
-.photo-progress__txt{ font-weight:800; color: var(--brand); }
 
 /* ===== Footer buttons ===== */
 .photo-modal__footer{
@@ -185,7 +259,7 @@
   transform: translateY(1px);
 }
 
-/* ✅ 아웃라인(=초기화 느낌) : 닫기 + 초기화 */
+/* 아웃라인(=초기화 느낌) : 닫기 + 초기화 */
 .photo-modal__close,
 #photoResetBtn{
   background: var(--paper);
@@ -199,7 +273,7 @@
   color: var(--paper);
 }
 
-/* ✅ 채움(=저장 느낌) : 전송 */
+/* 채움(=저장 느낌) : 전송 */
 #photoSubmitBtn{
   background: var(--brand);
   color: var(--paper);
@@ -214,10 +288,10 @@
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 900px){
+/* @media (max-width: 900px){
   .photo-grid{ grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 640px){
   .photo-grid{ grid-template-columns: repeat(2, 1fr); }
   .photo-progress{ min-width: 160px; }
-}
+} */

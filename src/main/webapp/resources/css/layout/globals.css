@@ -20,7 +20,7 @@ a {
 
 /* ------ 토스트 메시지 관련 css ------ */
 .swal2-container {
-    z-index: 99999 !important; 
+    z-index: 999999 !important; 
 }
 
 /* 메시지 위치(아랫쪽) 조정 */

@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
- // 식물 삭제 로직
+    // 식물 삭제 로직
     const plantListContainer = document.querySelector('.myplants-list');
 
     if (plantListContainer) {

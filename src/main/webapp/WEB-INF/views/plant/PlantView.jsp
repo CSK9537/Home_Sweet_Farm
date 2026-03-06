@@ -284,38 +284,6 @@
           </div>
         </section>
 
-
-
-        <!-- ===== 이미지 스트립(여러 장) : plantImages(List<String>) 있으면 사용, 없으면 기본이미지 1장만 ===== -->
-        <%-- <section class="pv-box" data-section>
-          <div class="pv-box__head">
-            <h2 class="pv-h2">이미지</h2>
-          </div>
-
-          <div class="pv-gallery" data-section>
-            <button type="button" class="pv-gbtn pv-gbtn--prev" aria-label="이전 이미지">‹</button>
-
-            <div class="pv-gtrack" id="pvGalleryTrack">
-              <c:choose>
-                <c:when test="${not empty plantImages}">
-                  <c:forEach var="img" items="${plantImages}">
-                    <c:if test="${not empty img}">
-                      <img class="pv-gimg" src="<c:out value='${img}'/>" alt="식물 이미지" loading="lazy" />
-                    </c:if>
-                  </c:forEach>
-                </c:when>
-                <c:otherwise>
-                  <c:if test="${not empty p.plant_image}">
-                    <img class="pv-gimg" src="<c:out value='${p.plant_image}'/>" alt="식물 이미지" loading="lazy" />
-                  </c:if>
-                </c:otherwise>
-              </c:choose>
-            </div>
-
-            <button type="button" class="pv-gbtn pv-gbtn--next" aria-label="다음 이미지">›</button>
-          </div>
-        </section> --%>
-
         <!-- ===== 문화/가치 섹션: 긴 텍스트(CLOB)들 ===== -->
         <section class="pv-box" data-section>
           <c:if test="${not empty p.plant_culture_symbolism || not empty p.plant_culture_if || not empty p.plant_culture_gu || not empty p.plant_culture_epv || not empty p.plant_culture_ev || not empty p.plant_culture_biv}">

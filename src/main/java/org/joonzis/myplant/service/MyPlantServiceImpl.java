@@ -57,16 +57,13 @@ public class MyPlantServiceImpl implements MyPlantService {
 		return result > 0;
 	}
 	
-	// 나의 식물 수정
+	// 나의 식물 이름 수정
 	@Override
-	public String modify(MyPlantDTO mpdto) {
-		int result = mpmapper.update(mpdto);
-		if(result > 0) {
-			return "success";
-		}else {
-			return "failure";
-		}
+	public boolean updateMyPlantName(int myplant_id, String myplant_name) {
+		int result = mpmapper.updateMyPlantName(myplant_id, myplant_name);
+		return result > 0;
 	}
+	
 	// 나의 식물 삭제
 	
 	private final String IMG_DIR = "\\\\192.168.0.153\\projecthsf\\myplant\\img\\";
@@ -77,7 +74,7 @@ public class MyPlantServiceImpl implements MyPlantService {
 		int result = 0;
 		try {
 			// 1. DB에서 파일 삭제 전, 저장되어 있는 이미지 파일명 조회
-			String savedFileName = mpimapper.getImgAddr(myplant_id); 
+			String savedFileName = mpimapper.getImg(myplant_id); 
 
 			// 2. 연관 데이터 삭제
 			mpmapper.deleteMyPlantStatistics(myplant_id);

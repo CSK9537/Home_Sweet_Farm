@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    let plantGuide = null;
+	
+	// 나의 식물 상태
+	let plantGuide = null;
     const plant_name = document.querySelector('.plant-detail__latin').innerHTML;
     const UPDATE_INTERVAL = 5000; 
     const SENSOR_API_URL = 'http://192.168.0.130:8080/api/realtime';
@@ -389,3 +391,83 @@ document.addEventListener('DOMContentLoaded', () => {
     	}
     });
 });
+
+// 이름 영역 변경
+function toggleNicknameEdit(isEditMode) {
+  const displayWrap = document.getElementById('nicknameDisplayWrap');
+  const editWrap = document.getElementById('nicknameEditWrap');
+  const inputEl = document.getElementById('nicknameInput');
+  const textEl = document.getElementById('nicknameText');
+
+  if (isEditMode) {
+    // 편집 모드 켜기
+    displayWrap.style.display = 'none';
+    editWrap.style.display = 'flex';
+    // 입력창에 현재 닉네임 세팅
+    inputEl.value = textEl.innerText;
+    inputEl.focus();
+  } else {
+    // 편집 모드 끄기 (취소)
+    displayWrap.style.display = 'flex';
+    editWrap.style.display = 'none';
+  }
+}
+
+// 이름 검증
+document.getElementById('nicknameInput').addEventListener('input', function() {
+  // 한글, 영문, 숫자만 허용하며 1~10자 이내인지 검사 (공백 포함 여부는 선택)
+  const isValid = /^[가-힣a-zA-Z0-9]{1,10}$/.test(this.value);
+  const confirmNameBtn = document.getElementById('confirmNameBtn');
+  
+  if(isValid) {
+	confirmNameBtn.disabled = false;
+    this.style.borderColor = "var(--brand)"; // 올바른 입력일 때 원래 테두리 색상
+  } else {
+	confirmNameBtn.disabled = true;
+    if(this.value.length > 0) {
+      this.style.borderColor = "red"; // 특수문자 등 잘못된 입력 시 붉은색 테두리 경고
+    } else {
+      this.style.borderColor = "var(--brand)"; // 다 지웠을 때는 기본 색상
+    }
+  }
+});
+
+
+// 이름 저장(서버 전송) 함수
+function saveNickname(myplantId) {
+  const inputEl = document.getElementById('nicknameInput');
+  const newNickname = inputEl.value.trim();
+
+  if (!newNickname) {
+	showCustomToast('식물 이름을 입력해주세요.', 'warning');
+    inputEl.focus();
+    return;
+  }
+
+  // 서버에 닉네임 수정 API 요청 (경로는 실제 서버 환경에 맞게 수정하세요)
+  fetch(`/myplant/updateName`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // 필요 시 CSRF 토큰 추가
+    },
+    body: JSON.stringify({
+      myplant_id: myplantId,
+      myplant_name: newNickname
+    })
+  })
+  .then(response => {
+    if (response.ok) {
+      // 화면 텍스트 업데이트
+      document.getElementById('nicknameText').innerText = newNickname;
+      // 편집 모드 종료
+      toggleNicknameEdit(false);
+    } else {
+      showCustomToast('이름 수정에 실패했습니다. 다시 시도해주세요.', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showCustomToast('서버 통신 중 오류가 발생했습니다.', 'error');
+  });
+}

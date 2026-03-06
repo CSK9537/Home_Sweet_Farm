@@ -48,7 +48,18 @@
 
           <!-- 상단: 닉네임/등록일 -->
           <div class="plant-detail__top">
-            <div class="plant-detail__nickname">${p.myplant_name}</div>
+            
+            <div class="plant-detail__nickname-wrap" id="nicknameDisplayWrap">
+              <div class="plant-detail__nickname" id="nicknameText">${p.myplant_name}</div>
+              <button type="button" id="modifyBtn" onclick="toggleNicknameEdit(true)">✏️</button>
+            </div>
+
+            <div class="plant-detail__nickname-edit-wrap" id="nicknameEditWrap">
+              <input type="text" id="nicknameInput" value="${p.myplant_name}" class="form-control"	placeholder="10자 이내" />
+              <button type="button" class="name-btns" id="confirmNameBtn" onclick="saveNickname(${p.myplant_id})" disabled>저장</button>
+              <button type="button" class="name-btns" id="cancelNameBtn" onclick="toggleNicknameEdit(false)">취소</button>
+            </div>
+
             <div class="plant-detail__since">등록일로부터 ${p.day_passed}일</div>
           </div>
 
@@ -88,7 +99,7 @@
                 <span class="status__icon">
                   <img src="${pageContext.request.contextPath}/resources/image/light_50x50.png" alt="light" />
                 </span>
-                <span class="status__value status__value--warn" id="realtimeLux_${p.myplant_id}">100lux</span>
+                <span class="status__value status__value--warn" id="realtimeLux_${p.myplant_id}">0</span>
                 <span class="status__text">다소 낮음</span>
               </div>
 
@@ -96,7 +107,7 @@
                 <span class="status__icon">
                   <img src="${pageContext.request.contextPath}/resources/image/humidity_50x50.png" alt="humidity" />
                 </span>
-                <span class="status__value status__value--good" id="realtimeHumi_${p.myplant_id}">100%RH</span>
+                <span class="status__value status__value--good" id="realtimeHumi_${p.myplant_id}">0</span>
                 <span class="status__text">적정</span>
               </div>
 
@@ -104,7 +115,7 @@
                 <span class="status__icon">
                   <img src="${pageContext.request.contextPath}/resources/image/temperature_50x50.png" alt="temperature" />
                 </span>
-                <span class="status__value status__value--bad" id="realtimeTemp_${p.myplant_id}">100℃</span>
+                <span class="status__value status__value--bad" id="realtimeTemp_${p.myplant_id}">0</span>
                 <span class="status__text">매우 높음</span>
               </div>
 
@@ -112,7 +123,7 @@
                 <span class="status__icon">
                   <img src="${pageContext.request.contextPath}/resources/image/soil_50x50.png" alt="soil" />
                 </span>
-                <span class="status__value status__value--bad" id="realtimeSoilMoist_${p.myplant_id}">100V</span>
+                <span class="status__value status__value--bad" id="realtimeSoilMoist_${p.myplant_id}">0</span>
                 <span class="status__text">매우 낮음</span>
               </div>
             </div>
@@ -225,31 +236,26 @@
             action="${pageContext.request.contextPath}/myplant/image/upload">
         <input type="hidden" name="plantId" id="photoPlantId" value="${p.myplant_id}" />
 
-        <div class="photo-grid" id="photoGrid">
+        <div class="photo-upload-area" id="photoGrid">
+          
           <label class="photo-add">
             <input type="file"
                    id="photoInput"
-                   name="files"
+                   name="file"
                    accept="image/*"
-                   multiple
                    hidden />
-            <div class="photo-add__inner">
+            
               <div class="photo-add__badge">+</div>
               <div class="photo-add__text">사진 추가</div>
               <div class="photo-add__sub">JPG/PNG/GIF · 최대 10MB</div>
-            </div>
           </label>
+
         </div>
 
         <div class="photo-meta">
           <div class="photo-meta__left">
             <div class="photo-meta__hint">선택한 사진은 미리보기 후 전송됩니다.</div>
             <div class="photo-meta__hint2">권장: 정사각형(1:1) 또는 세로 사진</div>
-          </div>
-
-          <div class="photo-progress" aria-hidden="true">
-            <div class="photo-progress__bar"><span id="photoProgressBar"></span></div>
-            <div class="photo-progress__txt" id="photoProgressTxt">0%</div>
           </div>
         </div>
 

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import org.joonzis.plant.dto.PlantDTO;
-import org.joonzis.plant.dto.PlantGuideDTO;
 import org.joonzis.plant.dto.SimplePlantDTO;
 
 public interface PlantMapper {
@@ -23,8 +22,5 @@ public interface PlantMapper {
 	
 	// 식물 이미지 주소목록 50개
 	public List<String> getPlantImagesByRandom();
-	
-	// 나의 식물 추천 가이드 목록
-	public  List<PlantGuideDTO> selectPlantWithGuideList(@Param("limit") int limit);
 	
 }

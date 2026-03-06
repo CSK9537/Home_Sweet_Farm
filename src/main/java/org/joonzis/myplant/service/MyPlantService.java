@@ -12,8 +12,8 @@ public interface MyPlantService {
 	public MyPlantMainDTO get(int myplant_id);
 	// 나의 식물 추가
 	public boolean register(MyPlantDTO mpdto);
-	// 나의 식물 수정
-	public String modify(MyPlantDTO mpdto);
+	// 나의 식물 이름 수정
+	public boolean updateMyPlantName(int myplant_id, String myplant_name);
 	// 나의 식물 삭제
 	public boolean remove(int myplant_id);
 	

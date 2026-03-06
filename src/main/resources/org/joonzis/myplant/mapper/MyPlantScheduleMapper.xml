@@ -23,14 +23,6 @@
 	    )
 	</insert>
 	
-	<update id="update">
-	    UPDATE tbl_myplant_schedule
-	    SET
-	        myplant_schedule_date = #{myplant_schedule_date},
-	        myplant_schedule_do   = #{myplant_schedule_do}
-	    WHERE schedule_id = #{schedule_id}
-	</update>
-	
 	<delete id="delete">
 		DELETE
 	    FROM tbl_myplant_schedule

@@ -10,13 +10,13 @@ public class MyPlantImageServiceImpl implements MyPlantImageService{
 	private MyPlantImageMapper mpimapper;
 	
 	@Override
-	public boolean updateImgAddr(String dbSaveString, int myplant_id) {
-		return mpimapper.updateImgAddr(dbSaveString, myplant_id) > 0;
+	public boolean updateImg(String dbSaveString, int myplant_id) {
+		return mpimapper.updateImg(dbSaveString, myplant_id) > 0;
 	}
 	
 	@Override
-	public String getImgAddr(int myplant_id) {
-	    String fileName = mpimapper.getImgAddr(myplant_id);
+	public String getImg(int myplant_id) {
+	    String fileName = mpimapper.getImg(myplant_id);
 	    // DB에 저장된 이미지가 없으면 빈 문자열 반환
 	    if (fileName == null || fileName.isEmpty()) {
 	        return "";
