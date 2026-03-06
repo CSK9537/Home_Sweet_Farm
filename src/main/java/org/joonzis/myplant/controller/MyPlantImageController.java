@@ -29,7 +29,7 @@ public class MyPlantImageController {
 	@Autowired
 	private MyPlantImageService mpiservice;
 	
-	private final String UPLOAD_DIR = "\\\\192.168.0.153\\projecthsf\\myplant\\img\\"; // 실제 파일이 저장될 물리 경로
+	private final String IMG_DIR = "\\\\192.168.0.153\\projecthsf\\myplant\\img\\"; // 실제 파일이 저장될 물리 경로
 
 	@PostMapping(value = "/upload", produces = "application/json")
     public ResponseEntity<Map<String, Object>> uploadPhoto(
@@ -44,28 +44,24 @@ public class MyPlantImageController {
             return ResponseEntity.badRequest().body(response);
         }
 
-        File dir = new File(UPLOAD_DIR);
+        File dir = new File(IMG_DIR);
         if (!dir.exists()) {
             dir.mkdirs(); 
         }
 
         try {
-            // =========================================================
-            // [추가된 부분] 1. 기존 이미지 삭제 로직
-            // =========================================================
-            // Service에서 기존 이미지 파일명을 가져옵니다. (메서드명은 실제 구현에 맞게 수정해주세요)
-            String oldFileName = mpiservice.getImgAddr(myplant_id); 
+            // Service에서 기존 이미지 파일명을 가져옵니다.
+            String oldFileName = mpiservice.getImg(myplant_id); 
             
             // 기존 파일명이 DB에 존재한다면 물리 파일 삭제 시도
             if (oldFileName != null && !oldFileName.isEmpty()) {
-                File oldFile = new File(UPLOAD_DIR + oldFileName);
+                File oldFile = new File(IMG_DIR + oldFileName);
                 if (oldFile.exists()) {
                     oldFile.delete(); // 🗑️ 기존 이미지 파일 삭제!
                 }
             }
-            // =========================================================
 
-            // 2. 새로운 파일명 생성
+            // 새로운 파일명 생성
             String originalFilename = file.getOriginalFilename();
             String extension = "";
             if (originalFilename != null && originalFilename.contains(".")) {
@@ -75,12 +71,12 @@ public class MyPlantImageController {
             String uuid = UUID.randomUUID().toString().replace("-", "");
             String dbSaveString = uuid + "." + extension;
 
-            // 3. 새로운 파일 물리적 폴더에 저장
-            File dest = new File(UPLOAD_DIR + dbSaveString);
+            // 새로운 파일 물리적 폴더에 저장
+            File dest = new File(IMG_DIR + dbSaveString);
             file.transferTo(dest);
 
-            // 4. DB에 새로운 파일명으로 업데이트
-            boolean result = mpiservice.updateImgAddr(dbSaveString, myplant_id);
+            // DB에 새로운 파일명으로 업데이트
+            boolean result = mpiservice.updateImg(dbSaveString, myplant_id);
             if(!result) {
                 throw new Exception("이미지 경로 업데이트 DB 오류 발생"); 
             }
@@ -103,7 +99,7 @@ public class MyPlantImageController {
 	public ResponseEntity<Resource> showImage(@RequestParam("fileName") String fileName) {
 		try {
 			// 1. 요청받은 파일 이름으로 실제 물리적 경로 생성
-			File file = new File(UPLOAD_DIR + fileName);
+			File file = new File(IMG_DIR + fileName);
 			
 			// 2. 파일이 존재하지 않으면 404 에러 반환 (엑스박스 방지)
 			if (!file.exists()) {

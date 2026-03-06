@@ -75,52 +75,88 @@ function attachMoreHandler(btn, ctx) {
       if (xhr.readyState !== 4) return;
 
       try {
-        if (xhr.status < 200 || xhr.status >= 300) throw new Error("HTTP " + xhr.status);
+          if (xhr.status < 200 || xhr.status >= 300) throw new Error("HTTP " + xhr.status);
 
-        var data = JSON.parse(xhr.responseText);
+          var data = JSON.parse(xhr.responseText);
 
-        if (!data || Object.prototype.toString.call(data) !== "[object Array]" || data.length === 0) {
-          btn.style.display = "none";
-          return;
-        }
+          if (!data || Object.prototype.toString.call(data) !== "[object Array]" || data.length === 0) {
+            btn.style.display = "none";
+            return;
+          }
 
-        // 카드 추가
-        var frag = document.createDocumentFragment();
+          // 카드 추가
+          var frag = document.createDocumentFragment();
 
-        for (var j = 0; j < data.length; j++) {
-          var p = data[j] || {};
-          var plantId = (p.plant_id !== undefined && p.plant_id !== null) ? String(p.plant_id) : "";
-          var nameKor = p.plant_name_kor ? p.plant_name_kor : "";
-          var name = p.plant_name ? p.plant_name : "";
-          var img = p.plant_image ? p.plant_image : "";
+          for (var j = 0; j < data.length; j++) {
+            var p = data[j] || {};
+            var plantId = (p.plant_id !== undefined && p.plant_id !== null) ? String(p.plant_id) : "";
+            var nameKor = p.plant_name_kor ? p.plant_name_kor : "";
+            var name = p.plant_name ? p.plant_name : "";
+            var img = p.plant_image ? p.plant_image : "";
 
-          var card = document.createElement("article");
-          card.className = "plant-card";
-          if (plantId) card.setAttribute("data-id", plantId);
+            var card = document.createElement("article");
+            card.className = "plant-card";
+            if (plantId) card.setAttribute("data-id", plantId);
 
-          var detailUrl = ctx + "/plant/detail?plant_id=" + encodeURIComponent(plantId);
+            var detailUrl = ctx + "/plant/detail?plant_id=" + encodeURIComponent(plantId);
 
-          card.innerHTML =
-        	`<div class="hover-area-wrapper">` +
-              `<div class="hover-area hover-area--left" onclick="location.href='/plant/info/` + escapeHtmlText(name) + `'"></div>` +
-              `<div class="hover-area hover-area--right" onclick="location.href='/plant/guide/` + escapeHtmlText(name) + `'"></div>` +
-            `</div>` +
-            `<div class="plant-card__link">` +
-              `<div class="plant-card__thumb">` +
-                `<img src="/plant/image/` + escapeHtmlAttr(img) + `" alt="` + escapeHtmlAttr(nameKor) + `" loading="lazy" />` +
-                `<span class="text left-text">백과사전</span>` +
-	            `<span class="text right-text">가이드</span>` +
+            // 💡 포인트 1: src에는 투명 1x1 픽셀을 넣고, 진짜 주소는 data-src에 넣습니다.
+            // 클래스에 lazy-load를 추가하여 나중에 찾기 쉽게 합니다.
+            card.innerHTML =
+              `<div class="hover-area-wrapper">` +
+                `<div class="hover-area hover-area--left" onclick="location.href='/plant/info/` + escapeHtmlText(name) + `'"></div>` +
+                `<div class="hover-area hover-area--right" onclick="location.href='/plant/guide/` + escapeHtmlText(name) + `'"></div>` +
               `</div>` +
-              `<div class="plant-card__body">` +
-                `<div class="plant-card__name">` + escapeHtmlText(nameKor) + `</div>` +
-                `<div class="plant-card__sub">` + escapeHtmlText(name) + `</div>` +
-              `</div>` +
-            `</div>`;
+              `<div class="plant-card__link">` +
+                `<div class="plant-card__thumb">` +
+                  // Base64 투명 픽셀 또는 비워두고 CSS로 배경색을 칠해두는 것을 추천합니다.
+                  `<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" ` + 
+                       `data-src="/plant/image/` + escapeHtmlAttr(img) + `" ` + 
+                       `alt="` + escapeHtmlAttr(nameKor) + `" ` +
+                       `class="lazy-load" />` +
+                  `<span class="text left-text">백과사전</span>` +
+                  `<span class="text right-text">가이드</span>` +
+                `</div>` +
+                `<div class="plant-card__body">` +
+                  `<div class="plant-card__name">` + escapeHtmlText(nameKor) + `</div>` +
+                  `<div class="plant-card__sub">` + escapeHtmlText(name) + `</div>` +
+                `</div>` +
+              `</div>`;
 
-          frag.appendChild(card);
-        }
+            frag.appendChild(card);
+          }
 
-        grid.appendChild(frag);
+          // DOM 트리에 텍스트와 구조 먼저 추가
+          grid.appendChild(frag);
+
+          // 💡 포인트 2: setTimeout을 사용해 렌더링 우선순위를 뒤로 미루고, IntersectionObserver로 이미지를 로드합니다.
+          setTimeout(function () {
+            var lazyImages = grid.querySelectorAll(".lazy-load");
+            
+            if ("IntersectionObserver" in window) {
+              var imageObserver = new IntersectionObserver(function (entries, observer) {
+                entries.forEach(function (entry) {
+                  if (entry.isIntersecting) {
+                    var lazyImage = entry.target;
+                    // 화면에 나타나면 data-src 값을 src로 옮겨서 이미지 로드 시작
+                    lazyImage.src = lazyImage.getAttribute("data-src");
+                    lazyImage.classList.remove("lazy-load");
+                    observer.unobserve(lazyImage);
+                  }
+                });
+              });
+
+              lazyImages.forEach(function (lazyImage) {
+                imageObserver.observe(lazyImage);
+              });
+            } else {
+              // 구형 브라우저 대응 (IntersectionObserver 미지원 시 바로 로드)
+              lazyImages.forEach(function (lazyImage) {
+                lazyImage.src = lazyImage.getAttribute("data-src");
+                lazyImage.classList.remove("lazy-load");
+              });
+            }
+          }, 0); // Call stack이 비워진 후(화면 페인팅 후) 실행되도록 0ms 지연
 
         // offset 갱신: 누적 로드 개수로 관리
         btn.setAttribute("data-offset", String(offset + data.length));

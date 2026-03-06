@@ -3,12 +3,12 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.joonzis.myplant.mapper.MyPlantImageMapper">
-	<update id="updateImgAddr">
+	<update id="updateImg">
 		UPDATE tbl_myplant SET myplant_image = #{dbSaveString}
 		WHERE myplant_id = #{myplant_id}
 	</update>
 	
-	<select id="getImgAddr" resultType="string">
+	<select id="getImg" resultType="string">
 		SELECT myplant_image FROM tbl_myplant 
 		WHERE myplant_id = #{myplant_id}
 	</select>

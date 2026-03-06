@@ -95,15 +95,15 @@
 	<select id="getPlantListByRandom" resultType="org.joonzis.plant.dto.SimplePlantDTO">
 		<![CDATA[
 			SELECT * FROM (
-				SELECT plant_id, plant_name, plant_name_kor, plant_image, plant_searchcount FROM tbl_plant WHERE plant_id NOT IN (
-					SELECT plant_id FROM (
-						SELECT plant_id FROM tbl_plant
-						ORDER BY plant_searchcount DESC
-						)
-					WHERE ROWNUM <= #{rank}
-					)
-				ORDER BY DBMS_RANDOM.VALUE
+				SELECT plant_id, plant_name, plant_name_kor, plant_image, plant_searchcount
+				FROM (
+					SELECT plant_id, plant_name, plant_name_kor, plant_image, plant_searchcount,
+						ROW_NUMBER() OVER(ORDER BY plant_searchcount DESC) AS rk
+					FROM tbl_plant
 				)
+				WHERE rk > #{rank}
+				ORDER BY DBMS_RANDOM.VALUE
+			)
 			WHERE ROWNUM <= #{total}
 		]]>
 	</select>

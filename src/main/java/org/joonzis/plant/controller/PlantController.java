@@ -30,6 +30,8 @@ public class PlantController {
 	@Autowired
 	private PlantService pservice;
 	
+	private final String IMG_DIR = "\\\\192.168.0.153\\projecthsf\\plant\\img\\"; // 실제 파일 물리 경로
+	
 	// 식물 메인 페이지
 	@RequestMapping("")
 	public String plantMain(Model model) {
@@ -52,11 +54,7 @@ public class PlantController {
 	@ResponseBody
 	@GetMapping("/image/{plant_image:.+}")
 	public ResponseEntity<Resource> showImage(@PathVariable("plant_image") String plant_image) {
-		String[] paths = plant_image.split("_");
-		String path = "";
-		if(paths.length > 5) {
-			path = "\\\\" + paths[0] + "\\" + paths[1] + "\\" + paths[2] + "\\" + paths[3] + "\\" + paths[4] + "." + paths[5];			
-		}
+		String path = IMG_DIR + plant_image;
 		Resource resource = new FileSystemResource(path);
 		if(!resource.exists()) {
 			String defaultPath = servletContext.getRealPath("/resources/image/Default_Plant.jpg");

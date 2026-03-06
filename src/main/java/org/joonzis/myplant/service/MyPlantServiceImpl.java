@@ -74,7 +74,7 @@ public class MyPlantServiceImpl implements MyPlantService {
 		int result = 0;
 		try {
 			// 1. DB에서 파일 삭제 전, 저장되어 있는 이미지 파일명 조회
-			String savedFileName = mpimapper.getImgAddr(myplant_id); 
+			String savedFileName = mpimapper.getImg(myplant_id); 
 
 			// 2. 연관 데이터 삭제
 			mpmapper.deleteMyPlantStatistics(myplant_id);
