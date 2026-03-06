@@ -15,6 +15,9 @@ public interface MypageMapper {
 	
 	// 사용자가 작성한 댓글
 	public List<ReplyVO> selectMyReply(int user_id);
+	
+//	// 사용자가 작성한 질문
+//	public List<CommunityPostCardDTO> selectMyQuest(int user_id);
 		
 	//마이페이지 수정-닉네임, 주소
 	public int updateMypage(UserVO vo);

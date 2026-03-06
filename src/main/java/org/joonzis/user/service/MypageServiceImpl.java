@@ -26,6 +26,11 @@ public class MypageServiceImpl implements MypageService{
 		return mpMapper.selectMyReply(user_id);
 	}
 	
+//	@Override
+//	public List<CommunityPostCardDTO> selectMyQuest(int user_id) {
+//		return mpMapper.selectMyQuest(user_id);
+//	}
+	
 	@Autowired
 	private MypageMapper mpMapper;
 	
