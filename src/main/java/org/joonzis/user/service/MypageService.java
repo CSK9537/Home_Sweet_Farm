@@ -19,4 +19,7 @@ public interface MypageService {
 	
 	//마이페이지 수정-프로필 이미지 변경
 	public void updateProfile(int userId, String profile_filename);
+	
+	//마이페이지 - 자기소개 수정
+	public int updateIntro(UserVO vo);
 }

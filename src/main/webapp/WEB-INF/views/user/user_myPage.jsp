@@ -82,16 +82,19 @@
 			    <div class="box">
 			      <div class="box-title">자기소개
 			      <c:if test="${isOwner}">
-                  	<button class="btn-edit">수정</button>
+                  	<button class="btn-edit" id="editIntro">수정</button>
                   </c:if>
 			      </div>
 			      <div class="box-body scroll-box">
-			        <pre class="pre-text"><c:choose>
-			  <c:when test="${not empty profileUser.intro}"><c:out value="${profileUser.intro}" /></c:when>
-			  <c:otherwise>간단한 자기소개를 작성해보세요. (스크롤 방식)</c:otherwise>
-			</c:choose></pre>
-			      </div>
+				  <textarea
+				      id="introText"
+				      class="pre-text"
+				      data-original="${empty profileUser.intro ? '' : profileUser.intro}"
+				      placeholder="간단한 자기소개를 작성해보세요.">${empty profileUser.intro ? '' : profileUser.intro}</textarea>
+				 </div>
+				 <span id="introMsg" class="form-msg"></span>
 			    </div>
+			    
 			    
 			    <!-- 회원 등급 -->
 			    <div class="box grade-box" id="btnGrade" role="button"

@@ -503,7 +503,7 @@
 	  }).then(function(res){ return res.text(); });
 	}
 
-	// 닉네임 버튼
+	// 닉네임 수정 버튼
 	if (btnNick) {
 	  btnNick.addEventListener("click", function(){
 		  
@@ -539,14 +539,12 @@
 	    	    nickMsg.className = "form-msg error";
 	    	    nickMsg.style.color = "red";
 	    	  }
-	    	  var msg = document.getElementById("nickMsg");
-
 	    	});
 	  	}); 
 	}
 	
 
-	// 주소 버튼
+	// 주소  수정 버튼
 	if (btnAddr) {
 	  btnAddr.addEventListener("click", function(){
 		  
@@ -583,7 +581,58 @@
 	//-------------------------
 	  // 프로필-자기소개 수정
 	 // -------------------------
-	
+	  var btnIntro = document.querySelector("#editIntro");
+	  var introText = document.querySelector("#introText");
+	  var introMsg = document.querySelector("#introMsg");
+	  var originalIntro = introText ?(introText.dataset.original || ""):"";
+	  
+	  function introUpdate(intro) {
+		  
+		  return fetch(ctx + "/user/myPage/introUpdate", {
+		    method: "POST",
+		    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+		    body: "intro="+encodeURIComponent(intro)
+		  })
+		  .then(function(res){ 
+			  return res.text(); 
+		  });
+		}
+
+	  
+	  	// 자기소개 수정 버튼
+		if (btnIntro) {
+			btnIntro.addEventListener("click", function(){
+			  
+			  var newIntro = introText.value.trim();
+			  
+			  if(newIntro === ""){
+				  introMsg.textContent = "자기소개를 수정해주세요";
+				  introMsg.style.color = "red"; 
+			  }
+			  else if(newIntro === originalIntro){
+				  introMsg.textContent = "다른 내용으로 수정해주세요";
+				  introMsg.className = "form-msg error";
+				  introMsg.style.color = "red";
+				  return;
+			  }
+			  introUpdate(newIntro)
+		      .then(function(t){ 
+
+		    	  if ((t || "").trim() === "ok") {
+		    		introMsg.textContent = "내용 수정 완료";
+		    		introMsg.className = "form-msg success";
+		    		introMsg.style.color = "green";
+		    	    //변경된 값 저장
+		    		originalIntro = newIntro;
+		    		introText.dataset.original = newIntro;
+		    	  } else {
+		    		introMsg.textContent = "내용 수정 실패";
+		    		introMsg.className = "form-msg error";
+		    		introMsg.style.color = "red";
+		    	  }
+		    	});
+		  	}); 
+		}
 
   
  

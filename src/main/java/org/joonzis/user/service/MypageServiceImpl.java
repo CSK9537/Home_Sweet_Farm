@@ -36,4 +36,9 @@ public class MypageServiceImpl implements MypageService{
 	public void updateProfile(int userId, String profile_filename) {
 		mpMapper.updateProfile(userId,profile_filename);
 	}
+	
+	@Override
+	public int updateIntro(UserVO vo) {
+		return mpMapper.updateIntro(vo);
+	}
 }

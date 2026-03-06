@@ -627,3 +627,15 @@
   color: #888;
   line-height: 1.2;
 }
+#introText {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  font: inherit;
+  line-height: 1.5;
+}

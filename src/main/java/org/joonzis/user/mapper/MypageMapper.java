@@ -19,4 +19,7 @@ public interface MypageMapper {
 	
 	//마이페이지 수정-프로필 이미지 변경
 	public void updateProfile(@Param("userId") int userId, @Param("profile_filename") String profile_filename);
+	
+	//마이페이지 - 자기소개 수정
+	public int updateIntro(UserVO vo);
 }

@@ -231,6 +231,30 @@ public class MyPageController {
 
 	    return res;
 	}
+	//마이페이지 - 자기소개 수정
+	@PostMapping("/introUpdate")
+	@ResponseBody
+	public String updateIntro(@RequestParam(required=false) String intro, 
+								HttpSession session) {
+		
+		UserVO loginUser = (UserVO)session.getAttribute("loginUser");
+		if(loginUser == null) return "no-session";
+		
+		
+	    if (intro == null || intro.trim().isEmpty()) {
+	        return "empty";
+	    }
+
+	    int userId = loginUser.getUser_id();
+	    
+		UserVO vo = new UserVO();
+		vo.setUser_id(userId);
+		vo.setIntro(intro);
+		
+		int result = mpService.updateIntro(vo);
+		
+		return result > 0 ? "ok":"fail";
+	}
 	
 	
 }

@@ -45,4 +45,11 @@
 		WHERE user_id = #{userId}
 	</update>
 	
+	<!-- 마이페이지 - 자기소개 수정 -->
+	<update id="updateIntro" parameterType="org.joonzis.user.vo.UserVO">
+		UPDATE tbl_user
+		SET intro = #{intro}
+		WHERE user_id = #{user_id}
+	</update>
+	
 </mapper>
