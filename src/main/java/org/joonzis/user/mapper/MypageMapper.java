@@ -16,4 +16,7 @@ public interface MypageMapper {
 		
 	//마이페이지 수정-관심사 선택(저장)
 	public int insertUserAspect(@Param("userId")int userId, @Param("hashtagId")int hashtagId);
+	
+	//마이페이지 수정-프로필 이미지 변경
+	public void updateProfile(@Param("userId") int userId, @Param("profile_filename") String profile_filename);
 }

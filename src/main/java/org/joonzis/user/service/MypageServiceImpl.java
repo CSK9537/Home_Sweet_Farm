@@ -31,4 +31,9 @@ public class MypageServiceImpl implements MypageService{
 	public int insertUserAspect(int userId, int hashtagId) {
 		return mpMapper.insertUserAspect(userId,hashtagId);
 	}
+	
+	@Override
+	public void updateProfile(int userId, String profile_filename) {
+		mpMapper.updateProfile(userId,profile_filename);
+	}
 }

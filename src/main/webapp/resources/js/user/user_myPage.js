@@ -54,7 +54,6 @@
 
   function openModal(el) {
     if (!el) return;
-    console.log("openModal called:", el.id);
     backdrop.hidden = false;
     el.hidden = false;
   }
@@ -452,11 +451,16 @@
 	  var formData = new FormData();
 	  formData.append("profileImage", file);
 
-	  fetch("/user/profile/upload", {
+	  fetch("/user/myPage/profileImage", {
 	    method: "POST",
 	    body: formData
 	  })
-	    .then(function (res) { return res.json(); })
+	    .then(function (res) {
+	    	if(!res.ok){
+	    		return new Error("222222");
+	    	}
+	    	return res.json(); 
+    	})
 	    .then(function (data) {
 	      if (data.success) {
 	        alert("저장 완료");
@@ -465,8 +469,8 @@
 	        alert("저장 실패");
 	      }
 	    })
-	    .catch(function () {
-	      alert("업로드 중 오류 발생");
+	    .catch(function (err) {
+	      alert("업로드 중 오류 발생" + err);
 	    });
 	});
   
@@ -527,6 +531,7 @@
 	    	    
 	    	    //왼쪽 닉네임도 즉시 반영
 	    	    var leftNickEl = document.querySelector("#leftNickname");
+	    	    
 	    	    if(leftNickEl)
 	    	    	leftNickEl.textContent = newNick;
 	    	  } else {
@@ -534,17 +539,12 @@
 	    	    nickMsg.className = "form-msg error";
 	    	    nickMsg.style.color = "red";
 	    	  }
+	    	  var msg = document.getElementById("nickMsg");
+
 	    	});
 	  	}); 
 	}
-	//닉네임 수정 후 메시지 사라짐
-	nicknameInput.addEventListener("input",
-	 function(){
-		if(nickMsg){
-		nickMsg.textContent = "";
-    	nickMsg.className = "form-msg";
-		}
-	});
+	
 
 	// 주소 버튼
 	if (btnAddr) {
@@ -579,14 +579,12 @@
 	      });
 	  });
 	}
-	//주소 수정 후 메시지 사라짐
-	addressInput.addEventListener("input",
-	 function(){
-		if(addressMsg){
-			addressMsg.textContent = "";
-			addressMsg.className = "form-msg";
-		}
-	});
+	
+	//-------------------------
+	  // 프로필-자기소개 수정
+	 // -------------------------
+	
+
   
  
   

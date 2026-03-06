@@ -16,4 +16,7 @@ public interface MypageService {
 	
 	//마이페이지 수정-관심사 선택(저장)
 	public int insertUserAspect(int userId, int hashtagId);
+	
+	//마이페이지 수정-프로필 이미지 변경
+	public void updateProfile(int userId, String profile_filename);
 }
