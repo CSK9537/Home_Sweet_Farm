@@ -182,4 +182,6 @@ public class MyPageController {
 	    return res;	
 	}
 	
+	//마이페이지 수정-프로필 이미지 변경
+	
 }

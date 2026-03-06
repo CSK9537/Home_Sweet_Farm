@@ -422,6 +422,57 @@
       .split('"').join("&quot;")
       .split("'").join("&#039;");
   }
+//-------------------------
+  // 프로필-이미지 업로드
+ // ------------------------- 
+  var avatarFile = document.querySelector("#avatarFile");
+  var btnAvatarSave = document.querySelector("#btnAvatarSave");
+  var avatarLarge = document.querySelector("#avatarLarge");
+  
+  avatarFile.addEventListener("change",
+  function(e){
+	  var file = e.target.files[0];
+	  if(!file) return;
+	  
+	  var reader = new FileReader();
+	  reader.onload = function (evt) {
+	    avatarLarge.src = evt.target.result; // 미리보기
+	  };
+	  reader.readAsDataURL(file);
+	});
+
+	btnAvatarSave.addEventListener("click", function () {
+	  var file = avatarFile.files[0];
+
+	  if (!file) {
+	    alert("이미지를 먼저 선택해주세요.");
+	    return;
+	  }
+
+	  var formData = new FormData();
+	  formData.append("profileImage", file);
+
+	  fetch("/user/profile/upload", {
+	    method: "POST",
+	    body: formData
+	  })
+	    .then(function (res) { return res.json(); })
+	    .then(function (data) {
+	      if (data.success) {
+	        alert("저장 완료");
+	        location.reload();
+	      } else {
+	        alert("저장 실패");
+	      }
+	    })
+	    .catch(function () {
+	      alert("업로드 중 오류 발생");
+	    });
+	});
+  
+  
+  
+  
  //-------------------------
   // 마이페이지-닉네임, 주소 수정
  // -------------------------

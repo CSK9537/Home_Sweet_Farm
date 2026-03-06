@@ -22,9 +22,15 @@
                     id="btnAvatar"
                     aria-label="프로필 이미지 크게 보기"
                     <c:if test="${!isOwner}">disabled="disabled"</c:if>>
-              <img class="avatar"
-                   src="<c:out value='${empty profileUser.profile ? (ctx.concat("/resources/img/default_profile.png")) : profileUser.profile}'/>"
-                   alt="프로필 이미지"/>
+              <c:choose>
+              	<c:when test="${empty profileUser.profile}">
+              		<img class="avatar" src="${ctx}/resources/image/Default_Plant.jpg" alt="프로필 이미지"/>
+              	</c:when>
+              	<c:otherwise>
+              		<img class="avatar" src="${ctx}/resources/upload/${profileUser.profile}" 
+              		onerror="this.onerror=null; this.src='${ctx}/resources/image/Default_Plant.jpg';" alt="프로필이미지"/>
+              	</c:otherwise>
+              </c:choose>
             </button>
 
             <div class="left-profile-meta">
@@ -149,7 +155,7 @@
 						  	<ul class="recent-list">
 							 <c:forEach var="p" items="${profileUser.posts}" varStatus="s">
 							  	<li>
-								    <a href="${p.moveUrl}">
+								    <a href="${ctx}/community/view?board_id=${p.boardId}">
 								       <div class="post-title"><c:out value='${p.title}'/></div>
 								       <div class="post-meta">커뮤니티  · 조회<c:out value='${p.viewCount}'/>
 								        						· 댓글<c:out value='${p.replyCnt}'/>
@@ -160,14 +166,14 @@
 						  	</ul>
 						  </div>
 					  </div>	  
-					  <!-- 최근 질문  -->
+					  <!-- 최근 질문  --><!-- 링크 부분은 보류하기(미완성) -->
 				    <div class="box">
 					  <div class="box-title">최근 질문</div>
 						  <div class="recent-questions">
 						  	<ul class="recent-list">
 						  	<c:forEach var="q" items="${profileUser.quests}" varStatus="s">
 							  	<li>
-							      <a href="${q.moveUrl}">
+							      <a href="${ctx}/qna/detail?qna_id=${p.qna_id}">
 							        <div class="post-title"><c:out value='${q.title}'/></div>
 							        <div class="post-meta">Q&A · 조회<c:out value='${q.viewCount}'/>
 								        						· 댓글<c:out value='${q.replyCnt}'/>
@@ -506,7 +512,7 @@
         </div>
       </div>
       
-   
+      
       <!-- 인증(이메일) 모달 -->
       <div class="modal" id="modalVerify" role="dialog" aria-modal="true" aria-labelledby="modalVerifyTitle" hidden>
         <div class="modal-card">
@@ -529,7 +535,6 @@
         </div>
       </div>
       
-      
 
       <!-- 프로필 이미지 크게보기 모달(주인만) -->
       <c:if test="${isOwner}">
@@ -540,9 +545,16 @@
 	            <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
 	          </div>
 	          <div class="modal-body center">
-	            <img id="avatarLarge"
-	                 src="<c:out value='${empty profileUser.profile ? (ctx.concat("/resources/img/default_profile.png")) : profileUser.profile}'/>"
-	                 alt="프로필 이미지 크게 보기" />
+	          
+	          <c:choose>
+              	<c:when test="${empty profileUser.profile}">
+              		<img id="avatarLarge" src="${ctx}/resources/image/Default_Plant.jpg" alt="프로필 이미지 크게 보기"/>
+              	</c:when>
+              	<c:otherwise>
+              		<img id="avatarLarge" src="${ctx}/resources/upload/${profileUser.profile}" 
+              		onerror="this.onerror=null; this.src='${ctx}/resources/image/Default_Plant.jpg';" alt="프로필이미지 크게 보기"/>
+              	</c:otherwise>
+              </c:choose>
 	              <!-- 이미지 선택 -->
 			      <div class="avatar-actions" style="margin-top:12px;">
 			        <label class="btn" for="avatarFile">이미지 선택</label>
