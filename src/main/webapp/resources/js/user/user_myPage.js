@@ -526,18 +526,29 @@
 	    	    nickMsg.textContent = "닉네임 수정 완료";
 	    	    nickMsg.className = "form-msg success";
 	    	    nickMsg.style.color = "green";
+	    	    nickMsg.style.display = "inline";
 	    	    //변경된 값 저장
 	    	    nicknameInput.dataset.original = newNick;
 	    	    
 	    	    //왼쪽 닉네임도 즉시 반영
 	    	    var leftNickEl = document.querySelector("#leftNickname");
 	    	    
-	    	    if(leftNickEl)
+	    	    if(leftNickEl){
 	    	    	leftNickEl.textContent = newNick;
+	    	    }
+	    	    setTimeout(function () {
+	                nickMsg.style.display = "none";
+	              }, 2000);
+	    	    	
 	    	  } else {
 	    	    nickMsg.textContent = "닉네임 수정 실패";
 	    	    nickMsg.className = "form-msg error";
 	    	    nickMsg.style.color = "red";
+	    	    nickMsg.style.display = "inline";
+	    	    
+	    	    setTimeout(function () {
+	                nickMsg.style.display = "none";
+	              }, 2000);
 	    	  }
 	    	});
 	  	}); 
@@ -566,13 +577,23 @@
 	    		  addressMsg.textContent = "주소 수정 완료";
 	    		  addressMsg.className = "form-msg success";
 	    		  addressMsg.style.color = "green";
+	    		  addressMsg.style.display = "inline";
 		    	    //변경된 값 저장
 	    		  addressInput.dataset.original = newAddr;
-		    	    
+	    		  
+	    		  setTimeout(function () {
+	    			  addressMsg.style.display = "none";
+		              }, 2000);
+	    		  
 		    	  } else {
 		    		addressMsg.textContent = "주소 수정 실패";
 		    		addressMsg.className = "form-msg error";
 		    		addressMsg.style.color = "red";
+		    		addressMsg.style.display = "inline";
+		    	    
+		    	    setTimeout(function () {
+		    	    	addressMsg.style.display = "none";
+		              }, 2000);
 		    	  }
 	      });
 	  });
@@ -622,13 +643,24 @@
 		    		introMsg.textContent = "내용 수정 완료";
 		    		introMsg.className = "form-msg success";
 		    		introMsg.style.color = "green";
+		    		introMsg.style.display = "inline";
 		    	    //변경된 값 저장
 		    		originalIntro = newIntro;
 		    		introText.dataset.original = newIntro;
+		    		
+		    		setTimeout(function () {
+		    			introMsg.style.display = "none";
+		              }, 2000);
+		    		
 		    	  } else {
 		    		introMsg.textContent = "내용 수정 실패";
 		    		introMsg.className = "form-msg error";
 		    		introMsg.style.color = "red";
+		    		introMsg.style.display = "inline";
+		    		
+		    		setTimeout(function () {
+		    			introMsg.style.display = "none";
+		              }, 2000);
 		    	  }
 		    	});
 		  	}); 
