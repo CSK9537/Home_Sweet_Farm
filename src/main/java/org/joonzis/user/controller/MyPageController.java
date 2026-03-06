@@ -51,8 +51,7 @@ public class MyPageController {
 		}
 		int user_id = user.getUser_id();
 		
-		
-		// 커뮤니티 서비스에 user_id를 파라미터로 요청 부분 추가 예정!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		postList = mpService.selectMyPosts(user_id);
 		
 		if(postList != null)
 			return new ResponseEntity<List<CommunityPostCardDTO>>(postList, HttpStatus.OK);
@@ -75,7 +74,7 @@ public class MyPageController {
 		}
 		int user_id = user.getUser_id();
 		
-		// 커뮤니티 서비스에 user_id를 파라미터로 요청 부분 추가 예정!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		replyList = mpService.selectMyReply(user_id);
 		
 		if(replyList != null)
 			return new ResponseEntity<List<ReplyVO>>(replyList, HttpStatus.OK);

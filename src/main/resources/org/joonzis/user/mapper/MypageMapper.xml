@@ -4,6 +4,31 @@
 
 <mapper namespace="org.joonzis.user.mapper.MypageMapper">
 	
+	<!-- 사용자가 작성한 글 -->
+	<select id="selectMyPosts" parameterType="int" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
+		SELECT
+        BOARD_ID AS boardId,
+        TITLE AS title,
+        USER_ID AS userId,
+        VIEW_COUNT AS viewCount,
+        REPLY_CNT AS replyCnt
+	    FROM tbl_board
+	    WHERE USER_ID = #{user_id}
+	    ORDER BY BOARD_ID DESC
+	</select>
+	
+	<!-- 사용자가 작성한 댓글 -->
+	<select id="selectMyReply" parameterType="int" resultType="org.joonzis.community.vo.ReplyVO">
+		SELECT
+	        reply_id, board_id, user_id, 
+	        content, reg_date
+    	FROM tbl_reply
+    	WHERE user_id = #{value}
+    	ORDER BY reg_date ASC
+	</select>
+	
+	
+	
 	<!-- 마이페이지 수정-닉네임, 주소  -->
 	<update id="updateMypage" parameterType="org.joonzis.user.vo.UserVO">
 		UPDATE TBL_USER
@@ -51,5 +76,6 @@
 		SET intro = #{intro}
 		WHERE user_id = #{user_id}
 	</update>
+	
 	
 </mapper>

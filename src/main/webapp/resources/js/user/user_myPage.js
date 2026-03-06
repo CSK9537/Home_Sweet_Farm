@@ -262,20 +262,60 @@
       });
   }
 
-  function renderListItem(data) {
-    var title = escapeHtml(data.title || "");
-    var url = data.url || "#";
-    var createdAt = escapeHtml(data.createdAt || "");
-    var summary = escapeHtml(data.summary || "");
+  function renderListItem(data, wrap) {
+//    var title = escapeHtml(data.title || "");
+//    var url = data.url || "#";
+//    var createdAt = escapeHtml(data.createdAt || "");
+//    var summary = escapeHtml(data.summary || "");
+//
+//    return '' +
+//      '<li class="list-item">' +
+//        '<div class="item-top">' +
+//          '<a class="item-title" href="' + url + '">' + title + '</a>' +
+//          '<div class="item-meta">' + createdAt + '</div>' +
+//        '</div>' +
+//        (summary ? '<div class="item-body">' + summary + '</div>' : '') +
+//      '</li>';
+	  
+	  
+		  var api = wrap.getAttribute("data-api");
+	
+		  // 작성댓글
+		  if (api.indexOf("reply") !== -1) {
+	
+		    var content = escapeHtml(data.content || "");
+		    var regDate = escapeHtml(data.reg_date || "");
+	
+		    return ''
+		      + '<li class="list-item">'
+		      + '<div class="comment-item">'
+		      + '<div class="comment-content">' + content + '</div>'
+		      + '<div class="comment-meta">등록날짜 ' + regDate + '</div>'
+		      + '</div>'
+		      + '</li>';
+		  }
+		  
+		  var title = escapeHtml(data.title || "");
+		  var url = data.moveUrl || "#";
+		  var viewCount = Number(data.viewCount || 0);
+		  var likeCount = Number(data.likeCount || 0);
+		  var replyCnt = Number(data.replyCnt || 0);
 
-    return '' +
-      '<li class="list-item">' +
-        '<div class="item-top">' +
-          '<a class="item-title" href="' + url + '">' + title + '</a>' +
-          '<div class="item-meta">' + createdAt + '</div>' +
-        '</div>' +
-        (summary ? '<div class="item-body">' + summary + '</div>' : '') +
-      '</li>';
+		  return ''
+		    + '<li class="list-item post-card">'
+		    +   '<a class="post-link" href="' + url + '">'
+		    +     '<div class="post-title">' + title + '</div>'
+		    +     '<div class="post-meta">'
+		    +       '<span>조회수 ' + viewCount + '</span>'
+		    +       '<span>|</span>'
+		    +       '<span>좋아요 ' + likeCount + '</span>'
+		    +       '<span>|</span>'
+		    +       '<span>댓글 ' + replyCnt + '</span>'
+		    +     '</div>'
+		    +   '</a>'
+		    + '</li>';
+		
+	  
   }
 
   function renderPager(pagerEl, currentPage, totalPages, onMove) {
@@ -297,6 +337,7 @@
 
   function loadList(wrap, tab, page) {
     var api = wrap.getAttribute("data-api");
+    console.log("api =", api, "tab =", tab, "page =", page);  
     var listEl = q(wrap, ".js-list");
     var pagerEl = q(wrap, ".js-pager");
     var emptyEl = q(wrap, ".js-empty");
@@ -304,11 +345,26 @@
 
     fetchList(api, tab, page)
       .then(function (data) {
-        var items = data.items || [];
-        var total = Number(data.total || 0);
-        var totalPages = Number(data.totalPages || 1);
-        var currentPage = Number(data.page || page);
+    	  console.log("api =", api);
+    	  console.log("data =", data);
+//        var items = data.items || [];
+//        var total = Number(data.total || 0);
+//        var totalPages = Number(data.totalPages || 1);
+//        var currentPage = Number(data.page || page);
+    	  var items, total, totalPages, currentPage;
 
+    	  if (Array.isArray(data)) {
+    	    items = data;
+    	    total = data.length;
+    	    totalPages = 1;
+    	    currentPage = 1;
+    	  } else {
+    	    items = data.items || [];
+    	    total = Number(data.total || 0);
+    	    totalPages = Number(data.totalPages || 1);
+    	    currentPage = Number(data.page || page);
+    	  }
+    	
         if (totalEl) totalEl.textContent = String(total);
 
         if (!items || items.length === 0) {
@@ -321,7 +377,7 @@
         if (emptyEl) emptyEl.style.display = "none";
         if (listEl) {
           var html = "";
-          for (var i = 0; i < items.length; i++) html += renderListItem(items[i]);
+          for (var i = 0; i < items.length; i++) html += renderListItem(items[i], wrap);
           listEl.innerHTML = html;
         }
 
@@ -665,6 +721,130 @@
 		    	});
 		  	}); 
 		}
+		
+		
+		// -------------------------
+		// 작성글 불러오기
+		// -------------------------
+		(function () {
+		  var postSection = document.getElementById("secPosts");
+		  if (!postSection) return;
+		
+		  var wrap = postSection.querySelector(".list-wrap");
+		  if (!wrap) return;
+		
+		  var api = wrap.getAttribute("data-api");
+		  var defaultTab = wrap.getAttribute("data-default-tab") || "all";
+		
+		  var listEl = wrap.querySelector(".js-list");
+		  var emptyEl = wrap.querySelector(".js-empty");
+		  var totalEl = wrap.querySelector(".js-total");
+		  var pagerEl = wrap.querySelector(".js-pager");
+		  var tabButtons = postSection.querySelectorAll(".tabbar[data-section='posts'] .tab");
+		
+		  var currentTab = defaultTab;
+		
+		  function escapeHtml(str) {
+		    if (str == null) return "";
+		    return String(str)
+		      .replace(/&/g, "&amp;")
+		      .replace(/</g, "&lt;")
+		      .replace(/>/g, "&gt;")
+		      .replace(/"/g, "&quot;")
+		      .replace(/'/g, "&#39;");
+		  }
+		
+		  function renderList(data) {
+		    if (!listEl || !emptyEl || !totalEl) return;
+		
+		    listEl.innerHTML = "";
+		    pagerEl.innerHTML = "";
+		
+		    if (!data || data.length === 0) {
+		      totalEl.textContent = "0";
+		      emptyEl.style.display = "block";
+		      listEl.style.display = "none";
+		      return;
+		    }
+		
+		    var filtered = data;
+		
+		    if (currentTab === "community") {
+		      filtered = data.filter(function (item) {
+		        return !item.moveUrl || item.moveUrl.indexOf("/qna/") === -1;
+		      });
+		    } else if (currentTab === "qna") {
+		      filtered = data.filter(function (item) {
+		        return item.moveUrl && item.moveUrl.indexOf("/qna/") !== -1;
+		      });
+		    }
+		
+		    totalEl.textContent = String(filtered.length);
+		
+		    if (filtered.length === 0) {
+		      emptyEl.style.display = "block";
+		      listEl.style.display = "none";
+		      return;
+		    }
+		
+		    emptyEl.style.display = "none";
+		    listEl.style.display = "block";
+		
+		    var html = "";
+		
+		    for (var i = 0; i < filtered.length; i++) {
+		      var post = filtered[i];
+		
+		      html += ''
+		        + '<li class="list-item">'
+		        + '  <a class="list-link" href="' + escapeHtml(post.moveUrl || "#") + '">'
+		        + '    <div class="item-title">' + escapeHtml(post.title || "") + '</div>'
+		        + '    <div class="item-meta">'
+		        + '      조회 ' + (post.viewCount || 0) + ' · 댓글 ' + (post.replyCnt || 0)
+		        + '    </div>'
+		        + '  </a>'
+		        + '</li>';
+		    }
+		
+		    listEl.innerHTML = html;
+		  }
+		
+		  function loadPosts() {
+		    if (!api) return;
+		
+		    fetch(api)
+		      .then(function (res) {
+		        return res.json();
+		      })
+		      .then(function (data) {
+		        console.log("작성글 데이터:", data);
+		        renderList(data);
+		      })
+		      .catch(function (err) {
+		        console.log("작성글 불러오기 실패:", err);
+		        totalEl.textContent = "0";
+		        emptyEl.style.display = "block";
+		        listEl.style.display = "none";
+		      });
+		  }
+		
+		  for (var i = 0; i < tabButtons.length; i++) {
+		    tabButtons[i].addEventListener("click", function () {
+		      currentTab = this.getAttribute("data-tab");
+		
+		      for (var j = 0; j < tabButtons.length; j++) {
+		        tabButtons[j].classList.remove("is-active");
+		      }
+		      this.classList.add("is-active");
+		
+		      loadPosts();
+		    });
+		  }
+		
+		  loadPosts();
+		})();
+		
+		
 
   
  
