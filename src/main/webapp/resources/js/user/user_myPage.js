@@ -54,7 +54,6 @@
 
   function openModal(el) {
     if (!el) return;
-    console.log("openModal called:", el.id);
     backdrop.hidden = false;
     el.hidden = false;
   }
@@ -103,7 +102,7 @@
   var plantEmpty = document.getElementById("plantEmpty");
 
   function searchPlants(keyword) {
-    var url = ctx + "/plant/api/search?keyword=" + encodeURIComponent(keyword);
+    var url = ctx + "/user/myPage/hashtag?keyword=" + encodeURIComponent(keyword);
     return fetch(url, { headers: { "Accept": "application/json" } })
       .then(function (res) {
         if (!res.ok) throw new Error("plant search failed");
@@ -122,16 +121,17 @@
 
     for (var i = 0; i < items.length; i++) {
       var p = items[i];
+      
+      var id = p.hashtag_id || p.HASHTAG_ID;
+      var name = p.hashtag_name || p.HASHTAG_NAME;
+      
       var li = document.createElement("li");
       li.className = "list-item";
       li.innerHTML =
-        '<div class="item-top">' +
-          '<div>' +
-            '<div><b>' + escapeHtml(p.plant_name_kor || p.plant_name_kr || "") + '</b></div>' +
-            '<div class="muted">' + escapeHtml(p.plant_name || p.plant_name_en || "") + '</div>' +
-          '</div>' +
-          '<button type="button" class="btn btn-ghost" data-plant-id="' + escapeHtml(p.plant_id) + '">선택</button>' +
-        '</div>';
+          '<div class="item-top">' +
+            '<div><b>' + escapeHtml(name || "") + '</b></div>' +
+            '<button type="button" class="btn btn-ghost" data-hashtag-id="' + escapeHtml(id) + '">선택</button>' +
+          '</div>';
       plantResult.appendChild(li);
     }
   }
@@ -150,25 +150,28 @@
   }
 
   if (plantResult) {
-    plantResult.addEventListener("click", function (e) {
-      var pickBtn = closest(e.target, "button[data-plant-id]");
-      if (!pickBtn) return;
+	  plantResult.addEventListener("click", function (e) {
+	    var pickBtn = closest(e.target, "button[data-hashtag-id]");
+	    if (!pickBtn) return;
 
-      var plantId = pickBtn.getAttribute("data-plant-id");
-      fetch(ctx + "/myPage/api/interest-plant", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plantId: plantId })
-      })
-        .then(function (res) {
-          if (!res.ok) throw new Error("save failed");
-          location.reload();
-        })
-        .catch(function () {
-          alert("관심식물 저장에 실패했습니다.");
-        });
-    });
-  }
+	    var hashtagId = pickBtn.getAttribute("data-hashtag-id");
+
+	    fetch(ctx + "/user/myPage/aspect?hashtagId=" + encodeURIComponent(hashtagId), {
+	      method: "POST",
+	      headers: { "Accept": "application/json" }
+	    })
+	      .then(function (res) {
+	        if (!res.ok) throw new Error("save failed");
+	        return res.json();
+	      })
+	      .then(function () {
+	        location.reload();
+	      })
+	      .catch(function () {
+	        alert("관심사 저장에 실패했습니다.");
+	      });
+	  });
+	}
 
   // -------------------------
   // Verify modal (phone/email)
@@ -259,20 +262,60 @@
       });
   }
 
-  function renderListItem(data) {
-    var title = escapeHtml(data.title || "");
-    var url = data.url || "#";
-    var createdAt = escapeHtml(data.createdAt || "");
-    var summary = escapeHtml(data.summary || "");
+  function renderListItem(data, wrap) {
+//    var title = escapeHtml(data.title || "");
+//    var url = data.url || "#";
+//    var createdAt = escapeHtml(data.createdAt || "");
+//    var summary = escapeHtml(data.summary || "");
+//
+//    return '' +
+//      '<li class="list-item">' +
+//        '<div class="item-top">' +
+//          '<a class="item-title" href="' + url + '">' + title + '</a>' +
+//          '<div class="item-meta">' + createdAt + '</div>' +
+//        '</div>' +
+//        (summary ? '<div class="item-body">' + summary + '</div>' : '') +
+//      '</li>';
+	  
+	  
+		  var api = wrap.getAttribute("data-api");
+	
+		  // 작성댓글
+		  if (api.indexOf("reply") !== -1) {
+	
+		    var content = escapeHtml(data.content || "");
+		    var regDate = escapeHtml(data.reg_date || "");
+	
+		    return ''
+		      + '<li class="list-item">'
+		      + '<div class="comment-item">'
+		      + '<div class="comment-content">' + content + '</div>'
+		      + '<div class="comment-meta">등록날짜 ' + regDate + '</div>'
+		      + '</div>'
+		      + '</li>';
+		  }
+		  
+		  var title = escapeHtml(data.title || "");
+		  var url = data.moveUrl || "#";
+		  var viewCount = Number(data.viewCount || 0);
+		  var likeCount = Number(data.likeCount || 0);
+		  var replyCnt = Number(data.replyCnt || 0);
 
-    return '' +
-      '<li class="list-item">' +
-        '<div class="item-top">' +
-          '<a class="item-title" href="' + url + '">' + title + '</a>' +
-          '<div class="item-meta">' + createdAt + '</div>' +
-        '</div>' +
-        (summary ? '<div class="item-body">' + summary + '</div>' : '') +
-      '</li>';
+		  return ''
+		    + '<li class="list-item post-card">'
+		    +   '<a class="post-link" href="' + url + '">'
+		    +     '<div class="post-title">' + title + '</div>'
+		    +     '<div class="post-meta">'
+		    +       '<span>조회수 ' + viewCount + '</span>'
+		    +       '<span>|</span>'
+		    +       '<span>좋아요 ' + likeCount + '</span>'
+		    +       '<span>|</span>'
+		    +       '<span>댓글 ' + replyCnt + '</span>'
+		    +     '</div>'
+		    +   '</a>'
+		    + '</li>';
+		
+	  
   }
 
   function renderPager(pagerEl, currentPage, totalPages, onMove) {
@@ -294,6 +337,7 @@
 
   function loadList(wrap, tab, page) {
     var api = wrap.getAttribute("data-api");
+    console.log("api =", api, "tab =", tab, "page =", page);  
     var listEl = q(wrap, ".js-list");
     var pagerEl = q(wrap, ".js-pager");
     var emptyEl = q(wrap, ".js-empty");
@@ -301,11 +345,26 @@
 
     fetchList(api, tab, page)
       .then(function (data) {
-        var items = data.items || [];
-        var total = Number(data.total || 0);
-        var totalPages = Number(data.totalPages || 1);
-        var currentPage = Number(data.page || page);
+    	  console.log("api =", api);
+    	  console.log("data =", data);
+//        var items = data.items || [];
+//        var total = Number(data.total || 0);
+//        var totalPages = Number(data.totalPages || 1);
+//        var currentPage = Number(data.page || page);
+    	  var items, total, totalPages, currentPage;
 
+    	  if (Array.isArray(data)) {
+    	    items = data;
+    	    total = data.length;
+    	    totalPages = 1;
+    	    currentPage = 1;
+    	  } else {
+    	    items = data.items || [];
+    	    total = Number(data.total || 0);
+    	    totalPages = Number(data.totalPages || 1);
+    	    currentPage = Number(data.page || page);
+    	  }
+    	
         if (totalEl) totalEl.textContent = String(total);
 
         if (!items || items.length === 0) {
@@ -318,7 +377,7 @@
         if (emptyEl) emptyEl.style.display = "none";
         if (listEl) {
           var html = "";
-          for (var i = 0; i < items.length; i++) html += renderListItem(items[i]);
+          for (var i = 0; i < items.length; i++) html += renderListItem(items[i], wrap);
           listEl.innerHTML = html;
         }
 
@@ -418,6 +477,62 @@
       .split('"').join("&quot;")
       .split("'").join("&#039;");
   }
+//-------------------------
+  // 프로필-이미지 업로드
+ // ------------------------- 
+  var avatarFile = document.querySelector("#avatarFile");
+  var btnAvatarSave = document.querySelector("#btnAvatarSave");
+  var avatarLarge = document.querySelector("#avatarLarge");
+  
+  avatarFile.addEventListener("change",
+  function(e){
+	  var file = e.target.files[0];
+	  if(!file) return;
+	  
+	  var reader = new FileReader();
+	  reader.onload = function (evt) {
+	    avatarLarge.src = evt.target.result; // 미리보기
+	  };
+	  reader.readAsDataURL(file);
+	});
+
+	btnAvatarSave.addEventListener("click", function () {
+	  var file = avatarFile.files[0];
+
+	  if (!file) {
+	    alert("이미지를 먼저 선택해주세요.");
+	    return;
+	  }
+
+	  var formData = new FormData();
+	  formData.append("profileImage", file);
+
+	  fetch("/user/myPage/profileImage", {
+	    method: "POST",
+	    body: formData
+	  })
+	    .then(function (res) {
+	    	if(!res.ok){
+	    		return new Error("222222");
+	    	}
+	    	return res.json(); 
+    	})
+	    .then(function (data) {
+	      if (data.success) {
+	        alert("저장 완료");
+	        location.reload();
+	      } else {
+	        alert("저장 실패");
+	      }
+	    })
+	    .catch(function (err) {
+	      alert("업로드 중 오류 발생" + err);
+	    });
+	});
+  
+  
+  
+  
  //-------------------------
   // 마이페이지-닉네임, 주소 수정
  // -------------------------
@@ -444,7 +559,7 @@
 	  }).then(function(res){ return res.text(); });
 	}
 
-	// 닉네임 버튼
+	// 닉네임 수정 버튼
 	if (btnNick) {
 	  btnNick.addEventListener("click", function(){
 		  
@@ -467,27 +582,36 @@
 	    	    nickMsg.textContent = "닉네임 수정 완료";
 	    	    nickMsg.className = "form-msg success";
 	    	    nickMsg.style.color = "green";
+	    	    nickMsg.style.display = "inline";
 	    	    //변경된 값 저장
 	    	    nicknameInput.dataset.original = newNick;
 	    	    
+	    	    //왼쪽 닉네임도 즉시 반영
+	    	    var leftNickEl = document.querySelector("#leftNickname");
+	    	    
+	    	    if(leftNickEl){
+	    	    	leftNickEl.textContent = newNick;
+	    	    }
+	    	    setTimeout(function () {
+	                nickMsg.style.display = "none";
+	              }, 2000);
+	    	    	
 	    	  } else {
 	    	    nickMsg.textContent = "닉네임 수정 실패";
 	    	    nickMsg.className = "form-msg error";
 	    	    nickMsg.style.color = "red";
+	    	    nickMsg.style.display = "inline";
+	    	    
+	    	    setTimeout(function () {
+	                nickMsg.style.display = "none";
+	              }, 2000);
 	    	  }
 	    	});
 	  	}); 
 	}
-	//닉네임 수정 후 메시지 사라짐
-	nicknameInput.addEventListener("input",
-	 function(){
-		if(nickMsg){
-		nickMsg.textContent = "";
-    	nickMsg.className = "form-msg";
-		}
-	});
+	
 
-	// 주소 버튼
+	// 주소  수정 버튼
 	if (btnAddr) {
 	  btnAddr.addEventListener("click", function(){
 		  
@@ -509,25 +633,219 @@
 	    		  addressMsg.textContent = "주소 수정 완료";
 	    		  addressMsg.className = "form-msg success";
 	    		  addressMsg.style.color = "green";
+	    		  addressMsg.style.display = "inline";
 		    	    //변경된 값 저장
 	    		  addressInput.dataset.original = newAddr;
-		    	    
+	    		  
+	    		  setTimeout(function () {
+	    			  addressMsg.style.display = "none";
+		              }, 2000);
+	    		  
 		    	  } else {
 		    		addressMsg.textContent = "주소 수정 실패";
 		    		addressMsg.className = "form-msg error";
 		    		addressMsg.style.color = "red";
+		    		addressMsg.style.display = "inline";
+		    	    
+		    	    setTimeout(function () {
+		    	    	addressMsg.style.display = "none";
+		              }, 2000);
 		    	  }
 	      });
 	  });
 	}
-	//주소 수정 후 메시지 사라짐
-	addressInput.addEventListener("input",
-	 function(){
-		if(addressMsg){
-			addressMsg.textContent = "";
-			addressMsg.className = "form-msg";
+	
+	//-------------------------
+	  // 프로필-자기소개 수정
+	 // -------------------------
+	  var btnIntro = document.querySelector("#editIntro");
+	  var introText = document.querySelector("#introText");
+	  var introMsg = document.querySelector("#introMsg");
+	  var originalIntro = introText ?(introText.dataset.original || ""):"";
+	  
+	  function introUpdate(intro) {
+		  
+		  return fetch(ctx + "/user/myPage/introUpdate", {
+		    method: "POST",
+		    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+		    body: "intro="+encodeURIComponent(intro)
+		  })
+		  .then(function(res){ 
+			  return res.text(); 
+		  });
 		}
-	});
+
+	  
+	  	// 자기소개 수정 버튼
+		if (btnIntro) {
+			btnIntro.addEventListener("click", function(){
+			  
+			  var newIntro = introText.value.trim();
+			  
+			  if(newIntro === ""){
+				  introMsg.textContent = "자기소개를 수정해주세요";
+				  introMsg.style.color = "red"; 
+			  }
+			  else if(newIntro === originalIntro){
+				  introMsg.textContent = "다른 내용으로 수정해주세요";
+				  introMsg.className = "form-msg error";
+				  introMsg.style.color = "red";
+				  return;
+			  }
+			  introUpdate(newIntro)
+		      .then(function(t){ 
+
+		    	  if ((t || "").trim() === "ok") {
+		    		introMsg.textContent = "내용 수정 완료";
+		    		introMsg.className = "form-msg success";
+		    		introMsg.style.color = "green";
+		    		introMsg.style.display = "inline";
+		    	    //변경된 값 저장
+		    		originalIntro = newIntro;
+		    		introText.dataset.original = newIntro;
+		    		
+		    		setTimeout(function () {
+		    			introMsg.style.display = "none";
+		              }, 2000);
+		    		
+		    	  } else {
+		    		introMsg.textContent = "내용 수정 실패";
+		    		introMsg.className = "form-msg error";
+		    		introMsg.style.color = "red";
+		    		introMsg.style.display = "inline";
+		    		
+		    		setTimeout(function () {
+		    			introMsg.style.display = "none";
+		              }, 2000);
+		    	  }
+		    	});
+		  	}); 
+		}
+		
+		
+		// -------------------------
+		// 작성글 불러오기
+		// -------------------------
+		(function () {
+		  var postSection = document.getElementById("secPosts");
+		  if (!postSection) return;
+		
+		  var wrap = postSection.querySelector(".list-wrap");
+		  if (!wrap) return;
+		
+		  var api = wrap.getAttribute("data-api");
+		  var defaultTab = wrap.getAttribute("data-default-tab") || "all";
+		
+		  var listEl = wrap.querySelector(".js-list");
+		  var emptyEl = wrap.querySelector(".js-empty");
+		  var totalEl = wrap.querySelector(".js-total");
+		  var pagerEl = wrap.querySelector(".js-pager");
+		  var tabButtons = postSection.querySelectorAll(".tabbar[data-section='posts'] .tab");
+		
+		  var currentTab = defaultTab;
+		
+		  function escapeHtml(str) {
+		    if (str == null) return "";
+		    return String(str)
+		      .replace(/&/g, "&amp;")
+		      .replace(/</g, "&lt;")
+		      .replace(/>/g, "&gt;")
+		      .replace(/"/g, "&quot;")
+		      .replace(/'/g, "&#39;");
+		  }
+		
+		  function renderList(data) {
+		    if (!listEl || !emptyEl || !totalEl) return;
+		
+		    listEl.innerHTML = "";
+		    pagerEl.innerHTML = "";
+		
+		    if (!data || data.length === 0) {
+		      totalEl.textContent = "0";
+		      emptyEl.style.display = "block";
+		      listEl.style.display = "none";
+		      return;
+		    }
+		
+		    var filtered = data;
+		
+		    if (currentTab === "community") {
+		      filtered = data.filter(function (item) {
+		        return !item.moveUrl || item.moveUrl.indexOf("/qna/") === -1;
+		      });
+		    } else if (currentTab === "qna") {
+		      filtered = data.filter(function (item) {
+		        return item.moveUrl && item.moveUrl.indexOf("/qna/") !== -1;
+		      });
+		    }
+		
+		    totalEl.textContent = String(filtered.length);
+		
+		    if (filtered.length === 0) {
+		      emptyEl.style.display = "block";
+		      listEl.style.display = "none";
+		      return;
+		    }
+		
+		    emptyEl.style.display = "none";
+		    listEl.style.display = "block";
+		
+		    var html = "";
+		
+		    for (var i = 0; i < filtered.length; i++) {
+		      var post = filtered[i];
+		
+		      html += ''
+		        + '<li class="list-item">'
+		        + '  <a class="list-link" href="' + escapeHtml(post.moveUrl || "#") + '">'
+		        + '    <div class="item-title">' + escapeHtml(post.title || "") + '</div>'
+		        + '    <div class="item-meta">'
+		        + '      조회 ' + (post.viewCount || 0) + ' · 댓글 ' + (post.replyCnt || 0)
+		        + '    </div>'
+		        + '  </a>'
+		        + '</li>';
+		    }
+		
+		    listEl.innerHTML = html;
+		  }
+		
+		  function loadPosts() {
+		    if (!api) return;
+		
+		    fetch(api)
+		      .then(function (res) {
+		        return res.json();
+		      })
+		      .then(function (data) {
+		        console.log("작성글 데이터:", data);
+		        renderList(data);
+		      })
+		      .catch(function (err) {
+		        console.log("작성글 불러오기 실패:", err);
+		        totalEl.textContent = "0";
+		        emptyEl.style.display = "block";
+		        listEl.style.display = "none";
+		      });
+		  }
+		
+		  for (var i = 0; i < tabButtons.length; i++) {
+		    tabButtons[i].addEventListener("click", function () {
+		      currentTab = this.getAttribute("data-tab");
+		
+		      for (var j = 0; j < tabButtons.length; j++) {
+		        tabButtons[j].classList.remove("is-active");
+		      }
+		      this.classList.add("is-active");
+		
+		      loadPosts();
+		    });
+		  }
+		
+		  loadPosts();
+		})();
+		
+		
+
   
  
   

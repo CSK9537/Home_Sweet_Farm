@@ -4,6 +4,34 @@
 
 <mapper namespace="org.joonzis.user.mapper.MypageMapper">
 	
+	<!-- 사용자가 작성한 글 -->
+	<select id="selectMyPosts" parameterType="int" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
+		SELECT
+        BOARD_ID AS boardId,
+        TITLE AS title,
+        USER_ID AS userId,
+        VIEW_COUNT AS viewCount,
+        REPLY_CNT AS replyCnt
+	    FROM tbl_board
+	    WHERE USER_ID = #{user_id}
+	    ORDER BY BOARD_ID DESC
+	</select>
+	
+	<!-- 사용자가 작성한 댓글 -->
+	<select id="selectMyReply" parameterType="int" resultType="org.joonzis.community.vo.ReplyVO">
+		SELECT
+	        reply_id, board_id, user_id, 
+	        content, reg_date
+    	FROM tbl_reply
+    	WHERE user_id = #{value}
+    	ORDER BY reg_date ASC
+	</select>
+	
+	<!-- 사용자가 작성한 질문 -->
+	
+		
+	
+	
 	<!-- 마이페이지 수정-닉네임, 주소  -->
 	<update id="updateMypage" parameterType="org.joonzis.user.vo.UserVO">
 		UPDATE TBL_USER
@@ -17,4 +45,40 @@
 		</set>
 		WHERE user_id = #{user_id}
 	</update>
+	
+	<!-- 마이페이지 수정-관심사  -->
+	<select id="searchHashtag" parameterType="string" resultType="map">
+		SELECT
+        hashtag_id,
+        hashtag_name
+	    FROM tbl_hashtag_list
+	    WHERE hashtag_name LIKE '%' || #{keyword} || '%'
+	    ORDER BY hashtag_name
+	</select>
+	
+	<!-- 마이페이지 수정-관심사 선택(저장)-->
+	<!-- merge 사용 이유: 데이터가 있으면  아무것도 안 하고 있으면 insert-->
+	<update id="insertUserAspect" >
+		  MERGE INTO tbl_user_aspect t
+		  USING (SELECT #{userId} AS user_id, #{hashtagId} AS hashtag_id FROM dual) s
+		  ON (t.user_id = s.user_id AND t.hashtag_id = s.hashtag_id)
+		  WHEN NOT MATCHED THEN
+		  INSERT (user_id, hashtag_id) VALUES (s.user_id, s.hashtag_id)
+	</update>
+	
+	<!-- 마이페이지 수정-프로필 이미지 변경  -->
+	<update id="updateProfile">
+		UPDATE tbl_user
+		SET profile_filename = #{profile_filename}
+		WHERE user_id = #{userId}
+	</update>
+	
+	<!-- 마이페이지 - 자기소개 수정 -->
+	<update id="updateIntro" parameterType="org.joonzis.user.vo.UserVO">
+		UPDATE tbl_user
+		SET intro = #{intro}
+		WHERE user_id = #{user_id}
+	</update>
+	
+	
 </mapper>
