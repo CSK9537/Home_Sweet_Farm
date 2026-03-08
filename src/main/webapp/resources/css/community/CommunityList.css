@@ -1,10 +1,17 @@
-/* ===== CommunityList page-only styles ===== */
-/* 공용 ContentLayout.css의 .page-shell / .content-wrap / .content-card를 전제로 함 */
+/* ===== CommunityList.css ===== */
 
+/* =========================
+   전체 컨테이너 레이아웃
+========================= */
 .content-card.community {
-  align-items: stretch; /* 내부는 좌우 꽉 차게 */
+  align-items: stretch;
+  padding: 30px;
+  box-sizing: border-box;
 }
 
+/* =========================
+   상단 타이틀 & 탭 & 버튼
+========================= */
 .community__header {
   width: 100%;
 }
@@ -14,476 +21,454 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 6px;
 }
 
 .community__title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: #2f3a2a;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-bg-main);
+  letter-spacing: -0.02em;
 }
 
 .community__writeBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  height: 30px;
-  padding: 0 14px;
-  border-radius: 8px;
-  border: 2px solid #6b7b61;
-  background: #6b7b61;
-  color: #f4f2ed;
+  height: 44px;
+  padding: 0 24px;
+  border-radius: 10px;
+  background: var(--color-bg-main);
+  color: #ffffff;
   text-decoration: none;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
+  transition: all 0.2s ease;
 }
-
 .community__writeBtn:hover {
-  filter: brightness(0.95);
+  background: #5a6851;
+  box-shadow: 0 4px 10px rgba(107, 123, 97, 0.2);
+  transform: translateY(-2px);
 }
 
+/* 하위 탭 & 보기 버튼 영역 */
 .community__subRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 12px;
-  padding: 0 6px;
+  margin-top: 16px;
 }
 
 .community__tabs {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .community__tab {
   text-decoration: none;
-  color: #2f3a2a;
-  font-size: 13px;
-  padding: 4px 2px;
-  border-bottom: 2px solid transparent;
-  font-weight: 600;
+  color: var(--color-main-muted);
+  font-size: 15px;
+  padding: 4px 8px;
+  border-bottom: 3px solid transparent;
+  font-weight: 700;
+  transition: all 0.2s ease;
 }
-
 .community__tab:hover {
   font-weight: 800;
-  border-bottom-color: #6b7b61;
+  color: var(--color-bg-main);
+  border-bottom-color: var(--color-main-soft);
 }
-
 .community__tab.is-active {
   font-weight: 800;
-  border-bottom-color: #6b7b61;
+  color: var(--color-bg-main);
+  border-bottom-color: var(--color-bg-main);
 }
 
 .community__tabSep {
-  color: #6b7b61;
-  opacity: 0.7;
+  color: var(--color-main-line);
+  opacity: 0.5;
+  user-select: none;
 }
 
+/* 우측 보기 방식 (카드/앨범/리스트) */
 .community__viewBtns {
   display: inline-flex;
   gap: 8px;
 }
 
 .viewBtn {
-  height: 30px;
-  padding: 0 10px;
+  height: 34px;
+  padding: 0 14px;
   border-radius: 8px;
-  border: 2px solid #6b7b61;
-  background: transparent;
-  color: #2f3a2a;
-  font-size: 12px;
+  border: 1px solid var(--color-main-line);
+  background: #ffffff;
+  color: var(--color-text-main);
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-
 .viewBtn:hover {
-  background: rgba(107, 123, 97, 0.10);
+  background: var(--color-main-soft);
+  border-color: var(--color-bg-main);
 }
-
 .viewBtn.is-active {
-  background: #6b7b61;
-  color: #f4f2ed;
+  background: var(--color-bg-main);
+  color: #ffffff;
+  border-color: var(--color-bg-main);
+  box-shadow: 0 4px 10px rgba(107, 123, 97, 0.15);
 }
 
 .community__divider {
   height: 2px;
-  background: #6b7b61;
-  opacity: 0.85;
-  margin: 16px 0 18px;
+  background: var(--color-main-line);
+  margin: 16px 0 24px;
 }
 
-/* ===== 리스트 래퍼 ===== */
+
+/* =========================
+   MARKET 전용 UI (상태 배지 + 가격)
+========================= */
+.marketBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  z-index: 4;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* 테마 톤에 맞춘 배지 컬러 */
+.marketBadge--sell { background: #e2874a; } /* 메인 강조색(오렌지) */
+.marketBadge--share { background: #2e5aa3; } /* 신뢰감 주는 블루 */
+.marketBadge--done { background: var(--color-main-muted); } /* 완료는 무채색 */
+
+.marketPrice {
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+.marketPrice--body {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #e2874a;
+}
+.marketPrice--overlay {
+  margin-top: 8px;
+  font-size: 15px;
+  color: #ffffff;
+}
+
+
+/* =========================
+   게시글 아이템 (공통 기본형 = 카드 뷰)
+========================= */
 .community__list {
   width: 100%;
 }
 
-/* =========================================================
-   MARKET 전용 UI (상태 배지 + 가격)
-   - 카드/앨범: 썸네일 위 absolute 배지
-   - 리스트: 이미지가 없으므로 배지를 inline-chip 형태로 보여주도록 보조 규칙 제공
-   ========================================================= */
-
-/* 공통 배지 */
-.marketBadge{
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 5px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 900;
-  color: #fff;
-  z-index: 4;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
-}
-
-/* 상태별 컬러 */
-.marketBadge--sell{ background:#ff6b3d; }
-.marketBadge--share{ background:#3b82f6; }
-.marketBadge--done{ background:#9aa0a6; }
-
-/* 가격(공통) */
-.marketPrice{
-  font-weight: 900;
-  letter-spacing: -0.2px;
-}
-
-/* 카드/리스트 본문 가격 */
-.marketPrice--body{
-  margin: 6px 0 6px;
-  font-size: 15px;
-  color: #ff6b3d;
-}
-
-/* 앨범 오버레이 가격(오버레이 안에서 더 잘 보이도록) */
-.marketPrice--overlay{
-  margin-top: 6px;
-  font-size: 13px;
-  color: rgba(47, 58, 42, 0.95);
-  font-weight: 900;
-}
-
-/* ===== 공통 아이템 ===== */
 .postItem {
   display: flex;
-  gap: 14px;
-
+  gap: 20px;
   width: 100%;
-  padding: 12px;
-  margin-bottom: 12px;
-
-  border-radius: 10px;
-  border: 2px solid rgba(107, 123, 97, 0.6);
-  background: rgba(244, 242, 237, 0.5);
-
+  padding: 20px;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--color-main-soft);
+  background: #ffffff;
   text-decoration: none;
   color: inherit;
-
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
 }
 
 .postItem:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.10);
-  background: rgba(244, 242, 237, 0.85);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(107, 123, 97, 0.1);
+  border-color: var(--color-main-line);
 }
 
 /* 썸네일 */
 .postItem__imgWrap {
   position: relative;
-  flex: 0 0 220px;
+  flex: 0 0 200px;
   height: 150px;
   border-radius: 10px;
   overflow: hidden;
-  border: 2px solid rgba(107, 123, 97, 0.55);
-  background: #ddd;
+  background: var(--color-main-soft);
+  border: 1px solid var(--color-main-line);
 }
-
 .postItem__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.4s ease;
+}
+.postItem:hover .postItem__img {
+  transform: scale(1.05); /* 부드러운 이미지 줌 효과 */
 }
 
-/* 앨범형 오버레이(기본 숨김) */
-.postItem__overlay {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  padding: 10px 10px 8px;
-  background: rgba(244, 242, 237, 0.78);
-
-  display: none;
-}
-
-.postItem__overlayTitle {
-  font-weight: 900;
-  font-size: 15px;
-  color: #2f3a2a;
-  line-height: 1.2;
-  margin-bottom: 2px;
-
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.postItem__overlayMeta,
-.postItem__overlayStats {
-  font-size: 12px;
-  color: rgba(47, 58, 42, 0.9);
-}
-
-.postItem__overlayStats {
-  margin-top: 4px;
-}
-
-.sep {
-  margin: 0 6px;
-  opacity: 0.7;
-}
+/* 오버레이 (카드뷰에선 숨김) */
+.postItem__overlay { display: none; }
 
 /* 본문 */
 .postItem__body {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .postItem__title {
-  font-size: 16px;
-  font-weight: 900;
-  color: #2f3a2a;
-  margin: 2px 0 4px;
-
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-bg-main);
+  margin-bottom: 8px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.postItem__writer {
-  font-size: 12px;
-  font-weight: 700;
-  color: rgba(47, 58, 42, 0.85);
-  margin-bottom: 8px;
-}
-
-.postItem__meta {
-  font-size: 12px;
-  color: rgba(47, 58, 42, 0.85);
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(107, 123, 97, 0.45);
-
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-}
-
-.postItem__meta .label {
-  font-weight: 800;
-  opacity: 0.85;
-}
-
 .postItem__content {
-  font-size: 12px;
-  color: rgba(47, 58, 42, 0.9);
-  margin-top: 8px;
-
+  font-size: 14px;
+  color: var(--color-text-main);
+  line-height: 1.6;
+  margin-bottom: 12px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  opacity: 0.9;
 }
 
-/* ====== 뷰 모드: CARD (기본) ====== */
-.view-card .postItem {
-  flex-direction: row;
+.postItem__writer {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-main-muted);
+  margin-bottom: 12px;
 }
 
-.view-card .postItem__overlay {
-  display: none;
+/* 등록날짜 / 조회수 등 */
+.postItem__meta {
+  font-size: 12px;
+  color: var(--color-main-muted);
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-main-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: auto; /* 항상 하단 배치 */
 }
+.postItem__meta .label { font-weight: 700; opacity: 0.8; }
+.postItem__meta .value { font-weight: 500; }
+.sep { margin: 0 4px; opacity: 0.5; }
 
-/* 카드에서 가격이 메타에 붙어서 줄바꿈이 이상해지지 않도록(선택) */
-.view-card .marketPrice--body{
-  display: inline-block;
-}
 
-/* ====== 뷰 모드: ALBUM ====== */
+/* =========================
+   뷰 모드 제어: ALBUM
+========================= */
 .view-album {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
+  gap: 24px;
 }
 
 .view-album .postItem {
   display: block;
   padding: 0;
   margin: 0;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
 }
 
 .view-album .postItem__imgWrap {
   width: 100%;
-  height: 220px;
+  height: 260px;
   border: 0;
-  border-radius: 14px;
+  border-radius: 16px;
 }
 
-/* 앨범에서는 오버레이 항상 노출 */
+/* 앨범형은 오버레이를 표시하고 본문을 숨김 */
 .view-album .postItem__overlay {
   display: block;
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 20px 20px 16px;
+  background: linear-gradient(to top, rgba(20, 30, 20, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
+  color: #ffffff;
 }
 
-/* 앨범형은 바디 숨김 */
-.view-album .postItem__body {
-  display: none;
+.view-album .postItem__overlayTitle {
+  font-weight: 800;
+  font-size: 16px;
+  color: #ffffff;
+  line-height: 1.3;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
-/* 앨범에서 배지가 더 튀도록 약간 크게 */
-.view-album .marketBadge{
-  top: 12px;
-  left: 12px;
-  padding: 6px 12px;
+.view-album .postItem__overlayMeta,
+.view-album .postItem__overlayStats {
   font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
 }
+.view-album .postItem__overlayStats { margin-top: 4px; }
 
-/* ====== 뷰 모드: LIST ====== */
+.view-album .postItem__body { display: none; }
+
+
+/* =========================
+   뷰 모드 제어: LIST
+========================= */
 .view-list .postItem {
-  gap: 10px;
-  padding: 16px 12px;
+  gap: 16px;
+  padding: 20px;
 }
 
-.view-list .postItem__imgWrap {
-  display: none; /* 리스트형은 이미지 숨김 */
-}
-
-/* 리스트형은 제목 위주 */
-.view-list .postItem__title {
-  font-size: 14px;
-}
-
-/* 리스트형은 작성자/본문 숨김 */
+.view-list .postItem__imgWrap { display: none; }
+.view-list .postItem__title { font-size: 16px; margin-bottom: 4px; }
 .view-list .postItem__writer,
-.view-list .postItem__content {
-  display: none;
-}
+.view-list .postItem__content { display: none; }
 
 .view-list .postItem__meta {
-  border-bottom: 0;
-  padding-bottom: 0;
-  margin-top: 2px;
+  border-top: 0;
+  padding-top: 0;
+  margin-top: 8px;
 }
+.view-list .marketPrice--body { margin: 0 0 6px; font-size: 14px; }
 
-/* 리스트형에서 marketPrice가 너무 튀지 않게 */
-.view-list .marketPrice--body{
-  margin: 0 0 4px;
-  font-size: 13px;
-}
-
-/* 리스트형은 imgWrap이 없어서 absolute 배지가 보일 자리가 없음.
-   -> JSP에서 리스트형일 때 배지를 제목 옆에 inline으로 뿌리는 경우를 대비한 스타일
-   (현재 JSP는 imgWrap 안에만 배지를 넣지만, 추후 확장 대비) */
-.view-list .marketBadge{
+/* 리스트 뷰일 때 JS에서 복제한 배지 처리 */
+.view-list .marketBadge {
   position: static;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-right: 6px;
+  margin-right: 8px;
   box-shadow: none;
-  font-size: 11px;
-  padding: 3px 8px;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  vertical-align: text-bottom;
 }
 
-/* ===== 하단 영역 ===== */
+
+/* =========================
+   하단: 페이지네이션 + 검색
+========================= */
 .community__bottom {
   width: 100%;
-  margin-top: 8px;
-  padding-top: 16px;
-  border-top: 2px solid rgba(107, 123, 97, 0.65);
-
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid var(--color-main-soft);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 24px;
 }
 
+/* 페이지네이션 (스토어 페이징과 통일) */
 .pagination {
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
-
 .pageBtn, .pageNum {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
-  border: 2px solid #6b7b61;
-  background: transparent;
+  border: 1px solid var(--color-main-line);
+  background: #ffffff;
+  color: var(--color-text-main);
+  font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
-  font-weight: 800;
-  color: #2f3a2a;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-
+.pageBtn:hover, .pageNum:not(.is-active):hover {
+  background: var(--color-main-soft);
+  border-color: var(--color-bg-main);
+  color: var(--color-bg-main);
+}
 .pageNum.is-active {
-  background: #6b7b61;
-  color: #f4f2ed;
+  background: var(--color-bg-main);
+  border-color: var(--color-bg-main);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(107, 123, 97, 0.2);
 }
 
+/* 검색바 */
 .searchBar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
 }
 
 .searchInput {
   width: 360px;
-  max-width: 72vw;
-  height: 34px;
+  max-width: 60vw;
+  height: 48px;
   border-radius: 999px;
-  border: 2px solid rgba(107, 123, 97, 0.75);
-  padding: 0 14px;
-  background: rgba(244, 242, 237, 0.6);
+  border: 2px solid var(--color-main-line);
+  padding: 0 20px;
+  background: #ffffff;
+  font-size: 14px;
+  color: var(--color-text-main);
   outline: none;
+  transition: all 0.2s ease;
 }
-
 .searchInput:focus {
-  border-color: #6b7b61;
-  background: rgba(244, 242, 237, 0.9);
+  border-color: var(--color-bg-main);
+  box-shadow: 0 0 0 3px var(--color-main-soft);
 }
 
 .searchBtn {
-  height: 34px;
-  padding: 0 14px;
+  height: 48px;
+  padding: 0 24px;
   border-radius: 999px;
-  border: 2px solid #6b7b61;
-  background: #6b7b61;
-  color: #f4f2ed;
+  border: 1px solid transparent;
+  background: var(--color-bg-main);
+  color: #ffffff;
   font-weight: 800;
+  font-size: 14px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-
 .searchBtn:hover {
-  filter: brightness(0.95);
+  background: #5a6851;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(107, 123, 97, 0.2);
 }
 
-/* ===== 반응형 ===== */
+
+/* =========================
+   반응형
+========================= */
 @media (max-width: 1024px) {
   .view-album { grid-template-columns: repeat(2, 1fr); }
-  .postItem__imgWrap { flex-basis: 200px; }
+  .postItem__imgWrap { flex-basis: 160px; height: 120px; }
 }
 
 @media (max-width: 767px) {
-  .community__subRow { flex-direction: column; align-items: flex-start; }
+  .content-card.community { padding: 20px; }
+  .community__subRow { flex-direction: column; align-items: flex-start; gap: 16px; }
+  
   .view-album { grid-template-columns: 1fr; }
-  .postItem { flex-direction: column; }
+  .postItem { flex-direction: column; gap: 12px; }
   .postItem__imgWrap { width: 100%; height: 200px; flex-basis: auto; }
+  
+  .view-list .postItem { padding: 16px; }
+  .searchInput { width: 100%; max-width: none; }
 }

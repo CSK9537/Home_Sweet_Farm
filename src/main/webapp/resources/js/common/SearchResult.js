@@ -1,56 +1,29 @@
-const service = SearchService;
-let q = document.getElementById('q').innerHTML;
-let tmp = document.querySelector('.tmp');
-service.getBoardsByTitle(q, jsonArray => {
-  jsonArray.forEach(board => {
-    let makechild = '';
-    makechild += `<div>`;
-    makechild += `${board.title}\n`;
-    makechild += `${board.content}\n`;
-    makechild += `${board.user_id}`;
-    makechild += `</div>`;
-    tmp.innerHTML += makechild;
-  });
-});
-service.getBoardsByContent(q, jsonArray => {
-  jsonArray.forEach(board => {
-    let makechild = '';
-    makechild += `<div>`;
-    makechild += `${board.title}\n`;
-    makechild += `${board.content}\n`;
-    makechild += `${board.user_id}`;
-    makechild += `</div>`;
-    tmp.innerHTML += makechild;
-  });
-});
-service.getBoardsByWriter(q, jsonArray => {
-  jsonArray.forEach(board => {
-    let makechild = '';
-    makechild += `<div>`;
-    makechild += `${board.title}\n`;
-    makechild += `${board.content}\n`;
-    makechild += `${board.user_id}`;
-    makechild += `</div>`;
-    tmp.innerHTML += makechild;
-  });
-});
-service.getPlants(q, jsonArray => {
-  jsonArray.forEach(plant => {
-    let makechild = '';
-    makechild += `<div>`;
-    makechild += `${plant.plant_name}\n`;
-    makechild += `${plant.plant_name_kor}`;
-    makechild += `</div>`;
-    tmp.innerHTML += makechild;
-  });
-});
-service.getProducts(q, jsonArray => {
-  jsonArray.forEach(product => {
-    let makechild = '';
-    makechild += `<div>`;
-    makechild += `${product.product_name}\n`;
-    makechild += `${product.product_price}`;
-    makechild += `</div>`;
-    tmp.innerHTML += makechild;
+// SearchResult.js
+
+document.addEventListener("DOMContentLoaded", function() {
+  const tabs = document.querySelectorAll(".search-result-tab");
+  const sections = document.querySelectorAll(".search-result-section");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", function() {
+      // 1. 탭 활성화 변경
+      tabs.forEach(t => t.classList.remove("is-active"));
+      this.classList.add("is-active");
+
+      const target = this.getAttribute("data-target");
+
+      // 2. 섹션 표시/숨김 처리
+      if (target === "all") {
+        sections.forEach(sec => sec.style.display = "block");
+      } else {
+        sections.forEach(sec => {
+          if (sec.id === target) {
+            sec.style.display = "block";
+          } else {
+            sec.style.display = "none";
+          }
+        });
+      }
+    });
   });
 });

@@ -37,14 +37,13 @@
       .join(' ');
   }
 
-  // ====== 기존 캐러셀 네비/카드 이동 유지 ======
+  // ====== 1. 기존 캐러셀 좌우 버튼 이동 ======
   function initCarouselNav(scope) {
     qsa('.js-nav', scope).forEach(function (btn) {
       btn.addEventListener('click', function () {
         var target = btn.getAttribute('data-target');
         var dir = parseInt(btn.getAttribute('data-dir') || '1', 10);
 
-        // 기존 코드 구조에 맞춰 rail id가 #rail-popular 같은 형태라면 아래를 유지
         var rail = qs('#rail-' + target, root) || qs('#' + target + 'Rail', root);
         if (!rail) return;
 
@@ -54,6 +53,20 @@
     });
   }
 
+  // ====== 2. 마우스 휠로 가로 스크롤 하기 (새로 추가된 기능!) ======
+  function initRailWheelScroll(scope) {
+    qsa('.rail', scope).forEach(function (rail) {
+      rail.addEventListener('wheel', function (e) {
+        // 세로 스크롤 휠(deltaY) 값 감지
+        if (e.deltaY !== 0) {
+          e.preventDefault(); // 화면 전체가 아래로 내려가는 것 방지
+          rail.scrollLeft += e.deltaY; // 세로 휠 값을 가로 스크롤에 더함
+        }
+      }, { passive: false }); // preventDefault()를 사용하기 위해 passive: false 설정 필수
+    });
+  }
+
+  // ====== 3. 카드 클릭 시 이동 ======
   function initCardMove(scope) {
     qsa('.js-card', scope).forEach(function (card) {
       card.addEventListener('click', function () {
@@ -141,7 +154,7 @@
     });
   }
 
-  // ====== content-card 통째로 교체 (핵심) ======
+  // ====== content-card 통째로 교체 ======
   function openMorePage(kind, titleText) {
     if (!homeView || !moreView || !moreList) return;
 
@@ -211,8 +224,9 @@
     });
   }
 
-  // 최초 바인딩
+  // 최초 바인딩 실행
   initCarouselNav(root);
+  initRailWheelScroll(root); // 🌟 마우스 휠 스크롤 이벤트 바인딩 추가
   initCardMove(root);
   initMoreButtons();
 })();
