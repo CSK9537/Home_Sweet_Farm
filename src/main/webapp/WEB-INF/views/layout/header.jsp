@@ -141,32 +141,21 @@
 	          <a class="gnb__link" href="/community">커뮤니티</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
-	              <a class="subbar__link" href="#">자유게시판</a>
+	              <a class="subbar__link" href="/community/list?type=FREE">자유게시판</a>
 	              <span class="subbar__sep">||</span>
-	              <a class="subbar__link" href="#">벼룩시장</a>
+	              <a class="subbar__link" href="/community/list?type=MARKET">벼룩시장</a>
 	            </div>
 	          </div>
 	        </li>
 	
 	        <li class="gnb__sep">||</li>
+	        
 	        <li class="gnb__item"><a class="gnb__link" href="/plant">식물</a></li>
+	        
 	        <li class="gnb__sep">||</li>
-	
-	        <li class="gnb__item has-sub">
-	          <a class="gnb__link" href="/store">스토어</a>
-	          <div class="subbar">
-	            <div class="subbar__pill">
-	              <a class="subbar__link" href="#">재배 &amp; 관리용품</a>
-	              <span class="subbar__sep">||</span>
-	              <a class="subbar__link" href="#">비료 &amp; 영양제</a>
-	              <span class="subbar__sep">||</span>
-	              <a class="subbar__link" href="#">병해충 &amp; 보호</a>
-	              <span class="subbar__sep">||</span>
-	              <a class="subbar__link" href="#">씨앗 &amp; 번식</a>
-	            </div>
-	          </div>
-	        </li>
-	
+	        
+	        <li class="gnb__item"><a class="gnb__link" href="/store">스토어</a></li>
+	        
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">

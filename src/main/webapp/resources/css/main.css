@@ -1,24 +1,26 @@
 /* ===== main content only ===== */
 .main-content {
-  gap: 24px;
+  gap: 32px; /* 섹션 간의 여백을 조금 더 넓혀 시원한 느낌 부여 */
 }
 
-/* HERO */
+/* =========================
+   HERO SECTION
+========================= */
 .hero {
   width: 100%;
-  border: 3px solid #6b7b61;
-  border-radius: 10px;
-  padding: 28px 24px;
+  /* 두꺼운 테두리를 제거하고 패딩을 조절하여 탁 트인 느낌 강조 */
+  padding: 10px 0 20px;
 }
 
 .hero__title {
-  margin: 0 0 18px;
-  font-family: "Great Vibes", Helvetica, Arial, sans-serif;
+  margin: 0 0 24px;
+  font-family: "Great Vibes", 'Pretendard', sans-serif;
   font-weight: 400;
   font-size: 40px;
-  line-height: 1.15;
+  line-height: 1.2;
   text-align: center;
-  color: #6b7b61;
+  color: var(--color-bg-main);
+  text-shadow: 1px 1px 2px rgba(107, 123, 97, 0.1);
 }
 
 .hero__grid {
@@ -28,24 +30,23 @@
   align-items: stretch;
 }
 
-/* HERO SLIDE (이미지 박스 안 '맞춤' 처리) */
+/* HERO SLIDE */
 .hero-slide {
   position: relative;
-  border: 1px solid #6b7b61;
-  border-radius: 10px;
+  border: 1px solid var(--color-main-soft);
+  border-radius: var(--radius-lg, 16px);
   overflow: hidden;
   background: #fff;
-  min-height: 500px;
-  max-height: 1000px;
+  min-height: 400px; /* 너무 길어지지 않도록 최소 높이 살짝 조정 */
+  max-height: 500px;
+  box-shadow: 0 8px 24px rgba(107, 123, 97, 0.08); /* 부드러운 그림자 */
 }
 
-/* ✅ media를 슬라이드 박스 전체로 깔기 */
 .hero-slide__media {
   position: absolute;
   inset: 0;
 }
 
-/* ✅ 이미지를 박스 안에 "맞춰서" 넣기 (안 잘리게) */
 .hero-slide__img {
   position: absolute;
   inset: 0;
@@ -53,80 +54,99 @@
   width: 100%;
   height: 100%;
   object-fit: cover;      
-  object-position: center;  /* 중앙 정렬 */
-  background: #f4f2ed;      /* 남는 여백 배경 */
-  transition: opacity 0.5s ease-in-out; 
-  opacity: 1;               /* 기본적으로 보이게 설정 */
+  object-position: center;  
+  background: var(--color-bg-card);      
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1); /* 페이드인 효과를 더 부드럽게 */
+  opacity: 1;               
+}
+
+/* Hero 내 뱃지/설명 (유리 질감 적용) */
+.hero-slide__badge,
+.hero-slide__desc {
+  position: absolute;
+  background: rgba(244, 242, 237, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-main-soft);
+  border-radius: 12px;
+  color: var(--color-bg-main);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .hero-slide__badge {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  padding: 10px 12px;
-  border: 1px solid #6b7b61;
-  border-radius: 10px;
-  background: rgba(244, 242, 237, 0.95);
-  color: #6b7b61;
+  right: 16px;
+  bottom: 16px;
+  padding: 10px 14px;
   font-weight: 700;
   text-align: center;
   line-height: 1.1;
 }
 
 .hero-slide__desc {
-  position: absolute;
-  left: 12px;
-  bottom: 12px;
+  left: 16px;
+  bottom: 16px;
   margin: 0;
-  padding: 10px 12px;
-  border: 1px solid #6b7b61;
-  border-radius: 10px;
-  background: rgba(244, 242, 237, 0.95);
-  color: #6b7b61;
-  font-size: 12px;
-  line-height: 1.35;
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
+/* HERO CTA BUTTON */
 .hero-cta {
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-decoration: none;
-  border: 1px solid #6b7b61;
-  border-radius: 10px;
-  padding: 20px 16px;
-  background: #f4f2ed;
-  color: #6b7b61;
+  border: 1px solid var(--color-main-line);
+  border-radius: var(--radius-lg, 16px);
+  padding: 20px 24px;
+  background: #ffffff; /* 순백색으로 깔끔하게 */
+  color: var(--color-bg-main);
   text-align: center;
-  font-size: 18px;
-  line-height: 1.4;
+  font-size: 17px;
+  line-height: 1.5;
+  box-shadow: 0 4px 15px rgba(107, 123, 97, 0.05);
+  transition: all 0.3s ease;
 }
 
 .hero-cta__link {
-  text-decoration: none;
-  font-weight: 400;
-  transition: all 0.15s ease;
-}
-
-.hero-cta:hover .hero-cta__link {
-  text-decoration: underline;
+  display: inline-block;
+  margin-top: 10px;
   font-weight: 700;
+  font-size: 15px;
+  color: var(--color-bg-main);
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: var(--color-main-soft);
+  transition: all 0.3s ease;
 }
 
-/* SECTIONS */
+/* 버튼 호버 시 메인 컬러로 채워지는 고급스러운 효과 */
+.hero-cta:hover {
+  border-color: var(--color-bg-main);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(107, 123, 97, 0.12);
+}
+.hero-cta:hover .hero-cta__link {
+  background: var(--color-bg-main);
+  color: #ffffff;
+}
+
+
+/* =========================
+   SECTIONS
+========================= */
 .sections {
   width: 100%;
-  border: 3px solid #6b7b61;
-  border-radius: 10px;
-  padding: 20px;
+  /* 겉 테두리 제거, 내부 여백 조정 */
+  padding: 10px 0;
 }
 
 .section {
-  padding: 18px 8px;
+  padding: 30px 10px;
 }
 
 .section + .section {
-  border-top: 1px solid #6b7b61;
+  border-top: 1px solid var(--color-main-line); /* 부드러운 구분선 */
 }
 
 .section__header {
@@ -134,46 +154,84 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 6px 12px;
+  padding: 0 6px 20px;
 }
 
 .section__title {
   margin: 0;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
-  color: #6b7b61;
+  color: var(--color-bg-main);
+  letter-spacing: -0.02em;
 }
 
 .section__more {
-  font-size: 18px;
-  font-weight: 400;
-  color: #6b7b61;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-main-muted);
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .section__more:hover {
+  color: var(--color-bg-main);
   font-weight: 700;
   text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
-/* GRID */
+
+/* =========================
+   GRID & CARDS COMMON
+========================= */
 .card-grid {
   display: grid;
-  gap: 18px;
-  padding: 6px;
+  gap: 20px;
+  padding: 4px; /* 그림자가 잘리지 않도록 약간의 여백 */
 }
 
 .card-grid--3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-/* COMMON META */
+/* 공통 카드 스타일 및 Hover 애니메이션 */
+.plant-card,
+.qa-card,
+.user-card {
+  text-decoration: none;
+  border: 1px solid var(--color-main-soft);
+  border-radius: 14px;
+  background: #ffffff; /* 베이지 배경 위에서 돋보이는 흰색 카드 */
+  box-shadow: 0 4px 15px rgba(107, 123, 97, 0.04);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.plant-card:hover,
+.qa-card:hover,
+.user-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(107, 123, 97, 0.12);
+  border-color: var(--color-main-line);
+}
+
+.plant-card:focus-visible,
+.qa-card:focus-visible,
+.user-card:focus-visible {
+  outline: 2px solid var(--color-bg-main);
+  outline-offset: 2px;
+  transform: translateY(-4px);
+}
+
+
+/* =========================
+   META DATA (조회수, 좋아요 등)
+========================= */
 .meta-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
@@ -182,63 +240,40 @@
 }
 
 .meta-row__sep {
-  opacity: 0.7;
-  color: #6b7b61;
+  color: var(--color-main-line);
+  font-size: 12px;
 }
 
 .meta {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  color: #6b7b61;
-  font-size: 13px;
+  gap: 4px;
+  color: var(--color-bg-main);
+  font-size: 12px;
 }
 
 .meta__label {
-  opacity: 0.9;
+  opacity: 0.7;
 }
 
 .meta__value {
   font-weight: 700;
 }
 
-/* PLANT CARD */
+
+/* =========================
+   PLANT CARD
+========================= */
 .plant-card {
   display: flex;
   flex-direction: column;
-  text-decoration: none;
-  border: 1px solid #6b7b61;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #fff;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-/* 공통 카드 hover 애니메이션 */
-.plant-card,
-.qa-card,
-.user-card {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.plant-card:hover,
-.qa-card:hover,
-.user-card:hover {
-  transform: translateY(-2px);
-}
-
-/* (선택) 키보드 접근성까지 동일하게 */
-.plant-card:focus-visible,
-.qa-card:focus-visible,
-.user-card:focus-visible {
-  outline: 2px solid #6b7b61;
-  outline-offset: 2px;
-  transform: translateY(-2px);
 }
 
 .plant-card__thumb {
-  height: 200px; /* 이미지 영역 */
-  background: #d9d9d9; /* 더미 */
+  height: 220px;
+  background: var(--color-main-soft);
+  position: relative;
+  overflow: hidden;
 }
 
 .plant-card__thumb img {
@@ -246,103 +281,109 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  z-index: 0;
+  transition: transform 0.5s ease; /* 이미지 호버 줌 효과 */
+}
+
+.plant-card:hover .plant-card__thumb img {
+  transform: scale(1.05);
 }
 
 .plant-card__body {
-  padding: 12px;
+  padding: 18px 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .plant-card__name {
   font-size: 18px;
   font-weight: 700;
-  color: #6b7b61;
+  color: var(--color-bg-main);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .plant-card__sci {
-  font-size: 14px;
-  color: #6b7b61;
+  font-size: 13px;
+  color: var(--color-main-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  opacity: 0.9;
+  margin-bottom: 8px;
 }
 
-/* QA CARD */
+
+/* =========================
+   QA CARD
+========================= */
 .qa-card {
   display: flex;
   flex-direction: column;
-  text-decoration: none;
-  border: 1px solid #6b7b61;
-  border-radius: 10px;
-  background: #f4f2ed;
-  padding: 12px;
-  gap: 10px;
-  min-height: 260px;
+  padding: 20px;
+  gap: 14px;
+  min-height: 240px;
 }
 
 .qa-card__title {
   font-size: 18px;
   font-weight: 700;
-  color: #6b7b61;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.qa-card .meta-row {
-  padding: 10px 0;
-  border-top: 1px solid #6b7b61;
-  border-bottom: 1px solid #6b7b61;
-}
-
-.qa-card__excerpt {
-  margin: 0;
-  color: #6b7b61;
-  font-size: 14px;
-  line-height: 1.5;
-
-  /* 4줄 말줄임 (지원 브라우저에서) */
+  color: var(--color-bg-main);
+  line-height: 1.4;
+  /* 2줄 말줄임 */
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* USER CARD */
+.qa-card .meta-row {
+  padding: 12px 0;
+  border-top: 1px dashed var(--color-main-line);
+  border-bottom: 1px dashed var(--color-main-line);
+}
+
+.qa-card__excerpt {
+  margin: 0;
+  color: var(--color-bg-main);
+  opacity: 0.85;
+  font-size: 14px;
+  line-height: 1.6;
+
+  /* 3줄 말줄임 */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+
+/* =========================
+   USER CARD
+========================= */
 .user-card {
   display: flex;
   flex-direction: column;
-  text-decoration: none;
-  border: 1px solid #6b7b61;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #fff;
-  min-height: 320px;
+  min-height: 300px;
 }
 
 .user-card__thumb {
-  height: 180px;
-  background: #d9d9d9;
+  height: 160px;
+  background: var(--color-main-soft); /* 유저 기본 배경색 */
 }
 
 .user-card__body {
-  padding: 12px;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  flex-grow: 1;
 }
 
 .user-card__name {
   font-size: 18px;
   font-weight: 700;
-  color: #6b7b61;
+  color: var(--color-bg-main);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -350,9 +391,11 @@
 
 .user-card__bio {
   margin: 0;
-  color: #6b7b61;
-  font-size: 14px;
-  line-height: 1.45;
+  color: var(--color-bg-main);
+  opacity: 0.8;
+  font-size: 13px;
+  line-height: 1.5;
+  flex-grow: 1;
 
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -360,30 +403,35 @@
   overflow: hidden;
 }
 
-/* EMPTY STATE */
+
+/* =========================
+   EMPTY STATE
+========================= */
 .empty-state {
   grid-column: 1 / -1;
-  border: 1px dashed #6b7b61;
-  border-radius: 10px;
-  padding: 30px 16px;
+  border: 2px dashed var(--color-main-line);
+  border-radius: 14px;
+  padding: 40px 16px;
   text-align: center;
-  color: #6b7b61;
-  background: #f4f2ed;
-  font-weight: 700;
+  color: var(--color-main-muted);
+  background: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+  font-size: 15px;
 }
 
-/* ===== responsive ===== */
+
+/* =========================
+   RESPONSIVE
+========================= */
 @media (max-width: 1024px) {
   .hero__grid {
     grid-template-columns: 1fr;
   }
-
   .card-grid--3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
   .hero__title {
-    font-size: 34px;
+    font-size: 32px;
   }
 }
 
@@ -391,12 +439,13 @@
   .card-grid--3 {
     grid-template-columns: 1fr;
   }
-
   .hero__title {
-    font-size: 28px;
+    font-size: 26px;
   }
-
   .section__more {
-    font-size: 16px;
+    font-size: 14px;
+  }
+  .hero-slide {
+    min-height: 300px;
   }
 }

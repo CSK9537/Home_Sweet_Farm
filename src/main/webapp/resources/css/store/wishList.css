@@ -1,0 +1,320 @@
+/* wishList.css */
+
+/* 전체 너비 확장 및 중앙 정렬 */
+.page-shell .content-wrap {
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.wish-cart-container {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* 섹션 스타일 통일 */
+.wish-section, 
+.cart-section {
+  flex: 1 1 50%;
+  min-width: 350px;
+  background: #ffffff;
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--color-main-line);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(107, 123, 97, 0.04);
+}
+
+/* 카테고리 바 (타이틀 영역) */
+.category-bar {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--color-main-line);
+}
+
+/* 파스텔톤 컬러 매핑 */
+.category-bar--wish { background: rgba(226, 135, 74, 0.1); } 
+.category-bar--cart { background: var(--color-main-soft); }  
+
+.category-bar__title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-bg-main);
+}
+
+/* 미니 액션 버튼 (전체 삭제 등) */
+.btn-mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.btn-mini--ghost {
+  background: #ffffff;
+  color: var(--color-text-main);
+  border-color: var(--color-main-line);
+}
+.btn-mini--ghost:hover {
+  background: #fff0f0;
+  color: #d64040;
+  border-color: #ffcdd2;
+}
+
+/* 리스트 그리드 */
+.grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 24px;
+}
+
+/* =========================
+   상품 카드
+========================= */
+.product-card {
+  border: 1px solid var(--color-main-soft);
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(107, 123, 97, 0.1);
+  border-color: var(--color-main-line);
+}
+
+.product-card__thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--color-main-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+.product-card__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.product-card:hover .product-card__thumb img {
+  transform: scale(1.05);
+}
+.thumb-dummy { font-size: 12px; color: var(--color-main-muted); }
+
+.product-card__body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-card__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 12px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.product-card__prices { margin-top: auto; }
+.product-card__price { font-size: 16px; font-weight: 800; color: var(--color-bg-main); }
+
+/* ✅ 카드 높이 통일용 수량 영역 */
+.product-card__qty {
+  min-height: 18px; /* 글자 한 줄의 높이를 고정으로 확보 */
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--color-main-muted);
+}
+.product-card__qty strong {
+  color: var(--color-bg-main);
+  font-weight: 800;
+}
+
+/* ✅ 카드 하단 액션 버튼 그룹 */
+.product-card__actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 6px;
+}
+
+.btn-card-action {
+  flex: 1;
+  height: 36px; /* 모바일에서도 클릭하기 편한 높이 */
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--color-main-line);
+  background: #ffffff;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-card-action:hover {
+  background: var(--color-main-soft);
+  border-color: var(--color-bg-main);
+}
+.btn-card-action--point {
+  background: rgba(226, 135, 74, 0.08);
+  color: #e2874a;
+  border-color: rgba(226, 135, 74, 0.3);
+}
+.btn-card-action--point:hover {
+  background: #e2874a;
+  color: #ffffff;
+  border-color: #e2874a;
+}
+.btn-card-action--icon {
+  flex: 0 0 36px; /* 수량 조절 버튼을 정사각형으로 */
+  font-size: 16px;
+}
+
+
+/* =========================
+   하단 총 주문 요약
+========================= */
+.cart-summary {
+  display: none; 
+  margin-top: 40px;
+  padding: 30px;
+  width: 100%;
+  max-width: 800px;
+  background: #ffffff;
+  border: 2px solid var(--color-main-line);
+  border-radius: var(--radius-lg, 16px);
+  box-sizing: border-box;
+  box-shadow: 0 10px 30px rgba(107, 123, 97, 0.05);
+}
+.cart-summary__text { text-align: center; margin-bottom: 20px; }
+.cart-summary__label { font-size: 15px; color: var(--color-main-muted); font-weight: 700; }
+.cart-summary__price { font-size: 28px; font-weight: 900; color: var(--color-bg-main); margin: 0 4px; }
+.cart-summary__unit { font-size: 15px; color: var(--color-main-muted); }
+
+.cart-summary__actions { display: flex; justify-content: center; }
+.btn-large {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 280px;
+  height: 54px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+.btn-large--primary { background: var(--color-bg-main); color: #ffffff; }
+.btn-large--primary:hover { background: #5a6851; box-shadow: 0 4px 12px rgba(107, 123, 97, 0.2); transform: translateY(-2px); }
+
+/* 빈 상태 */
+.empty-box {
+  grid-column: 1 / -1;
+  padding: 80px 20px;
+  text-align: center;
+  border: 2px dashed var(--color-main-line);
+  border-radius: 12px;
+  color: var(--color-main-muted);
+  font-size: 14px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+
+/* =========================
+   결제지 입력 모달 (공통)
+========================= */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(44, 62, 45, 0.4); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center; z-index: 9999;
+}
+.modal-content {
+  background: #ffffff; width: 90%; max-width: 500px;
+  border-radius: var(--radius-lg, 16px); overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15); animation: modalFadeIn 0.3s ease-out;
+}
+.modal-content--small { max-width: 400px; }
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  padding: 20px 24px; border-bottom: 1px solid var(--color-main-soft);
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--color-bg-card);
+}
+.modal-title { font-weight: 800; color: var(--color-bg-main); font-size: 18px; }
+.modal-close { font-size: 26px; line-height: 1; cursor: pointer; color: var(--color-main-muted); transition: color 0.2s; padding: 0; border: none; background: transparent; }
+.modal-close:hover { color: var(--color-bg-main); }
+
+.modal-body { padding: 24px; }
+.modal-desc { font-size: 14px; color: var(--color-text-main); margin-bottom: 12px; }
+.modal-textarea {
+  width: 100%; height: 100px; padding: 12px; border-radius: 8px;
+  border: 1px solid var(--color-main-line); resize: none; font-size: 14px; 
+  outline: none; box-sizing: border-box; font-family: inherit; transition: all 0.2s ease;
+}
+.modal-textarea:focus { border-color: var(--color-bg-main); box-shadow: 0 0 0 3px var(--color-main-soft); }
+
+.modal-footer { margin-top: 24px; display: flex; gap: 10px; justify-content: flex-end; }
+.btn-confirm-modal, .btn-close-modal {
+  padding: 0 20px; height: 44px; border-radius: 8px; border: none; 
+  font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+}
+.btn-confirm-modal { background: var(--color-bg-main); color: #fff; }
+.btn-confirm-modal:hover { background: #5a6851; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(107, 123, 97, 0.2); }
+.btn-close-modal { background: #ffffff; color: var(--color-text-main); border: 1px solid var(--color-main-line); }
+.btn-close-modal:hover { background: var(--color-main-soft); transform: translateY(-2px); }
+
+body.modal-open { overflow: hidden; }
+
+/* =========================
+   반응형
+========================= */
+@media (max-width: 992px) {
+  .wish-cart-container { flex-direction: column; }
+  .wish-section, .cart-section { flex: none; width: 100%; }
+}
+
+@media (max-width: 767px) {
+  .page-shell .content-wrap { padding: 20px 10px; }
+  .grid-2col { grid-template-columns: 1fr; padding: 16px; }
+  .cart-summary { padding: 20px; }
+  .btn-large { width: 100%; }
+}

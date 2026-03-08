@@ -1,306 +1,437 @@
 /* PlantView.css */
 .plant-view {
   width: 100%;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
-  color: #1f2a1f;
+  color: var(--color-text-main);
 }
 
-/* HERO */
+/* =========================
+   HERO (상단 식물 요약)
+========================= */
 .pv-hero {
   width: 100%;
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
-  gap: 24px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid rgba(0,0,0,0.12);
+  gap: 40px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--color-main-line);
 }
 
-.pv-breadcrumb {
-  font-size: 12px;
-  opacity: 0.7;
-  margin-bottom: 8px;
-}
-
-.pv-title {
-  font-size: 28px;
-  line-height: 1.2;
-  margin: 0;
-}
-
-.pv-subtitle {
-  margin-top: 6px;
-  font-size: 14px;
-  opacity: 0.75;
-}
-
-.pv-desc {
-  margin-top: 12px;
-  font-size: 14px;
-  line-height: 1.7;
-  white-space: pre-line;
-}
-
-.pv-mini-meta {
-  margin-top: 12px;
+.pv-hero__left {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.pv-chip {
-  font-size: 12px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(107, 123, 97, 0.14);
-  border: 1px solid rgba(107, 123, 97, 0.25);
-}
-
-/* 썸네일 */
-.pv-thumb {
-  width: 100%;
-  max-width: 240px;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 2px solid rgba(107, 123, 97, 0.35);
-  display: block;
-  margin-left: auto;
-}
-
-/* CTA */
-.pv-cta {
-  width: 100%;
-  margin-top: 18px;
-}
-.pv-cta__box {
-  background: #ffffff;
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 10px;
-  padding: 18px 18px;
-}
-.pv-cta__title {
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-.pv-cta__text {
-  font-size: 13px;
-  opacity: 0.85;
-  margin-bottom: 12px;
-}
-.pv-cta__actions {
-  display: flex;
-  gap: 10px;
+  flex-direction: column;
   justify-content: center;
 }
 
-/* 버튼 */
+.pv-title {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0;
+  color: var(--color-bg-main);
+  letter-spacing: -0.02em;
+}
+
+.pv-subtitle {
+  margin-top: 8px;
+  font-size: 16px;
+  color: var(--color-main-muted);
+  font-style: italic; /* 학명/영어명은 이탤릭체로 구분감 부여 */
+}
+
+.pv-desc {
+  margin-top: 16px;
+  font-size: 15px;
+  line-height: 1.7;
+  white-space: pre-line;
+  color: var(--color-text-main);
+  opacity: 0.9;
+}
+
+/* 상단 요약 칩 (종/속/과) */
+.pv-mini-meta {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pv-chip {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--color-main-soft);
+  color: var(--color-bg-main);
+  border: 1px solid var(--color-main-line);
+}
+
+/* 썸네일 이미지 */
+.pv-hero__right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.pv-thumb {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 10px 30px rgba(107, 123, 97, 0.15); /* 이미지 뎁스 추가 */
+  border: 1px solid var(--color-main-soft);
+  display: block;
+}
+
+
+/* =========================
+   CTA (커뮤니티 유도 박스)
+========================= */
+.pv-cta {
+  width: 100%;
+  margin-top: 30px;
+}
+
+.pv-cta__box {
+  background: var(--color-main-soft);
+  border: 1px dashed var(--color-bg-main);
+  border-radius: var(--radius-lg, 16px);
+  padding: 30px 24px;
+  text-align: center;
+}
+
+.pv-cta__title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-bg-main);
+  margin-bottom: 8px;
+}
+
+.pv-cta__text {
+  font-size: 14px;
+  color: var(--color-main-muted);
+  margin-bottom: 16px;
+}
+
+.pv-cta__actions {
+  display: flex;
+  justify-content: center;
+}
+
+
+/* =========================
+   버튼 공통
+========================= */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 14px;
-  border-radius: 999px;
+  padding: 0 24px;
+  height: 48px;
+  border-radius: 12px;
   text-decoration: none;
   cursor: pointer;
   user-select: none;
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 700;
+  transition: all 0.2s ease;
   border: 1px solid transparent;
 }
+
 .btn-primary {
-  background: #1f7a43;
-  color: #fff;
+  background: var(--color-bg-main);
+  color: #ffffff;
 }
+
 .btn-primary:hover {
-  filter: brightness(0.95);
+  background: #5a6851;
+  box-shadow: 0 4px 12px rgba(107, 123, 97, 0.2);
+  transform: translateY(-2px);
+}
+.btn-primary:active {
+  transform: translateY(0);
 }
 
-/* SPEC GRID */
-.pv-spec {
-  width: 100%;
-  margin-top: 18px;
-}
-.pv-spec__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
 
-.spec-item {
-  display: flex;
-  gap: 12px;
-  padding: 12px 12px;
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 10px;
-  background: rgba(255,255,255,0.75);
-}
-
-.spec-ico {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: rgba(107, 123, 97, 0.16);
-  border: 1px solid rgba(107, 123, 97, 0.25);
-  font-size: 16px;
-}
-
-.spec-k {
-  font-size: 12px;
-  opacity: 0.75;
-}
-.spec-v {
-  font-size: 13px;
-  font-weight: 700;
-  margin-top: 2px;
-}
-
-/* BOX */
+/* =========================
+   공통 박스 섹션
+========================= */
 .pv-box {
   width: 100%;
-  margin-top: 18px;
-  padding-top: 18px;
-  padding-bottom: 18px;
-  border-top: 1px solid rgba(0,0,0,0.12);
-  border-bottom: 1px solid rgba(0,0,0,0.12);
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid var(--color-main-line);
 }
+
 .pv-box__head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
+
 .pv-h2 {
-  font-size: 16px;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-bg-main);
   margin: 0;
 }
 
-/* TABLE */
+
+/* =========================
+   분류 테이블 (TABLE)
+========================= */
 .pv-table {
   width: 100%;
   border-collapse: collapse;
   overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 10px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid var(--color-main-soft);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
+
 .pv-table th,
 .pv-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
-  font-size: 13px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-main-soft);
+  font-size: 14px;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
 }
+
 .pv-table th {
   width: 160px;
-  background: rgba(107, 123, 97, 0.10);
+  background: var(--color-main-soft);
+  color: var(--color-bg-main);
   font-weight: 700;
 }
+
+.pv-table td {
+  color: var(--color-text-main);
+}
+
 .pv-table tr:last-child th,
 .pv-table tr:last-child td {
   border-bottom: none;
 }
 
-/* GALLERY */
-/* .pv-gallery {
+
+/* =========================
+   아이콘 스펙 영역 (SPEC GRID)
+========================= */
+.pv-spec {
   width: 100%;
+  margin-top: 30px;
+}
+
+.pv-spec__grid {
   display: grid;
-  grid-template-columns: 42px 1fr 42px;
-  align-items: center;
-  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
-.pv-gbtn {
-  height: 42px;
-  border-radius: 10px;
-  border: 1px solid rgba(0,0,0,0.12);
-  background: rgba(255,255,255,0.8);
-  cursor: pointer;
-  font-size: 18px;
-}
-.pv-gbtn:hover { filter: brightness(0.97); }
-
-.pv-gtrack {
+.spec-item {
   display: flex;
-  gap: 10px;
-  overflow: hidden;
-  scroll-behavior: smooth;
-  padding: 6px 2px;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--color-main-soft);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.pv-gimg {
-  flex: 0 0 auto;
-  width: 220px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid rgba(0,0,0,0.12);
-} */
+.spec-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(107, 123, 97, 0.08);
+}
 
-/* ARTICLE */
-.pv-article { width: 100%; }
+.spec-ico {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-main-soft);
+  color: var(--color-bg-main);
+  font-size: 20px;
+}
+
+.spec-k {
+  font-size: 12px;
+  color: var(--color-main-muted);
+  margin-bottom: 2px;
+}
+
+.spec-v {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-bg-main);
+}
+
+
+/* =========================
+   문화/가치 섹션 (ARTICLE)
+========================= */
+.pv-article { 
+  width: 100%; 
+}
+
 .pv-h3 {
-  font-size: 14px;
-  margin: 14px 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-bg-main);
+  margin: 24px 0 8px;
+  display: flex;
+  align-items: center;
 }
+.pv-h3::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  background: var(--color-focus, #e2874a);
+  border-radius: 2px;
+  margin-right: 8px;
+}
+
 .pv-p {
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.8;
   white-space: pre-line;
-  margin: 0;
+  color: var(--color-text-main);
+  margin: 0 0 16px 12px; /* 들여쓰기 느낌 */
+  opacity: 0.9;
 }
 
-/* SIMILAR */
+
+/* =========================
+   연관 식물 (SIMILAR)
+========================= */
 .pv-sim-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 16px;
 }
+
 .pv-sim-card {
-  display: grid;
-  grid-template-columns: 88px 1fr;
-  gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
   text-decoration: none;
   color: inherit;
-  border: 1px solid rgba(0,0,0,0.12);
+  border: 1px solid var(--color-main-soft);
   border-radius: 12px;
-  background: rgba(255,255,255,0.8);
-  overflow: hidden;
+  background: #ffffff;
+  padding: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.pv-sim-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(107, 123, 97, 0.1);
+  border-color: var(--color-main-line);
+}
+
+.pv-sim-thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--color-main-soft);
+  flex-shrink: 0;
+}
+
 .pv-sim-thumb img {
-  width: 88px;
-  height: 88px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
 }
+
 .pv-sim-body {
-  padding: 10px 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow: hidden;
 }
-.pv-sim-name { font-weight: 800; font-size: 13px; }
-.pv-sim-sub { font-size: 12px; opacity: 0.75; margin-top: 2px; }
 
+.pv-sim-name { 
+  font-weight: 800; 
+  font-size: 15px; 
+  color: var(--color-bg-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pv-sim-sub { 
+  font-size: 13px; 
+  color: var(--color-main-muted); 
+  margin-top: 4px; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   EMPTY STATE (데이터 없음)
+========================= */
 .pv-empty {
   width: 100%;
-  padding: 30px 10px;
+  padding: 60px 20px;
   text-align: center;
+  background: #ffffff;
+  border: 1px dashed var(--color-main-line);
+  border-radius: var(--radius-lg, 16px);
 }
 
-/* 반응형 */
+.pv-empty h2 {
+  font-size: 20px;
+  color: var(--color-bg-main);
+  margin-bottom: 10px;
+}
+
+.pv-empty p {
+  font-size: 14px;
+  color: var(--color-main-muted);
+  margin-bottom: 24px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
 @media (max-width: 1024px) {
-  .pv-hero { grid-template-columns: 1fr; }
-  .pv-thumb { margin-left: 0; max-width: 220px; }
-  .pv-sim-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pv-hero { 
+    grid-template-columns: 1fr; 
+    gap: 24px;
+  }
+  .pv-hero__right {
+    justify-content: flex-start;
+  }
+  .pv-thumb { 
+    max-width: 240px; 
+  }
+  .pv-sim-grid { 
+    grid-template-columns: repeat(2, minmax(0, 1fr)); 
+  }
 }
 
 @media (max-width: 767px) {
+  .pv-title { font-size: 28px; }
+  .pv-desc { font-size: 14px; }
+  .pv-thumb { max-width: 100%; }
+  
   .pv-spec__grid { grid-template-columns: 1fr; }
-  .pv-kvgrid { grid-template-columns: 1fr; }
   .pv-sim-grid { grid-template-columns: 1fr; }
-  .pv-gallery { grid-template-columns: 36px 1fr 36px; }
-  .pv-gimg { width: 180px; height: 110px; }
+  
+  .pv-table th { width: 100px; }
+  .pv-p { margin-left: 0; }
 }

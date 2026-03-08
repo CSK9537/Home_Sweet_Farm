@@ -1,10 +1,13 @@
 /* 페이지 배경 */
 .page-shell {
-  background-color: #6b7b61;
-  /* border: 1px solid #000; */
+  background-color: var(--color-bg-main);
   width: 100%;
   margin: 0 auto;
   position: relative;
+  /* 화면 높이가 짧아도 배경이 꽉 차도록 보장 */
+  min-height: 100vh; 
+  display: flex;
+  flex-direction: column;
 }
 
 /* 컨텐츠 래퍼 */
@@ -12,11 +15,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  padding: 80px 120px;   /* PC 기본값 수정 */
+  padding: 80px 120px;   /* PC 기본값 */
+  flex-grow: 1; /* 헤더와 푸터 사이의 빈 공간을 채워줌 */
 }
 
-/* 실제 컨텐츠 박스 */
+/* 실제 컨텐츠 박스 (식물 상태 및 센서 데이터 표시 영역) */
 .content-card {
   display: flex;
   flex-direction: column;
@@ -24,12 +27,15 @@
   gap: 5px;
 
   width: 100%;
-  max-width: 1260px;   /* 고정 width 제거 */
+  max-width: 1260px;
   padding: 50px 60px;
 
-  background-color: #f4f2ed;
-  border-radius: 10px;
-  border: 3px solid #6b7b61;
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg, 16px); /* 부드러운 곡선 적용 */
+  
+  /* 두꺼운 선 대신 은은한 그림자와 얇은 반투명 테두리로 세련되게 */
+  border: 1px solid var(--color-main-soft);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); 
 }
 
 .content-card,
@@ -42,11 +48,9 @@
    Tablet (1024px 이하)
 ========================= */
 @media (max-width: 1024px) {
-
   .content-wrap {
     padding: 60px 60px;
   }
-
   .content-card {
     padding: 40px 40px;
   }
@@ -56,13 +60,15 @@
    Mobile (767px 이하)
 ========================= */
 @media (max-width: 767px) {
-
   .content-wrap {
     padding: 40px 20px;
   }
-
   .content-card {
     padding: 30px 20px;
-    border-width: 2px;
+    
+    /* 모바일에서는 그림자를 살짝 줄이고 테두리를 명확하게 하여 가독성 확보 */
+    border: 1px solid var(--color-main-line);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border-radius: 12px; 
   }
 }

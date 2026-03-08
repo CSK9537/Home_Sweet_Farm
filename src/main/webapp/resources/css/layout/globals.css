@@ -1,21 +1,54 @@
 @import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+
+/* 1. 디자인 토큰 (변수 설정) */
+:root {
+  /* Colors */
+  --color-bg-main: #6b7b61; 
+  --color-bg-card: #f4f2ed; 
+  --color-text-main: #2c3e2d; 
+  --color-focus: #3a533b;
+  
+  /* 투명도 베리에이션 (헤더, 테두리, 호버 효과 공통 사용) */
+  --color-main-soft: rgba(107, 123, 97, 0.10);
+  --color-main-line: rgba(107, 123, 97, 0.45);
+  --color-main-muted: rgba(107, 123, 97, 0.75);
+
+  /* Spacing & Radius */
+  --spacing-sm: 20px;
+  --spacing-md: 40px;
+  --spacing-lg: 60px;
+  --spacing-xl: 80px;
+  --radius-lg: 16px;
+}
+
 * {
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; /* Mac 환경 폰트 렌더링 개선 */
   box-sizing: border-box;
 }
+
 html,
 body {
-  margin: 0px;
+  margin: 0;
   height: 100%;
-  background-color: #6b7b61;
+  background-color: var(--color-bg-main);
+  color: var(--color-text-main);
+  /* 깔끔한 모던 폰트 적용 (Pretendard 또는 시스템 기본 폰트) */
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  line-height: 1.5;
 }
-/* a blue color as a generic focus style */
-button:focus-visible {
-  outline: 2px solid #4a90e2 !important;
-  outline: -webkit-focus-ring-color auto 5px !important;
+
+/* 폼 요소 포커스 스타일 통일 */
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  border-color: var(--color-bg-main);
+  box-shadow: 0 0 0 3px var(--color-main-soft);
 }
+
 a {
   text-decoration: none;
+  color: inherit; /* 링크가 텍스트 색상을 따라가도록 설정 */
 }
 
 /* ------ 토스트 메시지 관련 css ------ */
