@@ -36,9 +36,9 @@
         <div class="qna-cat__header">
           <div class="qna-cat__title">분야</div>
           <div class="qna-cat__today">
-            <span>오늘의 새 질문 <strong>10,025</strong></span>
+            <span>오늘의 새 질문 <strong><c:out value="${todayNewQuestionCnt}"></c:out></strong></span>
             <span class="dot">|</span>
-            <span>오늘의 답변 <strong>29,905</strong></span>
+            <span>오늘의 답변 <strong><c:out value="${todayNewAnswerCnt}"></c:out></strong></span>
           </div>
         </div>
 

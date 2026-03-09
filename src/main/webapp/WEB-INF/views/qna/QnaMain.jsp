@@ -19,7 +19,7 @@
           </div>
 
           <div class="qna-toprow__right">
-            <a class="btn btn--primary" href="<c:url value='/community/CommunityForm'/>">질문하기</a>
+            <a class="btn btn--primary" href="<c:url value='/qna/ask'/>">질문하기</a>
           </div>
         </div>
 
