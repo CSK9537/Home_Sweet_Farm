@@ -3,9 +3,9 @@ package org.joonzis.community.mapper;
 import java.util.List;
 import java.util.Map;
 
-import org.joonzis.community.dto.CommunityListDTO;
+import org.joonzis.community.dto.CommunityPostCardDTO;
 
 public interface CommunityListMapper {
-  List<CommunityListDTO> selectCommunityList(Map<String, Object> param);
-  int countCommunityList(Map<String, Object> param);
+    List<CommunityPostCardDTO> selectCommunityList(Map<String, Object> param);
+    int countCommunityList(Map<String, Object> param);
 }

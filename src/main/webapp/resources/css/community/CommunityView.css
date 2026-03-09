@@ -165,6 +165,100 @@
   white-space: pre-line; 
 }
 
+.cv-market-box {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0 24px;
+  padding: 16px;
+  background: #f8f6f1;
+  border: 1px solid #e7e1d6;
+  border-radius: 14px;
+}
+
+.cv-market-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.cv-market-label {
+  font-size: 13px;
+  color: #8a8f80;
+  font-weight: 600;
+}
+
+.cv-market-value {
+  font-size: 16px;
+  color: #2f332b;
+  font-weight: 700;
+}
+
+.cv-market-item--price {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.cv-market-price {
+  font-size: 24px;
+  font-weight: 800;
+  color: #6b7b61;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .cv-market-box {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-market-item--price {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .cv-market-price {
+    font-size: 22px;
+  }
+}
+
+/* 해시태그 영역 */
+.cv-hashtags {
+  margin-top: 24px;
+  padding: 18px 20px;
+  border: 1px solid var(--color-main-line);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.cv-hashtags-title {
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-bg-main);
+}
+
+.cv-hashtags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 8px;
+}
+
+.cv-hashtag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--color-main-soft);
+  border: 1px solid var(--color-main-line);
+  color: var(--color-text-main);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
 /* 첨부파일 영역 */
 .cv-attachments { 
   margin-top: 30px; 

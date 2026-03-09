@@ -1,7 +1,7 @@
 /* CommunityMain.css */
 
 /* =========================
-   컨텐츠 영역 베이스 (영역 폭주 완벽 차단)
+   컨텐츠 영역 베이스
 ========================= */
 .content-card.community-card {
   --cm-gap: 20px;
@@ -16,7 +16,6 @@
   width: 100%;
   min-width: 0;
 }
-
 
 /* =========================
    상단 타이틀 & 탭 영역
@@ -41,7 +40,7 @@
 .community-title {
   font-weight: 800;
   color: var(--color-bg-main);
-  font-size: 26px; 
+  font-size: 26px;
   margin: 0;
   letter-spacing: -0.02em;
 }
@@ -65,13 +64,19 @@
   transition: all 0.2s ease;
   text-decoration: none;
 }
+
 .tab-item:hover,
 .tab-item.is-active {
   font-weight: 900;
   color: var(--color-bg-main);
   border-bottom-color: var(--color-bg-main);
 }
-.tab-sep { opacity: .3; user-select: none; color: var(--color-main-line); }
+
+.tab-sep {
+  opacity: .3;
+  user-select: none;
+  color: var(--color-main-line);
+}
 
 .btn-write {
   display: inline-flex;
@@ -87,6 +92,7 @@
   text-decoration: none;
   transition: all 0.2s ease;
 }
+
 .btn-write:hover {
   background: #5a6851;
   box-shadow: 0 4px 10px rgba(107, 123, 97, 0.2);
@@ -100,13 +106,12 @@
   margin-bottom: 30px;
 }
 
-
 /* =========================
-   블록 (인기글, HOT, 최신글)
+   블록
 ========================= */
 .block {
   width: 100%;
-  min-width: 0; /* 자식 크기에 맞춰 늘어나는 버그 방지 */
+  min-width: 0;
   border: 1px solid var(--color-main-soft);
   background: #ffffff;
   border-radius: var(--radius-lg, 16px);
@@ -129,6 +134,7 @@
   display: flex;
   align-items: center;
 }
+
 .block-title::before {
   content: "";
   display: inline-block;
@@ -150,23 +156,22 @@
   cursor: pointer;
   transition: all 0.2s;
 }
+
 .block-more:hover {
   background: var(--color-main-soft);
 }
 
-
 /* =========================
-   캐러셀 (버튼과 스크롤 완벽 통제)
+   캐러셀
 ========================= */
 .carousel {
   position: relative;
   width: 100%;
   min-width: 0;
-  padding: 0 44px; /* 양옆에 네비게이션 버튼이 들어갈 44px 공간 확보 */
+  padding: 0 44px;
   box-sizing: border-box;
 }
 
-/* 좌우 이동 네비게이션 버튼 (안전 영역에 배치) */
 .nav-btn {
   width: 40px;
   height: 40px;
@@ -187,6 +192,7 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   transition: all 0.2s ease;
 }
+
 .nav-left { left: 0; }
 .nav-right { right: 0; }
 
@@ -195,25 +201,24 @@
   border-color: var(--color-bg-main);
   transform: translateY(-50%) scale(1.05);
 }
+
 .nav-btn:disabled {
-  opacity: 0; 
-  pointer-events: none; 
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* 스크롤 레일 */
 .rail {
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
-  padding: 10px 4px 20px 4px; /* 호버 시 위아래 그림자 짤림 방지 */
+  padding: 10px 4px 20px 4px;
 }
 
-/* ✅ 스토어 메인과 동일한 커스텀 스크롤바 추가 */
 .rail::-webkit-scrollbar { height: 6px; }
-.rail::-webkit-scrollbar-thumb { 
-  background: var(--color-main-line); 
-  border-radius: 999px; 
+.rail::-webkit-scrollbar-thumb {
+  background: var(--color-main-line);
+  border-radius: 999px;
 }
 .rail::-webkit-scrollbar-track { background: transparent; }
 
@@ -221,16 +226,15 @@
   display: flex;
   flex-wrap: nowrap;
   gap: var(--cm-gap);
-  width: max-content; /* 내부 아이템 개수만큼 늘어나도록 허용 */
+  width: max-content;
 }
 
-
 /* =========================
-   카드 디자인 (가로 240px 절대 고정)
+   카드
 ========================= */
 .rail-track .card,
 .rail-track .post-card {
-  flex: 0 0 240px; 
+  flex: 0 0 240px;
   width: 240px;
 }
 
@@ -258,6 +262,23 @@
   border-color: var(--color-main-line);
 }
 
+.card-date {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.45);
+}
+
+.card-desc {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(0,0,0,0.72);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-word;
+}
+
 /* 썸네일 */
 .card-thumb,
 .cm-item__imgWrap {
@@ -269,6 +290,7 @@
   align-items: center;
   justify-content: center;
 }
+
 .card-thumb img,
 img.post-thumb,
 .cm-item__img {
@@ -278,9 +300,10 @@ img.post-thumb,
   object-fit: cover;
   transition: transform 0.4s ease;
 }
+
 .card:hover .card-thumb img,
 .cm-item:hover .cm-item__img {
-  transform: scale(1.05); 
+  transform: scale(1.05);
 }
 
 /* 카드 본문 */
@@ -321,7 +344,7 @@ img.post-thumb,
 .card-meta,
 .post-meta,
 .cm-item__meta {
-  margin-top: auto; 
+  margin-top: auto;
   font-size: 12px;
   font-weight: 600;
   color: var(--color-main-muted);
@@ -330,6 +353,7 @@ img.post-thumb,
   flex-wrap: wrap;
   align-items: center;
 }
+
 .meta-sep {
   margin: 0 4px;
   opacity: 0.5;
@@ -348,11 +372,14 @@ img.post-thumb,
   overflow: hidden;
   word-break: break-word;
 }
-.card-tags .tag, .cm-item__tags .tag { margin-right: 6px; }
 
+.card-tags .tag,
+.cm-item__tags .tag {
+  margin-right: 6px;
+}
 
 /* =========================
-   데이터 없을 때 패널
+   비어있을 때
 ========================= */
 .empty-panel {
   width: 100%;
@@ -364,15 +391,15 @@ img.post-thumb,
   align-items: center;
   justify-content: center;
 }
+
 .empty-text {
   font-size: 15px;
   font-weight: 700;
   color: var(--color-main-muted);
 }
 
-
 /* =========================
-   전체보기 화면 (communityMoreView)
+   전체보기 화면
 ========================= */
 #communityMoreView .cm-more-pageHead {
   display: flex;
@@ -381,11 +408,13 @@ img.post-thumb,
   gap: 12px;
   margin-bottom: 16px;
 }
+
 #communityMoreView .cm-more-pageTitle {
   font-weight: 800;
   color: var(--color-bg-main);
   font-size: 20px;
 }
+
 #communityMoreView .cm-more-pageTools {
   display: flex;
   align-items: center;
@@ -399,8 +428,11 @@ img.post-thumb,
   margin-bottom: 30px;
 }
 
-/* 보기 버튼 (카드/앨범/리스트) */
-.cm-viewBtns { display: inline-flex; gap: 8px; }
+.cm-viewBtns {
+  display: inline-flex;
+  gap: 8px;
+}
+
 .cm-viewBtn {
   cursor: pointer;
   border: 1px solid var(--color-main-line);
@@ -412,6 +444,7 @@ img.post-thumb,
   font-weight: 700;
   transition: all 0.2s ease;
 }
+
 .cm-viewBtn.is-active,
 .cm-viewBtn:hover {
   background: var(--color-main-soft);
@@ -441,50 +474,214 @@ img.post-thumb,
   font-weight: 800;
   transition: all 0.2s ease;
 }
+
 .community__backBtn:hover {
   background: var(--color-main-soft);
   border-color: var(--color-bg-main);
 }
 
-/* 리스트 레이아웃 (card / album / list) */
+/* =========================
+   전체보기 레이아웃
+========================= */
 .cm-list {
   width: 100%;
   display: grid;
   gap: var(--cm-gap);
-  padding: 4px; /* 호버 그림자 여백 */
+  padding: 4px;
 }
 
-.cm-list.view-card { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-.cm-list.view-album { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.cm-list.view-album .cm-item__imgWrap { height: 240px; }
-.cm-list.view-list { grid-template-columns: 1fr; }
-.cm-list.view-list .cm-item { display: grid; grid-template-columns: 280px 1fr; align-items: stretch; }
-.cm-list.view-list .cm-item__imgWrap { height: 100%; min-height: 180px; }
-.cm-list.view-list .cm-item__body { justify-content: center; padding: 20px 24px; }
-.cm-item__overlay { display: none; }
+.cm-list.view-card {
+  grid-template-columns: 1fr;
+}
 
+.cm-list.view-card .cm-item {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  align-items: stretch;
+}
+
+.cm-list.view-card .cm-item__imgWrap {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+}
+
+.cm-list.view-card .cm-item__body {
+  justify-content: center;
+  padding: 20px 24px;
+}
+
+
+.cm-list.view-album {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.cm-list.view-album .cm-item__imgWrap {
+  height: 220px;
+}
+
+.cm-list.view-list {
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.cm-list.view-list .cm-item {
+  display: block;
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cm-list.view-list .cm-item__imgWrap,
+.cm-list.view-list .cm-item__overlay,
+.cm-list.view-list .cm-item__tags,
+.cm-list.view-list .cm-item__desc {
+  display: none;
+}
+
+.cm-list.view-list .cm-item__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) 120px 120px 90px 90px 90px;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+}
+
+.cm-list.view-list .cm-item__title {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.cm-list.view-list .cm-item__writer,
+.cm-list.view-list .cm-item__date,
+.cm-list.view-list .cm-item__stat {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-main-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cm-list.view-list .cm-item__meta {
+  display: contents;
+  margin-top: 0;
+}
+
+.cm-list.view-list .cm-item__meta .sep {
+  display: none;
+}
+
+.cm-list.view-list .cm-item:hover {
+  transform: translateY(-2px);
+}
+
+.cm-item__overlay {
+  display: none;
+}
+
+.cm-item__date {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.45);
+}
+
+.cm-item__desc {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(0,0,0,0.72);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.cm-item__stat {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-main-muted);
+}
 
 /* =========================
-   반응형 (Responsive)
+   반응형
 ========================= */
 @media (max-width: 1024px) {
   .carousel { padding: 0 40px; }
+
+  .cm-list.view-list .cm-item__body {
+    grid-template-columns: minmax(0, 1.6fr) 110px 110px 80px 80px 80px;
+  }
+}
+
+@media (max-width: 900px) {
+  .cm-list.view-list .cm-item__body {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+  }
+
+  .cm-list.view-list .cm-item__meta {
+    display: flex;
+    grid-column: 1 / -1;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .cm-list.view-list .cm-item__writer,
+  .cm-list.view-list .cm-item__date {
+    min-width: 0;
+  }
+
+  .cm-list.view-list .cm-item__stat {
+    white-space: normal;
+  }
 }
 
 @media (max-width: 767px) {
   .content-card.community-card { padding: 20px; }
   .carousel { padding: 0; }
-  .nav-btn { display: none; } /* 모바일 스와이프 권장 */
+  .nav-btn { display: none; }
   .community-card { --cm-thumbH: 180px; }
+
   .community-top {
     grid-template-columns: 1fr;
     grid-template-areas: "left" "center" "right";
     justify-content: flex-start;
   }
-  .community-top__right { justify-content: flex-start; }
-  
-  .block { padding: 20px 16px; }
-  .cm-list.view-album { grid-template-columns: 1fr; }
-  .cm-list.view-list .cm-item { grid-template-columns: 1fr; }
-  .cm-list.view-list .cm-item__imgWrap { height: var(--cm-thumbH); }
+
+  .community-top__right {
+    justify-content: flex-start;
+  }
+
+  .block {
+    padding: 20px 16px;
+  }
+
+  .cm-list.view-album {
+    grid-template-columns: 1fr;
+  }
+
+  .cm-list.view-list .cm-item__body {
+    grid-template-columns: 1fr;
+  }
+
+  .cm-list.view-list .cm-item__meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .cm-list.view-list .cm-item__imgWrap {
+    height: var(--cm-thumbH);
+  }
+
+  #communityMoreView .cm-more-pageHead {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #communityMoreView .cm-more-pageTools {
+    width: 100%;
+    flex-wrap: wrap;
+  }
 }

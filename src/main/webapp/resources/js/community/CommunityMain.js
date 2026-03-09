@@ -5,11 +5,9 @@
   var root = qs('#communityMainSections');
   if (!root) return;
 
-  // ====== API/기본 이미지 ======
   var MORE_API = root.getAttribute('data-more-api') || '/community/main/more';
   var DEFAULT_IMG = root.getAttribute('data-default-img') || '';
 
-  // ====== content-card 내부 "홈뷰/전체보기뷰" ======
   var homeView = qs('#communityHomeView', root);
   var moreView = qs('#communityMoreView', root);
   var moreTitle = qs('#cmMoreTitle', root);
@@ -33,11 +31,10 @@
       .split(',')
       .map(function (t) { return t.trim(); })
       .filter(Boolean)
-      .map(function (t) { return '#' + t; })
-      .join(' ');
+      .map(function (t) { return '<span class="tag">#' + escapeHtml(t) + '</span>'; })
+      .join('');
   }
 
-  // ====== 1. 기존 캐러셀 좌우 버튼 이동 ======
   function initCarouselNav(scope) {
     qsa('.js-nav', scope).forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -53,20 +50,17 @@
     });
   }
 
-  // ====== 2. 마우스 휠로 가로 스크롤 하기 (새로 추가된 기능!) ======
   function initRailWheelScroll(scope) {
     qsa('.rail', scope).forEach(function (rail) {
       rail.addEventListener('wheel', function (e) {
-        // 세로 스크롤 휠(deltaY) 값 감지
         if (e.deltaY !== 0) {
-          e.preventDefault(); // 화면 전체가 아래로 내려가는 것 방지
-          rail.scrollLeft += e.deltaY; // 세로 휠 값을 가로 스크롤에 더함
+          e.preventDefault();
+          rail.scrollLeft += e.deltaY;
         }
-      }, { passive: false }); // preventDefault()를 사용하기 위해 passive: false 설정 필수
+      }, { passive: false });
     });
   }
 
-  // ====== 3. 카드 클릭 시 이동 ======
   function initCardMove(scope) {
     qsa('.js-card', scope).forEach(function (card) {
       card.addEventListener('click', function () {
@@ -76,7 +70,6 @@
     });
   }
 
-  // ====== API 호출 ======
   function fetchMore(kind, limit, cb) {
     var url = MORE_API + '?kind=' + encodeURIComponent(kind) + '&limit=' + encodeURIComponent(limit || 100);
 
@@ -98,39 +91,35 @@
     xhr.send();
   }
 
-  // ====== 전체보기 item ======
   function buildItem(post) {
     var a = document.createElement('a');
     a.className = 'cm-item';
     a.href = post.moveUrl || '#';
 
     var imgSrc = post.thumbSrc || DEFAULT_IMG;
+    var writer = post.writer || post.userId || post.author || '';
+    var regDate = post.regDate || '';
+    var replyCnt = (typeof post.replyCnt !== 'undefined') ? post.replyCnt : (post.replyCount || 0);
+    var contentPreview = post.contentPreview || '';
 
     a.innerHTML =
       '<div class="cm-item__imgWrap">' +
         '<img class="cm-item__img" src="' + escapeHtml(imgSrc) + '" alt="" ' +
           'onerror="this.onerror=null; this.src=\'' + escapeHtml(DEFAULT_IMG) + '\';" />' +
-        '<div class="cm-item__overlay">' +
-          '<div class="cm-item__overlayTitle">' + escapeHtml(post.title || '') + '</div>' +
-          '<div class="cm-item__overlayMeta"><span>' + escapeHtml(post.userId || post.author || '') + '</span></div>' +
-          '<div class="cm-item__overlayStats">' +
-            '<span>조회수 ' + (post.viewCount || 0) + '</span><span class="sep">|</span>' +
-            '<span>좋아요 ' + (post.likeCount || 0) + '</span><span class="sep">|</span>' +
-            '<span>댓글 ' + (post.replyCount || 0) + '</span>' +
-          '</div>' +
-        '</div>' +
       '</div>' +
       '<div class="cm-item__body">' +
         '<div class="cm-item__title">' + escapeHtml(post.title || '') + '</div>' +
-        '<div class="cm-item__writer">' + escapeHtml(post.userId || post.author || '') + '</div>' +
+        '<div class="cm-item__writer">' + escapeHtml(writer) + '</div>' +
+        '<div class="cm-item__date">' + escapeHtml(regDate) + '</div>' +
         '<div class="cm-item__meta">' +
-          '<span class="value">조회수 ' + (post.viewCount || 0) + '</span>' +
+          '<span class="cm-item__stat">조회수 ' + (post.viewCount || 0) + '</span>' +
           '<span class="sep">|</span>' +
-          '<span class="value">좋아요 ' + (post.likeCount || 0) + '</span>' +
+          '<span class="cm-item__stat">좋아요 ' + (post.likeCount || 0) + '</span>' +
           '<span class="sep">|</span>' +
-          '<span class="value">댓글 ' + (post.replyCount || 0) + '</span>' +
+          '<span class="cm-item__stat">댓글 ' + replyCnt + '</span>' +
         '</div>' +
-        '<div class="cm-item__tags">' + escapeHtml(formatHashtags(post.hashtags)) + '</div>' +
+        '<div class="cm-item__tags">' + formatHashtags(post.hashtags) + '</div>' +
+        '<div class="cm-item__desc">' + escapeHtml(contentPreview) + '</div>' +
       '</div>';
 
     return a;
@@ -154,28 +143,23 @@
     });
   }
 
-  // ====== content-card 통째로 교체 ======
   function openMorePage(kind, titleText) {
     if (!homeView || !moreView || !moreList) return;
 
     if (moreTitle) moreTitle.textContent = titleText || '전체보기';
 
-    // 홈 숨기고 전체보기 표시
     homeView.style.display = 'none';
     moreView.style.display = 'block';
 
-    // 기본 뷰
     setView('card');
-
-    // 로딩
     moreList.innerHTML = '<div class="cm-loading">불러오는 중...</div>';
 
-    // 데이터
     fetchMore(kind, 100, function (err, data) {
       if (err) {
         moreList.innerHTML = '<div class="cm-loading">불러오기 실패</div>';
         return;
       }
+
       if (!data || data.length === 0) {
         moreList.innerHTML = '<div class="empty-panel"><div class="empty-text">게시글 없음</div></div>';
         return;
@@ -187,8 +171,9 @@
       }
     });
 
-    // content-card 상단으로 스크롤(UX)
-    try { root.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+    try {
+      root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {}
   }
 
   function closeMorePage() {
@@ -198,7 +183,6 @@
     if (moreList) moreList.innerHTML = '';
   }
 
-  // ====== 이벤트 바인딩 ======
   function initMoreButtons() {
     qsa('.js-more', root).forEach(function (btn) {
       btn.addEventListener('click', function (e) {
@@ -212,10 +196,8 @@
     });
   }
 
-  // 뒤로 버튼
   if (backBtn) backBtn.addEventListener('click', closeMorePage);
 
-  // 보기 버튼
   if (viewBtnsWrap) {
     qsa('.cm-viewBtn', viewBtnsWrap).forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -224,9 +206,8 @@
     });
   }
 
-  // 최초 바인딩 실행
   initCarouselNav(root);
-  initRailWheelScroll(root); // 🌟 마우스 휠 스크롤 이벤트 바인딩 추가
+  initRailWheelScroll(root);
   initCardMove(root);
   initMoreButtons();
 })();

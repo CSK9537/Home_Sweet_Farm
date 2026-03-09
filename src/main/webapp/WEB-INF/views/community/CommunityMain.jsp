@@ -11,23 +11,22 @@
   <section class="content-wrap">
     <div class="content-card community-card">
 
-      <!-- 상단 타이틀/탭/글쓰기 -->
       <div class="community-top">
         <div class="community-top__left">
           <div class="community-title">커뮤니티</div>
         </div>
 
         <div class="community-top__center">
-		  <ul class="community-tabs" id="communityTabs">
-		    <li>
-		      <a class="tab-item ${type eq 'FREE' ? 'is-active' : ''}" href="<c:url value='/community/list?type=FREE'/>">자유게시판</a>
-		    </li>
-		    <li class="tab-sep">||</li>
-		    <li>
-		      <a class="tab-item ${type eq 'MARKET' ? 'is-active' : ''}" href="<c:url value='/community/list?type=MARKET'/>">벼룩시장</a>
-		    </li>
-		  </ul>
-		</div>
+          <ul class="community-tabs" id="communityTabs">
+            <li>
+              <a class="tab-item ${type eq 'FREE' ? 'is-active' : ''}" href="<c:url value='/community/list?type=FREE'/>">자유게시판</a>
+            </li>
+            <li class="tab-sep">||</li>
+            <li>
+              <a class="tab-item ${type eq 'MARKET' ? 'is-active' : ''}" href="<c:url value='/community/list?type=MARKET'/>">벼룩시장</a>
+            </li>
+          </ul>
+        </div>
 
         <div class="community-top__right">
           <a href="<c:url value='/community/form'/>" class="btn-write">글쓰기</a>
@@ -40,10 +39,9 @@
            data-more-api="${pageContext.request.contextPath}/community/main/more"
            data-default-img="${DEFAULT_POST_IMG}">
 
-        <!-- 홈 화면(기존 3블록) : content-card의 기본 화면 -->
         <div id="communityHomeView">
 
-          <!-- ===================== 인기글 ===================== -->
+          <!-- 인기글 -->
           <section class="block">
             <div class="block-head">
               <div class="block-title">인기글 (좋아요가 많은 글)</div>
@@ -70,35 +68,36 @@
                   <c:otherwise>
                     <div class="rail-track">
                       <c:forEach var="p" items="${popularPosts}">
-                        <!-- thumbSrc(더미/실데이터 공통 호환) -->
-                        <c:set var="thumbSrc"
-                               value="${not empty p.thumbSrc ? p.thumbSrc : (not empty p.thumbUrl ? p.thumbUrl : (not empty p.imgUrl ? p.imgUrl : DEFAULT_POST_IMG))}" />
-						
+                        <c:set var="thumbSrc" value="${not empty p.thumbSrc ? p.thumbSrc : DEFAULT_POST_IMG}" />
                         <div class="card js-card" data-move="${p.moveUrl}">
                           <div class="card-thumb">
-                            <img src="${thumbSrc}" alt=""
-                                 onerror="this.onerror=null; this.src='${DEFAULT_POST_IMG}';" />
+                            <img src="${thumbSrc}" alt="" onerror="this.onerror=null; this.src='${DEFAULT_POST_IMG}';" />
                           </div>
 
                           <div class="card-body">
                             <div class="card-title">${p.title}</div>
-                            <div class="card-author">${p.userId}</div>
+                            <div class="card-author">${p.writer}</div>
+                            <div class="card-date">${p.regDate}</div>
 
                             <div class="card-meta">
-                              <span>댓글 ${p.replyCnt}</span>
-                              <span class="meta-sep">|</span>
                               <span>조회수 ${p.viewCount}</span>
                               <span class="meta-sep">|</span>
                               <span>좋아요 ${p.likeCount}</span>
+                              <span class="meta-sep">|</span>
+                              <span>댓글 ${p.replyCnt}</span>
                             </div>
 
                             <c:if test="${not empty p.hashtags}">
                               <div class="card-tags">
                                 <c:forEach var="t" items="${fn:split(p.hashtags, ',')}">
-                                  <span class="tag">#${fn:trim(t)}</span>
+                                  <c:if test="${not empty fn:trim(t)}">
+                                    <span class="tag">#${fn:trim(t)}</span>
+                                  </c:if>
                                 </c:forEach>
                               </div>
                             </c:if>
+
+                            <div class="card-desc">${p.contentPreview}</div>
                           </div>
                         </div>
                       </c:forEach>
@@ -116,7 +115,7 @@
             </div>
           </section>
 
-          <!-- ===================== HOT ===================== -->
+          <!-- HOT -->
           <section class="block">
             <div class="block-head">
               <div class="block-title">HOT (조회수가 많은 글)</div>
@@ -143,34 +142,36 @@
                   <c:otherwise>
                     <div class="rail-track">
                       <c:forEach var="p" items="${hotPosts}">
-                        <c:set var="thumbSrc"
-                               value="${not empty p.thumbSrc ? p.thumbSrc : (not empty p.thumbUrl ? p.thumbUrl : (not empty p.imgUrl ? p.imgUrl : DEFAULT_POST_IMG))}" />
-
+                        <c:set var="thumbSrc" value="${not empty p.thumbSrc ? p.thumbSrc : DEFAULT_POST_IMG}" />
                         <div class="card js-card" data-move="${p.moveUrl}">
                           <div class="card-thumb">
-                            <img src="${thumbSrc}" alt=""
-                                 onerror="this.onerror=null; this.src='${DEFAULT_POST_IMG}';" />
+                            <img src="${thumbSrc}" alt="" onerror="this.onerror=null; this.src='${DEFAULT_POST_IMG}';" />
                           </div>
 
                           <div class="card-body">
                             <div class="card-title">${p.title}</div>
-                            <div class="card-author">${p.userId}</div>
+                            <div class="card-author">${p.writer}</div>
+                            <div class="card-date">${p.regDate}</div>
 
                             <div class="card-meta">
-                              <span>댓글 ${p.replyCnt}</span>
-                              <span class="meta-sep">|</span>
                               <span>조회수 ${p.viewCount}</span>
                               <span class="meta-sep">|</span>
                               <span>좋아요 ${p.likeCount}</span>
+                              <span class="meta-sep">|</span>
+                              <span>댓글 ${p.replyCnt}</span>
                             </div>
 
                             <c:if test="${not empty p.hashtags}">
                               <div class="card-tags">
                                 <c:forEach var="t" items="${fn:split(p.hashtags, ',')}">
-                                  <span class="tag">#${fn:trim(t)}</span>
+                                  <c:if test="${not empty fn:trim(t)}">
+                                    <span class="tag">#${fn:trim(t)}</span>
+                                  </c:if>
                                 </c:forEach>
                               </div>
                             </c:if>
+
+                            <div class="card-desc">${p.contentPreview}</div>
                           </div>
                         </div>
                       </c:forEach>
@@ -188,7 +189,7 @@
             </div>
           </section>
 
-          <!-- ===================== 최신글 ===================== -->
+          <!-- 최신글 -->
           <section class="block">
             <div class="block-head">
               <div class="block-title">최신글 (오늘 작성된 글)</div>
@@ -215,34 +216,36 @@
                   <c:otherwise>
                     <div class="rail-track">
                       <c:forEach var="p" items="${latestPosts}">
-                        <c:set var="thumbSrc"
-                               value="${not empty p.thumbSrc ? p.thumbSrc : (not empty p.thumbUrl ? p.thumbUrl : (not empty p.imgUrl ? p.imgUrl : DEFAULT_POST_IMG))}" />
-
+                        <c:set var="thumbSrc" value="${not empty p.thumbSrc ? p.thumbSrc : DEFAULT_POST_IMG}" />
                         <div class="card js-card" data-move="${p.moveUrl}">
                           <div class="card-thumb">
-                            <img src="${thumbSrc}" alt=""
-                                 onerror="this.onerror=null; this.src='${DEFAULT_POST_IMG}';" />
+                            <img src="${thumbSrc}" alt="" onerror="this.onerror=null; this.src='${DEFAULT_POST_IMG}';" />
                           </div>
 
                           <div class="card-body">
                             <div class="card-title">${p.title}</div>
-                            <div class="card-author">${p.userId}</div>
+                            <div class="card-author">${p.writer}</div>
+                            <div class="card-date">${p.regDate}</div>
 
                             <div class="card-meta">
-                              <span>댓글 ${p.replyCnt}</span>
-                              <span class="meta-sep">|</span>
                               <span>조회수 ${p.viewCount}</span>
                               <span class="meta-sep">|</span>
                               <span>좋아요 ${p.likeCount}</span>
+                              <span class="meta-sep">|</span>
+                              <span>댓글 ${p.replyCnt}</span>
                             </div>
 
                             <c:if test="${not empty p.hashtags}">
                               <div class="card-tags">
                                 <c:forEach var="t" items="${fn:split(p.hashtags, ',')}">
-                                  <span class="tag">#${fn:trim(t)}</span>
+                                  <c:if test="${not empty fn:trim(t)}">
+                                    <span class="tag">#${fn:trim(t)}</span>
+                                  </c:if>
                                 </c:forEach>
                               </div>
                             </c:if>
+
+                            <div class="card-desc">${p.contentPreview}</div>
                           </div>
                         </div>
                       </c:forEach>
@@ -260,11 +263,8 @@
             </div>
           </section>
 
-        </div><!-- /#communityHomeView -->
+        </div>
 
-        <!-- =================================================
-             ✅ 전체보기 화면 : content-card "통째로" 바뀌는 영역
-        ================================================== -->
         <div id="communityMoreView" style="display:none;">
           <div class="cm-more-pageHead">
             <div class="cm-more-pageTitle" id="cmMoreTitle">전체보기</div>
@@ -283,9 +283,9 @@
           <div class="cm-more__divider"></div>
 
           <div class="cm-list view-card" id="cmMoreList"></div>
-        </div><!-- /#communityMoreView -->
+        </div>
 
-      </div><!-- /#communityMainSections -->
+      </div>
 
     </div>
   </section>

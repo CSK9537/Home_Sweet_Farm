@@ -1,5 +1,7 @@
 package org.joonzis.community.controller;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +11,7 @@ import org.joonzis.community.dto.CommunityPostCardDTO;
 import org.joonzis.community.service.CommunityMainService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -21,54 +24,56 @@ public class CommunityMainController {
 
     private final CommunityMainService communityMainService;
 
-    /**
-     * /community 로 들어오면 데이터 세팅 페이지로 이동
-     */
     @GetMapping({"", "/"})
     public String root() {
         return "redirect:/community/main";
     }
 
-    // 썸네일 저장 경로 규칙(프로젝트에 맞게 수정)
-    private String buildThumbUrl(HttpServletRequest req, String savedName) {
-        if (savedName == null || savedName.trim().isEmpty()) return null;
+    private String buildThumbUrl(HttpServletRequest req, String subDir, String savedName) {
+        if (!StringUtils.hasText(subDir) || !StringUtils.hasText(savedName)) {
+            return null;
+        }
         String ctx = req.getContextPath();
-        // 예: /upload/community/{savedName}
-        return ctx + "/upload/community/" + savedName;
+        return ctx
+                + "/community/file?subDir="
+                + URLEncoder.encode(subDir, StandardCharsets.UTF_8)
+                + "&savedName="
+                + URLEncoder.encode(savedName, StandardCharsets.UTF_8);
     }
 
     private String buildMoveUrl(HttpServletRequest req, int boardId) {
-        String ctx = req.getContextPath();
-        // 상세 페이지 URL 규칙(프로젝트에 맞게 수정)
-        return ctx + "/community/view?board_id=" + boardId;
+        return req.getContextPath() + "/community/view?board_id=" + boardId;
+    }
+
+    private String stripHtmlAndCut(String html, int maxLen) {
+        if (html == null) return "";
+        String text = html.replaceAll("<[^>]+>", " ");
+        text = text.replaceAll("&nbsp;", " ").replaceAll("\\s+", " ").trim();
+        if (text.length() <= maxLen) return text;
+        return text.substring(0, maxLen) + "...";
     }
 
     private void decorate(HttpServletRequest req, List<CommunityPostCardDTO> list) {
         if (list == null) return;
-        for (int i = 0; i < list.size(); i++) {
-            CommunityPostCardDTO dto = list.get(i);
+        for (CommunityPostCardDTO dto : list) {
             dto.setMoveUrl(buildMoveUrl(req, dto.getBoardId()));
-            dto.setThumbSrc(buildThumbUrl(req, dto.getThumbSrc()));
+            dto.setThumbSrc(buildThumbUrl(req, dto.getThumbSubDir(), dto.getThumbSavedName()));
+            dto.setContentPreview(stripHtmlAndCut(dto.getContentPreview(), 80));
         }
     }
 
-    /**
-     * 커뮤니티 메인(레일 데이터 포함)
-     * 실제 URL: /community/main
-     */
     @GetMapping("/main")
     public String main(HttpServletRequest req, Model model) {
         Map<String, List<CommunityPostCardDTO>> rails = communityMainService.getRails(10);
 
         List<CommunityPostCardDTO> popular = rails.get("popularPosts");
-        List<CommunityPostCardDTO> hot     = rails.get("hotPosts");
-        List<CommunityPostCardDTO> latest  = rails.get("latestPosts");
+        List<CommunityPostCardDTO> hot = rails.get("hotPosts");
+        List<CommunityPostCardDTO> latest = rails.get("latestPosts");
 
         decorate(req, popular);
         decorate(req, hot);
         decorate(req, latest);
 
-        // CommunityMain.jsp가 기대하는 키 그대로
         model.addAttribute("popularPosts", popular);
         model.addAttribute("hotPosts", hot);
         model.addAttribute("latestPosts", latest);

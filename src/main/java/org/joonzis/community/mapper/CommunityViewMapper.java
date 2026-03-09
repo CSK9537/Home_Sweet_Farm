@@ -19,9 +19,9 @@ public interface CommunityViewMapper {
 	List<BoardFileVO> selectFiles(@Param("board_id") int board_id);
 	List<CommunityReplyDTO> selectRootReplies(@Param("board_id") int board_id);
 
-	// 이전/다음글
-	CommunityViewDTO selectPrev(@Param("board_id") int board_id);
-	CommunityViewDTO selectNext(@Param("board_id") int board_id);
+	// 이전/다음글 : 현재 글과 같은 board_type만 조회
+	CommunityViewDTO selectPrev(@Param("board_id") int board_id, @Param("board_type") String board_type);
+	CommunityViewDTO selectNext(@Param("board_id") int board_id, @Param("board_type") String board_type);
 
 	// 좋아요
 	int countBoardLike(@Param("board_id") int board_id, @Param("user_id") int user_id);

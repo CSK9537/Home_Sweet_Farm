@@ -1,11 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
 <link rel="stylesheet"
       href="${pageContext.request.contextPath}/resources/css/community/CommunityView.css" />
+
+<c:set var="boardTab"
+       value="${board.board_type eq 'T' or board.board_type eq 'S' ? 'MARKET' : 'FREE'}" />
 
 <div class="page-shell">
   <div class="content-wrap">
@@ -27,29 +31,30 @@
       <!-- 게시글 -->
       <div class="cv-post">
 
-		<div class="cv-breadcrumb">
-		  <!-- 1) 카테고리(대분류) : 카테고리 메인으로 -->
-		  <a class="cv-bc-link"
-		     href="${pageContext.request.contextPath}/category/main">
-		    카테고리
-		  </a>
-		
-		  <span class="cv-sep">&gt;</span>
-		
-		  <!-- 2) 보더타입 : 목록으로 (type 파라미터 유지) -->
-		  <a class="cv-bc-link"
-   			id="boardTypeLink"
-			data-board-type="${board.board_type}"
-			href="${pageContext.request.contextPath}/community/list?type=${board.board_type}">
-			</a>
-		
-		  <span class="cv-sep">&gt;</span>
-		
-		  <!-- 3) 카테고리네임 : 현재 글이 속한 카테고리(보더타입 내 필터로 목록 이동도 가능) -->
-		  <span class="cv-category">
-		    ${category.category_name}
-		  </span>
-		</div>
+        <div class="cv-breadcrumb">
+          <!-- 1) 커뮤니티 메인 -->
+          <a class="cv-bc-link"
+             href="${pageContext.request.contextPath}/community/main">
+            	커뮤니티
+          </a>
+
+          <span class="cv-sep">&gt;</span>
+
+          <!-- 2) 게시판 타입 -->
+          <a class="cv-bc-link"
+             id="boardTypeLink"
+             data-board-type="${board.board_type}"
+             data-board-tab="${boardTab}"
+             href="${pageContext.request.contextPath}/community/list?type=${boardTab}">
+          </a>
+
+          <span class="cv-sep">&gt;</span>
+
+          <!-- 3) 말머리 -->
+          <span class="cv-category">
+            ${category.category_name}
+          </span>
+        </div>
 
         <div class="cv-title-row">
           <h1 class="cv-title">${board.title}</h1>
@@ -88,7 +93,6 @@
             </div>
           </div>
 
-          <!-- 좋아요/댓글 클릭 가능 -->
           <div class="cv-stats">
             <span>조회 <span id="viewCnt">${board.view_cnt}</span></span>
             <span class="cv-bar">||</span>
@@ -110,10 +114,64 @@
         </div>
 
         <div class="cv-divider"></div>
+        
+        <c:if test="${board.board_type eq 'T' or board.board_type eq 'S'}">
+          <div class="cv-market-box">
+            <div class="cv-market-item">
+              <span class="cv-market-label">거래유형</span>
+              <span class="cv-market-value">
+                <c:choose>
+                  <c:when test="${board.board_type eq 'T'}">중고거래</c:when>
+                  <c:when test="${board.board_type eq 'S'}">나눔</c:when>
+                </c:choose>
+              </span>
+            </div>
+
+            <div class="cv-market-item">
+              <span class="cv-market-label">거래상태</span>
+              <span class="cv-market-value">
+                <c:choose>
+                  <c:when test="${board.trade_status eq 'C'}">완료</c:when>
+                  <c:otherwise>진행중</c:otherwise>
+                </c:choose>
+              </span>
+            </div>
+
+            <div class="cv-market-item cv-market-item--price">
+              <span class="cv-market-label">가격</span>
+              <span class="cv-market-price">
+                <c:choose>
+                  <c:when test="${board.board_type eq 'S'}">
+                    	나눔
+                  </c:when>
+                  <c:when test="${not empty board.price}">
+                    <fmt:formatNumber value="${board.price}" pattern="#,###"/>원
+                  </c:when>
+                  <c:otherwise>
+                    	가격 미정
+                  </c:otherwise>
+                </c:choose>
+              </span>
+            </div>
+          </div>
+        </c:if>
 
         <div class="cv-content">
           <c:out value="${board.content}" escapeXml="false"/>
         </div>
+
+        <c:if test="${not empty board.hashtags}">
+          <div class="cv-hashtags">
+            <div class="cv-hashtags-title">해시태그</div>
+            <div class="cv-hashtags-list">
+              <c:forEach var="tag" items="${fn:split(board.hashtags, ',')}">
+                <c:if test="${not empty fn:trim(tag)}">
+                  <span class="cv-hashtag">#${fn:trim(tag)}</span>
+                </c:if>
+              </c:forEach>
+            </div>
+          </div>
+        </c:if>
 
         <!-- 첨부파일 -->
         <c:if test="${not empty fileList}">
@@ -132,10 +190,8 @@
           </div>
         </c:if>
 
-        <!-- 하단 버튼 -->
         <div class="cv-post-actions">
           <div class="cv-post-actions__left">
-            <!-- (수정) ID 중복 제거 + 좋아요 버튼 연결 -->
             <button type="button"
                     class="cv-btn cv-btn-ghost cv-like-btn"
                     id="btnLikeBottom"
@@ -165,10 +221,8 @@
         </div>
       </div>
 
-      <!-- 댓글 작성/목록: (수정) 이동 타겟 id 부여 -->
       <div id="replySection"></div>
 
-      <!-- 댓글 작성 -->
       <div class="cv-comment-write">
         <div class="cv-section-title">댓글 작성</div>
         <div class="cv-comment-form">
@@ -180,7 +234,6 @@
         </div>
       </div>
 
-      <!-- 댓글 목록 -->
       <div class="cv-comments">
         <div class="cv-section-title">댓글</div>
 
@@ -263,7 +316,6 @@
         </div>
       </div>
 
-      <!-- 유저 팝업 -->
       <div id="userPop" class="cv-pop cv-user-pop" style="display:none;">
         <button type="button" class="cv-pop-item" data-action="boardView">게시글보기</button>
         <button type="button" class="cv-pop-item" data-action="chat">채팅하기</button>
@@ -275,6 +327,7 @@
       <input type="hidden" id="loginUserId" value="${loginUserId}" />
       <input type="hidden" id="prev_id" value="${not empty prev ? prev.board_id : ''}" />
       <input type="hidden" id="next_id" value="${not empty next ? next.board_id : ''}" />
+      <input type="hidden" id="board_tab" value="${boardTab}" />
 
     </div>
   </div>

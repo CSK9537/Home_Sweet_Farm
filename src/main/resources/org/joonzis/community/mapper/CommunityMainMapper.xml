@@ -5,7 +5,6 @@
 
 <mapper namespace="org.joonzis.community.mapper.CommunityMainMapper">
 
-  <!-- 세션 확인 -->
   <select id="selectSessionInfo" resultType="map">
     SELECT USER AS LOGIN_USER,
            SYS_CONTEXT('USERENV','CURRENT_SCHEMA') AS CURRENT_SCHEMA,
@@ -15,49 +14,58 @@
     FROM dual
   </select>
 
-  <!-- BOARD_ID 스모크 테스트 -->
   <select id="selectBoardIdSmoke" resultType="int">
     SELECT TBL_BOARD.BOARD_ID
     FROM TBL_BOARD
     WHERE ROWNUM = 1
   </select>
 
-  <!-- 결과 매핑 -->
-  <resultMap id="CommunityPostCardMap" type="org.joonzis.community.dto.CommunityPostCardDTO">
-    <id property="boardId" column="BOARD_ID"/>
-    <result property="title" column="TITLE"/>
-    <result property="userId" column="USERID"/>
-    <result property="viewCount" column="VIEW_COUNT"/>
-    <result property="likeCount" column="LIKE_COUNT"/>
-    <result property="replyCnt" column="REPLY_CNT"/>
-    <result property="thumbSrc" column="THUMB_SRC"/>
-    <result property="hashtags" column="HASHTAGS"/>
-  </resultMap>
-
-  <!-- 공통 SELECT -->
   <sql id="BaseSelect">
     SELECT
-      TBL_BOARD.BOARD_ID AS BOARD_ID,
-      TBL_BOARD.TITLE    AS TITLE,
-      TBL_USER.USER_ID   AS USERID,
+      TBL_BOARD.BOARD_ID AS boardId,
+      TBL_BOARD.TITLE AS title,
+      NVL(TBL_USER.NICKNAME, TBL_USER.USERNAME) AS writer,
+      TO_CHAR(TBL_BOARD.REG_DATE, 'YYYY-MM-DD') AS regDate,
 
-      NVL(TBL_BOARD.VIEW_COUNT, 0) AS VIEW_COUNT,
-      NVL(TBL_BOARD.LIKE_COUNT, 0) AS LIKE_COUNT,
-      NVL(TBL_BOARD.REPLY_CNT, 0)  AS REPLY_CNT,
+      NVL(TBL_BOARD.VIEW_COUNT, 0) AS viewCount,
+      NVL(TBL_BOARD.LIKE_COUNT, 0) AS likeCount,
+      NVL(TBL_BOARD.REPLY_CNT, 0) AS replyCnt,
 
-      ( SELECT MIN(TBL_BOARD_FILE.SAVED_NAME)
+      (
+        SELECT MIN(TBL_BOARD_FILE.SAVED_NAME) KEEP (
+                 DENSE_RANK FIRST
+                 ORDER BY CASE WHEN TBL_BOARD_FILE.IS_THUMBNAIL = 'Y' THEN 0 ELSE 1 END,
+                          TBL_BOARD_FILE.FILE_ID ASC
+               )
         FROM TBL_BOARD_FILE
         WHERE TBL_BOARD_FILE.BOARD_ID = TBL_BOARD.BOARD_ID
-          AND TBL_BOARD_FILE.IS_THUMBNAIL = 'Y'
-      ) AS THUMB_SRC,
+          AND TBL_BOARD_FILE.IS_ACTIVE = 'Y'
+          AND TBL_BOARD_FILE.CONTENT_TYPE LIKE 'image/%'
+      ) AS thumbSavedName,
 
-      ( SELECT LISTAGG(TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_NAME, ',') WITHIN GROUP (ORDER BY TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_NAME)
-          FROM TBL_BOARD_ASPECT
-          JOIN TBL_BOARD_HASHTAG_LIST
-            ON TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_ID = TBL_BOARD_ASPECT.BOARD_HASHTAG_ID
-          WHERE TBL_BOARD_ASPECT.BOARD_ID = TBL_BOARD.BOARD_ID
-            AND TBL_BOARD_HASHTAG_LIST.IS_ACTIVE = 'Y'
-      ) AS HASHTAGS
+      (
+        SELECT MIN(TBL_BOARD_FILE.SUB_DIR) KEEP (
+                 DENSE_RANK FIRST
+                 ORDER BY CASE WHEN TBL_BOARD_FILE.IS_THUMBNAIL = 'Y' THEN 0 ELSE 1 END,
+                          TBL_BOARD_FILE.FILE_ID ASC
+               )
+        FROM TBL_BOARD_FILE
+        WHERE TBL_BOARD_FILE.BOARD_ID = TBL_BOARD.BOARD_ID
+          AND TBL_BOARD_FILE.IS_ACTIVE = 'Y'
+          AND TBL_BOARD_FILE.CONTENT_TYPE LIKE 'image/%'
+      ) AS thumbSubDir,
+
+      (
+        SELECT LISTAGG(TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_NAME, ',')
+               WITHIN GROUP (ORDER BY TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_NAME)
+        FROM TBL_BOARD_ASPECT
+        JOIN TBL_BOARD_HASHTAG_LIST
+          ON TBL_BOARD_HASHTAG_LIST.BOARD_HASHTAG_ID = TBL_BOARD_ASPECT.BOARD_HASHTAG_ID
+        WHERE TBL_BOARD_ASPECT.BOARD_ID = TBL_BOARD.BOARD_ID
+          AND TBL_BOARD_HASHTAG_LIST.IS_ACTIVE = 'Y'
+      ) AS hashtags,
+
+      DBMS_LOB.SUBSTR(TBL_BOARD.CONTENT, 4000, 1) AS contentPreview
 
     FROM TBL_BOARD
     JOIN TBL_USER
@@ -66,29 +74,25 @@
       AND TBL_BOARD.BOARD_TYPE NOT IN ('Q','A')
   </sql>
 
-  <!-- 인기글 -->
-  <select id="selectPopularPosts" parameterType="int" resultMap="CommunityPostCardMap">
+  <select id="selectPopularPosts" parameterType="int" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
     SELECT *
     FROM (
       <include refid="BaseSelect"/>
-      /* 별칭 제거: 컬럼 alias로 정렬 */
-      ORDER BY LIKE_COUNT DESC, TBL_BOARD.REG_DATE DESC
+      ORDER BY likeCount DESC, TBL_BOARD.REG_DATE DESC
     )
     WHERE ROWNUM &lt;= #{value}
   </select>
 
-  <!-- 핫글 -->
-  <select id="selectHotPosts" parameterType="int" resultMap="CommunityPostCardMap">
+  <select id="selectHotPosts" parameterType="int" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
     SELECT *
     FROM (
       <include refid="BaseSelect"/>
-      ORDER BY VIEW_COUNT DESC, TBL_BOARD.REG_DATE DESC
+      ORDER BY viewCount DESC, TBL_BOARD.REG_DATE DESC
     )
     WHERE ROWNUM &lt;= #{value}
   </select>
 
-  <!-- 최신글 -->
-  <select id="selectLatestPosts" parameterType="int" resultMap="CommunityPostCardMap">
+  <select id="selectLatestPosts" parameterType="int" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
     SELECT *
     FROM (
       <include refid="BaseSelect"/>
@@ -97,8 +101,7 @@
     WHERE ROWNUM &lt;= #{value}
   </select>
 
-  <!-- 전체보기 -->
-  <select id="selectMorePosts" parameterType="map" resultMap="CommunityPostCardMap">
+  <select id="selectMorePosts" parameterType="map" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
     SELECT *
     FROM (
       <include refid="BaseSelect"/>
@@ -109,10 +112,10 @@
 
       <choose>
         <when test="kind == 'popular'">
-          ORDER BY LIKE_COUNT DESC, TBL_BOARD.REG_DATE DESC
+          ORDER BY likeCount DESC, TBL_BOARD.REG_DATE DESC
         </when>
         <when test="kind == 'hot'">
-          ORDER BY VIEW_COUNT DESC, TBL_BOARD.REG_DATE DESC
+          ORDER BY viewCount DESC, TBL_BOARD.REG_DATE DESC
         </when>
         <otherwise>
           ORDER BY TBL_BOARD.REG_DATE DESC
@@ -121,9 +124,8 @@
     )
     WHERE ROWNUM &lt;= #{limit}
   </select>
-  
-  <!-- 특정 유저 작성글(마이페이지용) -->
-  <select id="selectMyPosts" parameterType="map" resultMap="CommunityPostCardMap">
+
+  <select id="selectMyPosts" parameterType="map" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
     SELECT *
     FROM (
       <include refid="BaseSelect"/>
