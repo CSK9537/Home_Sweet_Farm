@@ -135,7 +135,7 @@
 	          <a class="gnb__link" href="/qna">Q&amp;A</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
-	              <a class="subbar__link" href="#">질문들</a>
+	              <a class="subbar__link" href="/qna/QnaList">질문들</a>
 	              <span class="subbar__sep">||</span>
 	              <a class="subbar__link" href="#">사람들</a>
 	            </div>
@@ -175,7 +175,7 @@
 	
 	          <details class="mnav__item">
 	            <summary>Q&amp;A</summary>
-	            <a href="#">질문들</a>
+	            <a href="/qna/QnaList">질문들</a>
 	            <a href="#">사람들</a>
 	          </details>
 	        </nav>

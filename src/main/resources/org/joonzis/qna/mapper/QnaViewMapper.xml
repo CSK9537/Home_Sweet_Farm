@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.joonzis.qna.mapper.QnaViewMapper">
+
+    <select id="selectQuestion" resultType="org.joonzis.qna.dto.QnaQuestionDTO">
+        SELECT
+            B.BOARD_ID    AS board_id,
+            B.USER_ID     AS user_id,
+            B.CATEGORY_ID AS category_id,
+            B.BOARD_TYPE  AS board_type,
+            B.TITLE       AS title,
+            B.CONTENT     AS content,
+            NVL(U.NICKNAME, '익명') AS writer,
+            U.PROFILE_FILENAME      AS writer_profile,
+            NVL(B.VIEW_COUNT, 0) AS view_cnt,
+            NVL(B.LIKE_COUNT, 0) AS like_cnt,
+            NVL(B.REPLY_CNT, 0)  AS reply_cnt,
+            B.REG_DATE    AS reg_date,
+            B.UPDATE_DATE AS update_date,
+            B.IS_SELECTED AS is_selected
+        FROM TBL_BOARD B
+        LEFT JOIN TBL_USER U
+          ON U.USER_ID = B.USER_ID
+        WHERE B.BOARD_ID = #{board_id}
+          AND NVL(B.IS_ACTIVE, 'Y') = 'Y'
+    </select>
+
+    <select id="selectAnswers" resultType="org.joonzis.qna.dto.QnaAnswerDTO">
+        SELECT
+            B.BOARD_ID    AS board_id,
+            B.USER_ID     AS user_id,
+            B.CATEGORY_ID AS category_id,
+            B.TITLE       AS title,
+            B.CONTENT     AS content,
+            NVL(U.NICKNAME, '익명') AS writer,
+            U.PROFILE_FILENAME      AS writer_profile,
+            NVL(B.LIKE_COUNT, 0) AS like_cnt,
+            NVL(B.REPLY_CNT, 0)  AS reply_cnt,
+            B.REG_DATE    AS reg_date,
+            B.UPDATE_DATE AS update_date,
+            B.IS_SELECTED AS is_selected
+        FROM TBL_BOARD B
+        LEFT JOIN TBL_USER U
+          ON U.USER_ID = B.USER_ID
+        WHERE B.PARENT_ID = #{board_id}
+          AND B.BOARD_TYPE = 'A'
+          AND NVL(B.IS_ACTIVE, 'Y') = 'Y'
+        ORDER BY B.IS_SELECTED DESC, B.BOARD_ID ASC
+    </select>
+
+    <select id="selectReplies" resultType="org.joonzis.qna.dto.QnaReplyDTO">
+        SELECT
+          R.REPLY_ID        AS reply_id,
+          R.BOARD_ID        AS board_id,
+          R.USER_ID         AS user_id,
+          R.PARENT_REPLY_ID AS parent_reply_id,
+          R.CONTENT         AS content,
+          NVL(U.NICKNAME, '익명') AS writer,
+          U.PROFILE_FILENAME      AS writer_profile,
+          NVL(R.LIKE_CNT, 0)      AS like_cnt,
+          R.REG_DATE              AS reg_date
+        FROM TBL_REPLY R
+        LEFT JOIN TBL_USER U
+          ON U.USER_ID = R.USER_ID
+        WHERE R.BOARD_ID = #{board_id}
+          AND R.PARENT_REPLY_ID IS NULL
+          AND NVL(R.IS_ACTIVE, 'Y') = 'Y'
+        ORDER BY R.REPLY_ID DESC
+    </select>
+    
+    <insert id="insertAnswer">
+    	INSERT INTO tbl_board(
+    		board_id,
+    		user_id,
+    		title,
+    		content,
+    		view_count,
+    		reg_date,
+    		update_date,
+    		reply_cnt,
+    		like_count,
+    		board_type,
+    		parent_id
+    	)
+    	VALUES(
+    		board_seq.nextval,
+    		#{uid},
+    		#{title},
+    		#{content},
+    		0,
+    		SYSDATE,
+    		SYSDATE,
+    		0,
+    		0,
+    		'A',
+    		#{parentId}
+    	)
+    </insert>
+    
+</mapper>

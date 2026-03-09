@@ -9,9 +9,9 @@
 	
 	      <!-- 모바일 전용 링크 영역 -->
 	      <nav class="footer__m-nav" aria-label="모바일 푸터 링크">
-	        <a href="#">이용약관</a>
-	        <a href="#">개인정보처리방침</a>
-	        <a href="#">고객센터</a>
+	        <a href="/rules/use">이용약관</a>
+	        <a href="/rules/privacy">개인정보처리방침</a>
+	        <!-- <a href="#">고객센터</a> -->
 	      </nav>
 	
 	      <!-- 모바일 전용 로고 -->
@@ -27,8 +27,8 @@
 	          Home Sweet Farm이 당신의 초록빛 여정에 함께합니다.
 	        </p>
 	        <div class="footer__sns">
-	          <a href="#">Instagram</a>
-	          <a href="#">Blog</a>
+	          <!-- <a href="#">Instagram</a>
+	          <a href="#">Blog</a> -->
 	        </div>
 	      </div>
 	
@@ -38,7 +38,7 @@
 	        <ul class="footer__links">
 	          <li><a href="/rules/use">이용약관</a></li>
 	          <li><a href="/rules/privacy">개인정보처리방침</a></li>
-	          <li><a href="#">고객센터</a></li>
+	          <!-- <li><a href="#">고객센터</a></li> -->
 	        </ul>
 	      </div>
 	

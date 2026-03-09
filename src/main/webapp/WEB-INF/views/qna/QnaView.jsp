@@ -5,17 +5,6 @@
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/community/CommunityView.css" />
-<style>
-  /* Q&A 전용 스타일 보완 */
-  .qv-answer-section { margin-top: 40px; }
-  .qv-answer-item { border: 1px solid #eee; border-radius: 8px; padding: 20px; margin-bottom: 20px; transition: all 0.2s; }
-  .qv-answer-item.is-selected { border-color: #8bc34a; background-color: #f9fff0; box-shadow: 0 2px 8px rgba(139, 195, 74, 0.2); }
-  .qv-selected-badge { display: inline-block; background: #8bc34a; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-bottom: 10px; font-weight: bold; }
-  .qv-answer-write { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
-  .qv-comment-container { margin-top: 15px; padding-left: 20px; border-left: 2px solid #eee; }
-  .qv-comment-toggle-btn { background: none; border: none; color: #666; font-size: 13px; cursor: pointer; padding: 5px 0; }
-  .qv-comment-toggle-btn:hover { color: #333; text-decoration: underline; }
-</style>
 
 <div class="page-shell">
   <div class="content-wrap">
@@ -36,7 +25,9 @@
 
         <div class="cv-meta">
           <div class="cv-writer">
-            <div class="cv-avatar"><span class="cv-avatar-fallback"></span></div>
+            <div class="cv-avatar">
+              <img src="${pageContext.request.contextPath}/user/getProfile?fileName=${board.writer_profile != null ? board.writer_profile : 'default_profile.png'}" alt="profile">
+            </div>
             <div class="cv-writer-info">
               <div class="cv-writer-line">
                 <a href="javascript:void(0)" class="js-user-trigger cv-nick" data-user-id="${board.user_id}" data-user-nick="${board.writer}">${board.writer}</a>
@@ -88,8 +79,22 @@
            </div>
         </div>
         <div class="js-reply-list-container" data-board-id="${board.board_id}">
-            <!-- AJAX로 로드될 질문 댓글 목록 -->
-            <ul class="cv-comment-list js-reply-list"></ul>
+            <ul class="cv-comment-list js-reply-list">
+              <c:forEach var="rp" items="${replyList}">
+                <li class="cv-comment-item" data-reply-id="${rp.reply_id}">
+                  <div class="cv-comment-avatar">
+                    <img src="${pageContext.request.contextPath}/user/getProfile?fileName=${rp.writer_profile != null ? rp.writer_profile : 'default_profile.png'}" alt="profile">
+                  </div>
+                  <div class="cv-comment-main">
+                    <div class="cv-comment-header">
+                      <span class="cv-comment-writer">${rp.writer}</span>
+                      <span class="cv-comment-date"><fmt:formatDate value="${rp.reg_date}" pattern="yyyy.MM.dd HH:mm" /></span>
+                    </div>
+                    <div class="cv-comment-content"><c:out value="${rp.content}"/></div>
+                  </div>
+                </li>
+              </c:forEach>
+            </ul>
         </div>
       </div>
 
@@ -123,7 +128,9 @@
 
             <div class="cv-meta">
               <div class="cv-writer">
-                <div class="cv-avatar cv-avatar-sm"><span class="cv-avatar-fallback"></span></div>
+                <div class="cv-avatar cv-avatar-sm">
+                  <img src="${pageContext.request.contextPath}/user/getProfile?fileName=${ans.writer_profile != null ? ans.writer_profile : 'default_profile.png'}" alt="profile">
+                </div>
                 <div class="cv-writer-info">
                   <div class="cv-writer-line">
                     <a href="javascript:void(0)" class="js-user-trigger cv-nick" data-user-id="${ans.user_id}" data-user-nick="${ans.writer}">${ans.writer}</a>

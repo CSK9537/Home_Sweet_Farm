@@ -102,7 +102,7 @@
   var plantEmpty = document.getElementById("plantEmpty");
 
   function searchPlants(keyword) {
-    var url = ctx + "/user/myPage/hashtag?keyword=" + encodeURIComponent(keyword);
+    var url = ctx + "/user/mypage/hashtag?keyword=" + encodeURIComponent(keyword);
     return fetch(url, { headers: { "Accept": "application/json" } })
       .then(function (res) {
         if (!res.ok) throw new Error("plant search failed");
@@ -156,7 +156,7 @@
 
 	    var hashtagId = pickBtn.getAttribute("data-hashtag-id");
 
-	    fetch(ctx + "/user/myPage/aspect?hashtagId=" + encodeURIComponent(hashtagId), {
+	    fetch(ctx + "/user/mypage/aspect?hashtagId=" + encodeURIComponent(hashtagId), {
 	      method: "POST",
 	      headers: { "Accept": "application/json" }
 	    })
@@ -173,72 +173,6 @@
 	  });
 	}
 
-  // -------------------------
-  // Verify modal (phone/email)
-  // -------------------------
-  var modalVerifyTitle = document.getElementById("modalVerifyTitle");
-  var verifyDesc = document.getElementById("verifyDesc");
-  var verifyTarget = document.getElementById("verifyTarget");
-  var btnEmailVerify = document.getElementById("btnEmailVerify");
-  var inpPhone = document.getElementById("inpPhone");
-  var inpEmail = document.getElementById("inpEmail");
-
-  function openVerify(kind) {
-    if (!isOwner) return;
-      if (modalVerifyTitle) modalVerifyTitle.textContent = "이메일 인증";
-      if (verifyDesc) verifyDesc.textContent = "이메일로 인증번호를 발송합니다.";
-      if (verifyTarget) verifyTarget.value = inpEmail ? (inpEmail.value || "") : "";
-    
-    if (modals.verify) modals.verify.setAttribute("data-kind", kind);
-    openModal(modals.verify);
-  }
-
-  if (btnEmailVerify && isOwner) btnEmailVerify.addEventListener("click", function () { openVerify("email"); });
-  if (inpEmail) inpEmail.addEventListener("click", function () { if (isOwner) openVerify("email"); });
-
-  var btnSendCode = document.getElementById("btnSendCode");
-  var btnConfirmCode = document.getElementById("btnConfirmCode");
-  var verifyCode = document.getElementById("verifyCode");
-
-  if (btnSendCode) {
-    btnSendCode.addEventListener("click", function () {
-      var kind = modals.verify ? modals.verify.getAttribute("data-kind") : "";
-      fetch(ctx + "/myPage/api/verify/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ kind: kind })
-      })
-        .then(function (res) {
-          if (!res.ok) throw new Error("send failed");
-          alert("인증번호를 발송했습니다.");
-        })
-        .catch(function () {
-          alert("인증번호 발송에 실패했습니다.");
-        });
-    });
-  }
-
-  if (btnConfirmCode) {
-    btnConfirmCode.addEventListener("click", function () {
-      var kind = modals.verify ? modals.verify.getAttribute("data-kind") : "";
-      var code = (verifyCode && verifyCode.value ? verifyCode.value : "").trim();
-      if (!code) return alert("인증번호를 입력하세요.");
-
-      fetch(ctx + "/myPage/api/verify/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ kind: kind, code: code })
-      })
-        .then(function (res) {
-          if (!res.ok) throw new Error("confirm failed");
-          alert("인증이 완료되었습니다.");
-          location.reload();
-        })
-        .catch(function () {
-          alert("인증에 실패했습니다.");
-        });
-    });
-  }
 
   // -------------------------
   // Lists: tab + paging (7 items/page, max 5 pages)
@@ -507,153 +441,30 @@
 	  var formData = new FormData();
 	  formData.append("profileImage", file);
 
-	  fetch("/user/myPage/profileImage", {
+	  fetch("/user/uploadProfile", {
 	    method: "POST",
 	    body: formData
 	  })
 	    .then(function (res) {
 	    	if(!res.ok){
-	    		return new Error("222222");
+	    		return new Error("error");
 	    	}
 	    	return res.json(); 
     	})
-	    .then(function (data) {
-	      if (data.success) {
-	        alert("저장 완료");
-	        location.reload();
-	      } else {
-	        alert("저장 실패");
-	      }
-	    })
+		.then(function (data) {
+		    if (data.status === "success") { // data.success -> data.status === "success" 로 변경
+		        alert("저장 완료");
+		        location.reload();
+		    } else {
+		        alert("저장 실패: " + data.message); // 서버에서 보낸 메시지 출력
+		    }
+		})
 	    .catch(function (err) {
 	      alert("업로드 중 오류 발생" + err);
 	    });
 	});
   
-  
-  
-  
- //-------------------------
-  // 마이페이지-닉네임, 주소 수정
- // -------------------------
-  var btnNick = document.querySelector("#nicknameUpdateBtn");
-  var btnAddr = document.querySelector("#addressUpdateBtn");
-  var nicknameInput = document.querySelector("#nicknameInput");
-  var addressInput = document.querySelector("#addressInput");
-  var nickMsg = document.querySelector("#nicknameMsg");
-  var originalNick = nicknameInput.dataset.original;
-  var originalAddr = addressInput.dataset.original;
-  
-  function mypageUpdate(payload) {
-	  // payload: {nickname:"", address:""} 중 필요한 것만 넣어서 보냄
-	  var body = Object.keys(payload)
-	    .map(function(k){
-	      return encodeURIComponent(k) + "=" + encodeURIComponent(payload[k]);
-	    })
-	    .join("&");
-
-	  return fetch(ctx + "/user/myPage/update", {
-	    method: "POST",
-	    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-	    body: body
-	  }).then(function(res){ return res.text(); });
-	}
-
-	// 닉네임 수정 버튼
-	if (btnNick) {
-	  btnNick.addEventListener("click", function(){
-		  
-		  var newNick = nicknameInput.value.trim();
-		  
-		  if(newNick === ""){
-			  nickMsg.textContent = "닉네임을 수정해주세요";
-			  nickMsg.style.color = "red"; 
-		  }
-		  else if(newNick === originalNick){
-			  nickMsg.textContent = "다른 닉네임으로 수정해주세요";
-			  nickMsg.className = "form-msg error";
-			  nickMsg.style.color = "red";
-			  return;
-		  }
-		  mypageUpdate({ nickname: newNick })
-	      .then(function(t){ 
-
-	    	  if ((t || "").trim() === "ok") {
-	    	    nickMsg.textContent = "닉네임 수정 완료";
-	    	    nickMsg.className = "form-msg success";
-	    	    nickMsg.style.color = "green";
-	    	    nickMsg.style.display = "inline";
-	    	    //변경된 값 저장
-	    	    nicknameInput.dataset.original = newNick;
-	    	    
-	    	    //왼쪽 닉네임도 즉시 반영
-	    	    var leftNickEl = document.querySelector("#leftNickname");
-	    	    
-	    	    if(leftNickEl){
-	    	    	leftNickEl.textContent = newNick;
-	    	    }
-	    	    setTimeout(function () {
-	                nickMsg.style.display = "none";
-	              }, 2000);
-	    	    	
-	    	  } else {
-	    	    nickMsg.textContent = "닉네임 수정 실패";
-	    	    nickMsg.className = "form-msg error";
-	    	    nickMsg.style.color = "red";
-	    	    nickMsg.style.display = "inline";
-	    	    
-	    	    setTimeout(function () {
-	                nickMsg.style.display = "none";
-	              }, 2000);
-	    	  }
-	    	});
-	  	}); 
-	}
 	
-
-	// 주소  수정 버튼
-	if (btnAddr) {
-	  btnAddr.addEventListener("click", function(){
-		  
-		  var newAddr = addressInput.value.trim();
-		  
-		  if(newAddr === ""){
-			  addressMsg.textContent = "주소를 수정해주세요";
-			  addressMsg.style.color = "red"; 
-		  }
-		  else if(newAddr === originalAddr){
-			  addressMsg.textContent = "다른 주소로 수정해주세요";
-			  addressMsg.className = "form-msg error";
-			  addressMsg.style.color = "red";
-			  return;
-		  }
-		  mypageUpdate({ address: addressInput.value })
-	      .then(function(t){
-	    	  if ((t || "").trim() === "ok") {
-	    		  addressMsg.textContent = "주소 수정 완료";
-	    		  addressMsg.className = "form-msg success";
-	    		  addressMsg.style.color = "green";
-	    		  addressMsg.style.display = "inline";
-		    	    //변경된 값 저장
-	    		  addressInput.dataset.original = newAddr;
-	    		  
-	    		  setTimeout(function () {
-	    			  addressMsg.style.display = "none";
-		              }, 2000);
-	    		  
-		    	  } else {
-		    		addressMsg.textContent = "주소 수정 실패";
-		    		addressMsg.className = "form-msg error";
-		    		addressMsg.style.color = "red";
-		    		addressMsg.style.display = "inline";
-		    	    
-		    	    setTimeout(function () {
-		    	    	addressMsg.style.display = "none";
-		              }, 2000);
-		    	  }
-	      });
-	  });
-	}
 	
 	//-------------------------
 	  // 프로필-자기소개 수정
@@ -665,7 +476,7 @@
 	  
 	  function introUpdate(intro) {
 		  
-		  return fetch(ctx + "/user/myPage/introUpdate", {
+		  return fetch(ctx + "/user/mypage/introUpdate", {
 		    method: "POST",
 		    headers: {"Content-Type": "application/x-www-form-urlencoded"},
 		    body: "intro="+encodeURIComponent(intro)
@@ -843,10 +654,5 @@
 		
 		  loadPosts();
 		})();
-		
-		
-
-  
- 
   
 })();

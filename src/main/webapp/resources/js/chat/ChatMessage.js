@@ -1,7 +1,7 @@
 import { chatState } from "./ChatState.js";
 import { jumpToMessage, updateSearchCounter } from "./ChatSearch.js";
-import { loadChatRooms } from "./ChatUI.js";
 import { isScrollBottom } from "./ChatScroll.js";
+import { updateRoomListRealtime } from "./ChatUI.js";
 
 
 function createMessageRow(data) {
@@ -55,7 +55,7 @@ export async function loadMessages(room_id, offset = 0, size = 40, prepend = fal
             roomState.hasMore = false;
         }
 
-        if (!list || list.length === 0) {return;}
+        if (!list || list.length === 0) { return; }
 
         list.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
         roomState.loadedCount += list.length;
@@ -84,6 +84,12 @@ export async function loadMessages(room_id, offset = 0, size = 40, prepend = fal
 
             appendMessage(msg, prepend, fragment);
         });
+
+        if (list.length > 0) {
+            const finalMsg = list[list.length - 1];
+            const { dateStr } = prepareMessageMeta(finalMsg);
+            roomState.lastDateKey = dateStr;
+        }
 
         const isAtTop = container.scrollTop === 0;
         const oldScrollHeight = container.scrollHeight;
@@ -130,7 +136,8 @@ export function appendMessage(data, prepend = false, fragment = null) {
     const myId = chatState.session.myUserId;
     const container = document.getElementById("messages");
     const msgId = Number(data.msg_id);
-    const { timeStr, currentTime } = prepareMessageMeta(data);
+    const { dateStr, timeStr, currentTime } = prepareMessageMeta(data);
+    const currentRoomId = String(chatState.session.currentRoomId);
 
     if (!chatState.message.rooms[roomId]) chatState.message.rooms[roomId] = {};
     if (!chatState.message.rooms[roomId][myId]) {
@@ -140,15 +147,42 @@ export function appendMessage(data, prepend = false, fragment = null) {
             lastMessageTime: null,
             lastTimeStr: null,
             lastDateKey: null,
-            firstDateKey: null,
-            lastImageContainer: null,
-            lastFileContainer: null,
-            lastAppendedData: null,
-            appendedMsgSet: new Set()
+            appendedMsgSet: new Set(),
+            lastAppendedData: null
         };
     }
-
     const roomState = chatState.message.rooms[roomId][myId];
+
+    if (currentRoomId === "0") {
+        const senderId = String(data.sender_id);
+        const receiverId = String(data.receiver_id);
+        const sessionReceiverId = String(chatState.session.receiverId);
+
+        const isTargetMatch = (senderId === sessionReceiverId || receiverId === sessionReceiverId);
+        if (isTargetMatch) {
+            console.log("[DEBUG] 가상방(0) -> 실제 방 전환:", roomId);
+            chatState.session.currentRoomId = data.room_id;
+        } else {
+            return;
+        }
+    } else if (String(currentRoomId) !== String(roomId)) {
+        return;
+    }
+
+    if (roomState.appendedMsgSet.has(msgId)) return;
+
+    if (!fragment && roomState.lastDateKey !== dateStr) {
+        const dateBox = document.createElement("div");
+        dateBox.className = "chat-date-box";
+        dateBox.textContent = dateStr;
+        
+        if (prepend) container.prepend(dateBox);
+        else container.appendChild(dateBox);
+        
+        roomState.lastDateKey = dateStr;
+    }else if (fragment) {
+        roomState.lastDateKey = dateStr;
+    }
 
     const box = document.createElement("div");
     box.classList.add("message-box");
@@ -172,7 +206,7 @@ export function appendMessage(data, prepend = false, fragment = null) {
 
         const timeEl = document.createElement("div");
         timeEl.classList.add("time");
-        timeEl.innerText = `${timeStr} (#${data.group_id})`;
+        timeEl.innerText = data.group_id ? `${timeStr} (#${data.group_id})` : timeStr;
         row.appendChild(timeEl);
 
         if (fragment) {
@@ -181,17 +215,15 @@ export function appendMessage(data, prepend = false, fragment = null) {
             if (prepend) container.prepend(row);
             else container.appendChild(row);
         }
-        roomState.appendedMsgSet.add(msgId);
     }
 
-    // 상태 갱신
+    // 5. 상태 최종 갱신
     roomState.lastGroupId = data.group_id || null;
     roomState.lastSenderId = data.sender_id;
     roomState.lastMessageTime = currentTime;
     roomState.lastTimeStr = timeStr;
     roomState.lastAppendedData = data;
     roomState.appendedMsgSet.add(msgId);
-
 }
 
 export async function markAsRead(roomId, msgId = null) {
@@ -232,23 +264,82 @@ export async function sendMessage(content) {
         const res = await fetch("/chat/messages", {
             method: "POST",
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Accept": "application/json" // 서버에 JSON을 원한다고 명시
             },
             body: params
         });
 
         if (res.ok) {
-            const roomId = chatState.session.currentRoomId;
-            markAsRead(roomId);
+            const text = await res.text(); // json() 대신 text()로 먼저 받음
+            console.log("[DEBUG] 서버 원본 응답:", text);
+
+            let savedMsg;
+
+            // 1. 응답이 XML인 경우 (방어 로직)
+            if (text.trim().startsWith("<")) {
+                console.warn("[WARN] 서버가 XML을 반환했습니다. 수동 파싱을 시도합니다.");
+                
+                // 간단한 정규식으로 XML 내부 데이터 추출 (필요한 것만)
+                const roomIdMatch = text.match(/<room_id>(.*?)<\/room_id>/);
+                const senderIdMatch = text.match(/<sender_id>(.*?)<\/sender_id>/);
+                const contentMatch = text.match(/<content>(.*?)<\/content>/);
+                const createdAtMatch = text.match(/<created_at>(.*?)<\/created_at>/);
+
+                savedMsg = {
+                    room_id: roomIdMatch ? roomIdMatch[1] : chatState.session.currentRoomId,
+                    sender_id: senderIdMatch ? senderIdMatch[1] : chatState.session.myUserId,
+                    content: contentMatch ? contentMatch[1] : content,
+                    created_at: createdAtMatch ? createdAtMatch[1] : new Date().toISOString(),
+                    msg_type: "TEXT"
+                };
+            } 
+            // 2. 정상적인 JSON인 경우
+            else {
+                savedMsg = JSON.parse(text);
+            }
+
+            // --- 데이터 처리 로직 ---
+            if (String(chatState.session.currentRoomId) === "0") {
+                console.log("[DEBUG] 가상방 세션 갱신:", savedMsg.room_id);
+                chatState.session.currentRoomId = savedMsg.room_id;
+                
+                const messagesContainer = document.getElementById("messages");
+                if (messagesContainer) messagesContainer.innerHTML = "";
+                
+                // 새 방 번호로 웹소켓 구독 갱신
+                if (typeof subscribeRoom === "function") {
+                    subscribeRoom(savedMsg.room_id);
+                }
+            }
+
+            // 화면에 메시지 추가 및 목록 업데이트
+            appendMessage(savedMsg);
+            updateRoomListRealtime(savedMsg);
+            markAsRead(savedMsg.room_id);
+
+        } else {
+            console.error("[ERROR] 서버 응답 상태가 좋지 않음:", res.status);
         }
     } catch (err) {
-        console.error("메시지 전송 실패:", err);
+        console.error("메시지 전송 로직 실행 중 에러:", err);
     }
 }
 
 function prepareMessageMeta(data) {
+    const rawDate = data.created_at ? data.created_at : new Date();
+    
+    let date;
+    if (typeof rawDate === 'string') {
+        date = new Date(rawDate.replace(/\.0$/, "").replace(" ", "T"));
+    } else {
+        date = new Date(rawDate);
+    }
 
-    const date = new Date(data.created_at);
+    if (isNaN(date.getTime())) {
+        date = new Date();
+    }
+
     const days = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
     const dayOfWeek = days[date.getDay()];
 
@@ -355,30 +446,29 @@ function updateImageLayout(container) {
     container.classList.remove("loading");
 }
 
-document.querySelector(".btn-send")?.addEventListener("click", () => {
-    const textarea = document.getElementById("chat-textarea");
-    const content = textarea.value.trim();
-    if (content) {
-        sendMessage(content);
-        textarea.value = "";
-    }
-});
-
-const chatInput = document.querySelector(".chat-textarea textarea");
-chatInput.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-        if (event.isComposing) return;
-
-        if (event.shiftKey) {
-            return;
-        } else {
-            event.preventDefault();
-
-            const message = event.target.value.trim();
-            if (message.length > 0) {
-                sendMessage(message);
-                event.target.value = "";
+export function initSendMessageEvents() {
+    document.addEventListener("click", (e) => {
+        const sendBtn = e.target.closest(".btn-send");
+        if (sendBtn) {
+            const textarea = document.getElementById("chat-textarea");
+            const content = textarea?.value.trim();
+            if (content) {
+                sendMessage(content);
+                textarea.value = "";
             }
         }
-    }
-});
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.target.id === "chat-textarea" && e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+            e.preventDefault();
+            const message = e.target.value.trim();
+            if (message.length > 0) {
+                sendMessage(message);
+                e.target.value = "";
+            }
+        }
+    });
+}
+
+

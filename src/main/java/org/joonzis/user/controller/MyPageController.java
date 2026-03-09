@@ -4,12 +4,14 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
 import org.joonzis.community.dto.CommunityPostCardDTO;
 import org.joonzis.community.service.CommunityMainService;
 import org.joonzis.community.vo.ReplyVO;
+import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.service.MypageService;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +31,7 @@ import lombok.extern.log4j.Log4j;
 
 @Log4j
 @RestController
-@RequestMapping("/user/myPage")
+@RequestMapping("/user/mypage")
 public class MyPageController {
 
 	@Autowired
@@ -129,26 +132,26 @@ public class MyPageController {
 	/*
 	 * 마이페이지
 	 * */
-	//마이페이지 수정-닉네임, 주소
-	@PostMapping("/update")
-	@ResponseBody
-	public String updateMypage(@RequestParam(required=false) String nickname, 
-								@RequestParam(required=false) String address,
-								HttpSession session) {
-		
-		UserVO loginUser = (UserVO)session.getAttribute("loginUser");
-		if(loginUser == null) return "no-session";
-		
-		int userId = loginUser.getUser_id();
-		
-		UserVO vo = new UserVO();
-		vo.setUser_id(userId);
-		vo.setNickname(nickname);
-		vo.setAddress(address);
-		
-		mpService.updateMypage(vo);
-		
-		return "ok";
+	@PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> updateMypage(@ModelAttribute UserVO vo) { 
+	    Map<String, Object> response = new HashMap<>();
+
+	    try {
+	        boolean result = mpService.updateMypage(vo);
+	        if (result) {
+	            response.put("success", true);
+	            response.put("message", "수정 완료");
+	        } else {
+	            response.put("success", false);
+	            response.put("message", "수정 실패 (DB 업데이트 안 됨)");
+	        }
+	    } catch (Exception e) {
+	        log.error("마이페이지 정보 수정 중 에러 발생: ", e); // 이클립스/인텔리제이 콘솔에 에러 상세 출력
+	        response.put("success", false);
+	        response.put("message", "서버 오류가 발생했습니다.");
+	    }
+
+	    return response; 
 	}
 	
 	//마이페이지 수정-관심사 검색
@@ -183,53 +186,6 @@ public class MyPageController {
 	    return res;	
 	}
 	
-	//마이페이지 수정-프로필 이미지 변경
-	@PostMapping(value = "/profileImage", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public Map<String, Object> uploadProfile(
-			@RequestParam("profileImage")MultipartFile file,
-			HttpSession session){
-		
-		Map<String, Object> res = new HashMap<>();
-		
-		try {
-	        Object obj = session.getAttribute("loginUser");
-	        System.out.println("session loginUser = " + obj);
-
-	        if (obj == null) {
-	            res.put("success", false);
-	            res.put("message", "세션 loginUser 없음");
-	            return res;
-	        }
-
-	        UserVO loginUser = (UserVO) obj;
-	        int userId = loginUser.getUser_id();
-
-	        String fileName = file.getOriginalFilename();
-	        String uploadDir = session.getServletContext().getRealPath("/resources/upload/");
-
-	        File dir = new File(uploadDir);
-	        if (!dir.exists()) {
-	            dir.mkdirs();
-	        }
-
-	        File dest = new File(uploadDir, fileName);
-	        file.transferTo(dest);
-
-	        mpService.updateProfile(userId, fileName);
-
-	        res.put("success", true);
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        res.put("success", false);
-	        res.put("message", e.getClass().getSimpleName() + ": " + e.getMessage());
-	    }
-		
-		log.error("res : " + res);
-
-	    return res;
-	}
 	//마이페이지 - 자기소개 수정
 	@PostMapping("/introUpdate")
 	@ResponseBody

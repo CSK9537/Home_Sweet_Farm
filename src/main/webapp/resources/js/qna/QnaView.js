@@ -37,7 +37,7 @@
       btnDelQ.onclick = function() {
         if (!confirm('정말 삭제하시겠습니까?')) return;
         // AJAX 또는 폼 제출로 연동 필요
-        alert('삭제 요청 (개발 예정)');
+        showCustomToast('삭제 기능은 개발 예정입니다.', 'info');
       };
     }
 
@@ -46,7 +46,7 @@
     if (btnAnsSubmit) {
       btnAnsSubmit.onclick = function() {
         var content = $('#answerContent').value.trim();
-        if (!content) return alert('답변 내용을 입력해주세요.');
+        if (!content) return showCustomToast('답변 내용을 입력해주세요.', 'warning');
         submitAnswer(content);
       };
     }
@@ -88,7 +88,7 @@
          var pid = t.getAttribute('data-parent-id');
          var input = t.closest('.cv-comment-form, .cv-reply-write').querySelector('textarea, input');
          var val = input.value.trim();
-         if (!val) return alert('댓글 내용을 입력하세요.');
+         if (!val) return showCustomToast('댓글 내용을 입력하세요.', 'warning');
          submitReply(pid, val, t.closest('.qv-question-comments, .js-answer-reply-box').querySelector('.js-reply-list'), input);
       }
     });
@@ -137,19 +137,35 @@
 
   // 답변 등록
   function submitAnswer(content) {
+    if (!content || content.trim() === '') {
+      alert('답변 내용을 입력해주세요.');
+      return;
+    }
+
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', ctx + '/qna/write', true);
+    xhr.open('POST', ctx + '/qna/AnswerWrite', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
-      if (xhr.status === 200 || xhr.status === 302) {
-        location.reload();
+      if (xhr.status === 200) {
+        showCustomToast('답변이 등록되었습니다.', 'success').then(function() {
+          location.reload();
+        });
+      } else if (xhr.status === 401 || xhr.status === 400 || xhr.status === 502) {
+        showCustomToast('로그인이 필요한 서비스입니다.', 'warning').then(function() {
+          location.href = ctx + '/user/login';
+        });
       } else {
-        alert('답변 등록에 실패했습니다.');
+        showCustomToast('답변 등록에 실패했습니다. (Error: ' + xhr.status + ')', 'error');
       }
     };
-    // parent_id로 질문 ID를 전달, board_type은 'A'
-    var params = 'parent_id=' + boardId + '&board_type=A&content=' + encodeURIComponent(content);
+    xhr.onerror = function() {
+      showCustomToast('네트워크 오류가 발생했습니다.', 'error');
+    };
+    
+    // parentId로 질문 ID를 전달 (Controller 파라미터명에 맞춤)
+    var params = 'parentId=' + boardId + '&content=' + encodeURIComponent(content);
     xhr.send(params);
+    location.href = ctx + '/qna/detail/' + boardId;
   }
 
   // 댓글 등록
@@ -162,9 +178,11 @@
         inputEl.value = '';
         loadReplies(bId, listEl);
       } else if (xhr.status === 401) {
-        alert('로그인이 필요합니다.');
+        showCustomToast('로그인이 필요한 서비스입니다.', 'warning').then(function() {
+          location.href = ctx + '/user/login';
+        });
       } else {
-        alert('댓글 등록 실패');
+        showCustomToast('댓글 등록에 실패했습니다.', 'error');
       }
     };
     var data = JSON.stringify({ board_id: bId, content: content });
@@ -178,10 +196,11 @@
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
       if (xhr.status === 200) {
-        alert('채택이 완료되었습니다.');
-        location.reload();
+        showCustomToast('채택이 완료되었습니다.', 'success').then(function() {
+          location.reload();
+        });
       } else {
-        alert('처리에 실패했습니다.');
+        showCustomToast('처리에 실패했습니다.', 'error');
       }
     };
     xhr.send('board_id=' + aid + '&parent_id=' + boardId);
@@ -190,15 +209,16 @@
   // 좋아요 처리
   function handleLike(id, btn) {
     // 기존 좋아요 로직 이식
-    alert('좋아요 처리 (ID: ' + id + ')');
+    showCustomToast('좋아요 처리 (ID: ' + id + ')', 'info');
   }
 
-  // 간단 날짜 포맷
-  function formatDate(ts) {
-    if (!ts) return "";
-    var d = new Date(ts);
-    return d.getFullYear() + '.' + (d.getMonth()+1) + '.' + d.getDate();
-  }
+function formatDate(ts) {
+  if (!ts) return "";
+  var d = new Date(ts);
+  
+  // 'ko-KR' 옵션을 주면 한국 형식(YYYY. MM. DD.)으로 출력
+  return d.toLocaleDateString('ko-KR').replace(/\s/g, '').replace(/\.$/, '');
+}
 
   init();
 })();
