@@ -3,6 +3,7 @@ import { appendMessage, loadMessages, markAsRead } from "./ChatMessage.js";
 import { subscribeRoom } from "./ChatWebSocket.js";
 import { updateSearchCounter } from "./ChatSearch.js";
 
+// 내 정보
 export function initMyUserInfo(textData) {
     let loginUser = null;
 
@@ -23,7 +24,7 @@ export function initMyUserInfo(textData) {
         if (loginUser && loginUser.user_id) {
             chatState.session.loginUser = loginUser;
             chatState.session.myUserId = loginUser.user_id;
-            
+
             updateMyHeaderProfile();
             return loginUser.user_id;
         }
@@ -31,6 +32,31 @@ export function initMyUserInfo(textData) {
         console.error("[ChatUI] 내 정보 파싱 실패:", e);
     }
     return null;
+}
+
+// 프로필 공통 헬퍼
+function getProfileUrl(fileName) {
+    const safeName = (fileName && fileName.trim() !== "" && fileName !== "null")
+        ? fileName
+        : "none";
+    return `/user/getProfile?fileName=${encodeURIComponent(safeName)}`;
+}
+
+// 유저 등급 뱃지
+function getRoleBadge(gradeId) {
+    const grade = Number(gradeId);
+
+    if (grade === 1 || !grade) return "";
+
+    if (grade === 2) {
+        return `<span class="badge-role badge-gosu">고수</span>`;
+    }
+
+    if (grade === 3) {
+        return `<span class="badge-role badge-pro">전문가</span>`;
+    }
+
+    return "";
 }
 
 export function updateMyHeaderProfile() {
@@ -42,15 +68,7 @@ export function updateMyHeaderProfile() {
 
     const imgEl = document.getElementById("my-profile-img");
     if (imgEl) {
-        const fileName = myInfo.profile_filename || myInfo.profile_img || "";
-        
-        if (fileName) {
-            imgEl.src = `/user/getProfile?fileName=${encodeURIComponent(fileName)}`;
-        } else {
-            imgEl.src = `/user/getProfile?fileName=`; 
-        }
-
-        console.log("[DEBUG] 내 프로필 이미지 최종 경로:", imgEl.src);
+        imgEl.src = getProfileUrl(myInfo.profile_filename);
     }
 }
 
@@ -127,14 +145,17 @@ export function loadChatRooms() {
             rooms.forEach(room => {
                 const item = document.createElement("div");
                 item.classList.add("chat-item");
+                const listBadge = getRoleBadge(room.other_user_grade_id);
                 item.dataset.room_id = room.room_id;
                 item.dataset.user_id = room.other_user_id;
-                const profileSrc = `/user/getProfile?fileName=${encodeURIComponent(room.other_user_profile || '')}`;
-                
+                const profileSrc = getProfileUrl(room.other_user_profile);
+
                 item.innerHTML = `
                     <img src="${profileSrc}" alt="유저">
                     <div class="info">
-                        <div class="name">${room.other_user_name}</div>
+                        <div class="name">
+                            ${room.other_user_name} 
+                            ${listBadge}  </div>
                         <div class="last-msg">
                             ${makePreviewMessage(room.last_msg, room.last_msg_type)}
                         </div>
@@ -162,6 +183,14 @@ export function loadChatRooms() {
 
                     const headerName = document.querySelector('.chat-header .name');
                     if (headerName) headerName.innerText = room.other_user_name;
+
+                    const roleEl = document.querySelector('.chat-header .role');
+                    if (roleEl) roleEl.innerHTML = getRoleBadge(room.other_user_grade_id);
+
+                    const headerImg = document.querySelector('.chat-header img');
+                    if (headerImg) {
+                        headerImg.src = profileSrc;
+                    }
 
                     loadMessages(chatState.session.currentRoomId, 0, 40, false, true)
                         .then(() => {
@@ -790,15 +819,15 @@ export async function initVirtualRoom(targetUserId) {
             headerName.innerText = userName;
         }
 
+        const roleEl = document.querySelector('.chat-header .role');
+        if (roleEl) {
+            roleEl.innerHTML = getRoleBadge(userData.grade_id);
+        }
+
         const headerImg = document.querySelector('.chat-header img');
         if (headerImg) {
-            if (userData.profile_filename) {
-                // 담당자가 알려준 경로 형식 사용
-                headerImg.src = `/user/getProfile?fileName=${encodeURIComponent(userData.profile_filename)}`;
-            } else {
-                // 프로필 이미지가 없을 경우 보여줄 기본 이미지 경로
-                headerImg.src = "/resources/images/default-profile.png";
-            }
+            const fName = userData.profile_filename || "empty";
+            headerImg.src = getProfileUrl(userData.profile_filename);
         }
 
         document.getElementById("empty-view").style.display = "none";

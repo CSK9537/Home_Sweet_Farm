@@ -18,4 +18,6 @@ public class ChatRoomDTO {// 채팅방 리스트
     private int unread_count;
     private Date created_at;
     private String last_msg_type;
+    private String other_user_profile;
+    private int other_user_grade_id;
 }
