@@ -58,16 +58,45 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 6. 폼 전송(Submit) 시 최종 검증
   form.addEventListener('submit', function(e) {
+	e.preventDefault(); 
     const isNameValid = validateRealTime(nameInput, regexName);
     const isNicknameValid = validateRealTime(nicknameInput, regexNickname);
     const isPhoneValid = validateRealTime(phoneInput, regexPhone);
 
     // 하나라도 검증을 통과하지 못하면 폼 제출 막기
     if (!isNameValid || !isNicknameValid || !isPhoneValid) {
-      e.preventDefault(); 
-      alert('입력하신 정보를 다시 확인해주세요.');
+      showCustomToast("적절치 못한 항목이 존재합니다.", "warning");
+      return;
     }
+    
+    const url = this.getAttribute('action');
+    const formData = new FormData(this); // 폼 데이터 자동 수집
+
+    // fetch를 이용한 비동기 통신
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        // response.ok가 아닐 때 상태 코드(status)를 에러 메시지에 포함시킵니다.
+        if (!response.ok) {
+            throw new Error(`서버 응답 에러: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+        	showCustomToast("회원정보가 성공적으로 수정되었습니다.", "success");
+            // 필요하다면 페이지 새로고침 또는 특정 UI 업데이트
+        	window.location.reload();
+        } else {
+        	showCustomToast("수정에 실패했습니다", "error");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showCustomToast("오류가 발생했습니다.", "error");
+    });
   });
-  
   
 });

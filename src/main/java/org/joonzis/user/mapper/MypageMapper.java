@@ -19,7 +19,7 @@ public interface MypageMapper {
 //	// 사용자가 작성한 질문
 //	public List<CommunityPostCardDTO> selectMyQuest(int user_id);
 		
-	//마이페이지 수정-닉네임, 주소
+	//마이페이지 수정
 	public int updateMypage(UserVO vo);
 	
 	//마이페이지 수정-관심사 검색

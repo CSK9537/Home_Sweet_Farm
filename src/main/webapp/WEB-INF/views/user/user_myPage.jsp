@@ -204,7 +204,7 @@
             </header>
 
             <div class="list-wrap"
-                 data-api="${ctx}/user/myPage/posts"
+                 data-api="${ctx}/user/mypage/posts"
                  data-default-tab="all">
               <div class="list-head">
                 <div class="list-count">
@@ -235,7 +235,7 @@
             </header>
 
             <div class="list-wrap"
-                 data-api="${ctx}/user/myPage/replys"
+                 data-api="${ctx}/user/mypage/replys"
                  data-default-tab="all">
               <div class="list-head">
                 <div class="list-count">
@@ -267,7 +267,7 @@
               </header>
 
               <div class="list-wrap"
-                   data-api="${ctx}/user/myPage/questions"
+                   data-api="${ctx}/user/mypage/questions"
                    data-default-tab="all">
                 <div class="list-head">
                   <div class="list-count">
@@ -298,7 +298,7 @@
             </header>
 
             <div class="list-wrap"
-                 data-api="${ctx}/user/myPage/answers"
+                 data-api="${ctx}/user/mypage/answers"
                  data-default-tab="all">
               <div class="list-head">
                 <div class="list-count">
@@ -365,8 +365,7 @@
                       <div class="verify-card__head">
                         <h3 class="verify-title">이메일 인증</h3>
                         <p class="verify-desc">
-                          회원님의 이메일 수정을 위해 <strong>인증</strong>이 필요합니다.<br/>
-                          새로운 이메일을 통해 인증을 진행해주세요.
+                          이메일을 수정하시길 원한다면 <strong>인증</strong>이 필요합니다.<br/>
                         </p>
                       </div>
                       <div class="verify-card__body">

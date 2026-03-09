@@ -102,7 +102,7 @@
   var plantEmpty = document.getElementById("plantEmpty");
 
   function searchPlants(keyword) {
-    var url = ctx + "/user/myPage/hashtag?keyword=" + encodeURIComponent(keyword);
+    var url = ctx + "/user/mypage/hashtag?keyword=" + encodeURIComponent(keyword);
     return fetch(url, { headers: { "Accept": "application/json" } })
       .then(function (res) {
         if (!res.ok) throw new Error("plant search failed");
@@ -156,7 +156,7 @@
 
 	    var hashtagId = pickBtn.getAttribute("data-hashtag-id");
 
-	    fetch(ctx + "/user/myPage/aspect?hashtagId=" + encodeURIComponent(hashtagId), {
+	    fetch(ctx + "/user/mypage/aspect?hashtagId=" + encodeURIComponent(hashtagId), {
 	      method: "POST",
 	      headers: { "Accept": "application/json" }
 	    })
@@ -476,7 +476,7 @@
 	  
 	  function introUpdate(intro) {
 		  
-		  return fetch(ctx + "/user/myPage/introUpdate", {
+		  return fetch(ctx + "/user/mypage/introUpdate", {
 		    method: "POST",
 		    headers: {"Content-Type": "application/x-www-form-urlencoded"},
 		    body: "intro="+encodeURIComponent(intro)

@@ -36,11 +36,23 @@
 	<update id="updateMypage" parameterType="org.joonzis.user.vo.UserVO">
 		UPDATE TBL_USER
 		<set>
+		    <if test="name != null and name != ''">
+		        name = #{name},
+		    </if>
+		    <if test="brith_date != null and brith_date != ''">
+		        brith_date = #{brith_date},
+		    </if>
 		    <if test="nickname != null and nickname != ''">
 		        nickname = #{nickname},
 		    </if>
 		    <if test="address != null and address != ''">
 		        address = #{address},
+		    </if>
+		    <if test="phone != null and phone != ''">
+		        phone = #{phone},
+		    </if>
+		    <if test="email != null and email != ''">
+		        email = #{email},
 		    </if>
 		</set>
 		WHERE user_id = #{user_id}

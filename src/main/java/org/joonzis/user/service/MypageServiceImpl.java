@@ -16,6 +16,9 @@ import lombok.extern.log4j.Log4j;
 @Service
 public class MypageServiceImpl implements MypageService{
 	
+	@Autowired
+	private MypageMapper mpMapper;
+	
 	@Override
 	public List<CommunityPostCardDTO> selectMyPosts(int user_id) {
 		return mpMapper.selectMyPosts(user_id);
@@ -31,13 +34,10 @@ public class MypageServiceImpl implements MypageService{
 //		return mpMapper.selectMyQuest(user_id);
 //	}
 	
-	@Autowired
-	private MypageMapper mpMapper;
-	
 	@Override
-		public int updateMypage(UserVO vo) {
-			return mpMapper.updateMypage(vo);
-		}
+	public boolean updateMypage(UserVO vo) {
+		return mpMapper.updateMypage(vo) > 0;
+	}
 	@Override
 	public List<Map<String, Object>> searchHashtag(String keyword) {
 		if(keyword == null) keyword = "";
