@@ -110,13 +110,21 @@ public class ChatServiceImpl implements ChatService{
     
     // 7. 파일 전송
     @Transactional
-    public MsgVO sendFileMessage(int sender_id, int room_id, MsgVO msgVO, long group_id) {
-    	msgVO.setSender_id(sender_id);
-    	msgVO.setRoom_id(room_id);
-    	msgVO.setGroup_id(group_id);
-    	msgService.sendMessage(msgVO);
-    	
-    	return msgService.findById(msgVO.getMsg_id());
+    public MsgVO sendFileMessage(int sender_id, int receiver_id, int room_id, MsgVO msgVO, long group_id) {
+        
+        // [중요] 가상방(room_id=0)인 경우 방을 먼저 찾거나 생성함
+        if (room_id == 0) {
+            room_id = roomService.getOrCreateRoom(sender_id, receiver_id);
+        }
+        
+        msgVO.setSender_id(sender_id);
+        msgVO.setRoom_id(room_id);
+        msgVO.setGroup_id(group_id);
+        
+        // 이제 room_id가 확실히 DB에 존재하므로 에러가 나지 않음
+        msgService.sendMessage(msgVO);
+        
+        return msgService.findById(msgVO.getMsg_id());
     }
     
     public long getNextGroupId(int room_id) {

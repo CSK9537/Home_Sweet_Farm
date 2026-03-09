@@ -79,7 +79,7 @@
 	</select>
 	
 	<select id="findMaxGroupId" resultType="long">
-	    SELECT MAX(group_id) 
+	    SELECT NVL(MAX(group_id), 0) 
 	    FROM tbl_msg 
 	    WHERE room_id = #{room_id}
 	</select>

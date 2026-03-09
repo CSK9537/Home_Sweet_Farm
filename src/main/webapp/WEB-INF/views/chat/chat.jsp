@@ -20,13 +20,13 @@
 						</a>
 					</div>
 					<div class="account">
-						<img src="https://via.placeholder.com/40" alt="프로필"> <span class="username">내계정</span>
+						<img id="my-profile-img" src="" alt="프로필">
+						<span id="my-profile-name" class="username">로드 중...</span>
 					</div>
 				</div>
 			</header>
+
 			<div class="chat-container">
-
-
 				<!-- 좌측 채팅 목록 -->
 				<div class="chat-list">
 					<div class="chat-list-header">
@@ -70,7 +70,7 @@
 				<div class="chat-main">
 					<div id="empty-view" class="empty-view">
 						<div class="empty-content">
-							<img src="/resources/img/logo.png" alt="logo" class="empty-logo">
+							<span class="logo__text">Home Sweet Farm</span>
 							<div class="empty-text">채팅방을 선택해주세요.</div>
 						</div>
 					</div>
@@ -153,6 +153,9 @@
 				<!-- 숨겨진 input -->
 				<input type="file" id="imageInput" accept="image/*" multiple hidden />
 				<input type="file" id="fileInput" multiple hidden />
+				<input type="hidden" id="hidden_room_id" value="${room_id}">
+				<input type="hidden" id="hidden_target_id" value="${target_id}">
+				<input type="hidden" id="hidden_my_id" value="${user_id}">
 			</div>
 			<!-- 이미지 확대 modal -->
 			<div id="imagePreviewModal" class="modal">

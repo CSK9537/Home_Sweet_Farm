@@ -1,7 +1,58 @@
 import { chatState } from "./ChatState.js";
-import { loadMessages, markAsRead } from "./ChatMessage.js";
+import { appendMessage, loadMessages, markAsRead } from "./ChatMessage.js";
 import { subscribeRoom } from "./ChatWebSocket.js";
 import { updateSearchCounter } from "./ChatSearch.js";
+
+export function initMyUserInfo(textData) {
+    let loginUser = null;
+
+    try {
+        if (textData.trim().startsWith('<')) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(textData, "text/xml");
+            loginUser = {
+                user_id: Number(xmlDoc.getElementsByTagName("user_id")[0]?.textContent),
+                nickname: xmlDoc.getElementsByTagName("nickname")[0]?.textContent || "",
+                username: xmlDoc.getElementsByTagName("username")[0]?.textContent || "",
+                profile_filename: xmlDoc.getElementsByTagName("profile_filename")[0]?.textContent || ""
+            };
+        } else {
+            loginUser = JSON.parse(textData);
+        }
+
+        if (loginUser && loginUser.user_id) {
+            chatState.session.loginUser = loginUser;
+            chatState.session.myUserId = loginUser.user_id;
+            
+            updateMyHeaderProfile();
+            return loginUser.user_id;
+        }
+    } catch (e) {
+        console.error("[ChatUI] 내 정보 파싱 실패:", e);
+    }
+    return null;
+}
+
+export function updateMyHeaderProfile() {
+    const myInfo = chatState.session.loginUser;
+    if (!myInfo) return;
+
+    const myDisplayName = myInfo.nickname || myInfo.username || "내 계정";
+    document.getElementById("my-profile-name").innerText = myDisplayName;
+
+    const imgEl = document.getElementById("my-profile-img");
+    if (imgEl) {
+        const fileName = myInfo.profile_filename || myInfo.profile_img || "";
+        
+        if (fileName) {
+            imgEl.src = `/user/getProfile?fileName=${encodeURIComponent(fileName)}`;
+        } else {
+            imgEl.src = `/user/getProfile?fileName=`; 
+        }
+
+        console.log("[DEBUG] 내 프로필 이미지 최종 경로:", imgEl.src);
+    }
+}
 
 // 채팅방 프리뷰 분기
 function makePreviewMessage(msg, type) {
@@ -78,9 +129,10 @@ export function loadChatRooms() {
                 item.classList.add("chat-item");
                 item.dataset.room_id = room.room_id;
                 item.dataset.user_id = room.other_user_id;
-
+                const profileSrc = `/user/getProfile?fileName=${encodeURIComponent(room.other_user_profile || '')}`;
+                
                 item.innerHTML = `
-                    <img src="https://via.placeholder.com/40" alt="유저">
+                    <img src="${profileSrc}" alt="유저">
                     <div class="info">
                         <div class="name">${room.other_user_name}</div>
                         <div class="last-msg">
@@ -122,121 +174,130 @@ export function loadChatRooms() {
                         });
                 });
             });
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetRoomId = urlParams.get('room_id');
+            const targetUserId = urlParams.get('target_id');
+            const targetUserName = urlParams.get('target_name');
+
+            if (targetRoomId && targetRoomId !== "0") {
+                const targetItem = chatListContainer.querySelector(`[data-room_id="${targetRoomId}"]`);
+                if (targetItem) {
+                    targetItem.click();
+                }
+            }
+            else if (targetUserId) {
+                const existingRoom = rooms.find(r => String(r.other_user_id) === String(targetUserId));
+
+                if (existingRoom) {
+                    const targetItem = chatListContainer.querySelector(`[data-room_id="${existingRoom.room_id}"]`);
+                    if (targetItem) targetItem.click();
+                } else {
+                    initVirtualRoom(targetUserId);
+                }
+
+                const messagesContainer = document.getElementById("messages");
+                if (messagesContainer) {
+                    messagesContainer.innerHTML = `
+                            <div style="text-align:center; padding:40px; color:#888;">
+                                <p>신규 대화입니다.</p>
+                                <small>메시지를 보내면 대화방이 생성됩니다.</small>
+                            </div>`;
+                }
+            }
+
+            window.history.replaceState({}, '', window.location.pathname);
         })
         .catch(err => console.error("채팅방 목록 로드 실패", err));
 }
 
 //채팅방 목록 실시간 업데이트
 export function updateRoomListRealtime(msg) {
-    console.log("realtime msg =", msg);
-
+    console.log("[DEBUG] 실시간 메시지 수신 데이터:", msg);
 
     const chatListContainer = document.querySelector('.chat-items');
+    const messagesContainer = document.getElementById("messages");
 
-    // 핵심
-    const roomId = String(msg.room_id);
+    // [중요] 모든 ID를 String으로 강제 형변환하여 비교 오류 방지
+    const msgRoomId = String(msg.room_id);
+    const myId = String(chatState.session.myUserId);
+    const receiverId = String(chatState.session.receiverId);
+    let currentRoomId = String(chatState.session.currentRoomId);
 
-    const isCurrentRoom =
-        roomId === String(chatState.session.currentRoomId);
+    console.log(`[DEBUG] 비교 상태 - 수신Room:${msgRoomId}, 현재Room:${currentRoomId}, 상대ID:${receiverId}`);
 
-    let item = chatListContainer.querySelector(
-        `[data-room_id="${roomId}"]`
-    );
+    // 1. 가상방(0)에서 실제 방으로 전환되는 찰나의 순간 처리
+    if (currentRoomId === "0" || currentRoomId === "null" || !currentRoomId) {
+        // 내가 보냈거나, 내가 지정한 상대방이 보낸 메시지라면 이 방은 내 방임
+        const isFromMe = String(msg.sender_id) === myId;
+        const isFromTarget = String(msg.sender_id) === receiverId;
 
-    // ===== 채팅방 없으면 새로 생성 =====
-    if (!item) {
+        if (isFromMe || isFromTarget) {
+            console.log("[DEBUG] 가상방 상태에서 첫 메시지 감지. 현재 세션을 실제 ID로 업데이트합니다.");
+            chatState.session.currentRoomId = msg.room_id;
+            currentRoomId = String(msg.room_id); // 즉시 반영
 
-        item = document.createElement("div");
-        item.classList.add("chat-item");
-        item.dataset.room_id = roomId;
+            // "신규 대화입니다" 안내 문구 삭제
+            if (messagesContainer) {
+                messagesContainer.innerHTML = "";
+            }
 
-        const imgSrc = (msg.msg_type === 'IMAGE')
-            ? `/chat/files/${msg.content}`
-            : `https://via.placeholder.com/40`;
-
-        item.innerHTML = `
-        <img src="${imgSrc}" class="chat-thumbnail-list">
-        <div class="info">
-            <div class="name">${msg.sender_name || "유저"}</div>
-            <div class="last-msg">
-                ${makePreviewMessage(msg.content, msg.msg_type)}
-            </div>
-        </div>
-    `;
-        chatListContainer.prepend(item);
+            // 실제 방으로 구독 전환
+            if (typeof subscribeRoom === "function") {
+                subscribeRoom(msg.room_id);
+            }
+        }
     }
 
-    // 마지막 메시지 갱신 
-    const lastMsg = makePreviewMessage(msg.content, msg.msg_type);
-    const lastMsgEl = item.querySelector(".last-msg");
-    if (lastMsgEl) {
-        lastMsgEl.innerText = lastMsg;
-    }
+    // 2. 메시지 화면 출력 판정 (이게 return보다 먼저 와야 함)
+    const isCurrentRoom = (msgRoomId === currentRoomId);
 
-    // 시간 갱신
-    const timeEl = item.querySelector(".time");
-    if (timeEl) {
-        timeEl.innerText = formatChatTime(msg.created_at);
-    }
-
-    // 현재 보고 있는 채팅방일 시  unread배지 제거
     if (isCurrentRoom) {
-        const badge = item.querySelector(".badge");
-        if (badge) badge.remove();
+        console.log("[DEBUG] 현재 보고 있는 방이 맞으므로 화면에 메시지를 추가합니다.");
+        if (typeof appendMessage === "function") {
+            appendMessage(msg);
 
-        if (chatState.message.roomUnreadGroupMap[roomId]) {
-            chatState.message.roomUnreadGroupMap[roomId].clear();
+            // 스크롤 처리
+            if (messagesContainer) {
+                setTimeout(() => {
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 50);
+            }
         }
     }
 
-    // unread 카운트
-    if (!isCurrentRoom && msg.sender_id !== chatState.session.myUserId) {
+    const displayTime = msg.created_at || new Date().toISOString();
+    // 3. 왼쪽 목록 UI 업데이트
+    let item = chatListContainer.querySelector(`[data-room_id="${msgRoomId}"]`);
 
-        const groupId = msg.group_id || msg.msg_id;
-        const roomKey = String(roomId);
+    if (!item) {
+        console.log("[DEBUG] 목록에 해당 방이 없어 목록 전체를 새로 불러옵니다.");
+        loadChatRooms(); // 비동기 로드
+        return; // 새로 불러올 것이므로 여기서 종료
+    }
 
-        if (!chatState.message.roomUnreadGroupMap[roomKey]) {
-            chatState.message.roomUnreadGroupMap[roomKey] = new Set();
-        }
+    // 목록에 방이 이미 존재하는 경우 (업데이트 후 맨 위로 올리기)
+    const lastMsgEl = item.querySelector(".last-msg");
+    if (lastMsgEl) lastMsgEl.innerText = makePreviewMessage(msg.content, msg.msg_type);
 
-        const unreadGroupSet = chatState.message.roomUnreadGroupMap[roomKey];
+    const timeEl = item.querySelector(".time");
+    if (timeEl) timeEl.innerText = formatChatTime(displayTime);
 
-        // 이미 unread 처리된 그룹이면 무시
-        if (unreadGroupSet.has(groupId)) return;
-
-        unreadGroupSet.add(groupId);
-
-        const right = item.querySelector(".right");
-        let badge = right.querySelector(".badge");
-
+    // 알림 배지 처리
+    if (!isCurrentRoom && String(msg.sender_id) !== myId) {
+        let badge = item.querySelector(".badge");
         if (!badge) {
             badge = document.createElement("div");
             badge.classList.add("badge");
-            badge.innerText = "1";
-            right.appendChild(badge);
-        } else {
-            badge.innerText =
-                String(parseInt(badge.innerText || "0") + 1);
+            const rightDiv = item.querySelector(".right");
+            if (rightDiv) rightDiv.appendChild(badge);
         }
-    }
-
-    // 재정렬 안정화
-    if (!isCurrentRoom &&
-        chatListContainer.firstElementChild !== item) {
-        chatListContainer.prepend(item);
-    }
-
-    // unread-only 필터
-    const unreadCheckbox = document.getElementById("unread-only");
-
-    if (unreadCheckbox && unreadCheckbox.checked) {
+        badge.innerText = Number(badge.innerText || 0) + 1;
+    } else if (isCurrentRoom) {
         const badge = item.querySelector(".badge");
-        item.style.display = badge ? "flex" : "none";
-    } else {
-        item.style.display = "flex";
+        if (badge) badge.remove();
     }
 
-    // 최신 채팅방 위로
+    // 최신 메시지 방을 목록 최상단으로 이동
     chatListContainer.prepend(item);
 }
 
@@ -588,16 +649,39 @@ export function initPendingFilesModal() {
 function uploadFile(file, type) {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("room_id", chatState.session.currentRoomId);
     formData.append("msg_type", type);
+
+    // 현재 세션 상태 확인
+    const currentRoomId = String(chatState.session.currentRoomId);
+    formData.append("room_id", currentRoomId);
+
+    // [핵심] 가상 방일 때 receiver_id를 반드시 포함
+    if (currentRoomId === "0") {
+        formData.append("receiver_id", chatState.session.receiverId);
+        console.log("[DEBUG] 첫 파일 전송: 방 생성 프로세스 시작");
+    }
 
     fetch(`/chat/rooms/upload`, {
         method: "POST",
         body: formData
     })
-        .then(res => res.json())
+        .then(async res => {
+            const text = await res.text();
+            if (!res.ok) {
+                // 이제 서버 에러 페이지 내용이 콘솔에 찍힐 겁니다.
+                console.error("[ERROR] 서버 내부 오류 발생:", text);
+                throw new Error("서버 업로드 실패");
+            }
+            return JSON.parse(text);
+        })
         .then(data => {
-            console.log("[SUCCESS] 파일 업로드 완료:", data);
+            // 성공 처리 (방 번호 갱신 및 메시지 추가)
+            if (currentRoomId === "0" && data.room_id) {
+                chatState.session.currentRoomId = data.room_id;
+                if (typeof subscribeRoom === "function") subscribeRoom(data.room_id);
+                loadChatRooms(); // 목록 새로고침
+            }
+            appendMessage(data);
         })
         .catch(err => console.error("파일 업로드 에러:", err));
 }
@@ -651,5 +735,88 @@ export function initImagePreviewModal() {
             previewImg.src = "";
         }
     });
+}
+
+
+export async function initTargetInfo() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetId = urlParams.get('target_id');
+    const roomId = urlParams.get('room_id'); // 기존 방 번호가 있을 수도 있음
+
+    // 신규 채팅(가상방 0)이거나, 방 번호만 있고 이름이 없는 경우 처리
+    if (targetId) {
+        try {
+            const res = await fetch(`/chat/user/info/${targetId}`);
+            if (res.ok) {
+                const user = await res.json();
+
+                // 1. 헤더의 상대방 이름 업데이트
+                const headerName = document.querySelector(".chat-header .name");
+                if (headerName) headerName.innerText = user.username;
+
+                // 2. 전역 상태(chatState)에 상대방 정보 저장
+                chatState.session.receiverId = targetId;
+                chatState.session.targetName = user.username;
+
+                console.log("[DEBUG] 상대방 정보 로드 완료:", user.username);
+            }
+        } catch (err) {
+            console.error("상대방 정보를 불러오지 못했습니다.", err);
+        }
+    }
+}
+
+export async function initVirtualRoom(targetUserId) {
+    if (!targetUserId) return;
+
+    console.log("[DEBUG] 가상 채팅방 활성화 프로세스 시작. ID:", targetUserId);
+
+    chatState.session.currentRoomId = 0;
+    chatState.session.receiverId = targetUserId;
+
+    try {
+        const response = await fetch(`/chat/user/info/${targetUserId}`);
+        if (!response.ok) throw new Error("유저 정보를 가져올 수 없습니다.");
+
+        const userData = await response.json();
+        const userName = userData.nickname || userData.username || `사용자 ${targetUserId}`;
+
+        console.log(`[DEBUG] 표시될 이름 결정: ${userName} (원본: nick=${userData.nickname}, id=${userData.username})`);
+
+        chatState.session.tempTargetName = userName;
+
+        const headerName = document.querySelector('.chat-header .name');
+        if (headerName) {
+            headerName.innerText = userName;
+        }
+
+        const headerImg = document.querySelector('.chat-header img');
+        if (headerImg) {
+            if (userData.profile_filename) {
+                // 담당자가 알려준 경로 형식 사용
+                headerImg.src = `/user/getProfile?fileName=${encodeURIComponent(userData.profile_filename)}`;
+            } else {
+                // 프로필 이미지가 없을 경우 보여줄 기본 이미지 경로
+                headerImg.src = "/resources/images/default-profile.png";
+            }
+        }
+
+        document.getElementById("empty-view").style.display = "none";
+        document.getElementById("chat-view").style.display = "flex";
+
+        const messagesContainer = document.getElementById("messages");
+        if (messagesContainer) {
+            messagesContainer.innerHTML = `
+                <div class="first-message-guide" style="text-align:center; padding:40px; color:#888;">
+                    <p><strong>${userName}</strong> 님과 대화를 시작해보세요.</p>
+                    <small>메시지를 보내면 대화방이 생성됩니다.</small>
+                </div>`;
+        }
+
+        initSendMessageEvents();
+
+    } catch (error) {
+        console.error("[ERROR] 상대방 정보를 불러오는데 실패했습니다:", error);
+    }
 }
 
