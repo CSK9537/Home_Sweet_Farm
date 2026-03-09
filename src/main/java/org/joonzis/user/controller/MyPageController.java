@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
@@ -183,53 +184,6 @@ public class MyPageController {
 	    return res;	
 	}
 	
-	//마이페이지 수정-프로필 이미지 변경
-	@PostMapping(value = "/profileImage", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public Map<String, Object> uploadProfile(
-			@RequestParam("profileImage")MultipartFile file,
-			HttpSession session){
-		
-		Map<String, Object> res = new HashMap<>();
-		
-		try {
-	        Object obj = session.getAttribute("loginUser");
-	        System.out.println("session loginUser = " + obj);
-
-	        if (obj == null) {
-	            res.put("success", false);
-	            res.put("message", "세션 loginUser 없음");
-	            return res;
-	        }
-
-	        UserVO loginUser = (UserVO) obj;
-	        int userId = loginUser.getUser_id();
-
-	        String fileName = file.getOriginalFilename();
-	        String uploadDir = session.getServletContext().getRealPath("/resources/upload/");
-
-	        File dir = new File(uploadDir);
-	        if (!dir.exists()) {
-	            dir.mkdirs();
-	        }
-
-	        File dest = new File(uploadDir, fileName);
-	        file.transferTo(dest);
-
-	        mpService.updateProfile(userId, fileName);
-
-	        res.put("success", true);
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        res.put("success", false);
-	        res.put("message", e.getClass().getSimpleName() + ": " + e.getMessage());
-	    }
-		
-		log.error("res : " + res);
-
-	    return res;
-	}
 	//마이페이지 - 자기소개 수정
 	@PostMapping("/introUpdate")
 	@ResponseBody

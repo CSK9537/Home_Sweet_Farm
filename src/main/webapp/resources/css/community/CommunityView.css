@@ -400,6 +400,98 @@
 
 .cv-loading, .cv-end { text-align: center; padding: 20px 0; color: var(--color-main-muted); font-size: 13px; font-weight: 500; }
 
+/* =========================================
+   Q&A 전용 스타일 (CommunityView.css 확장)
+   ========================================= */
+
+/* 1. 질문 영역 박스 강조 */
+.qv-question-box {
+  border: 2px solid var(--color-bg-main);
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(107, 123, 97, 0.05);
+}
+
+/* 2. 질문에 달리는 기본 댓글 영역 배경색 차별화 */
+.qv-question-comments {
+  background: var(--color-main-soft);
+  border: 1px dashed var(--color-main-line);
+}
+
+/* 3. 답변 작성 폼 영역 */
+.qv-answer-write {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: var(--radius-lg, 16px);
+  margin-bottom: 40px;
+  border: 1px solid var(--color-main-soft);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+
+/* 4. 전체 답변 섹션 */
+.qv-answer-section {
+  margin-top: 40px;
+}
+.qv-answer-section .cv-section-title .text-primary {
+  color: var(--color-focus, #e2874a);
+}
+
+/* 5. 개별 답변 아이템 박스 */
+.qv-answer-item {
+  border: 1px solid var(--color-main-line);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+.qv-answer-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(107, 123, 97, 0.08);
+}
+
+/* 6. '채택된 답변' 스타일 */
+.qv-answer-item.is-selected {
+  border: 2px solid var(--color-focus, #e2874a);
+  background: rgba(226, 135, 74, 0.02);
+}
+.qv-selected-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-focus, #e2874a);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 10px rgba(226, 135, 74, 0.2);
+}
+
+/* 7. 답변에 달리는 대댓글 컨테이너 */
+.qv-comment-container {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--color-main-soft);
+}
+
+/* 대댓글 토글 버튼 */
+.qv-comment-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-main-muted);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 0;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+.qv-comment-toggle-btn:hover {
+  color: var(--color-bg-main);
+}
+
 
 /* =========================
    반응형

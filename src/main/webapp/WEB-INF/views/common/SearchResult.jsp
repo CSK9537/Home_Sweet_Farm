@@ -67,15 +67,11 @@
         <h2 class="search-result-title">
           <span class="highlight">'${keyword}'</span> 검색 결과
         </h2>
-        <form class="search-result-form" action="${pageContext.request.contextPath}/search" method="get">
-          <span class="search-result-icon" aria-hidden="true"></span>
-          <input type="text" name="keyword" class="search-result-input" value="${keyword}" placeholder="검색어를 입력하세요" autocomplete="off" />
-        </form>
       </div>
 
       <div class="search-result-tabs" id="searchResultTabs">
-        <button type="button" class="search-result-tab is-active" data-target="all">통합검색</button>
-        <button type="button" class="search-result-tab" data-target="sec-plant">식물 도감</button>
+        <button type="button" class="search-result-tab is-active" data-target="all">통합 검색</button>
+        <button type="button" class="search-result-tab" data-target="sec-plant">식물</button>
         <button type="button" class="search-result-tab" data-target="sec-store">스토어</button>
         <button type="button" class="search-result-tab" data-target="sec-comm">커뮤니티</button>
         <button type="button" class="search-result-tab" data-target="sec-qna">Q&A</button>
@@ -87,7 +83,7 @@
 
         <section class="search-result-section" id="sec-plant">
           <div class="search-result-section__head">
-            <h3 class="search-result-section__title">식물 도감 <span class="count">${fn:length(plantResults)}</span></h3>
+            <h3 class="search-result-section__title">식물 <span class="count">${fn:length(plantResults)}</span></h3>
             <a href="#" class="search-result-more">식물 더보기 &gt;</a>
           </div>
           <c:choose>

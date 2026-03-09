@@ -26,54 +26,6 @@
   color: var(--color-bg-main);
 }
 
-.search-result-form {
-  width: 100%;
-  max-width: 600px;
-  position: relative;
-}
-.search-result-input {
-  width: 100%;
-  height: 56px;
-  padding: 0 24px 0 54px;
-  border: 2px solid var(--color-main-line);
-  border-radius: 999px;
-  background: #ffffff;
-  outline: none;
-  font-size: 16px;
-  color: var(--color-text-main);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
-  box-sizing: border-box;
-}
-.search-result-input:focus {
-  border-color: var(--color-bg-main);
-  box-shadow: 0 0 0 4px var(--color-main-soft);
-}
-.search-result-icon {
-  position: absolute;
-  left: 24px;
-  top: 50%;
-  width: 20px;
-  height: 20px;
-  transform: translateY(-50%);
-  border: 2px solid var(--color-main-muted);
-  border-radius: 50%;
-  transition: border-color 0.3s;
-}
-.search-result-icon:after {
-  content: "";
-  position: absolute;
-  right: -5px;
-  bottom: -5px;
-  width: 10px;
-  height: 2px;
-  background: var(--color-main-muted);
-  transform: rotate(45deg);
-  transition: background 0.3s;
-}
-.search-result-input:focus ~ .search-result-icon { border-color: var(--color-bg-main); }
-.search-result-input:focus ~ .search-result-icon:after { background: var(--color-bg-main); }
-
 
 /* =========================
    2. 탭 필터 영역
