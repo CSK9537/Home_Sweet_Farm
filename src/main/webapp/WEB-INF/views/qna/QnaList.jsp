@@ -116,7 +116,7 @@
                 </span>
               </div>
 
-              <div class="cell cell-cat"><c:out value="${q.tagName}"/></div>
+              <div class="cell cell-cat"><c:out value="${q.tagName != null ? q.tagName : '-'}"/></div>
               <div class="cell cell-like"><c:out value="${q.likeCount}"/></div>
               <div class="cell cell-ans"><c:out value="${q.answerCount}"/></div>
               <div class="cell cell-date"><c:out value="${q.createdAtLabel}"/></div>

@@ -14,27 +14,25 @@
 
   <!-- 1) 채택왕 -->
   <select id="selectTopUsers" parameterType="int" resultType="org.joonzis.qna.dto.QnaTopUserDTO">
-    SELECT *
-    FROM (
-      SELECT ROWNUM AS RN, X.*
-      FROM (
-        SELECT
-          U.USER_ID AS userId,
-          NVL(U.NICKNAME, U.USERNAME) AS name,
-          U.PROFILE_FILENAME AS img,
-          COUNT(*) AS point
-        FROM TBL_BOARD A
-        JOIN TBL_USER U
-          ON U.USER_ID = A.USER_ID
-        WHERE A.IS_ACTIVE = 'Y'
-          AND A.BOARD_TYPE = 'Q'
-          AND A.PARENT_ID IS NOT NULL
-          AND NVL(A.IS_SELECTED, 'N') = 'Y'
-        GROUP BY U.USER_ID, NVL(U.NICKNAME, U.USERNAME), U.PROFILE_FILENAME
-        ORDER BY COUNT(*) DESC, U.USER_ID ASC
-      ) X
-      WHERE ROWNUM &lt;= #{limit}
-    )
+		SELECT 
+		    U.USER_ID   AS userId,
+		    U.NICKNAME  AS name,
+		    T.SELECTED_COUNT AS point,
+		    T.RNK       AS rank
+		FROM TBL_USER U
+		JOIN (
+		    SELECT 
+		        USER_ID, 
+		        COUNT(*) AS SELECTED_COUNT,
+		        RANK() OVER (ORDER BY COUNT(*) DESC) AS RNK
+		    FROM TBL_BOARD
+		    WHERE BOARD_TYPE = 'A' 
+		      AND IS_SELECTED = 'Y'
+		      AND IS_ACTIVE = 'Y'
+		    GROUP BY USER_ID
+		) T ON U.USER_ID = T.USER_ID
+		WHERE T.RNK &lt;= #{topUserLimit}
+		ORDER BY T.RNK ASC
   </select>
 
   <!-- 2) FAQ(많이 물어보는 QnA) -->
