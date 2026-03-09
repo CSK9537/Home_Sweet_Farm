@@ -19,4 +19,8 @@ public interface QnaMainMapper {
     // Waiting: 답변(자식글)이 없는 QNA 질문
     int countWaitingQuestions();
     List<QnaWaitingDTO> selectWaitingList(Map<String, Object> param);
+
+    // People: 전체 활동 유저
+    int countActiveUsers();
+    List<QnaTopUserDTO> selectActiveUserList(Map<String, Object> param);
 }

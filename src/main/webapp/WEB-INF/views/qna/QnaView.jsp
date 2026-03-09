@@ -25,7 +25,9 @@
 
         <div class="cv-meta">
           <div class="cv-writer">
-            <div class="cv-avatar"><span class="cv-avatar-fallback"></span></div>
+            <div class="cv-avatar">
+              <img src="${pageContext.request.contextPath}/user/getProfile?fileName=${board.writer_profile != null ? board.writer_profile : 'default_profile.png'}" alt="profile">
+            </div>
             <div class="cv-writer-info">
               <div class="cv-writer-line">
                 <a href="javascript:void(0)" class="js-user-trigger cv-nick" data-user-id="${board.user_id}" data-user-nick="${board.writer}">${board.writer}</a>
@@ -77,8 +79,22 @@
            </div>
         </div>
         <div class="js-reply-list-container" data-board-id="${board.board_id}">
-            <!-- AJAX로 로드될 질문 댓글 목록 -->
-            <ul class="cv-comment-list js-reply-list"></ul>
+            <ul class="cv-comment-list js-reply-list">
+              <c:forEach var="rp" items="${replyList}">
+                <li class="cv-comment-item" data-reply-id="${rp.reply_id}">
+                  <div class="cv-comment-avatar">
+                    <img src="${pageContext.request.contextPath}/user/getProfile?fileName=${rp.writer_profile != null ? rp.writer_profile : 'default_profile.png'}" alt="profile">
+                  </div>
+                  <div class="cv-comment-main">
+                    <div class="cv-comment-header">
+                      <span class="cv-comment-writer">${rp.writer}</span>
+                      <span class="cv-comment-date"><fmt:formatDate value="${rp.reg_date}" pattern="yyyy.MM.dd HH:mm" /></span>
+                    </div>
+                    <div class="cv-comment-content"><c:out value="${rp.content}"/></div>
+                  </div>
+                </li>
+              </c:forEach>
+            </ul>
         </div>
       </div>
 
@@ -112,7 +128,9 @@
 
             <div class="cv-meta">
               <div class="cv-writer">
-                <div class="cv-avatar cv-avatar-sm"><span class="cv-avatar-fallback"></span></div>
+                <div class="cv-avatar cv-avatar-sm">
+                  <img src="${pageContext.request.contextPath}/user/getProfile?fileName=${ans.writer_profile != null ? ans.writer_profile : 'default_profile.png'}" alt="profile">
+                </div>
                 <div class="cv-writer-info">
                   <div class="cv-writer-line">
                     <a href="javascript:void(0)" class="js-user-trigger cv-nick" data-user-id="${ans.user_id}" data-user-nick="${ans.writer}">${ans.writer}</a>
