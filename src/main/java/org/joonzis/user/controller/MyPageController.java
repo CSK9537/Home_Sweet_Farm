@@ -1,23 +1,18 @@
 package org.joonzis.user.controller;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
-import org.joonzis.community.dto.CommunityPostCardDTO;
 import org.joonzis.community.service.CommunityMainService;
-import org.joonzis.community.vo.ReplyVO;
-import org.joonzis.user.dto.UserDTO;
+import org.joonzis.user.dto.MyPageItemDTO;
+import org.joonzis.user.dto.MyPageReplyDTO;
 import org.joonzis.user.service.MypageService;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.extern.log4j.Log4j;
 
@@ -39,103 +33,102 @@ public class MyPageController {
 	@Autowired
 	CommunityMainService cmService;
 	
-	// 사용자가 작성한 글
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@GetMapping(
-			value = "/posts",
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<CommunityPostCardDTO>> writedPosts(
-			HttpSession session){
-		List<CommunityPostCardDTO> postList = null;
-		
-		UserVO user = (UserVO)session.getAttribute("loginUser");
-		if(user == null) {
-			return new ResponseEntity(HttpStatus.BAD_GATEWAY);
-		}
-		int user_id = user.getUser_id();
-		
-		postList = mpService.selectMyPosts(user_id);
-		
-		if(postList != null)
-			return new ResponseEntity<List<CommunityPostCardDTO>>(postList, HttpStatus.OK);
-		else
-			return new ResponseEntity<List<CommunityPostCardDTO>>(HttpStatus.OK);
-	}
-	
-	// 사용자가 작성한 댓글
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@GetMapping(
-			value = "/replys" ,
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ReplyVO>> wirtedReplys(
-			HttpSession session){
-		List<ReplyVO> replyList = null;
-		
-		UserVO user = (UserVO)session.getAttribute("loginUser");
-		if(user == null) {
-			return new ResponseEntity(HttpStatus.BAD_GATEWAY);
-		}
-		int user_id = user.getUser_id();
-		
-		replyList = mpService.selectMyReply(user_id);
-		
-		if(replyList != null)
-			return new ResponseEntity<List<ReplyVO>>(replyList, HttpStatus.OK);
-		else
-			return new ResponseEntity<List<ReplyVO>>(HttpStatus.OK);
-	}
-	
-	// 사용자가 작성한 질문
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@GetMapping(
-			value = "/questions",
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<CommunityPostCardDTO>> wirteQ(
-			HttpSession session){
-		List<CommunityPostCardDTO> quesList = null;
-		
-		UserVO user = (UserVO)session.getAttribute("loginUser");
-		if(user == null) {
-			return new ResponseEntity(HttpStatus.BAD_GATEWAY);
-		}
-		int user_id = user.getUser_id();
-		
-//		quesList = mpService.selectMyQuest(user_id);
-		
-		if(quesList != null)
-			return new ResponseEntity<List<CommunityPostCardDTO>>(quesList, HttpStatus.OK);
-		else
-			return new ResponseEntity<List<CommunityPostCardDTO>>(HttpStatus.OK);
-	}
-	// 사용자가 작성한 답변
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@GetMapping(
-			value = "/answers",
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<CommunityPostCardDTO>> writeAn(
-			HttpSession session){
-		List<CommunityPostCardDTO> answerList = null;
-		
-		UserVO user = (UserVO)session.getAttribute("loginUser");
-		if(user == null) {
-			return new ResponseEntity(HttpStatus.BAD_GATEWAY);
-		}
-		int user_id = user.getUser_id();
-		
-		// 커뮤니티 서비스에 user_id를 파라미터로 요청 부분 추가 예정!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		
-		if(answerList != null)
-			return new ResponseEntity<List<CommunityPostCardDTO>>(answerList, HttpStatus.OK);
-		else
-			return new ResponseEntity<List<CommunityPostCardDTO>>(HttpStatus.OK);
-	}
-	/*
-	 * 마이페이지
-	 * */
-	@PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateMypage(@ModelAttribute UserVO vo) { 
-	    Map<String, Object> response = new HashMap<>();
+	/**
+     * 1. 나의 글 API
+     * tab: all(전체), free(자유게시판), market(벼룩시장)
+     */
+    @GetMapping("/posts")
+    public Map<String, Object> getMyPosts(
+            @RequestParam String userId,
+            @RequestParam(defaultValue = "all") String tab,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "7") int pageSize) {
 
+        int total = mpService.getMyPostsCount(userId, tab);
+        List<MyPageItemDTO> items = mpService.getMyPosts(userId, tab, page, pageSize);
+
+        return buildPageResponse(items, total, page, pageSize);
+    }
+
+    /**
+     * 2. 나의 질문 API
+     * tab: all(전체), open(미해결), solved(해결)
+     */
+    @GetMapping("/questions")
+    public Map<String, Object> getMyQuestions(
+            @RequestParam String userId,
+            @RequestParam(defaultValue = "all") String tab,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "7") int pageSize) {
+
+        int total = mpService.getMyQuestionsCount(userId, tab);
+        List<MyPageItemDTO> items = mpService.getMyQuestions(userId, tab, page, pageSize);
+
+        return buildPageResponse(items, total, page, pageSize);
+    }
+
+    /**
+     * 3. 나의 답변 API
+     * tab: all(전체), accepted(채택)
+     */
+    @GetMapping("/answers")
+    public Map<String, Object> getMyAnswers(
+            @RequestParam String userId,
+            @RequestParam(defaultValue = "all") String tab,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "7") int pageSize) {
+
+        int total = mpService.getMyAnswersCount(userId, tab);
+        List<MyPageItemDTO> items = mpService.getMyAnswers(userId, tab, page, pageSize);
+
+        return buildPageResponse(items, total, page, pageSize);
+    }
+
+    /**
+     * 4. 나의 댓글 API
+     * tab: all(전체), community(커뮤니티), qna(Q&A)
+     */
+    @GetMapping("/replys")
+    public Map<String, Object> getMyReplys(
+            @RequestParam String userId,
+            @RequestParam(defaultValue = "all") String tab,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "7") int pageSize) {
+
+        int total = mpService.getMyReplysCount(userId, tab);
+        // 댓글은 뷰에 보여줄 항목이 다르므로 DTO를 분리하거나 공용 DTO를 사용할 수 있습니다.
+        List<MyPageReplyDTO> items = mpService.getMyReplys(userId, tab, page, pageSize);
+
+        return buildPageResponse(items, total, page, pageSize);
+    }
+
+    /**
+     * 공통 헬퍼 메서드: 프론트엔드가 요구하는 페이징 JSON 형식으로 조립
+     */
+    private Map<String, Object> buildPageResponse(List<?> items, int total, int page, int pageSize) {
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("items", items);
+        response.put("total", total);
+        response.put("totalPages", totalPages);
+        response.put("page", page);
+
+        return response;
+    }
+	
+	
+	// 마이페이지 - 개인 정보 수정
+	@PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> updateMypage(@ModelAttribute UserVO vo, HttpSession session) { 
+		UserVO uvo = (UserVO) session.getAttribute("loginUser");
+		if (uvo != null) {
+			int user_id = uvo.getUser_id();
+			vo.setUser_id(user_id);
+		}
+		
+		Map<String, Object> response = new HashMap<>();
+	    
 	    try {
 	        boolean result = mpService.updateMypage(vo);
 	        if (result) {

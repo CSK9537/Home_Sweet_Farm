@@ -6,19 +6,24 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 import org.joonzis.community.dto.CommunityPostCardDTO;
 import org.joonzis.community.vo.ReplyVO;
+import org.joonzis.user.dto.MyPageItemDTO;
+import org.joonzis.user.dto.MyPageReplyDTO;
 import org.joonzis.user.vo.UserVO;
 
 public interface MypageMapper {
 	
-	// 사용자가 작성한 글
-	public List<CommunityPostCardDTO> selectMyPosts(int user_id);
-	
-	// 사용자가 작성한 댓글
-	public List<ReplyVO> selectMyReply(int user_id);
-	
-//	// 사용자가 작성한 질문
-//	public List<CommunityPostCardDTO> selectMyQuest(int user_id);
-		
+	public int countMyPosts(@Param("userId") String userId, @Param("tab") String tab);
+	public List<MyPageItemDTO> selectMyPosts(@Param("userId") String userId, @Param("tab") String tab, @Param("offset") int offset, @Param("pageSize") int pageSize);
+
+	public int countMyQuestions(@Param("userId") String userId, @Param("tab") String tab);
+	public List<MyPageItemDTO> selectMyQuestions(@Param("userId") String userId, @Param("tab") String tab, @Param("offset") int offset, @Param("pageSize") int pageSize);
+    
+	public int countMyAnswers(@Param("userId") String userId, @Param("tab") String tab);
+	public List<MyPageItemDTO> selectMyAnswers(@Param("userId") String userId, @Param("tab") String tab, @Param("offset") int offset, @Param("pageSize") int pageSize);
+    
+	public int countMyReplys(@Param("userId") String userId, @Param("tab") String tab);
+	public List<MyPageReplyDTO> selectMyReplys(@Param("userId") String userId, @Param("tab") String tab, @Param("offset") int offset, @Param("pageSize") int pageSize);
+    
 	//마이페이지 수정
 	public int updateMypage(UserVO vo);
 	

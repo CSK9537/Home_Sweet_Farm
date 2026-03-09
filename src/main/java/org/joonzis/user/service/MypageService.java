@@ -5,20 +5,25 @@ import java.util.Map;
 
 import org.joonzis.community.dto.CommunityPostCardDTO;
 import org.joonzis.community.vo.ReplyVO;
+import org.joonzis.user.dto.MyPageItemDTO;
+import org.joonzis.user.dto.MyPageReplyDTO;
 import org.joonzis.user.vo.UserVO;
 
 public interface MypageService {
 	
-	// 사용자가 작성한 글
-	public List<CommunityPostCardDTO> selectMyPosts(int user_id);
+	public int getMyPostsCount(String userId, String tab);
+	public List<MyPageItemDTO> getMyPosts(String userId, String tab, int page, int pageSize);
+    
+    public int getMyQuestionsCount(String userId, String tab);
+    public List<MyPageItemDTO> getMyQuestions(String userId, String tab, int page, int pageSize);
+    
+    public int getMyAnswersCount(String userId, String tab);
+    public List<MyPageItemDTO> getMyAnswers(String userId, String tab, int page, int pageSize);
+    
+    public int getMyReplysCount(String userId, String tab);
+    public List<MyPageReplyDTO> getMyReplys(String userId, String tab, int page, int pageSize);
 	
-	// 사용자가 작성한 댓글
-	public List<ReplyVO> selectMyReply(int user_id);
-	
-//	// 사용자가 작성한 질문
-//	public List<CommunityPostCardDTO> selectMyQuest(int user_id);
-	
-	//마이페이지 수정
+	//마이페이지-개인 정보 수정
 	public boolean updateMypage(UserVO vo);
 	
 	//마이페이지 수정-관심사 검색
