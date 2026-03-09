@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.joonzis.community.dto.CommunityPostCardDTO;
 import org.joonzis.community.vo.ReplyVO;
+import org.joonzis.user.dto.MyPageItemDTO;
+import org.joonzis.user.dto.MyPageReplyDTO;
 import org.joonzis.user.mapper.MypageMapper;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +22,49 @@ public class MypageServiceImpl implements MypageService{
 	private MypageMapper mpMapper;
 	
 	@Override
-	public List<CommunityPostCardDTO> selectMyPosts(int user_id) {
-		return mpMapper.selectMyPosts(user_id);
+    public int getMyPostsCount(String userId, String tab) {
+        return mpMapper.countMyPosts(userId, tab);
+    }
+
+    @Override
+    public List<MyPageItemDTO> getMyPosts(String userId, String tab, int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        return mpMapper.selectMyPosts(userId, tab, offset, pageSize);
+    }
+
+    @Override
+    public int getMyQuestionsCount(String userId, String tab) {
+        return mpMapper.countMyQuestions(userId, tab);
+    }
+
+    @Override
+    public List<MyPageItemDTO> getMyQuestions(String userId, String tab, int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        return mpMapper.selectMyQuestions(userId, tab, offset, pageSize);
+    }
+	
+	@Override
+	public int getMyAnswersCount(String userId, String tab) {
+		return mpMapper.countMyAnswers(userId, tab);
 	}
 	
 	@Override
-	public List<ReplyVO> selectMyReply(int user_id) {
-		return mpMapper.selectMyReply(user_id);
+	public List<MyPageItemDTO> getMyAnswers(String userId, String tab, int page, int pageSize) {
+		int offset = (page - 1) * pageSize;
+		return mpMapper.selectMyAnswers(userId, tab, offset, pageSize);
 	}
 	
-//	@Override
-//	public List<CommunityPostCardDTO> selectMyQuest(int user_id) {
-//		return mpMapper.selectMyQuest(user_id);
-//	}
+	@Override
+	public int getMyReplysCount(String userId, String tab) {
+		return mpMapper.countMyReplys(userId, tab);
+	}
+	
+	@Override
+	public List<MyPageReplyDTO> getMyReplys(String userId, String tab, int page, int pageSize) {
+		int offset = (page - 1) * pageSize;
+		return mpMapper.selectMyReplys(userId, tab, offset, pageSize);
+	}
+	
 	
 	@Override
 	public boolean updateMypage(UserVO vo) {

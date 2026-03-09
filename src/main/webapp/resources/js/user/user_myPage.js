@@ -33,7 +33,7 @@
   }
 
   showSection("secProfile");
- 
+
   // -------------------------
   // Modal helpers
   // -------------------------
@@ -65,10 +65,11 @@
   }
 
   document.addEventListener("click", function (e) {
-	const t = e.target;
-    const closeBtn = t && t.closest ? t.closest("[data-modal-close]"): null;
+    var t = e.target;
+    var closeBtn = t && t.closest ? t.closest("[data-modal-close]") : null;
+    
     if (closeBtn) {
-    	const modal = closeBtn.closest(".modal");
+      var modal = closeBtn.closest(".modal");
       closeModal(modal);
       return;
     }
@@ -81,13 +82,17 @@
 
   // 프로필 이미지 크게보기 (주인만)
   var btnAvatar = document.getElementById("btnAvatar");
-  if (btnAvatar && isOwner) btnAvatar.addEventListener("click", function () { openModal(modals.avatar); });
+  if (btnAvatar && isOwner) {
+    btnAvatar.addEventListener("click", function () { openModal(modals.avatar); });
+  }
 
-  //프로필: 회원등급 안내
+  // 프로필: 회원등급 안내
   var btnGradeGuide = document.getElementById("btnGrade");
-  if (btnGradeGuide) btnGradeGuide.addEventListener("click", function () { openModal(modals.grade); });
-  
-  
+  if (btnGradeGuide) {
+    btnGradeGuide.addEventListener("click", function () { openModal(modals.grade); });
+  }
+
+
   // -------------------------
   // Account: interest plant modal
   // -------------------------
@@ -113,6 +118,7 @@
   function renderPlantResults(items) {
     if (!plantResult) return;
     plantResult.innerHTML = "";
+    
     if (!items || items.length === 0) {
       if (plantEmpty) plantEmpty.style.display = "block";
       return;
@@ -121,7 +127,6 @@
 
     for (var i = 0; i < items.length; i++) {
       var p = items[i];
-      
       var id = p.hashtag_id || p.HASHTAG_ID;
       var name = p.hashtag_name || p.HASHTAG_NAME;
       
@@ -150,29 +155,28 @@
   }
 
   if (plantResult) {
-	  plantResult.addEventListener("click", function (e) {
-	    var pickBtn = closest(e.target, "button[data-hashtag-id]");
-	    if (!pickBtn) return;
+    plantResult.addEventListener("click", function (e) {
+      var pickBtn = closest(e.target, "button[data-hashtag-id]");
+      if (!pickBtn) return;
 
-	    var hashtagId = pickBtn.getAttribute("data-hashtag-id");
+      var hashtagId = pickBtn.getAttribute("data-hashtag-id");
 
-	    fetch(ctx + "/user/mypage/aspect?hashtagId=" + encodeURIComponent(hashtagId), {
-	      method: "POST",
-	      headers: { "Accept": "application/json" }
-	    })
-	      .then(function (res) {
-	        if (!res.ok) throw new Error("save failed");
-	        return res.json();
-	      })
-	      .then(function () {
-	        location.reload();
-	      })
-	      .catch(function () {
-	        alert("관심사 저장에 실패했습니다.");
-	      });
-	  });
-	}
-
+      fetch(ctx + "/user/mypage/aspect?hashtagId=" + encodeURIComponent(hashtagId), {
+        method: "POST",
+        headers: { "Accept": "application/json" }
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error("save failed");
+          return res.json();
+        })
+        .then(function () {
+          location.reload();
+        })
+        .catch(function () {
+          showCustomToast("관심사 저장에 실패했습니다.", "error");
+        });
+    });
+  }
 
   // -------------------------
   // Lists: tab + paging (7 items/page, max 5 pages)
@@ -183,6 +187,7 @@
   function q(rootEl, sel) { return rootEl.querySelector(sel); }
 
   function fetchList(api, tab, page) {
+    // 백엔드 컨트롤러에 맞게 userId, tab, page, pageSize 파라미터 조립!
     var url = api +
       "?userId=" + encodeURIComponent(profileUserId) +
       "&tab=" + encodeURIComponent(tab) +
@@ -197,59 +202,42 @@
   }
 
   function renderListItem(data, wrap) {
-//    var title = escapeHtml(data.title || "");
-//    var url = data.url || "#";
-//    var createdAt = escapeHtml(data.createdAt || "");
-//    var summary = escapeHtml(data.summary || "");
-//
-//    return '' +
-//      '<li class="list-item">' +
-//        '<div class="item-top">' +
-//          '<a class="item-title" href="' + url + '">' + title + '</a>' +
-//          '<div class="item-meta">' + createdAt + '</div>' +
-//        '</div>' +
-//        (summary ? '<div class="item-body">' + summary + '</div>' : '') +
-//      '</li>';
-	  
-	  
-		  var api = wrap.getAttribute("data-api");
-	
-		  // 작성댓글
-		  if (api.indexOf("reply") !== -1) {
-	
-		    var content = escapeHtml(data.content || "");
-		    var regDate = escapeHtml(data.reg_date || "");
-	
-		    return ''
-		      + '<li class="list-item">'
-		      + '<div class="comment-item">'
-		      + '<div class="comment-content">' + content + '</div>'
-		      + '<div class="comment-meta">등록날짜 ' + regDate + '</div>'
-		      + '</div>'
-		      + '</li>';
-		  }
-		  
-		  var title = escapeHtml(data.title || "");
-		  var url = data.moveUrl || "#";
-		  var viewCount = Number(data.viewCount || 0);
-		  var likeCount = Number(data.likeCount || 0);
-		  var replyCnt = Number(data.replyCnt || 0);
+    var api = wrap.getAttribute("data-api");
 
-		  return ''
-		    + '<li class="list-item post-card">'
-		    +   '<a class="post-link" href="' + url + '">'
-		    +     '<div class="post-title">' + title + '</div>'
-		    +     '<div class="post-meta">'
-		    +       '<span>조회수 ' + viewCount + '</span>'
-		    +       '<span>|</span>'
-		    +       '<span>좋아요 ' + likeCount + '</span>'
-		    +       '<span>|</span>'
-		    +       '<span>댓글 ' + replyCnt + '</span>'
-		    +     '</div>'
-		    +   '</a>'
-		    + '</li>';
-		
-	  
+    // 작성댓글
+    if (api.indexOf("reply") !== -1) {
+      var content = escapeHtml(data.content || "");
+      var regDate = escapeHtml(data.reg_date || "");
+
+      return ''
+        + '<li class="list-item">'
+        +   '<div class="comment-item">'
+        +     '<div class="comment-content">' + content + '</div>'
+        +     '<div class="comment-meta">등록날짜 ' + regDate + '</div>'
+        +   '</div>'
+        + '</li>';
+    }
+    
+    // 작성글 / 질문 / 답변 등
+    var title = escapeHtml(data.title || "");
+    var url = data.moveUrl || "#";
+    var viewCount = Number(data.viewCount || 0);
+    var likeCount = Number(data.likeCount || 0);
+    var replyCnt = Number(data.replyCnt || 0);
+
+    return ''
+      + '<li class="list-item post-card">'
+      +   '<a class="post-link" href="' + url + '">'
+      +     '<div class="post-title">' + title + '</div>'
+      +     '<div class="post-meta">'
+      +       '<span>조회수 ' + viewCount + '</span>'
+      +       '<span>|</span>'
+      +       '<span>좋아요 ' + likeCount + '</span>'
+      +       '<span>|</span>'
+      +       '<span>댓글 ' + replyCnt + '</span>'
+      +     '</div>'
+      +   '</a>'
+      + '</li>';
   }
 
   function renderPager(pagerEl, currentPage, totalPages, onMove) {
@@ -271,7 +259,6 @@
 
   function loadList(wrap, tab, page) {
     var api = wrap.getAttribute("data-api");
-    console.log("api =", api, "tab =", tab, "page =", page);  
     var listEl = q(wrap, ".js-list");
     var pagerEl = q(wrap, ".js-pager");
     var emptyEl = q(wrap, ".js-empty");
@@ -279,26 +266,20 @@
 
     fetchList(api, tab, page)
       .then(function (data) {
-    	  console.log("api =", api);
-    	  console.log("data =", data);
-//        var items = data.items || [];
-//        var total = Number(data.total || 0);
-//        var totalPages = Number(data.totalPages || 1);
-//        var currentPage = Number(data.page || page);
-    	  var items, total, totalPages, currentPage;
+        var items, total, totalPages, currentPage;
 
-    	  if (Array.isArray(data)) {
-    	    items = data;
-    	    total = data.length;
-    	    totalPages = 1;
-    	    currentPage = 1;
-    	  } else {
-    	    items = data.items || [];
-    	    total = Number(data.total || 0);
-    	    totalPages = Number(data.totalPages || 1);
-    	    currentPage = Number(data.page || page);
-    	  }
-    	
+        if (Array.isArray(data)) {
+          items = data;
+          total = data.length;
+          totalPages = 1;
+          currentPage = 1;
+        } else {
+          items = data.items || [];
+          total = Number(data.total || 0);
+          totalPages = Number(data.totalPages || 1);
+          currentPage = Number(data.page || page);
+        }
+        
         if (totalEl) totalEl.textContent = String(total);
 
         if (!items || items.length === 0) {
@@ -309,9 +290,12 @@
         }
 
         if (emptyEl) emptyEl.style.display = "none";
+        
         if (listEl) {
           var html = "";
-          for (var i = 0; i < items.length; i++) html += renderListItem(items[i], wrap);
+          for (var i = 0; i < items.length; i++) {
+            html += renderListItem(items[i], wrap);
+          }
           listEl.innerHTML = html;
         }
 
@@ -322,20 +306,13 @@
         }
       })
       .catch(function () {
-        // 요구사항: 데이터 없으면 숨김 (API 실패도 동일 취급)
-        //wrap.style.display = "none";
-    	  var listEl = q(wrap, ".js-list");
-    	  var pagerEl = q(wrap, ".js-pager");
-    	  var emptyEl = q(wrap, ".js-empty");
-    	  var totalEl = q(wrap, ".js-total");
-
-    	  if (totalEl) totalEl.textContent = "0";
-    	  if (listEl) listEl.innerHTML = "";
-    	  if (pagerEl) pagerEl.innerHTML = "";
-    	  if (emptyEl) {
-    	    emptyEl.textContent = "표시할 데이터가 없습니다.";
-    	    emptyEl.style.display = "block";
-    	  } 
+        if (totalEl) totalEl.textContent = "0";
+        if (listEl) listEl.innerHTML = "";
+        if (pagerEl) pagerEl.innerHTML = "";
+        if (emptyEl) {
+          emptyEl.textContent = "표시할 데이터가 없습니다.";
+          emptyEl.style.display = "block";
+        } 
       });
   }
 
@@ -347,7 +324,6 @@
         var tabBtn = closest(e.target, ".tab");
         if (!tabBtn) return;
 
-        // 같은 섹션의 list-wrap 찾기
         var sec = closest(tabbar, ".right-section");
         if (!sec) return;
         var wrap = sec.querySelector(".list-wrap");
@@ -404,6 +380,7 @@
   }
 
   function escapeHtml(str) {
+    if (str == null) return "";
     return String(str)
       .split("&").join("&amp;")
       .split("<").join("&lt;")
@@ -411,248 +388,123 @@
       .split('"').join("&quot;")
       .split("'").join("&#039;");
   }
-//-------------------------
+
+  // -------------------------
   // 프로필-이미지 업로드
- // ------------------------- 
+  // ------------------------- 
   var avatarFile = document.querySelector("#avatarFile");
   var btnAvatarSave = document.querySelector("#btnAvatarSave");
   var avatarLarge = document.querySelector("#avatarLarge");
   
-  avatarFile.addEventListener("change",
-  function(e){
-	  var file = e.target.files[0];
-	  if(!file) return;
-	  
-	  var reader = new FileReader();
-	  reader.onload = function (evt) {
-	    avatarLarge.src = evt.target.result; // 미리보기
-	  };
-	  reader.readAsDataURL(file);
-	});
+  if (avatarFile && btnAvatarSave && avatarLarge) {
+    avatarFile.addEventListener("change", function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      
+      var reader = new FileReader();
+      reader.onload = function (evt) {
+        avatarLarge.src = evt.target.result; // 미리보기
+      };
+      reader.readAsDataURL(file);
+    });
 
-	btnAvatarSave.addEventListener("click", function () {
-	  var file = avatarFile.files[0];
+    btnAvatarSave.addEventListener("click", function () {
+      var file = avatarFile.files[0];
 
-	  if (!file) {
-	    alert("이미지를 먼저 선택해주세요.");
-	    return;
-	  }
+      if (!file) {
+        showCustomToast("이미지를 먼저 선택해주세요.", "warning");
+        return;
+      }
 
-	  var formData = new FormData();
-	  formData.append("profileImage", file);
+      var formData = new FormData();
+      formData.append("profileImage", file);
 
-	  fetch("/user/uploadProfile", {
-	    method: "POST",
-	    body: formData
-	  })
-	    .then(function (res) {
-	    	if(!res.ok){
-	    		return new Error("error");
-	    	}
-	    	return res.json(); 
-    	})
-		.then(function (data) {
-		    if (data.status === "success") { // data.success -> data.status === "success" 로 변경
-		        alert("저장 완료");
-		        location.reload();
-		    } else {
-		        alert("저장 실패: " + data.message); // 서버에서 보낸 메시지 출력
-		    }
-		})
-	    .catch(function (err) {
-	      alert("업로드 중 오류 발생" + err);
-	    });
-	});
+      fetch("/user/uploadProfile", {
+        method: "POST",
+        body: formData
+      })
+        .then(function (res) {
+          if (!res.ok) {
+            throw new Error("error");
+          }
+          return res.json(); 
+        })
+        .then(function (data) {
+          if (data.status === "success") { 
+            showCustomToast("이미지 저장 완료", "success");
+            location.reload();
+          } else {
+            showCustomToast("저장 실패", "error");
+          }
+        })
+        .catch(function (err) {
+          showCustomToast("업로드 중 오류 발생", "error");
+        });
+    });
+  }
   
-	
-	
-	//-------------------------
-	  // 프로필-자기소개 수정
-	 // -------------------------
-	  var btnIntro = document.querySelector("#editIntro");
-	  var introText = document.querySelector("#introText");
-	  var introMsg = document.querySelector("#introMsg");
-	  var originalIntro = introText ?(introText.dataset.original || ""):"";
-	  
-	  function introUpdate(intro) {
-		  
-		  return fetch(ctx + "/user/mypage/introUpdate", {
-		    method: "POST",
-		    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-		    body: "intro="+encodeURIComponent(intro)
-		  })
-		  .then(function(res){ 
-			  return res.text(); 
-		  });
-		}
-
-	  
-	  	// 자기소개 수정 버튼
-		if (btnIntro) {
-			btnIntro.addEventListener("click", function(){
-			  
-			  var newIntro = introText.value.trim();
-			  
-			  if(newIntro === ""){
-				  introMsg.textContent = "자기소개를 수정해주세요";
-				  introMsg.style.color = "red"; 
-			  }
-			  else if(newIntro === originalIntro){
-				  introMsg.textContent = "다른 내용으로 수정해주세요";
-				  introMsg.className = "form-msg error";
-				  introMsg.style.color = "red";
-				  return;
-			  }
-			  introUpdate(newIntro)
-		      .then(function(t){ 
-
-		    	  if ((t || "").trim() === "ok") {
-		    		introMsg.textContent = "내용 수정 완료";
-		    		introMsg.className = "form-msg success";
-		    		introMsg.style.color = "green";
-		    		introMsg.style.display = "inline";
-		    	    //변경된 값 저장
-		    		originalIntro = newIntro;
-		    		introText.dataset.original = newIntro;
-		    		
-		    		setTimeout(function () {
-		    			introMsg.style.display = "none";
-		              }, 2000);
-		    		
-		    	  } else {
-		    		introMsg.textContent = "내용 수정 실패";
-		    		introMsg.className = "form-msg error";
-		    		introMsg.style.color = "red";
-		    		introMsg.style.display = "inline";
-		    		
-		    		setTimeout(function () {
-		    			introMsg.style.display = "none";
-		              }, 2000);
-		    	  }
-		    	});
-		  	}); 
-		}
-		
-		
-		// -------------------------
-		// 작성글 불러오기
-		// -------------------------
-		(function () {
-		  var postSection = document.getElementById("secPosts");
-		  if (!postSection) return;
-		
-		  var wrap = postSection.querySelector(".list-wrap");
-		  if (!wrap) return;
-		
-		  var api = wrap.getAttribute("data-api");
-		  var defaultTab = wrap.getAttribute("data-default-tab") || "all";
-		
-		  var listEl = wrap.querySelector(".js-list");
-		  var emptyEl = wrap.querySelector(".js-empty");
-		  var totalEl = wrap.querySelector(".js-total");
-		  var pagerEl = wrap.querySelector(".js-pager");
-		  var tabButtons = postSection.querySelectorAll(".tabbar[data-section='posts'] .tab");
-		
-		  var currentTab = defaultTab;
-		
-		  function escapeHtml(str) {
-		    if (str == null) return "";
-		    return String(str)
-		      .replace(/&/g, "&amp;")
-		      .replace(/</g, "&lt;")
-		      .replace(/>/g, "&gt;")
-		      .replace(/"/g, "&quot;")
-		      .replace(/'/g, "&#39;");
-		  }
-		
-		  function renderList(data) {
-		    if (!listEl || !emptyEl || !totalEl) return;
-		
-		    listEl.innerHTML = "";
-		    pagerEl.innerHTML = "";
-		
-		    if (!data || data.length === 0) {
-		      totalEl.textContent = "0";
-		      emptyEl.style.display = "block";
-		      listEl.style.display = "none";
-		      return;
-		    }
-		
-		    var filtered = data;
-		
-		    if (currentTab === "community") {
-		      filtered = data.filter(function (item) {
-		        return !item.moveUrl || item.moveUrl.indexOf("/qna/") === -1;
-		      });
-		    } else if (currentTab === "qna") {
-		      filtered = data.filter(function (item) {
-		        return item.moveUrl && item.moveUrl.indexOf("/qna/") !== -1;
-		      });
-		    }
-		
-		    totalEl.textContent = String(filtered.length);
-		
-		    if (filtered.length === 0) {
-		      emptyEl.style.display = "block";
-		      listEl.style.display = "none";
-		      return;
-		    }
-		
-		    emptyEl.style.display = "none";
-		    listEl.style.display = "block";
-		
-		    var html = "";
-		
-		    for (var i = 0; i < filtered.length; i++) {
-		      var post = filtered[i];
-		
-		      html += ''
-		        + '<li class="list-item">'
-		        + '  <a class="list-link" href="' + escapeHtml(post.moveUrl || "#") + '">'
-		        + '    <div class="item-title">' + escapeHtml(post.title || "") + '</div>'
-		        + '    <div class="item-meta">'
-		        + '      조회 ' + (post.viewCount || 0) + ' · 댓글 ' + (post.replyCnt || 0)
-		        + '    </div>'
-		        + '  </a>'
-		        + '</li>';
-		    }
-		
-		    listEl.innerHTML = html;
-		  }
-		
-		  function loadPosts() {
-		    if (!api) return;
-		
-		    fetch(api)
-		      .then(function (res) {
-		        return res.json();
-		      })
-		      .then(function (data) {
-		        console.log("작성글 데이터:", data);
-		        renderList(data);
-		      })
-		      .catch(function (err) {
-		        console.log("작성글 불러오기 실패:", err);
-		        totalEl.textContent = "0";
-		        emptyEl.style.display = "block";
-		        listEl.style.display = "none";
-		      });
-		  }
-		
-		  for (var i = 0; i < tabButtons.length; i++) {
-		    tabButtons[i].addEventListener("click", function () {
-		      currentTab = this.getAttribute("data-tab");
-		
-		      for (var j = 0; j < tabButtons.length; j++) {
-		        tabButtons[j].classList.remove("is-active");
-		      }
-		      this.classList.add("is-active");
-		
-		      loadPosts();
-		    });
-		  }
-		
-		  loadPosts();
-		})();
+  // -------------------------
+  // 프로필-자기소개 수정
+  // -------------------------
+  var btnIntro = document.querySelector("#editIntro");
+  var introText = document.querySelector("#introText");
+  var introMsg = document.querySelector("#introMsg");
+  var originalIntro = introText ? (introText.dataset.original || "") : "";
   
+  function introUpdate(intro) {
+    return fetch(ctx + "/user/mypage/introUpdate", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "intro=" + encodeURIComponent(intro)
+    })
+    .then(function(res) { 
+      return res.text(); 
+    });
+  }
+  
+  // 자기소개 수정 버튼
+  if (btnIntro) {
+    btnIntro.addEventListener("click", function() {
+      var newIntro = introText.value.trim();
+      
+      if (newIntro === "") {
+        introMsg.textContent = "자기소개를 수정해주세요";
+        introMsg.style.color = "red"; 
+        return;
+      } else if (newIntro === originalIntro) {
+        introMsg.textContent = "다른 내용으로 수정해주세요";
+        introMsg.className = "form-msg error";
+        introMsg.style.color = "red";
+        return;
+      }
+      
+      introUpdate(newIntro).then(function(t) { 
+        if ((t || "").trim() === "ok") {
+          introMsg.textContent = "내용 수정 완료";
+          introMsg.className = "form-msg success";
+          introMsg.style.color = "green";
+          introMsg.style.display = "inline";
+          
+          // 변경된 값 저장
+          originalIntro = newIntro;
+          introText.dataset.original = newIntro;
+          
+          setTimeout(function () {
+            introMsg.style.display = "none";
+          }, 2000);
+          
+        } else {
+          introMsg.textContent = "내용 수정 실패";
+          introMsg.className = "form-msg error";
+          introMsg.style.color = "red";
+          introMsg.style.display = "inline";
+          
+          setTimeout(function () {
+            introMsg.style.display = "none";
+          }, 2000);
+        }
+      });
+    }); 
+  }
+
 })();

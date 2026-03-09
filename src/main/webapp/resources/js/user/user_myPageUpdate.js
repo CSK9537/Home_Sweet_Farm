@@ -1,8 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
   // 1. 입력 요소 가져오기
   const nameInput = document.querySelector('input[name="name"]');
+  const brithInput = document.querySelector('input[name="brith_date"]');
   const nicknameInput = document.getElementById('nicknameInput');
+  const aspectInput = document.querySelector('input[name="aspect"]');
+  const addressInput = document.getElementById('addressInput');
   const phoneInput = document.getElementById('inpPhone');
+  const emailInput = document.getElementById('inpEmail');
   const form = document.getElementById('accountForm');
 
   // 2. 정규표현식 (검증 규칙)
@@ -17,10 +21,10 @@ document.addEventListener('DOMContentLoaded', function() {
   function validateRealTime(inputElement, regex) {
     const value = inputElement.value.trim();
     
-    // 값이 비어있을 때는 에러 표시를 지울지, 에러로 낼지 결정 (여기선 비어있으면 원상복구)
+    // 값이 비어있을 때는 에러 표시를 지울지, 에러로 낼지 결정
     if (value === "") {
       inputElement.classList.remove('input-invalid');
-      return false;
+      return true;
     }
 
     // 정규식 테스트
@@ -68,7 +72,11 @@ document.addEventListener('DOMContentLoaded', function() {
       showCustomToast("적절치 못한 항목이 존재합니다.", "warning");
       return;
     }
-    
+    if (!nameInput.value && !brithInput.value && !nicknameInput.value && !aspectInput.value
+    	&& !addressInput.value && !phoneInput.value && !emailInput.value) {
+      showCustomToast("최소 1항목 이상은 입력하세요.", "warning");
+      return;
+    }
     const url = this.getAttribute('action');
     const formData = new FormData(this); // 폼 데이터 자동 수집
 
