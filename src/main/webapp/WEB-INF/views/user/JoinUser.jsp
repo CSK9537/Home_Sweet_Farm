@@ -126,21 +126,12 @@
                 <button type="button" class="btn btn-primary" id="toVerifyBtn" disabled>다음</button>
               </div>
 
-              <div class="social-box" aria-label="소셜 회원가입">
-                <p class="social-title">다른 서비스 계정으로 회원가입</p>
-                <div class="social-row">
-                  <button type="button" class="social-btn kakao">카카오톡</button>
-                  <button type="button" class="social-btn naver">네이버</button>
-                  <button type="button" class="social-btn google">구글</button>
-                </div>
                 <p class="login-guide">
              	 이미 회원가입 하셨다면?&nbsp;<a class="login-link" href="${pageContext.request.contextPath}/user/login">로그인</a>
              	 </p>
-              </div>
               
             </form>
           </section>
-		<body>
           <!-- STEP 2: 이메일 인증 -->
           <section class="step-panel" id="step-verify" data-step="verify" aria-label="이메일 인증">
             <div class="verify-card">

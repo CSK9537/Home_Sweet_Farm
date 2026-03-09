@@ -1,208 +1,213 @@
-:root{
-  --brand:#6b7b61;
-  --paper:#f4f2ed;
-  --white:#ffffff;
-  --muted:rgba(42,42,42,.7);
-  --radius:14px;
-}
-
 /* ===== Modal base ===== */
-.photo-modal{ position:fixed; inset:0; display:none; z-index:9999; font-family:inherit; }
-.photo-modal[aria-hidden="false"]{ display:block; }
+.photo-modal { 
+  position: fixed; 
+  inset: 0; 
+  display: none; 
+  z-index: 9999; 
+}
+.photo-modal[aria-hidden="false"] { 
+  display: block; 
+}
 
-.photo-modal__backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.35); }
+/* 배경 블러 및 색상 통일 */
+.photo-modal__backdrop { 
+  position: absolute; 
+  inset: 0; 
+  background: rgba(44, 62, 45, 0.4);
+  backdrop-filter: blur(2px);
+}
 
-.photo-modal__panel{
-  position:relative;
-  width: min(460px, calc(100vw - 40px));
+.photo-modal__panel {
+  position: relative;
+  width: min(500px, calc(100vw - 40px));
   max-height: calc(100vh - 40px);
-  margin: 20px auto;
-  background: var(--paper);
-  border-radius: var(--radius);
-  overflow:hidden;
-  box-shadow: 0 12px 40px rgba(0,0,0,.25);
-  display:flex;
-  flex-direction:column;
+  margin: 100px auto; /* 중앙 배치감 최적화 */
+  background: #ffffff;
+  border-radius: var(--radius-lg, 16px);
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  animation: modalScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.photo-modal__header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding: 16px 18px;
-  background: rgba(255,255,255,.55);
-  border-bottom: 1px solid rgba(0,0,0,.08);
+@keyframes modalScale {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
-.photo-modal__title{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:20px;
-  font-weight:800;
-  color: var(--brand);
+.photo-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--color-bg-card);
+  border-bottom: 1px solid var(--color-main-soft);
 }
 
-.photo-modal__icon{ font-size:20px; }
+.photo-modal__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-bg-main);
+  margin: 0;
+}
 
-.photo-modal__body{ padding: 18px; overflow:auto; }
+/* 우측 상단 텍스트 닫기 버튼 */
+.photo-modal__close {
+  background: transparent;
+  border: none;
+  color: var(--color-main-muted);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 0;
+}
+.photo-modal__close:hover {
+  color: var(--color-bg-main);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 
+.photo-modal__body { 
+  padding: 24px; 
+  overflow-y: auto; 
+}
 
+/* =========================================
+   업로드 영역 (Drop Zone)
+   ========================================= */
 .photo-upload-area {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
-.photo-card{
-  background: var(--white);
-  border-radius: var(--radius);
-  overflow:hidden;
-  border: 1px solid rgba(0,0,0,.06);
-  position:relative;
-}
-
-.photo-card__img{
-  width:100%;
-  aspect-ratio: 1 / 1;
-  object-fit:cover;
-  display:block;
-}
-
-.photo-card__remove{
-  position:absolute;
-  top:10px;
-  right:10px;
-  width:34px;
-  height:34px;
-  border-radius:999px;
-  border:1px solid rgba(0,0,0,.12);
-  background: rgba(255,255,255,.85);
-  cursor:pointer;
-  font-size:18px;
-  line-height:1;
-}
-
-/* ===== Add tile ===== */
 .photo-add {
-  background: transparent; 
-  border: 2px dashed rgba(107, 123, 97, 0.35); 
-  border-radius: var(--radius);
+  background: #ffffff; 
+  border: 2px dashed var(--color-main-line); 
+  border-radius: 12px;
   cursor: pointer;
-  min-height: 170px;
+  min-height: 220px;
   width: 100%;
   display: flex;
-  color: var(--brand);
+  color: var(--color-bg-main);
   flex-direction: column; 
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease; 
 }
 
-.photo-add__badge{
-  width:42px; height:42px;
-  border-radius:999px;
-  background: rgba(107,123,97,.15);
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  font-size:24px;
-  font-weight:900;
-  margin-bottom:8px;
-  color: var(--brand);
+.photo-add:hover {
+  background: var(--color-main-soft);
+  border-color: var(--color-bg-main);
 }
 
-.photo-add__text{ font-weight:800; }
-.photo-add__sub{ margin-top:4px; font-size:12px; opacity:.8; }
+.photo-add__badge {
+  width: 50px; 
+  height: 50px;
+  border-radius: 50%;
+  background: var(--color-main-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 900;
+  margin-bottom: 12px;
+  color: var(--color-bg-main);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.photo-add:hover .photo-add__badge {
+  transform: scale(1.1);
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(107, 123, 97, 0.1);
+}
+
+.photo-add__text { 
+  font-size: 16px; 
+  font-weight: 800; 
+}
+.photo-add__sub { 
+  margin-top: 6px; 
+  font-size: 13px; 
+  color: var(--color-main-muted); 
+}
 
 
 /* =========================================
-   1. Drag & Drop Feedback
+   드래그 앤 드롭 피드백
    ========================================= */
-/* 드래그 요소가 들어왔을 때 .photo-add 영역의 스타일이 변하도록 설정 */
 #photoGrid.is-dragover .photo-add {
-  background-color: rgba(107, 123, 97, 0.08); 
-  border-color: var(--brand);                 
+  background-color: var(--color-main-soft); 
+  border-color: var(--color-bg-main); 
+  transform: scale(1.02);
 }
 
 #photoGrid.is-dragover * {
   pointer-events: none;
 }
 
-/* .photo-add 기본 스타일 (transition 추가하여 부드럽게 변하도록) */
-.photo-add {
-  background: transparent; 
-  border: 2px dashed rgba(107, 123, 97, 0.35); 
-  border-radius: var(--radius);
-  cursor: pointer;
-  min-height: 170px;
-  width: 100%;
-  display: flex;
-  color: var(--brand);
-  flex-direction: column; 
-  align-items: center;
-  justify-content: center;
-  /* 상태 변화가 부드럽게 일어나도록 애니메이션 효과 추가 */
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease; 
-}
 
 /* =========================================
-   2. 미리보기 사진 크기 및 디자인 고정
+   미리보기 사진 디자인
    ========================================= */
 .photo-card {
   position: relative;
   width: 100%;
-  max-width: 250px;    /* 모달 안에서 예쁘게 보일 최대 가로 크기 */
-  aspect-ratio: 1 / 1; /* 정사각형 비율 강제 유지 (세로 사진이어도 정사각형 박스 안에 담김) */
-  margin: 0 auto;      /* 모달 가운데 정렬 */
-  border-radius: 8px;  
-  overflow: hidden;    /* 둥근 모서리 바깥으로 나가는 이미지 숨김 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 살짝 떠 있는 듯한 고급스러운 그림자 */
+  max-width: 260px;    
+  aspect-ratio: 1 / 1; 
+  margin: 0 auto;      
+  border-radius: 12px;  
+  overflow: hidden;    
+  box-shadow: 0 10px 30px rgba(107, 123, 97, 0.15); 
+  border: 1px solid var(--color-main-soft);
 }
 
 .photo-card__img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 이미지가 찌그러지지 않고 영역에 꽉 차게 잘림 */
+  object-fit: cover; 
   display: block;
 }
 
-/* 미리보기 삭제 (X) 버튼 스타일링 */
 .photo-card__remove {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 12px;
+  right: 12px;
   width: 32px;
   height: 32px;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--color-text-main);
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 20px;
-  line-height: 1;
+  font-size: 18px;
+  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .photo-card__remove:hover {
-  background-color: rgba(220, 53, 69, 0.9); /* 마우스 올렸을 때 빨간색으로 변경 */
+  background-color: #d64040; 
+  color: #ffffff;
+  transform: scale(1.1);
 }
 
-/* =========================================
-   3. 미리보기 사진이 있을 때 드래그 앤 드롭 피드백
-   ========================================= */
-
-/* 드래그 요소가 들어왔을 때 기존 사진(photo-card)의 변화 */
+/* 미리보기 상태에서의 드래그 오버 */
 #photoGrid.is-dragover .photo-card {
   transform: scale(1.02);
-  border: 2px dashed var(--brand); /* 브랜드 컬러 점선 테두리 */
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); /* 그림자를 조금 더 진하게 */
+  border: 2px dashed var(--color-bg-main); 
+  box-shadow: 0 15px 35px rgba(107, 123, 97, 0.2); 
 }
 
-/* 기존 사진 위에 반투명 오버레이 띄우기 */
 #photoGrid.is-dragover .photo-card::after {
   content: "";
   position: absolute;
@@ -213,85 +218,99 @@
 }
 
 
-/* ===== Meta ===== */
-.photo-meta{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 16px;
-  background: rgba(255,255,255,.55);
-  border: 1px solid rgba(0,0,0,.06);
-  border-radius: var(--radius);
-  padding: 12px 14px;
+/* =========================================
+   하단 메타 정보
+   ========================================= */
+.photo-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-main-soft);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
 }
 
-.photo-meta__hint{ color: rgba(0,0,0,.65); font-size:13px; }
-.photo-meta__hint2{ color: rgba(0,0,0,.55); font-size:12px; margin-top:4px; }
-
-/* ===== Footer buttons ===== */
-.photo-modal__footer{
-  display:flex;
-  justify-content:flex-end;
-  gap: 12px;
-  margin-top: 16px;
+.photo-meta__hint { 
+  color: var(--color-bg-main); 
+  font-size: 14px; 
+  font-weight: 700;
+}
+.photo-meta__hint2 { 
+  color: var(--color-main-muted); 
+  font-size: 13px; 
 }
 
-/* ===== Common button look (닫기/초기화/전송) ===== */
-.photo-modal__close,
-#photoResetBtn,
-#photoSubmitBtn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  height: 44px;
-  padding: 0 18px;
-  border-radius: var(--radius);
-  font-weight: 900;
-  letter-spacing: .2px;
-  border: 2px solid transparent;
+
+/* =========================================
+   버튼 및 푸터 (모달 내 버튼 통일)
+   ========================================= */
+.photo-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.mp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .06s ease;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
 }
 
-.photo-modal__close:active,
-#photoResetBtn:active,
-#photoSubmitBtn:active{
-  transform: translateY(1px);
+/* 초기화 버튼 (Ghost) */
+.mp-btn--ghost {
+  background: #ffffff;
+  color: var(--color-bg-main);
+  border-color: var(--color-main-line);
+}
+.mp-btn--ghost:hover {
+  background: var(--color-main-soft);
+  border-color: var(--color-bg-main);
+  transform: translateY(-2px);
 }
 
-/* 아웃라인(=초기화 느낌) : 닫기 + 초기화 */
-.photo-modal__close,
-#photoResetBtn{
-  background: var(--paper);
-  color: var(--brand);
-  border-color: rgba(107,123,97,.75);
+/* 전송 버튼 (Primary) */
+.mp-btn--primary {
+  background: var(--color-bg-main);
+  color: #ffffff;
+}
+.mp-btn--primary:not(:disabled):hover {
+  background: #5a6851;
+  box-shadow: 0 4px 12px rgba(107, 123, 97, 0.2);
+  transform: translateY(-2px);
 }
 
-.photo-modal__close:hover,
-#photoResetBtn:hover{
-  background: var(--brand);
-  color: var(--paper);
-}
-
-/* 채움(=저장 느낌) : 전송 */
-#photoSubmitBtn{
-  background: var(--brand);
-  color: var(--paper);
-  border-color: var(--brand);
-}
-
-/* 비활성화 */
-#photoSubmitBtn:disabled{
-  opacity: .55;
+/* 비활성화 상태 */
+#photoSubmitBtn:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
-  filter: none;
+  background: #ccc;
+  box-shadow: none;
+  transform: none;
 }
 
-/* ===== Responsive ===== */
-/* @media (max-width: 900px){
-  .photo-grid{ grid-template-columns: repeat(3, 1fr); }
+
+/* =========================================
+   Responsive
+   ========================================= */
+@media (max-width: 767px) {
+  .photo-modal__panel {
+    margin: 40px auto;
+  }
+  .photo-add {
+    min-height: 180px;
+  }
+  .photo-card {
+    max-width: 220px;
+  }
 }
-@media (max-width: 640px){
-  .photo-grid{ grid-template-columns: repeat(2, 1fr); }
-  .photo-progress{ min-width: 160px; }
-} */
