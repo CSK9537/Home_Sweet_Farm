@@ -75,32 +75,35 @@
                                value="${not empty p.thumbSrc ? p.thumbSrc : (not empty p.thumbUrl ? p.thumbUrl : (not empty p.imgUrl ? p.imgUrl : DEFAULT_POST_IMG))}" />
 						
                         <div class="card js-card" data-move="${p.moveUrl}">
-                          <div class="card-thumb">
-                            <img src="${thumbSrc}" alt=""
-                                 onerror="this.onerror=null; this.src='${DEFAULT_POST_IMG}';" />
-                          </div>
-
-                          <div class="card-body">
-                            <div class="card-title">${p.title}</div>
-                            <div class="card-author">${p.userId}</div>
-
-                            <div class="card-meta">
-                              <span>댓글 ${p.replyCnt}</span>
-                              <span class="meta-sep">|</span>
-                              <span>조회수 ${p.viewCount}</span>
-                              <span class="meta-sep">|</span>
-                              <span>좋아요 ${p.likeCount}</span>
-                            </div>
-
-                            <c:if test="${not empty p.hashtags}">
-                              <div class="card-tags">
-                                <c:forEach var="t" items="${fn:split(p.hashtags, ',')}">
-                                  <span class="tag">#${fn:trim(t)}</span>
-                                </c:forEach>
-                              </div>
-                            </c:if>
-                          </div>
-                        </div>
+						  <div class="card-thumb">
+						    <img src="${not empty p.thumbSrc ? p.thumbSrc : DEFAULT_POST_IMG}" alt=""
+						         onerror="this.onerror=null; this.src='${DEFAULT_POST_IMG}';" />
+						  </div>
+						
+						  <div class="card-body">
+						    <div class="card-title">${p.title}</div>
+						    <div class="card-author">${p.writer}</div>
+						    <div class="card-date">${p.regDate}</div>
+						
+						    <div class="card-meta">
+						      <span>조회수 ${p.viewCount}</span>
+						      <span class="meta-sep">|</span>
+						      <span>좋아요 ${p.likeCount}</span>
+						      <span class="meta-sep">|</span>
+						      <span>댓글 ${p.replyCnt}</span>
+						    </div>
+						
+						    <c:if test="${not empty p.hashtags}">
+						      <div class="card-tags">
+						        <c:forEach var="t" items="${fn:split(p.hashtags, ',')}">
+						          <span class="tag">#${fn:trim(t)}</span>
+						        </c:forEach>
+						      </div>
+						    </c:if>
+						
+						    <div class="card-desc">${p.contentPreview}</div>
+						  </div>
+						</div>
                       </c:forEach>
                     </div>
                   </c:otherwise>

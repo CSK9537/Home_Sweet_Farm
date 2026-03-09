@@ -10,22 +10,23 @@ import lombok.NoArgsConstructor;
 public class CommunityListDTO {
   private int id;
 
-  private String img;     // 썸네일 URL (없으면 null)
-  private String status;  // MARKET: sell|share|done, FREE: null
+  private String img;
+  private String status;
 
   private String title;
   private Integer price;
 
   private String writer;
-  private String regDate;    // yyyy-MM-dd
+  private String regDate;
 
   private int views;
   private int likes;
   private int comments;
 
-  private String boardContent; // 미리보기 텍스트(HTML 제거/짧게)
+  private String boardContent;
   
   private String boardType;
   private String tradeStatus;
   private String thumbSavedName;
+  private String thumbSubDir;
 }

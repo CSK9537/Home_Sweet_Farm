@@ -5,74 +5,15 @@
 
 <mapper namespace="org.joonzis.community.mapper.CommunityListMapper">
 
-    <sql id="BaseFrom">
-	    FROM TBL_BOARD B
-	    JOIN TBL_USER U
-	      ON U.USER_ID = B.USER_ID
-	    WHERE B.IS_ACTIVE = 'Y'
-	      AND B.BOARD_TYPE NOT IN ('Q','A')
-	</sql>
+  <sql id="BaseFrom">
+    FROM TBL_BOARD B
+    JOIN TBL_USER U
+      ON U.USER_ID = B.USER_ID
+    WHERE B.IS_ACTIVE = 'Y'
+      AND B.BOARD_TYPE NOT IN ('Q', 'A')
+  </sql>
 
-  <!-- 목록 -->
-  <select id="selectCommunityList" parameterType="map" resultType="org.joonzis.community.dto.CommunityListDTO">
-    SELECT *
-    FROM (
-      SELECT ROWNUM AS RN, X.*
-      FROM (
-        SELECT
-          B.BOARD_ID AS id,
-          B.TITLE    AS title,
-          NVL(U.NICKNAME, '익명') AS writer,
-
-          TO_CHAR(B.REG_DATE, 'YYYY-MM-DD') AS regDate,
-
-          NVL(B.VIEW_COUNT, 0) AS views,
-          NVL(B.LIKE_COUNT, 0) AS likes,
-          NVL(B.REPLY_CNT, 0)  AS comments,
-
-          B.BOARD_TYPE   AS boardType,
-          B.TRADE_STATUS AS tradeStatus,
-          B.PRICE        AS price,
-
-          (
-            SELECT MIN(F.SAVED_NAME)
-            FROM TBL_BOARD_FILE F
-            WHERE F.BOARD_ID = B.BOARD_ID
-              AND F.IS_THUMBNAIL = 'Y'
-              AND F.IS_ACTIVE = 'Y'
-          ) AS thumbSavedName,
-
-          B.CONTENT AS boardContent
-        <include refid="BaseFrom"/>
-
-        <!-- 타입 필터 -->
-        <if test="boardTypes != null and boardTypes.size() > 0">
-          AND B.BOARD_TYPE IN
-          <foreach collection="boardTypes" item="t" open="(" close=")" separator=",">
-            #{t}
-          </foreach>
-        </if>
-
-        <!-- 검색 -->
-        <if test="q != null and q != ''">
-          AND (
-            UPPER(B.TITLE) LIKE '%' || UPPER(#{q}) || '%'
-            OR UPPER(B.CONTENT) LIKE '%' || UPPER(#{q}) || '%'
-          )
-        </if>
-
-        ORDER BY B.REG_DATE DESC
-      ) X
-      WHERE ROWNUM &lt;= #{endRow}
-    )
-    WHERE RN &gt;= #{startRow}
-  </select>
-
-  <!-- 총 개수 -->
-  <select id="countCommunityList" parameterType="map" resultType="int">
-    SELECT COUNT(*)
-    <include refid="BaseFrom"/>
-
+  <sql id="SearchWhere">
     <if test="boardTypes != null and boardTypes.size() > 0">
       AND B.BOARD_TYPE IN
       <foreach collection="boardTypes" item="t" open="(" close=")" separator=",">
@@ -82,10 +23,93 @@
 
     <if test="q != null and q != ''">
       AND (
-        UPPER(B.TITLE) LIKE '%' || UPPER(#{q}) || '%'
-        OR UPPER(B.CONTENT) LIKE '%' || UPPER(#{q}) || '%'
+           UPPER(B.TITLE) LIKE '%' || UPPER(#{q}) || '%'
+        OR UPPER(DBMS_LOB.SUBSTR(B.CONTENT, 4000, 1)) LIKE '%' || UPPER(#{q}) || '%'
+        OR UPPER(NVL(U.NICKNAME, '')) LIKE '%' || UPPER(#{q}) || '%'
+        OR UPPER(NVL(U.USERNAME, '')) LIKE '%' || UPPER(#{q}) || '%'
+        OR EXISTS (
+             SELECT 1
+             FROM TBL_BOARD_ASPECT BA
+             JOIN TBL_BOARD_HASHTAG_LIST HL
+               ON HL.BOARD_HASHTAG_ID = BA.BOARD_HASHTAG_ID
+             WHERE BA.BOARD_ID = B.BOARD_ID
+               AND HL.IS_ACTIVE = 'Y'
+               AND UPPER(HL.BOARD_HASHTAG_NAME) LIKE '%' || UPPER(#{qNoHash}) || '%'
+        )
       )
     </if>
+  </sql>
+
+  <select id="selectCommunityList"
+          parameterType="map"
+          resultType="org.joonzis.community.dto.CommunityPostCardDTO">
+    SELECT *
+    FROM (
+      SELECT ROWNUM AS RN, X.*
+      FROM (
+        SELECT
+          B.BOARD_ID AS boardId,
+          B.TITLE AS title,
+          NVL(U.NICKNAME, U.USERNAME) AS writer,
+          TO_CHAR(B.REG_DATE, 'YYYY-MM-DD') AS regDate,
+
+          NVL(B.VIEW_COUNT, 0) AS viewCount,
+          NVL(B.LIKE_COUNT, 0) AS likeCount,
+          NVL(B.REPLY_CNT, 0) AS replyCnt,
+
+          B.BOARD_TYPE AS boardType,
+          B.TRADE_STATUS AS tradeStatus,
+          B.PRICE AS price,
+
+          (
+            SELECT MIN(F.SAVED_NAME) KEEP (
+                     DENSE_RANK FIRST
+                     ORDER BY CASE WHEN F.IS_THUMBNAIL = 'Y' THEN 0 ELSE 1 END,
+                              F.FILE_ID ASC
+                   )
+            FROM TBL_BOARD_FILE F
+            WHERE F.BOARD_ID = B.BOARD_ID
+              AND F.IS_ACTIVE = 'Y'
+              AND F.CONTENT_TYPE LIKE 'image/%'
+          ) AS thumbSavedName,
+
+          (
+            SELECT MIN(F.SUB_DIR) KEEP (
+                     DENSE_RANK FIRST
+                     ORDER BY CASE WHEN F.IS_THUMBNAIL = 'Y' THEN 0 ELSE 1 END,
+                              F.FILE_ID ASC
+                   )
+            FROM TBL_BOARD_FILE F
+            WHERE F.BOARD_ID = B.BOARD_ID
+              AND F.IS_ACTIVE = 'Y'
+              AND F.CONTENT_TYPE LIKE 'image/%'
+          ) AS thumbSubDir,
+
+          (
+            SELECT LISTAGG(HL.BOARD_HASHTAG_NAME, ',') WITHIN GROUP (ORDER BY HL.BOARD_HASHTAG_NAME)
+            FROM TBL_BOARD_ASPECT BA
+            JOIN TBL_BOARD_HASHTAG_LIST HL
+              ON HL.BOARD_HASHTAG_ID = BA.BOARD_HASHTAG_ID
+            WHERE BA.BOARD_ID = B.BOARD_ID
+              AND HL.IS_ACTIVE = 'Y'
+          ) AS hashtags,
+
+          DBMS_LOB.SUBSTR(B.CONTENT, 4000, 1) AS contentPreview
+
+        <include refid="BaseFrom"/>
+        <include refid="SearchWhere"/>
+
+        ORDER BY B.REG_DATE DESC, B.BOARD_ID DESC
+      ) X
+      WHERE ROWNUM &lt;= #{endRow}
+    )
+    WHERE RN &gt;= #{startRow}
+  </select>
+
+  <select id="countCommunityList" parameterType="map" resultType="int">
+    SELECT COUNT(*)
+    <include refid="BaseFrom"/>
+    <include refid="SearchWhere"/>
   </select>
 
 </mapper>

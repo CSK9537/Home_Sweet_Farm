@@ -186,6 +186,32 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
+.postItem__date {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.45);
+}
+
+.postItem__hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.postItem__tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(107, 123, 97, 0.12);
+  border: 1px solid rgba(107, 123, 97, 0.28);
+  color: #6b7b61;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
 .postItem:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 24px rgba(0,0,0,0.10);
@@ -389,9 +415,6 @@
   font-size: 13px;
 }
 
-/* 리스트형은 imgWrap이 없어서 absolute 배지가 보일 자리가 없음.
-   -> JSP에서 리스트형일 때 배지를 제목 옆에 inline으로 뿌리는 경우를 대비한 스타일
-   (현재 JSP는 imgWrap 안에만 배지를 넣지만, 추후 확장 대비) */
 .view-list .marketBadge{
   position: static;
   display: inline-flex;

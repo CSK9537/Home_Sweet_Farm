@@ -247,6 +247,23 @@
   border-color: rgba(0,0,0,0.22);
 }
 
+.card-date {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.45);
+}
+
+.card-desc {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(0,0,0,0.72);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-word;
+}
+
 /* 썸네일 */
 .card-thumb{
   width: 100%;

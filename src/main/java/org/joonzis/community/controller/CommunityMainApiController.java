@@ -1,5 +1,7 @@
 package org.joonzis.community.controller;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.joonzis.community.dto.CommunityPostCardDTO;
 import org.joonzis.community.service.CommunityMainService;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,30 +30,41 @@ public class CommunityMainApiController {
         log.info("[DB_CHECK] {}", info);
         return info;
     }
-    
-    // ✅ 허용 kind (요구사항: popular/hot/latest/qa)
+
     private boolean isAllowedKind(String kind) {
         return "popular".equals(kind) || "hot".equals(kind) || "latest".equals(kind) || "qa".equals(kind);
     }
 
-    // ✅ 썸네일 URL 조립 (컨트롤러와 동일 규칙)
-    private String buildThumbUrl(HttpServletRequest req, String savedName) {
-        if (savedName == null || savedName.trim().isEmpty()) return null;
+    private String buildThumbUrl(HttpServletRequest req, String subDir, String savedName) {
+        if (!StringUtils.hasText(subDir) || !StringUtils.hasText(savedName)) {
+            return null;
+        }
         String ctx = req.getContextPath();
-        return ctx + "/upload/community/" + savedName;
+        return ctx
+                + "/community/file?subDir="
+                + URLEncoder.encode(subDir, StandardCharsets.UTF_8)
+                + "&savedName="
+                + URLEncoder.encode(savedName, StandardCharsets.UTF_8);
     }
 
-    // ✅ 상세 이동 URL 조립 (컨트롤러와 동일 규칙)
     private String buildMoveUrl(HttpServletRequest req, int boardId) {
-        String ctx = req.getContextPath();
-        return ctx + "/community/view?board_id=" + boardId;
+        return req.getContextPath() + "/community/view?board_id=" + boardId;
+    }
+
+    private String stripHtmlAndCut(String html, int maxLen) {
+        if (html == null) return "";
+        String text = html.replaceAll("<[^>]+>", " ");
+        text = text.replaceAll("&nbsp;", " ").replaceAll("\\s+", " ").trim();
+        if (text.length() <= maxLen) return text;
+        return text.substring(0, maxLen) + "...";
     }
 
     private void decorate(HttpServletRequest req, List<CommunityPostCardDTO> list) {
         if (list == null) return;
         for (CommunityPostCardDTO dto : list) {
             dto.setMoveUrl(buildMoveUrl(req, dto.getBoardId()));
-            dto.setThumbSrc(buildThumbUrl(req, dto.getThumbSrc()));
+            dto.setThumbSrc(buildThumbUrl(req, dto.getThumbSubDir(), dto.getThumbSavedName()));
+            dto.setContentPreview(stripHtmlAndCut(dto.getContentPreview(), 80));
         }
     }
 
@@ -58,20 +72,14 @@ public class CommunityMainApiController {
     public List<CommunityPostCardDTO> more(
             HttpServletRequest req,
             @RequestParam(defaultValue = "latest") String kind,
-            @RequestParam(defaultValue = "100") int limit
-    ) {
-        // limit 안전장치
+            @RequestParam(defaultValue = "100") int limit) {
+
         if (limit > 100) limit = 100;
         if (limit < 1) limit = 1;
-
-        // kind 안전장치
         if (!isAllowedKind(kind)) kind = "latest";
 
         List<CommunityPostCardDTO> list = communityMainService.getMore(kind, limit);
-
-        // ✅ API 응답도 화면에서 바로 쓰도록 가공
         decorate(req, list);
-
         return list;
     }
 }
