@@ -59,6 +59,11 @@ export function reconnectWS() {
 export function subscribeRoom(roomId) {
     if (!chatState.socket.stompClient) return;
 
+    if (chatState.socket.roomSubscription) {
+        console.log(`[WS] 기존 구독 해지: roomSubscription`);
+        chatState.socket.roomSubscription.unsubscribe();
+    }
+
     console.log(`[WS] 채팅방 구독 시작: ${roomId}`);
     chatState.socket.roomSubscription = chatState.socket.stompClient.subscribe(
         `/topic/room.${roomId}`,
@@ -109,12 +114,6 @@ export function subscribeUserChannel() {
                 if (!data.room_id) return;
 
                 console.log("실시간 개인 알림 수신:", data);
-
-                if (chatState.session.currentRoomId === data.room_id) {
-                    if (data.sender_id !== chatState.session.myUserId) {
-                        markAsRead(data.room_id, data.msg_id);
-                    }
-                }
                 updateRoomListRealtime(data);
 
             } catch (err) {

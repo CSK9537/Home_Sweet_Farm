@@ -1,9 +1,9 @@
 import { chatState } from "./ChatState.js";
 import { connectWS } from "./ChatWebSocket.js";
-import { loadChatRooms, initTabs, initUnreadFilter, initDropdownMenu, initPendingFilesModal, initImagePreviewModal, initCharCount } from "./ChatUI.js";
+import { initMyUserInfo, loadChatRooms, initTabs, initUnreadFilter, initDropdownMenu, initPendingFilesModal, initImagePreviewModal, initCharCount, initTargetInfo } from "./ChatUI.js";
 import { initSearchInput, initSearchKeydown, initNextSearchButton } from "./ChatSearch.js";
 import { handleNewMessageButton } from "./ChatScroll.js";
-import { sendMessage } from "./ChatMessage.js";
+import { initSendMessageEvents } from "./ChatMessage.js";
 
 async function initApp() {
     console.log("[DEBUG] 채팅 초기화 시작");
@@ -15,22 +15,9 @@ async function initApp() {
             return;
         }
 
-        const textData = await response.text();
+        const rawData = await response.text();
 
-        let myUserId = null;
-
-        if (textData.trim().startsWith('<')) {
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(textData, "text/xml");
-            
-            const userIdNode = xmlDoc.getElementsByTagName("user_id")[0];
-            if (userIdNode) {
-                myUserId = Number(userIdNode.textContent);
-            }
-        } else {
-            const loginUser = JSON.parse(textData);
-            myUserId = loginUser.user_id;
-        }
+        const myUserId = initMyUserInfo(rawData);
 
         if (myUserId) {
             chatState.session.myUserId = myUserId;
@@ -48,7 +35,8 @@ async function initApp() {
             initSearchInput();
             initSearchKeydown();
             initNextSearchButton();
-            sendMessage();
+            initTargetInfo();
+            initSendMessageEvents();
             handleNewMessageButton();
         } else {
             throw new Error("유저 ID를 찾을 수 없음");
