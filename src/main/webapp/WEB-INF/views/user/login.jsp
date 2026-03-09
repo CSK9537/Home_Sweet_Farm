@@ -69,18 +69,10 @@
               <div class="btn-row">
                 <button type="button" class="btn btn-primary" id="loginBtn" style="width: 100%;">로그인</button>
               </div>
-
-              <div class="social-box" aria-label="소셜 로그인">
-                <p class="social-title">다른 서비스 계정으로 로그인</p>
-                <div class="social-row">
-                  <button type="button" class="social-btn kakao">카카오톡</button>
-                  <button type="button" class="social-btn naver">네이버</button>
-                  <button type="button" class="social-btn google">구글</button>
-                </div>
+              
                 <p class="login-guide">
                   아직 계정이 없으신가요?&nbsp;<a class="login-link" href="${pageContext.request.contextPath}/user/join">회원가입</a>
                 </p>
-              </div>
             </form>
           </section>
 

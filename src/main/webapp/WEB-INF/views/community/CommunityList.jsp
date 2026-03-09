@@ -7,19 +7,28 @@
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
 <c:set var="boardType" value="${empty type ? 'FREE' : type}" />
+<c:set var="viewMode" value="${empty view ? 'card' : view}" />
+<c:set var="boardLabel" value="${boardType eq 'MARKET' ? '벼룩시장' : '자유게시판'}" />
 
 <div class="page-shell">
   <div class="content-wrap">
     <div class="content-card community">
 
       <div class="community__header">
+
         <div class="community__titleRow">
-          <h2 class="community__title">
-            <c:choose>
-              <c:when test="${boardType eq 'MARKET'}">벼룩시장</c:when>
-              <c:otherwise>자유게시판</c:otherwise>
-            </c:choose>
-          </h2>
+          <div class="community__titleArea">
+            <div class="community__breadcrumb">
+              <a class="community__breadcrumbLink"
+                 href="${pageContext.request.contextPath}/community/main">
+                커뮤니티
+              </a>
+              <span class="community__breadcrumbSep">&gt;</span>
+              <span class="community__breadcrumbCurrent">${boardLabel}</span>
+            </div>
+
+            <h2 class="community__title">${boardLabel}</h2>
+          </div>
 
           <a class="community__writeBtn"
              href="${pageContext.request.contextPath}/community/form?mode=insert&boardType=${writeBoardType}">
@@ -30,27 +39,27 @@
         <div class="community__subRow">
           <div class="community__tabs" role="tablist" aria-label="게시판 탭">
             <a class="community__tab ${boardType ne 'MARKET' ? 'is-active' : ''}"
-               href="${pageContext.request.contextPath}/community/list?type=FREE"
+               href="${pageContext.request.contextPath}/community/list?type=FREE&view=${viewMode}"
                role="tab"
                aria-selected="${boardType ne 'MARKET'}">자유게시판</a>
             <span class="community__tabSep">|</span>
             <a class="community__tab ${boardType eq 'MARKET' ? 'is-active' : ''}"
-               href="${pageContext.request.contextPath}/community/list?type=MARKET"
+               href="${pageContext.request.contextPath}/community/list?type=MARKET&view=${viewMode}"
                role="tab"
                aria-selected="${boardType eq 'MARKET'}">벼룩시장</a>
           </div>
 
           <div class="community__viewBtns" aria-label="보기 방식">
-            <button type="button" class="viewBtn is-active" data-view="card">카드</button>
-            <button type="button" class="viewBtn" data-view="album">앨범</button>
-            <button type="button" class="viewBtn" data-view="list">리스트</button>
+            <button type="button" class="viewBtn ${viewMode eq 'card' ? 'is-active' : ''}" data-view="card">카드</button>
+            <button type="button" class="viewBtn ${viewMode eq 'album' ? 'is-active' : ''}" data-view="album">앨범</button>
+            <button type="button" class="viewBtn ${viewMode eq 'list' ? 'is-active' : ''}" data-view="list">리스트</button>
           </div>
         </div>
 
         <div class="community__divider"></div>
       </div>
 
-      <div id="communityList" class="community__list view-card">
+      <div id="communityList" class="community__list view-${viewMode}">
 
         <c:choose>
           <c:when test="${not empty posts}">
@@ -172,24 +181,25 @@
         <div class="pagination">
           <c:if test="${hasPrev}">
             <a class="pageBtn"
-               href="${pageContext.request.contextPath}/community/list?type=${boardType}&q=${q}&page=${prevPage}&size=${size}">&lsaquo;</a>
+               href="${pageContext.request.contextPath}/community/list?type=${boardType}&q=${q}&page=${prevPage}&size=${size}&view=${viewMode}">&lsaquo;</a>
           </c:if>
 
           <c:forEach var="i" begin="${startPage}" end="${endPage}">
             <a class="pageNum ${i eq page ? 'is-active' : ''}"
-               href="${pageContext.request.contextPath}/community/list?type=${boardType}&q=${q}&page=${i}&size=${size}">
+               href="${pageContext.request.contextPath}/community/list?type=${boardType}&q=${q}&page=${i}&size=${size}&view=${viewMode}">
               ${i}
             </a>
           </c:forEach>
 
           <c:if test="${hasNext}">
             <a class="pageBtn"
-               href="${pageContext.request.contextPath}/community/list?type=${boardType}&q=${q}&page=${nextPage}&size=${size}">&rsaquo;</a>
+               href="${pageContext.request.contextPath}/community/list?type=${boardType}&q=${q}&page=${nextPage}&size=${size}&view=${viewMode}">&rsaquo;</a>
           </c:if>
         </div>
 
         <form class="searchBar" action="${pageContext.request.contextPath}/community/list" method="get">
           <input type="hidden" name="type" value="${boardType}" />
+          <input type="hidden" name="view" value="${viewMode}" />
           <input type="text"
                  name="q"
                  class="searchInput"

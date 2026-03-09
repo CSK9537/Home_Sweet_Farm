@@ -14,9 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
 
 @Service
 @RequiredArgsConstructor
+@Log4j
 public class CommunityViewServiceImpl implements CommunityViewService {
 
 	private final CommunityViewMapper mapper;
@@ -51,8 +53,20 @@ public class CommunityViewServiceImpl implements CommunityViewService {
 	@Override
 	public Map<String, Object> getPrevNext(int board_id) {
 		Map<String, Object> res = new HashMap<>();
-		res.put("prev", mapper.selectPrev(board_id));
-		res.put("next", mapper.selectNext(board_id));
+
+		CommunityViewDTO currentBoard = mapper.selectBoard(board_id);
+
+		if (currentBoard == null || currentBoard.getBoard_type() == null) {
+			res.put("prev", null);
+			res.put("next", null);
+			return res;
+		}
+
+		String boardType = currentBoard.getBoard_type();
+
+		res.put("prev", mapper.selectPrev(board_id, boardType));
+		res.put("next", mapper.selectNext(board_id, boardType));
+
 		return res;
 	}
 
@@ -65,11 +79,9 @@ public class CommunityViewServiceImpl implements CommunityViewService {
 	@Transactional
 	public Map<String, Object> likeOnce(int board_id, int user_id) {
 		Map<String, Object> res = new HashMap<>();
-		try {
-			// 1) 좋아요 기록 insert (UK로 1회 제한)
-			mapper.insertBoardLike(board_id, user_id);
 
-			// 2) 게시글 like_cnt 증가
+		try {
+			mapper.insertBoardLike(board_id, user_id);
 			mapper.increaseLikeCount(board_id);
 
 			int like_cnt = mapper.selectLikeCount(board_id);
@@ -80,13 +92,16 @@ public class CommunityViewServiceImpl implements CommunityViewService {
 			return res;
 
 		} catch (DuplicateKeyException e) {
-			// 이미 좋아요 한 상태
 			int like_cnt = mapper.selectLikeCount(board_id);
 
 			res.put("ok", true);
 			res.put("already", true);
 			res.put("like_cnt", like_cnt);
 			return res;
+
+		} catch (Exception e) {
+			log.error("좋아요 처리 실패 - board_id=" + board_id + ", user_id=" + user_id, e);
+			throw e;
 		}
 	}
 

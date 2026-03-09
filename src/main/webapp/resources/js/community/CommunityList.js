@@ -7,6 +7,21 @@
     return (parent || document).querySelectorAll(sel);
   }
 
+  function getQueryParam(name) {
+    try {
+      return new URLSearchParams(window.location.search).get(name);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function normalizeView(view) {
+    if (view === 'album' || view === 'list') {
+      return view;
+    }
+    return 'card';
+  }
+
   var listEl = qs('#communityList');
   var btns = qsa('.viewBtn');
 
@@ -75,20 +90,27 @@
     injectInlineBadgesIfNeeded(view);
   }
 
-  function init() {
-    // 항상 카드형으로 시작
-    applyView('card');
-
-    // 예전 localStorage 값이 남아 있어도 무시
+  function moveWithView(view) {
+    var url;
     try {
-      localStorage.removeItem('communityViewMode_FREE');
-      localStorage.removeItem('communityViewMode_MARKET');
-    } catch (e) {}
+      url = new URL(window.location.href);
+    } catch (e) {
+      return;
+    }
+
+    url.searchParams.set('view', view);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+  }
+
+  function init() {
+    var currentView = normalizeView(getQueryParam('view'));
+    applyView(currentView);
 
     for (var i = 0; i < btns.length; i++) {
       btns[i].onclick = function () {
-        var view = this.getAttribute('data-view');
-        applyView(view);
+        var view = normalizeView(this.getAttribute('data-view'));
+        moveWithView(view);
       };
     }
   }

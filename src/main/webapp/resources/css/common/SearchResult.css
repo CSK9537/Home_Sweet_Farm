@@ -1,0 +1,323 @@
+/* SearchResult.css */
+
+.search-result-card {
+  width: 100%;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+/* =========================
+   1. 상단 검색 영역
+========================= */
+.search-result-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.search-result-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin: 0 0 24px 0;
+}
+.search-result-title .highlight {
+  color: var(--color-bg-main);
+}
+
+.search-result-form {
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+}
+.search-result-input {
+  width: 100%;
+  height: 56px;
+  padding: 0 24px 0 54px;
+  border: 2px solid var(--color-main-line);
+  border-radius: 999px;
+  background: #ffffff;
+  outline: none;
+  font-size: 16px;
+  color: var(--color-text-main);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+.search-result-input:focus {
+  border-color: var(--color-bg-main);
+  box-shadow: 0 0 0 4px var(--color-main-soft);
+}
+.search-result-icon {
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translateY(-50%);
+  border: 2px solid var(--color-main-muted);
+  border-radius: 50%;
+  transition: border-color 0.3s;
+}
+.search-result-icon:after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  width: 10px;
+  height: 2px;
+  background: var(--color-main-muted);
+  transform: rotate(45deg);
+  transition: background 0.3s;
+}
+.search-result-input:focus ~ .search-result-icon { border-color: var(--color-bg-main); }
+.search-result-input:focus ~ .search-result-icon:after { background: var(--color-bg-main); }
+
+
+/* =========================
+   2. 탭 필터 영역
+========================= */
+.search-result-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.search-result-tab {
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: 1px solid var(--color-main-line);
+  background: #ffffff;
+  color: var(--color-main-muted);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.search-result-tab:hover {
+  background: var(--color-main-soft);
+  color: var(--color-bg-main);
+  border-color: var(--color-bg-main);
+}
+.search-result-tab.is-active {
+  background: var(--color-bg-main);
+  color: #ffffff;
+  border-color: var(--color-bg-main);
+  box-shadow: 0 4px 12px rgba(107, 123, 97, 0.2);
+}
+
+.search-result-divider {
+  width: 100%;
+  height: 2px;
+  background: var(--color-main-soft);
+  margin-bottom: 40px;
+}
+
+
+/* =========================
+   3. 섹션 공통
+========================= */
+.search-result-section {
+  margin-bottom: 50px;
+}
+.search-result-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.search-result-section__title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-bg-main);
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+.search-result-section__title::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 20px;
+  background: var(--color-focus, #e2874a);
+  border-radius: 3px;
+  margin-right: 10px;
+}
+.search-result-section__title .count {
+  font-size: 15px;
+  color: var(--color-main-muted);
+  margin-left: 8px;
+}
+.search-result-more {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-main-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.search-result-more:hover {
+  color: var(--color-bg-main);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+
+/* =========================
+   4. 카드 그리드 (식물, 스토어 공용)
+========================= */
+.search-result-grid {
+  display: grid;
+  gap: 20px;
+}
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* 도감용 식물 카드 */
+.plant-card, .product-card {
+  border-radius: 16px;
+  border: 1px solid var(--color-main-soft);
+  background: #ffffff;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+.plant-card:hover, .product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(107, 123, 97, 0.12);
+  border-color: var(--color-main-line);
+}
+
+.plant-card__thumb, .product-card__thumb {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: var(--color-main-soft);
+  overflow: hidden;
+}
+.product-card__thumb { aspect-ratio: 1/1; }
+
+.plant-card__thumb img, .product-card__thumb img {
+  width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;
+}
+.plant-card:hover .plant-card__thumb img, 
+.product-card:hover .product-card__thumb img { transform: scale(1.05); }
+
+.plant-card__body, .product-card__body {
+  padding: 16px; display: flex; flex-direction: column; flex-grow: 1;
+}
+.plant-card__name, .product-card__name {
+  font-size: 15px; font-weight: 800; color: var(--color-text-main); margin-bottom: 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.plant-card__sub { font-size: 13px; font-style: italic; color: var(--color-main-muted); }
+
+.product-card__prices { margin-top: auto; }
+.product-card__price { font-size: 16px; font-weight: 800; color: var(--color-bg-main); }
+.product-card__rating { margin-top: 6px; font-size: 12px; color: var(--color-main-muted); }
+.product-card__rating .stars { color: #f2c94c; }
+
+
+/* =========================
+   5. 리스트 형태 (커뮤니티, Q&A)
+========================= */
+.search-result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.list-item {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--color-main-soft);
+  background: #ffffff;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+.list-item:hover {
+  border-color: var(--color-bg-main);
+  background: var(--color-main-soft);
+}
+
+.list-item__badge {
+  flex: 0 0 auto;
+  height: fit-content;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(107, 123, 97, 0.1);
+  color: var(--color-bg-main);
+  font-size: 12px;
+  font-weight: 800;
+}
+.list-item__badge.is-done {
+  background: var(--color-bg-main);
+  color: #ffffff;
+}
+
+.list-item__body { flex: 1; min-width: 0; }
+.list-item__title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.q-mark { color: var(--color-focus, #e2874a); margin-right: 4px; }
+
+.list-item__content {
+  font-size: 14px;
+  color: var(--color-main-muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.list-item__meta {
+  font-size: 12px;
+  font-weight: 600;
+  color: #999;
+}
+.list-item__meta .sep { margin: 0 6px; opacity: 0.5; }
+
+
+/* =========================
+   6. 빈 상태
+========================= */
+.search-result-empty {
+  width: 100%;
+  padding: 60px 20px;
+  text-align: center;
+  border: 2px dashed var(--color-main-line);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.5);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-main-muted);
+}
+
+
+/* =========================
+   반응형
+========================= */
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 767px) {
+  .search-result-card { padding: 20px; }
+  .grid-4 { grid-template-columns: 1fr; }
+  .list-item { flex-direction: column; gap: 12px; }
+  .list-item__badge { align-self: flex-start; }
+}

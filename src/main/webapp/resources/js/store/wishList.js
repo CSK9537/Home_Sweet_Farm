@@ -1,8 +1,3 @@
-/**
- * wishList.js
- * 찜목록과 장바구니 기능을 통합한 스크립트
- */
-
 let fetchWishList;
 let fetchCartList;
 
@@ -49,11 +44,12 @@ let fetchCartList;
             <div class="product-card__prices">
               <div class="product-card__price">${price}원</div>
             </div>
-            <div style="margin-top: 10px; display: flex; gap: 4px;">
-              <button type="button" class="store-more__btn" 
-                      style="flex:1; height: 24px; font-size: 10px; background: #eee;" onclick="removeWishItem(${item.product_id})">삭제</button>
-              <button type="button" class="store-more__btn" 
-                      style="flex:1; height: 24px; font-size: 10px; background: #f2f084;" onclick="moveToCart(${item.product_id})">장바구니</button>
+            
+            <div class="product-card__qty"></div>
+            
+            <div class="product-card__actions">
+              <button type="button" class="btn-card-action" onclick="removeWishItem(${item.product_id})">삭제</button>
+              <button type="button" class="btn-card-action btn-card-action--point" onclick="moveToCart(${item.product_id})">장바구니 담기</button>
             </div>
           </div>
         </div>
@@ -104,13 +100,15 @@ let fetchCartList;
             <div class="product-card__prices">
               <div class="product-card__price">${new Intl.NumberFormat().format(price)}원</div>
             </div>
-            <div style="margin-top: 8px; font-size: 11px; color: #666;">
+            
+            <div class="product-card__qty">
               수량: <strong id="product_count_${item.product_id}">${item.product_count}</strong>개
             </div>
-            <div style="margin-top: 10px; display: flex; gap: 4px;">
-              <button type="button" class="store-more__btn" style="width:24px; height: 24px; padding:0;" onclick="minusCartItem(${item.product_id})">-</button>
-              <button type="button" class="store-more__btn" style="width:24px; height: 24px; padding:0;" onclick="plusCartItem(${item.product_id})">+</button>
-              <button type="button" class="store-more__btn" style="flex:1; height: 24px; font-size: 10px; background: #eee;" onclick="removeCartItem(${item.product_id})">삭제</button>
+            
+            <div class="product-card__actions">
+              <button type="button" class="btn-card-action btn-card-action--icon" onclick="minusCartItem(${item.product_id})">-</button>
+              <button type="button" class="btn-card-action btn-card-action--icon" onclick="plusCartItem(${item.product_id})">+</button>
+              <button type="button" class="btn-card-action" onclick="removeCartItem(${item.product_id})">삭제</button>
             </div>
           </div>
         </div>
@@ -153,7 +151,7 @@ function removeWishItem(product_id){
     })
     .then(data => {
       if(data) {
-        showCustomToast(`해당 상품이 찜목록에서 성공적으로 삭제되었습니다. : ${data}`, "success");
+        showCustomToast(`해당 상품이 찜목록에서 성공적으로 삭제되었습니다.`, "success");
         fetchWishList();
       }
     })
@@ -173,7 +171,7 @@ function moveToCart(product_id){
 }
 
 function minusCartItem(product_id){
-  const countEL= document.querySelector(`#product_count_${product_id}`);
+  const countEL = document.querySelector(`#product_count_${product_id}`);
   const count = parseInt(countEL.textContent);
   if(count <= 1) {
     showCustomToast("최소 수량은 1개입니다.", "warning");
@@ -186,7 +184,6 @@ function minusCartItem(product_id){
     })
     .then(data => {
       if(data) {
-        showCustomToast(`상품 수량이 변경되었습니다. ${data} : ${count - 1}`, "info");
         fetchCartList();
       }
     })
@@ -194,7 +191,7 @@ function minusCartItem(product_id){
 }
 
 function plusCartItem(product_id){
-  const countEL= document.querySelector(`#product_count_${product_id}`);
+  const countEL = document.querySelector(`#product_count_${product_id}`);
   const count = parseInt(countEL.textContent);
 
   fetch(`/store/cart/modifyCart/product/${product_id}?type=plus`, { method: "PUT" })
@@ -203,7 +200,6 @@ function plusCartItem(product_id){
     })
     .then(data => {
       if(data) {
-        showCustomToast(`상품 수량이 변경되었습니다. ${data} : ${count + 1}`, "info");
         fetchCartList();
       }
     })
@@ -217,7 +213,7 @@ function removeCartItem(product_id){
     })
     .then(data => {
       if(data) {
-        showCustomToast(`해당 상품을 성공적으로 장바구니에서 삭제했습니다. : ${data}`, "success");
+        showCustomToast(`해당 상품을 성공적으로 장바구니에서 삭제했습니다.`, "success");
         fetchCartList();
       }
     })
@@ -257,7 +253,6 @@ function newOrder(){
     return;
   }
 
-  // 배송지 입력 모달 열기
   openDeliveryModal(function(deliveryAddr) {
     const orderInfo = {
       use_point: 0,

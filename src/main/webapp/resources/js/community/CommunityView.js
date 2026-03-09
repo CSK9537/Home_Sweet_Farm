@@ -2,28 +2,41 @@
   'use strict';
 
   /* =========================
-   * Board Type 표시 변환
+   * Board Type 표시/변환
    * ========================= */
 
-  function convertBoardType(type){
-    switch(type){
+  function convertBoardType(type) {
+    switch (type) {
       case 'G': return '자유게시판';
-      case 'Q': return '질문';
-      case 'A': return '답변';
       case 'T':
       case 'S': return '벼룩시장';
+      case 'Q': return '질문게시판';
+      case 'A': return '답변게시판';
+      case 'FREE': return '자유게시판';
+      case 'MARKET': return '벼룩시장';
       default: return '게시판';
     }
   }
 
-  function initBoardTypeBreadcrumb(){
+  function normalizeBoardTab(type) {
+    var v = String(type || '').toUpperCase();
+
+    if (v === 'MARKET' || v === 'T' || v === 'S') return 'MARKET';
+    if (v === 'FREE' || v === 'G') return 'FREE';
+
+    return 'FREE';
+  }
+
+  function initBoardTypeBreadcrumb() {
     var el = document.getElementById('boardTypeLink');
-    if(!el) return;
+    if (!el) return;
 
-    var type = el.dataset.boardType;
-    var name = convertBoardType(type);
+    var rawType = el.getAttribute('data-board-type');
+    var boardTab = normalizeBoardTab(el.getAttribute('data-board-tab') || rawType);
 
-    el.textContent = name;
+    el.textContent = convertBoardType(rawType);
+    el.setAttribute('href', getCtx() + '/community/list?type=' + encode(boardTab));
+    el.setAttribute('data-board-tab', boardTab);
   }
 
   /* =========================
@@ -40,8 +53,9 @@
   }
 
   function getQueryParam(name) {
-    try { return new URLSearchParams(location.search).get(name); }
-    catch (e) {
+    try {
+      return new URLSearchParams(location.search).get(name);
+    } catch (e) {
       var query = location.search.replace(/^\?/, '').split('&');
       for (var i = 0; i < query.length; i++) {
         var kv = query[i].split('=');
@@ -56,12 +70,17 @@
   function safeInt(v) { var n = parseInt(v, 10); return isNaN(n) ? null : n; }
 
   function postForm(url, data) {
-    return fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-      body: new URLSearchParams(data).toString()
-    }).then(function (r) { return r.json(); });
-  }
+	  return fetch(url, {
+	    method: 'POST',
+	    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+	    body: new URLSearchParams(data).toString()
+	  }).then(function (r) {
+	    if (!r.ok) {
+	      throw new Error('HTTP ' + r.status);
+	    }
+	    return r.json();
+	  });
+	}
 
   /* =========================
    * State
@@ -73,7 +92,16 @@
                 (typeof window.board_id !== 'undefined' ? safeInt(window.board_id) : null) ||
                 safeInt(getQueryParam('board_id'));
 
-  var boardType = getQueryParam('type') || (typeof window.boardType !== 'undefined' ? window.boardType : null) || 'FREE';
+  var boardTabInput = $('#board_tab');
+  var boardTypeLink = $('#boardTypeLink');
+
+  var boardType = normalizeBoardTab(
+    getQueryParam('type') ||
+    (boardTabInput && boardTabInput.value) ||
+    (boardTypeLink && boardTypeLink.getAttribute('data-board-tab')) ||
+    (boardTypeLink && boardTypeLink.getAttribute('data-board-type')) ||
+    (typeof window.boardType !== 'undefined' ? window.boardType : null)
+  );
 
   var btnPrev = $('#btnPrev');
   var btnNext = $('#btnNext');
@@ -118,7 +146,7 @@
   }
 
   /* =========================
-   * User Popup (닉네임 클릭) - (수정) 유저네임 "밑"으로
+   * User Popup
    * ========================= */
 
   function readUserFromTrigger(triggerEl) {
@@ -131,7 +159,6 @@
     var nickname =
       triggerEl.getAttribute('data-nickname') ||
       triggerEl.getAttribute('data-user-nick') ||
-      triggerEl.getAttribute('data-user-nick') ||
       triggerEl.textContent.trim();
 
     return { user_id: safeInt(user_id) || user_id, nickname: nickname };
@@ -142,7 +169,6 @@
 
     activeUser = readUserFromTrigger(triggerEl);
 
-    // 위치: 트리거 바로 아래
     var rect = triggerEl.getBoundingClientRect();
     var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
@@ -162,7 +188,7 @@
   }
 
   /* =========================
-   * 댓글 ⋮ 메뉴 닫기(기존 유지)
+   * 댓글 더보기 메뉴
    * ========================= */
 
   function closeAllMoreMenus() {
@@ -188,7 +214,6 @@
       menu.style.display = 'block';
       menu.classList.add('is-open');
 
-      // 버튼 아래로 위치
       var rect = btnEl.getBoundingClientRect();
       var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
@@ -200,7 +225,7 @@
   }
 
   /* =========================
-   * 좋아요(게시글) - (수정) 1인 1회 + 누르면 비활성화
+   * 좋아요
    * ========================= */
 
   function setLikeDisabled(disabled) {
@@ -227,15 +252,13 @@
           else toast('좋아요 처리 중 오류가 발생했습니다.');
           return;
         }
-        // 서버에서 최신 like_cnt 내려줌
         if (typeof res.like_cnt !== 'undefined') syncLikeCount(res.like_cnt);
-
-        // 이미 눌렀든/지금 눌렀든 => 비활성화
         setLikeDisabled(true);
       })
-      .catch(function () {
-        toast('좋아요 요청 실패');
-      });
+      .catch(function (err) {
+    	  console.error('좋아요 요청 실패:', err);
+    	  toast('좋아요 요청 실패');
+    	});
   }
 
   function bindLikeButton(btn) {
@@ -249,7 +272,7 @@
   }
 
   /* =========================
-   * 신고(게시글)
+   * 신고
    * ========================= */
 
   function doBoardReport(board_id) {
@@ -274,7 +297,7 @@
   }
 
   /* =========================
-   * Button handlers
+   * 버튼 바인딩
    * ========================= */
 
   function bindButtons() {
@@ -294,7 +317,6 @@
       });
     }
 
-    // 이전/다음글
     if (btnPrev) {
       btnPrev.addEventListener('click', function () {
         var id = safeInt(btnPrev.getAttribute('data-id')) || prevId;
@@ -311,16 +333,13 @@
       });
     }
 
-    // 댓글로 이동(제목 옆/통계)
     if (btnGoReply) btnGoReply.addEventListener('click', function (e) { e.preventDefault(); scrollToReply(); });
     if (btnReplyStat) btnReplyStat.addEventListener('click', function () { scrollToReply(); });
 
-    // 좋아요(상단/통계/하단)
     bindLikeButton(btnLikeTop);
     bindLikeButton(btnLikeStat);
     bindLikeButton(btnLikeBottom);
 
-    // 신고
     if (btnBoardReport) {
       btnBoardReport.addEventListener('click', function () {
         var bid = btnBoardReport.getAttribute('data-board-id') || boardId;
@@ -331,14 +350,13 @@
   }
 
   /* =========================
-   * Global delegated events
+   * 전역 이벤트
    * ========================= */
 
   function bindDelegatedEvents() {
     document.addEventListener('click', function (e) {
       var t = e.target;
 
-      // 닉네임 트리거
       var trigger = t.closest ? t.closest('.js-user-trigger') : null;
       if (trigger) {
         if (userPop && userPop.classList.contains('is-open')) closeUserPop();
@@ -348,7 +366,6 @@
         return;
       }
 
-      // 댓글 ⋮ 버튼
       var moreBtn = t.closest ? t.closest('.js-more-menu') : null;
       if (moreBtn) {
         closeUserPop();
@@ -358,47 +375,8 @@
         return;
       }
 
-      // 유저팝업 내부 클릭
-      if (userPop && (t === userPop || userPop.contains(t))) {
-        var item = t.closest ? t.closest('.cv-pop-item') : null;
-        if (item) {
-          var action = item.getAttribute('data-action');
-          if (!activeUser) { closeUserPop(); return; }
-
-          if (action === 'boardView') {
-            location.href = ctx + '/user/profile/' + encode(activeUser.user_id);
-          } else if (action === 'chat') {
-            toast('채팅 기능 라우트가 아직 연결되지 않았습니다.');
-          } else if (action === 'report') {
-            toast('프로필 신고 기능 라우트가 아직 연결되지 않았습니다.');
-          } else if (action === 'block') {
-            toast('차단 기능 라우트가 아직 연결되지 않았습니다.');
-          }
-          closeUserPop();
-        }
-        e.stopPropagation();
-        return;
-      }
-
-      // 그 외 클릭 → 닫기
       closeUserPop();
       closeAllMoreMenus();
-    }, true);
-
-    // ESC 닫기
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') {
-        closeUserPop();
-        closeAllMoreMenus();
-      }
-    });
-
-    // 스크롤/리사이즈 시 열린 유저팝업 닫기(위치 꼬임 방지)
-    window.addEventListener('scroll', function () {
-      if (userPop && userPop.classList.contains('is-open')) closeUserPop();
-    });
-    window.addEventListener('resize', function () {
-      if (userPop && userPop.classList.contains('is-open')) closeUserPop();
     });
   }
 
@@ -407,12 +385,14 @@
    * ========================= */
 
   function init() {
-	initBoardTypeBreadcrumb();
+    initBoardTypeBreadcrumb();
     bindButtons();
     bindDelegatedEvents();
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
-
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();

@@ -24,72 +24,28 @@
 	        <span class="logo__text">Home Sweet Farm</span>
 	      </a>
 	
-	      <!-- 필터 검색 (데스크탑/태블릿에서만 사용, 모바일에서는 CSS로 숨김) -->
-	      <div class="fsearch" id="filterSearch">
-	        <input class="fsearch__toggle" type="checkbox" id="fsearchToggle" />
-	
-	        <div class="fsearch__bar" id="fsearchBar" role="button" tabindex="0" aria-label="검색창 열기">
+	      <!-- 검색 (데스크탑/태블릿에서만 사용, 모바일에서는 CSS로 숨김) -->
+	      <form class="fsearch" method="get">
 	          <span class="fsearch__icon" aria-hidden="true"></span>
-	          <input id="searchQ" name="q" class="fsearch__input" type="search" placeholder="" />
-	        </div>
-	
-	        <div class="fchips" id="filterChips" aria-label="선택된 필터"></div>
-	
-	        <div class="fpanel" role="dialog" aria-label="필터 검색 패널">
-	          <div class="fpanel__row">
-	            <div class="fpanel__cell fpanel__cell--category">
-	              <span class="fpanel__hint" id="filterHint">대분류를 선택해주세요.</span>
-	
-	              <div class="fcat" id="mainCategories">
-	                <details class="fcat__item" data-main="커뮤니티">
-	                  <summary class="fcat__summary">커뮤니티</summary>
-	                  <div class="fsub">
-	                    <button type="button" class="fsub__item" data-sub="자유게시판">자유게시판</button>
-	                    <button type="button" class="fsub__item" data-sub="벼룩시장">벼룩시장</button>
-	                  </div>
-	                </details>
-	               
-	                <button type="button" class="fcat__solo" data-main="식물">식물</button>
-	                
-	                <button type="button" class="fcat__solo" data-main="스토어">스토어</button>
-	                
-	                <details class="fcat__item" data-main="Q&A">
-	                  <summary class="fcat__summary">Q&amp;A</summary>
-	                  <div class="fsub">
-	                    <button type="button" class="fsub__item" data-sub="질문들">질문들</button>
-	                    <button type="button" class="fsub__item" data-sub="사람들">사람들</button>
-	                  </div>
-	                </details>
-	              </div>
-	
-	              <div class="fsub-panel" id="subPanel" aria-hidden="true"></div>
-	            </div>
-	
-	            <div class="fpanel__cell fpanel__cell--actions">
-	              <button class="fbtn fbtn--plus" type="button" id="addFilterBtn" aria-label="필터 추가">+</button>
-	              <button class="fbtn fbtn--search" type="button" id="doSearchBtn">검색</button>
-	              <button class="fbtn fbtn--close" type="button" id="closePanelBtn" aria-label="닫기">X</button>
-	            </div>
-	          </div>
-	        </div>
-	      </div>
-			      <div class="auth auth--desktop">
-					
-					<c:choose>
-					  <c:when test="${empty sessionScope.loginUser}">
-					    <a class="auth__link" href="/user/login">로그인</a>
-					    <span class="auth__sep" aria-hidden="true">||</span>
-					    <a class="auth__link" href="/user/join">회원가입</a>
-					  </c:when>
-					
-					  <c:otherwise>
-					 	<a class="auth__link" href="/user/mypage">마이페이지</a>
-					    <span class="auth__sep" aria-hidden="true">||</span>
-					    <a class="auth__link" href="/user/logout">로그아웃</a>
-					  </c:otherwise>
-					</c:choose>
-				</div>
-	    	</div>
+	          <input type="text" class="fsearch__input" name="q" placeholder="식물, 스토어, 커뮤니티, Q&A 검색" autocomplete="off" />
+	      </form> 
+		   
+		    <div class="auth auth--desktop">
+				<c:choose>
+				  <c:when test="${empty sessionScope.loginUser}">
+				    <a class="auth__link" href="/user/login">로그인</a>
+				    <span class="auth__sep" aria-hidden="true">||</span>
+				    <a class="auth__link" href="/user/join">회원가입</a>
+				  </c:when>
+				
+				  <c:otherwise>
+				 	<a class="auth__link" href="/user/mypage">마이페이지</a>
+				    <span class="auth__sep" aria-hidden="true">||</span>
+				    <a class="auth__link" href="/user/logout">로그아웃</a>
+				  </c:otherwise>
+				</c:choose>
+			</div>
+	    </div>
 	
 	    <!-- 모바일 1줄: 햄버거 / 로그인 / 회원가입 -->
 	    <div class="mrow mrow--top">
@@ -141,32 +97,21 @@
 	          <a class="gnb__link" href="/community">커뮤니티</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
-	              <a class="subbar__link" href="#">자유게시판</a>
+	              <a class="subbar__link" href="/community/list?type=FREE">자유게시판</a>
 	              <span class="subbar__sep">||</span>
-	              <a class="subbar__link" href="#">벼룩시장</a>
+	              <a class="subbar__link" href="/community/list?type=MARKET">벼룩시장</a>
 	            </div>
 	          </div>
 	        </li>
 	
 	        <li class="gnb__sep">||</li>
+	        
 	        <li class="gnb__item"><a class="gnb__link" href="/plant">식물</a></li>
+	        
 	        <li class="gnb__sep">||</li>
-	
-	        <li class="gnb__item has-sub">
-	          <a class="gnb__link" href="/store">스토어</a>
-	          <div class="subbar">
-	            <div class="subbar__pill">
-	              <a class="subbar__link" href="#">재배 &amp; 관리용품</a>
-	              <span class="subbar__sep">||</span>
-	              <a class="subbar__link" href="#">비료 &amp; 영양제</a>
-	              <span class="subbar__sep">||</span>
-	              <a class="subbar__link" href="#">병해충 &amp; 보호</a>
-	              <span class="subbar__sep">||</span>
-	              <a class="subbar__link" href="#">씨앗 &amp; 번식</a>
-	            </div>
-	          </div>
-	        </li>
-	
+	        
+	        <li class="gnb__item"><a class="gnb__link" href="/store">스토어</a></li>
+	        
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
@@ -181,7 +126,9 @@
 	        </li>
 	
 	        <li class="gnb__sep">||</li>
+	        
 	        <li class="gnb__item"><a class="gnb__link" href="/chat">채팅</a></li>
+	        
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
@@ -210,19 +157,13 @@
 	        <nav class="mnav__list" aria-label="모바일 주요 메뉴">
 	          <details class="mnav__item">
 	            <summary>커뮤니티</summary>
-	            <a href="#">자유게시판</a>
-	            <a href="#">벼룩시장</a>
+	            <a href="/community/list?type=FREE">자유게시판</a>
+	            <a href="/community/list?type=MARKET">벼룩시장</a>
 	          </details>
 	
 	          <a class="mnav__link" href="/plant">식물</a>
-	
-	          <details class="mnav__item">
-	            <summary>스토어</summary>
-	            <a href="#">재배 &amp; 관리용품</a>
-	            <a href="#">비료 &amp; 영양제</a>
-	            <a href="#">병해충 &amp; 보호</a>
-	            <a href="#">씨앗 &amp; 번식</a>
-	          </details>
+	          
+	          <a class="mnav__link" href="/store">스토어</a>
 	
 	          <details class="mnav__item">
 	            <summary>나의 식물</summary>
@@ -230,7 +171,7 @@
 	            <a href="/myplant/recommend">추천 가이드</a>
 	          </details>
 	
-	          <a class="mnav__link" href="#">채팅</a>
+	          <a class="mnav__link" href="/chat">채팅</a>
 	
 	          <details class="mnav__item">
 	            <summary>Q&amp;A</summary>

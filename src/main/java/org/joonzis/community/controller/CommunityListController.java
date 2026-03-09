@@ -46,15 +46,29 @@ public class CommunityListController {
         return "MARKET".equalsIgnoreCase(type) ? "T" : "G";
     }
 
+    private String resolveView(String view) {
+        if (!StringUtils.hasText(view)) {
+            return "card";
+        }
+
+        String normalized = view.trim().toLowerCase();
+        if ("album".equals(normalized) || "list".equals(normalized)) {
+            return normalized;
+        }
+        return "card";
+    }
+
     @GetMapping("/list")
     public String list(HttpServletRequest req,
                        Model model,
                        @RequestParam(value = "type", required = false, defaultValue = "FREE") String type,
                        @RequestParam(value = "q", required = false) String q,
                        @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-                       @RequestParam(value = "size", required = false, defaultValue = "12") int size) {
+                       @RequestParam(value = "size", required = false, defaultValue = "12") int size,
+                       @RequestParam(value = "view", required = false, defaultValue = "card") String view) {
 
         String boardTab = "MARKET".equalsIgnoreCase(type) ? "MARKET" : "FREE";
+        String resolvedView = resolveView(view);
 
         Map<String, Object> data = communityListService.getList(boardTab, q, page, size);
 
@@ -84,6 +98,7 @@ public class CommunityListController {
         model.addAttribute("size", pageSize);
         model.addAttribute("q", keyword);
         model.addAttribute("type", boardTab);
+        model.addAttribute("view", resolvedView);
 
         model.addAttribute("writeBoardType", resolveWriteBoardType(boardTab));
 
