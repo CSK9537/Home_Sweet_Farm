@@ -66,11 +66,16 @@
 		  INSERT (user_id, hashtag_id) VALUES (s.user_id, s.hashtag_id)
 	</update>
 	
+	<!-- 마이페이지-프로필 이미지 파일 이름 가져오기 -->
+	<select id="getProfile" resultType="string">
+		SELECT profile_filename FROM tbl_user WHERE user_id = #{user_id}
+	</select>
+	
 	<!-- 마이페이지 수정-프로필 이미지 변경  -->
 	<update id="updateProfile">
 		UPDATE tbl_user
 		SET profile_filename = #{profile_filename}
-		WHERE user_id = #{userId}
+		WHERE user_id = #{user_id}
 	</update>
 	
 	<!-- 마이페이지 - 자기소개 수정 -->

@@ -50,8 +50,13 @@ public class MypageServiceImpl implements MypageService{
 	}
 	
 	@Override
-	public void updateProfile(int userId, String profile_filename) {
-		mpMapper.updateProfile(userId,profile_filename);
+	public String getProfile(int user_id) {
+		return mpMapper.getProfile(user_id);
+	}
+	
+	@Override
+	public boolean updateProfile(int user_id, String profile_filename) {
+		return mpMapper.updateProfile(user_id, profile_filename) > 0;
 	}
 	
 	@Override

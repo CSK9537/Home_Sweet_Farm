@@ -6,8 +6,8 @@
 <link rel="stylesheet" href="${ctx}/resources/css/user/user_myPage.css" />
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
-
 <div class="page-shell">
+<section class="content-wrap">
     <div class="content-card mypage-card"
          data-ctx="${ctx}"
          data-profile-user-id="${profileUser.user_id}"
@@ -27,7 +27,7 @@
               		<img class="avatar" src="${ctx}/resources/image/Default_Plant.jpg" alt="프로필 이미지"/>
               	</c:when>
               	<c:otherwise>
-              		<img class="avatar" src="${ctx}/resources/upload/${profileUser.profile}" 
+              		<img class="avatar" src="/user/getProfile?fileName=${profileUser.profile}" 
               		onerror="this.onerror=null; this.src='${ctx}/resources/image/Default_Plant.jpg';" alt="프로필이미지"/>
               	</c:otherwise>
               </c:choose>
@@ -36,28 +36,26 @@
             <div class="left-profile-meta">
               <div class="nickname" id="leftNickname"><c:out value="${profileUser.nickname}" /></div>
               <div class="grade"><c:out value="${profileUser.gradeName}" /></div>
-              <a class="chat-link" href="${ctx}/chat/room?targetUserId=${profileUser.user_id}">채팅하기</a>
+              <a class="chat-link" href="${ctx}/chat">채팅하기</a>
             </div>
           </div>
 
           <nav class="left-menu" aria-label="마이페이지 메뉴">
-            <!-- 채팅하기는 페이지 이동 -->
-            <a class="menu-item" href="${ctx}/chat/room?targetUserId=${profileUser.user_id}">채팅하기</a>
-
             <!-- 아래는 우측 영역 변경 -->
-            <c:if test="${isOwner}">
-              <button type="button" class="menu-item js-nav" data-target="secAccount">마이페이지</button>
-            </c:if>
 
             <button type="button" class="menu-item js-nav is-active" data-target="secProfile">프로필</button>
-            <button type="button" class="menu-item js-nav" data-target="secPosts">작성글</button>
-            <button type="button" class="menu-item js-nav" data-target="secComments">작성댓글</button>
+            <button type="button" class="menu-item js-nav" data-target="secPosts">나의 글</button>
+            <button type="button" class="menu-item js-nav" data-target="secComments">나의 댓글</button>
 
             <c:if test="${isOwner}">
               <button type="button" class="menu-item js-nav" data-target="secMyQuestions">나의 질문</button>
             </c:if>
 
             <button type="button" class="menu-item js-nav" data-target="secMyAnswers">나의 답변</button>
+            
+            <c:if test="${isOwner}">
+              <button type="button" class="menu-item js-nav" data-target="secAccount">나의 정보 수정</button>
+            </c:if>
           </nav>
         </aside>
 
@@ -191,11 +189,11 @@
 				</div>
 		</section>
           <!-- =======================
-               2) 작성글 (공개)
+               2) 나의 글 (공개)
           ======================== -->
           <section id="secPosts" class="right-section">
             <header class="section-head">
-              <h2 class="section-title">작성글</h2>
+              <h2 class="section-title">나의 글</h2>
               <div class="section-actions">
                 <div class="tabbar" data-section="posts">
                   <button type="button" class="tab is-active" data-tab="all">전체</button>
@@ -214,7 +212,7 @@
                 </div>
               </div>
 
-              <ul class="list js-list" aria-label="작성글 목록"></ul>
+              <ul class="list js-list" aria-label="나의 글 목록"></ul>
 
               <div class="pager js-pager" aria-label="페이지네이션"></div>
               <div class="empty js-empty">표시할 데이터가 없습니다.</div>
@@ -222,11 +220,11 @@
           </section>
 
           <!-- =======================
-               3) 작성댓글 (공개)
+               3) 나의 댓글 (공개)
           ======================== -->
           <section id="secComments" class="right-section">
             <header class="section-head">
-              <h2 class="section-title">작성댓글</h2>
+              <h2 class="section-title">나의 댓글</h2>
               <div class="section-actions">
                 <div class="tabbar" data-section="comments">
                   <button type="button" class="tab is-active" data-tab="all">전체</button>
@@ -318,114 +316,74 @@
           <!-- =======================
                6) 마이페이지(계정 주인만)
           ======================== -->
-          
           <c:if test="${isOwner}">
             <section id="secAccount" class="right-section">
               <header class="section-head">
-                <h2 class="section-title">마이페이지</h2>
+                <h2 class="section-title">나의 정보 수정</h2>
               </header>
-              <form id="accountForm" class="account-form" method="post" action="${ctx}/user/mypage/update">
-                <div class="form-row">
-                  <label class="label">이름</label>
-                  <c:choose>
-                  	<c:when test=" ${empty profileUser.name}">
-                  		<input type="text" value="<c:out value='${profileUser.name}' default=''/>" disabled />
-                  	</c:when>
-                  	<c:otherwise>
-                  		<input type="text" value="<c:out value='${profileUser.name}'/>" disabled />                  	
-                  	</c:otherwise>
-                  </c:choose>
-                </div>
-                <div class="form-row">
-                  <label class="label">생년월일</label>
-                  <c:choose>
-                  	<c:when test=" ${empty profileUser.brith_date}">
-                  		<input type="text" value="<c:out value='${profileUser.brith_date}' default=''/>" disabled />
-                  	</c:when>
-                  	<c:otherwise>
-                  		<input type="text" value="<c:out value='${profileUser.brith_date}'/>" disabled />            	
-                  	</c:otherwise>
-                  </c:choose>
+
+              <form id="accountForm" class="account-form" method="post" action="${ctx}/user/mypage/update" autocomplete="off">
+                <div class="form-stack">
+
+                  <div class="form-col">
+                    <label class="form-label">이름</label>
+                    <input class="form-input" type="text" name="name" value="<c:out value='${profileUser.name}'/>" placeholder="한글, 영문 대소문자 2~10자" />
+                  </div>
+
+                  <div class="form-col">
+                    <label class="form-label">생년월일</label>
+                    <input class="form-input" type="date" name="brith_date" value="<c:out value='${profileUser.brith_date}'/>" />
+                  </div>
+
+                  <div class="form-col">
+                    <label class="form-label">닉네임</label>
+                    <input id="nicknameInput" class="form-input" type="text" name="nickname" value="<c:out value='${profileUser.nickname}'/>" placeholder="한글, 영문, 숫자 2~10자 (특수문자 제외)" />
+                  </div>
+
+
+                  <div class="form-col">
+                    <label class="form-label">관심사</label>
+                    <div class="input-group">
+                      <input class="form-input" type="text" name="aspect" value="<c:out value='${profileUser.aspect}'/>" readonly placeholder="관심사를 선택하세요" />
+                      <button type="button" class="btn btn-ghost" id="btnInterestPlant">선택</button>
+                    </div>
+                  </div>
+
+                  <div class="form-col">
+                    <label class="form-label">주소</label>
+                    <input id="addressInput" class="form-input" type="text" name="address" value="<c:out value='${profileUser.address}'/>" placeholder="주소를 입력하세요" />
+                  </div>
+                  
+                  <div class="form-col">
+                    <label class="form-label">휴대전화</label>
+                    <input class="form-input" type="text" id="inpPhone" name="phone" value="<c:out value='${profileUser.phone}'/>" placeholder="010으로 시작, 10~11자리 숫자" />
+                  </div>
+
+                  <div class="form-col">
+                    <label class="form-label">이메일</label>
+                    <div class="verify-card">
+                      <div class="verify-card__head">
+                        <h3 class="verify-title">이메일 인증</h3>
+                        <p class="verify-desc">
+                          회원님의 이메일 수정을 위해 <strong>인증</strong>이 필요합니다.<br/>
+                          새로운 이메일을 통해 인증을 진행해주세요.
+                        </p>
+                      </div>
+                      <div class="verify-card__body">
+                        <div class="verify-single-row">
+                          <input class="form-input" type="email" id="inpEmail" name="email" value="<c:out value='${profileUser.email}'/>" placeholder="이메일 주소" readonly/>
+                        </div>
+                        <div class="verify-single-row mt-15">
+                          <button type="button" class="btn btn-outline w-100" id="sendCode-btn" data-email-open>이메일 인증</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
 
-                <div class="form-row">
-                  <label class="label">닉네임</label>
-                  <c:choose>
-                  	<c:when test=" ${empty profileUser.nickname}">
-                  		<input id = "nicknameInput" type="text" name="nickname" value="<c:out value='${profileUser.nickname}' default=''/>"/>
-                  	</c:when>
-                  	<c:otherwise>
-                  		<input id = "nicknameInput" type="text" name="nickname" 
-                  		value="<c:out value='${profileUser.nickname}'/>"
-                  		data-original="<c:out value='${profileUser.nickname}'/>" />            	
-                  	</c:otherwise>
-                  </c:choose>
-                  <div class="input-actions">
-                    <button type="button" class="btn" id="nicknameUpdateBtn">수정</button>
-                  </div>
-                  <!-- 메시지 영역  -->
-                  <div class="form-msg"><p id="nicknameMsg"></p></div>
-                </div>
-
-                <div class="form-row">
-                  <label class="label">관심사</label>
-                  <c:choose>
-                  	<c:when test=" ${empty profileUser.aspect}">
-                  		<input type="text" value="<c:out value='${profileUser.aspect}' default=''/>" />
-                  	</c:when>
-                  	<c:otherwise>
-                  		<input type="text" value="<c:out value='${profileUser.aspect}'/>" />            	
-                  	</c:otherwise>
-                  </c:choose>
-                  <div class="input-actions">
-                    <button type="button" class="btn" id="btnInterestPlant">+</button>
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <label class="label">휴대전화</label>
-                  <c:choose>
-                  	<c:when test=" ${empty profileUser.phone}">
-                  		<input type="text" id="inpPhone" value="<c:out value='${profileUser.phone}' default=''/>"/>
-                  	</c:when>
-                  	<c:otherwise>
-                  		<input type="text" id="inpPhone" value="<c:out value='${profileUser.phone}'/>" />            	
-                  	</c:otherwise>
-                  </c:choose>
-                </div>
-
-                <div class="form-row">
-                  <label class="label">이메일</label>
-                  <c:choose>
-                  	<c:when test=" ${empty profileUser.email}">
-                  		<input type="text" value="<c:out value='${profileUser.email}' default=''/>"/>
-                  	</c:when>
-                  	<c:otherwise>
-                  		<input type="text" value="<c:out value='${profileUser.email}'/>" />            	
-                  	</c:otherwise>
-                  </c:choose>
-                  <div class="input-actions">
-                    <button type="button" class="btn btn-ghost" id="btnEmailVerify">인증</button>
-                  </div>
-                </div>
-                <!-- 주소 html 추가 -->
-                 <div class="form-row">
-                  <label class="label">주소</label>
-                  <c:choose>
-                     <c:when test=" ${empty profileUser.address}">
-                        <input id = "addressInput" type="text" value="<c:out value='${profileUser.address}' default=''/>"/>
-                     </c:when>
-                     <c:otherwise>
-                        <input id = "addressInput" type="text" 
-                        value="<c:out value='${profileUser.address}'/>"
-                        data-original="<c:out value='${profileUser.address}'/>" />               
-                     </c:otherwise>
-                  </c:choose>
-                  <div class="input-actions">
-                    <button type="button" class="btn" id="addressUpdateBtn">수정</button>
-                  </div>
-                   <!-- 메시지 영역  -->
-                  <div class="form-msg"><p id="addressMsg"></p></div>
+                <div class="form-bottom-actions">
+                  <button type="submit" class="btn-large btn-large--primary" id="btnUpdateAll">정보 수정</button>
                 </div>
               </form>
             </section>
@@ -436,7 +394,7 @@
            MODALS
       ======================== -->
       <div class="modal-backdrop" id="modalBackdrop" hidden></div>
-
+      
       <!-- 등급 안내 모달 -->
       <div class="modal" id="modalGrade" role="dialog" aria-modal="true" aria-labelledby="modalGradeTitle" hidden>
         <div class="modal-card">
@@ -515,29 +473,10 @@
         </div>
       </div>
       
-      
-      <!-- 인증(이메일) 모달 -->
-      <div class="modal" id="modalVerify" role="dialog" aria-modal="true" aria-labelledby="modalVerifyTitle" hidden>
-        <div class="modal-card">
-          <div class="modal-head">
-            <h3 id="modalVerifyTitle">인증</h3>
-            <button type="button" class="icon-btn" data-modal-close aria-label="닫기">×</button>
-          </div>
-          <div class="modal-body">
-            <p class="muted" id="verifyDesc">인증 절차를 진행합니다.</p>
-            <div class="verify-grid">
-              <input type="text" id="verifyTarget" readonly />
-              <button type="button" class="btn" id="btnSendCode">인증번호 발송</button>
-              <input type="text" id="verifyCode" placeholder="인증번호 입력" />
-              <button type="button" class="btn" id="btnConfirmCode">확인</button>
-            </div>
-          </div>
-          <div class="modal-foot">
-            <button type="button" class="btn" data-modal-close>닫기</button>
-          </div>
-        </div>
-      </div>
-      
+      <!-- 이메일 인증 모달 -->
+      <jsp:include page="/WEB-INF/views/common/EmailModal.jsp">
+		<jsp:param name="mode" value="signup" />
+	  </jsp:include>
 
       <!-- 프로필 이미지 크게보기 모달(주인만) -->
       <c:if test="${isOwner}">
@@ -554,7 +493,7 @@
               		<img id="avatarLarge" src="${ctx}/resources/image/Default_Plant.jpg" alt="프로필 이미지 크게 보기"/>
               	</c:when>
               	<c:otherwise>
-              		<img id="avatarLarge" src="${ctx}/resources/upload/${profileUser.profile}" 
+              		<img id="avatarLarge" src="/user/getProfile?fileName=${profileUser.profile}" 
               		onerror="this.onerror=null; this.src='${ctx}/resources/image/Default_Plant.jpg';" alt="프로필이미지 크게 보기"/>
               	</c:otherwise>
               </c:choose>
@@ -573,8 +512,9 @@
 	        </div>
 	      </div>
 	</c:if>
-    </div>
   </div>
-
+</section>
+</div>
+<script src="${pageContext.request.contextPath}/resources/js/user/user_myPageUpdate.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/user/user_myPage.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

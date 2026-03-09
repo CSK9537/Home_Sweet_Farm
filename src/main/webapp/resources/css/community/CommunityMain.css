@@ -7,8 +7,6 @@
   --cm-gap: 20px;
   --cm-thumbH: 160px;
   width: 100%;
-  max-width: 1200px; /* 전체 카드 최대 폭 고정 */
-  min-width: 0; /* Flex 환경에서 자식 요소 때문에 영역이 무한히 늘어나는 현상 방지 */
   margin: 0 auto; /* 중앙 정렬 */
   padding: 30px;
   box-sizing: border-box;

@@ -5,17 +5,6 @@
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/community/CommunityView.css" />
-<style>
-  /* Q&A 전용 스타일 보완 */
-  .qv-answer-section { margin-top: 40px; }
-  .qv-answer-item { border: 1px solid #eee; border-radius: 8px; padding: 20px; margin-bottom: 20px; transition: all 0.2s; }
-  .qv-answer-item.is-selected { border-color: #8bc34a; background-color: #f9fff0; box-shadow: 0 2px 8px rgba(139, 195, 74, 0.2); }
-  .qv-selected-badge { display: inline-block; background: #8bc34a; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-bottom: 10px; font-weight: bold; }
-  .qv-answer-write { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
-  .qv-comment-container { margin-top: 15px; padding-left: 20px; border-left: 2px solid #eee; }
-  .qv-comment-toggle-btn { background: none; border: none; color: #666; font-size: 13px; cursor: pointer; padding: 5px 0; }
-  .qv-comment-toggle-btn:hover { color: #333; text-decoration: underline; }
-</style>
 
 <div class="page-shell">
   <div class="content-wrap">

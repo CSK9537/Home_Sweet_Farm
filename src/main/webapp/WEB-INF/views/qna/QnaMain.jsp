@@ -27,7 +27,7 @@
         <div class="qna-menuline" id="qnaTopMenu">
           <a class="qna-menu" href="<c:url value='/qna/QnaList'/>" data-tab="questions">질문들</a>
           <span class="qna-divider">||</span>
-          <a class="qna-menu" href="<c:url value='/qna/people'/>" data-tab="people">사람들</a>
+          <a class="qna-menu" href="<c:url value='#'/>" data-tab="people">사람들</a>
         </div>
 
         <!-- 굵은 라인 -->

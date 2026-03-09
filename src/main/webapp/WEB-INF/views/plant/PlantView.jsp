@@ -69,9 +69,7 @@
             <div class="pv-cta__title">식물을 키워서 식물을 잘 아신다면?</div>
             <div class="pv-cta__text">같이 키우는 사람들과 팁을 공유하고 관리 기록을 남겨보세요.</div>
             <div class="pv-cta__actions">
-              <!-- 오류 제거를 위한 href 제거, 커뮤니티 완성시 추가할 것 -->
-              <!-- href="${pageContext.request.contextPath}/community/write?plant_id=${p.plant_id} -->
-              <a class="btn btn-primary">
+              <a class="btn btn-primary" href="${pageContext.request.contextPath}/community">
                 	글 작성하러 가기
               </a>
             </div>

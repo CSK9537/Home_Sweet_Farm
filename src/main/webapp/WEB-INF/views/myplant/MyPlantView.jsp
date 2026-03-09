@@ -173,9 +173,9 @@
           </div>
 
           <div class="cal__nav">
-            <button class="cal-btn cal-btn--ghost" type="button" onclick="calPrev()">이전</button>
+            <button class="cal-btn cal-btn--ghost" type="button" onclick="calPrev()">이전 달</button>
             <button class="cal-btn cal-btn--ghost" type="button" onclick="calToday()">오늘</button>
-            <button class="cal-btn cal-btn--ghost" type="button" onclick="calNext()">다음</button>
+            <button class="cal-btn cal-btn--ghost" type="button" onclick="calNext()">다음 달</button>
           </div>
         </div>
 
