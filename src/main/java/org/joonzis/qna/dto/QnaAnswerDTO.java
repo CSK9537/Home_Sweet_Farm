@@ -1,6 +1,7 @@
 package org.joonzis.qna.dto;
 
 import java.sql.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,8 +19,11 @@ public class QnaAnswerDTO {
 	private String title;
 	private String content;
 	private String writer;
+	private String writer_profile;
 	private Date reg_date;
 	private Date update_date;
 	
 	private String is_selected; // "Y"/"N"으로 채택 여부를 확인
+	
+	private List<QnaReplyDTO> replys;
 }

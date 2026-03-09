@@ -22,78 +22,107 @@ public class QnaMainServiceImpl implements QnaMainService {
 
     private final QnaMainMapper qnaMainMapper;
 
-    // 화면 구성 추천값(원하면 조절 가능)
     private static final int TOP_USER_LIMIT = 3;
-
-    private static final int FAQ_PAGE_SIZE = 12;     // faq-grid가 카드형이라 12 권장
+    private static final int FAQ_PAGE_SIZE = 12;
     private static final int FAQ_BLOCK_SIZE = 5;
-
-    private static final int WAITING_PAGE_SIZE = 10; // waiting-list는 10 권장
+    private static final int WAITING_PAGE_SIZE = 10;
     private static final int WAITING_BLOCK_SIZE = 5;
 
     @Override
     public void fillQnaMainModel(Model model, int faqPage, int waitingPage, String waitingSort, String ctx) {
-
         // 1) 채택왕
         List<QnaTopUserDTO> topUsers = qnaMainMapper.selectTopUsers(TOP_USER_LIMIT);
         for (int i = 0; i < topUsers.size(); i++) {
             QnaTopUserDTO u = topUsers.get(i);
             u.setRank(i + 1);
+            setProfileImg(u, ctx);
 
-            // profile 이미지 URL 완성 (프로젝트에서 쓰는 기본 이미지 경로 참고)
-            if (u.getImg() == null || u.getImg().trim().isEmpty()) {
-                u.setImg(ctx + "/resources/img/default_profile.png");
-            } else if (!u.getImg().startsWith("http") && !u.getImg().startsWith(ctx)) {
-                // DB에 파일명만 들어온 경우를 방어적으로 처리
-                // (프로필 업로드 경로가 따로 있으면 여기만 맞춰주면 됨)
-                u.setImg(ctx + "/resources/img/default_profile.png");
-            }
-
-            // 배지 예시
             if (u.getRank() == 1) u.setBadge("채택왕");
             else if (u.getRank() == 2) u.setBadge("우수답변");
             else u.setBadge("상위답변");
         }
         model.addAttribute("topUsers", topUsers);
 
-        // 2) 많이 물어보는 Q&A (FAQ)
+        // 2) FAQ
         int faqTotal = qnaMainMapper.countFaqQuestions();
         QnaPagingDTO faqPaging = buildPaging(faqTotal, faqPage, FAQ_PAGE_SIZE, FAQ_BLOCK_SIZE);
-
         Map<String, Object> faqParam = new HashMap<>();
         faqParam.put("startRow", startRow(faqPage, FAQ_PAGE_SIZE));
         faqParam.put("endRow", endRow(faqPage, FAQ_PAGE_SIZE));
         List<QnaFaqDTO> faqTopList = qnaMainMapper.selectFaqTopList(faqParam);
-
-        // rank(현재 페이지 기준으로 연속번호 부여)
         int faqBaseRank = (faqPage - 1) * FAQ_PAGE_SIZE;
         for (int i = 0; i < faqTopList.size(); i++) {
             faqTopList.get(i).setRank(faqBaseRank + i + 1);
         }
-
         model.addAttribute("faqTopList", faqTopList);
         model.addAttribute("faqPaging", faqPaging);
 
         // 3) 답변을 기다리는 질문
         int waitingTotal = qnaMainMapper.countWaitingQuestions();
         QnaPagingDTO waitingPaging = buildPaging(waitingTotal, waitingPage, WAITING_PAGE_SIZE, WAITING_BLOCK_SIZE);
-
         Map<String, Object> waitingParam = new HashMap<>();
         waitingParam.put("startRow", startRow(waitingPage, WAITING_PAGE_SIZE));
         waitingParam.put("endRow", endRow(waitingPage, WAITING_PAGE_SIZE));
-        waitingParam.put("waitingSort", waitingSort); // recent / view(=오래된순)
-
+        waitingParam.put("waitingSort", waitingSort);
         List<QnaWaitingDTO> waitingList = qnaMainMapper.selectWaitingList(waitingParam);
-
-        // ago / isNew 계산
         LocalDateTime now = LocalDateTime.now();
         for (QnaWaitingDTO q : waitingList) {
             q.setAgo(toAgo(now, q.getRegDate()));
             q.setIsNew(isNew(now, q.getRegDate()));
         }
-
         model.addAttribute("waitingList", waitingList);
         model.addAttribute("waitingPaging", waitingPaging);
+    }
+
+    @Override
+    public void fillQnaPeopleModel(Model model, String ctx) {
+        List<QnaTopUserDTO> topUsers = qnaMainMapper.selectTopUsers(20);
+        for (QnaTopUserDTO u : topUsers) {
+            setProfileImg(u, ctx);
+            if (u.getRank() == 1) u.setBadge("채택왕");
+            else if (u.getRank() <= 5) u.setBadge("우수답변");
+            else u.setBadge("상위답변");
+        }
+        model.addAttribute("topUsers", topUsers);
+    }
+
+    @Override
+    public Map<String, Object> getActiveUsersJson(int page, String ctx) {
+        int pageSize = 8;
+        int total = qnaMainMapper.countActiveUsers();
+        Map<String, Object> param = new HashMap<>();
+        param.put("startRow", startRow(page, pageSize));
+        param.put("endRow", endRow(page, pageSize));
+        List<QnaTopUserDTO> list = qnaMainMapper.selectActiveUserList(param);
+        for (QnaTopUserDTO u : list) {
+            setProfileImg(u, ctx);
+            if (u.getRank() == 1) u.setBadge("채택왕");
+            else if (u.getRank() <= 5) u.setBadge("우수답변");
+            else if (u.getRank() <= 20) u.setBadge("상위답변");
+            else u.setBadge("활동중");
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("total", total);
+        result.put("hasNext", endRow(page, pageSize) < total);
+        return result;
+    }
+
+    /**
+     * 프로필 이미지 경로 설정 (이미지 스트리밍 엔드포인트 사용)
+     */
+    private void setProfileImg(QnaTopUserDTO u, String ctx) {
+        String img = u.getImg();
+        if (img == null || img.trim().isEmpty()) {
+            img = "default_profile.png";
+        }
+        
+        if (img.startsWith("http")) {
+            u.setImg(img);
+        } else {
+            // ProfileImageController (/user/getProfile) 사용
+            u.setImg(ctx + "/user/getProfile?fileName=" + img);
+        }
     }
 
     private static int startRow(int page, int pageSize) {
@@ -108,10 +137,8 @@ public class QnaMainServiceImpl implements QnaMainService {
         int totalPage = (int) Math.ceil(totalCount / (double) pageSize);
         if (totalPage < 1) totalPage = 1;
         if (page > totalPage) page = totalPage;
-
         int startPage = ((page - 1) / blockSize) * blockSize + 1;
         int endPage = Math.min(startPage + blockSize - 1, totalPage);
-
         return new QnaPagingDTO(page, startPage, endPage, totalPage);
     }
 
@@ -123,14 +150,11 @@ public class QnaMainServiceImpl implements QnaMainService {
     private static String toAgo(LocalDateTime now, LocalDateTime regDate) {
         if (regDate == null) return "";
         Duration d = Duration.between(regDate, now);
-
         long minutes = d.toMinutes();
         if (minutes < 1) return "방금 전";
         if (minutes < 60) return minutes + "분 전";
-
         long hours = d.toHours();
         if (hours < 24) return hours + "시간 전";
-
         long days = d.toDays();
         return days + "일 전";
     }

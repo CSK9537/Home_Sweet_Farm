@@ -1,5 +1,6 @@
 package org.joonzis.qna.service;
 
+import java.sql.Date;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -65,6 +66,23 @@ public class QnaListServiceImpl implements QnaListService {
         model.addAttribute("qnaList", qnaList);
         model.addAttribute("pageInfo", paging);
         model.addAttribute("tagTop15", tagTop15);
+        
+        // 오늘의 새 질문 + 오늘의 답변
+        Map<String, Object> counts = qnaListMapper.getCountTodayQna(Date.valueOf(now.toLocalDate()));
+        int todayNewQuestionCnt = 0;
+        int todayNewAnswerCnt = 0;
+        
+        if (counts != null) {
+            // Oracle/MyBatis는 Map 키를 대문자로 반환하는 경우가 많습니다.
+            Object q = (counts.get("Q_COUNT") != null) ? counts.get("Q_COUNT") : counts.get("q_count");
+            Object a = (counts.get("A_COUNT") != null) ? counts.get("A_COUNT") : counts.get("a_count");
+            
+            if (q != null) todayNewQuestionCnt = Integer.parseInt(q.toString());
+            if (a != null) todayNewAnswerCnt = Integer.parseInt(a.toString());
+        }
+        
+        model.addAttribute("todayNewQuestionCnt", todayNewQuestionCnt);
+        model.addAttribute("todayNewAnswerCnt", todayNewAnswerCnt);
     }
 
     // --- Helper Methods (QnaMainServiceImpl 스타일 계승) ---
