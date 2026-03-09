@@ -101,7 +101,8 @@ public class ChatController {
 	        "user_id", user.getUser_id(),
 	        "username", user.getUsername(),
 	        "nickname", user.getNickname() != null ? user.getNickname() : "",
-	        "profile_filename", user.getProfile_filename() != null ? user.getProfile_filename() : ""
+	        "profile_filename", user.getProfile_filename() != null ? user.getProfile_filename() : "",
+	        "grade_id", user.getGrade_id()
 	    ));
 	}
 

@@ -17,6 +17,8 @@
 		END AS other_user_id,
 
 		u.nickname AS other_user_name,
+		u.grade_id AS other_user_grade_id,
+		u.profile_filename AS other_user_profile,
 
 		m.content AS last_msg,
 		m.msg_type AS last_msg_type,

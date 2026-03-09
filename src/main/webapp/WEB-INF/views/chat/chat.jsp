@@ -77,7 +77,7 @@
 					<div id="chat-view" style="display: none; flex-direction: column; height: 100%;">
 						<div class="chat-header">
 							<div class="user-left" style="display: flex; align-items: center;">
-								<img src="https://via.placeholder.com/40" alt="유저">
+								<img src="/resources/image/default_profile.png" alt="유저">
 								<div class="user-info">
 									<span class="name"></span> <span class="role"></span>
 								</div>
