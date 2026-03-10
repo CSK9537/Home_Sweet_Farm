@@ -17,6 +17,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -106,40 +107,52 @@ public class ProfileImageController {
             return ResponseEntity.status(500).body(response);
         }
     }
-	
+
 	@GetMapping("/getProfile")
-	public ResponseEntity<Resource> showImage(@RequestParam("fileName") String fileName) {
+	public ResponseEntity<Resource> showImage(@RequestParam(value = "fileName", required = false) String fileName) {
 	    try {
-	        // 1. 외부 저장소(IMG_DIR)에서 요청된 파일 확인
-	        File file = new File(IMG_DIR + fileName);
-	        Resource resource;
-	        String mimeType;
+	        File targetFile = null;
 
-	        if (file.exists()) {
-	            resource = new FileSystemResource(file);
-	            mimeType = Files.probeContentType(file.toPath());
-	        } else {
-	            // 2. 파일이 없으면 webapp/resources/image/default_profile.png 참조
-	            String defaultPath = servletContext.getRealPath("/resources/image/default_profile.png");
-	            File defaultFile = new File(defaultPath);
+	        // 1. 파라미터가 존재할 경우 외부 저장소에서 파일 확인
+	        if (StringUtils.hasText(fileName)) {
+	            // [보안] 경로 탐색(Directory Traversal) 공격 방지
+	            if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
+	                return ResponseEntity.badRequest().build();
+	            }
 
-	            if (defaultFile.exists()) {
-	                resource = new FileSystemResource(defaultFile);
-	                mimeType = "image/png"; // 또는 Files.probeContentType(defaultFile.toPath());
-	            } else {
-	                return ResponseEntity.notFound().build();
+	            File requestedFile = new File(IMG_DIR, fileName);
+	            if (requestedFile.exists() && requestedFile.isFile()) {
+	                targetFile = requestedFile;
 	            }
 	        }
 
-	        // 3. MIME 타입 방어 코드 및 응답 반환
-	        if (mimeType == null) mimeType = "image/jpeg";
+	        // 2. 파일명이 없거나, 요청한 파일이 존재하지 않으면 기본 이미지로 폴백(Fallback)
+	        if (targetFile == null) {
+	            String defaultPath = servletContext.getRealPath("/resources/image/default_profile.png");
+	            if (defaultPath != null) {
+	                targetFile = new File(defaultPath);
+	            }
+	        }
+
+	        // 3. 최종 파일이 없으면 404 Not Found 반환
+	        if (targetFile == null || !targetFile.exists()) {
+	            return ResponseEntity.notFound().build();
+	        }
+
+	        // 4. MIME 타입 확인 및 응답 생성
+	        Resource resource = new FileSystemResource(targetFile);
+	        String mimeType = Files.probeContentType(targetFile.toPath());
+	        
+	        if (mimeType == null) {
+	            mimeType = "image/jpeg"; // 기본 MIME 타입 방어
+	        }
 
 	        return ResponseEntity.ok()
 	                .header(HttpHeaders.CONTENT_TYPE, mimeType)
 	                .body(resource);
 
 	    } catch (Exception e) {
-	        e.printStackTrace();
+	        // e.printStackTrace(); // 실제 운영에서는 log.error()를 사용하는 것을 권장합니다.
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
 	}

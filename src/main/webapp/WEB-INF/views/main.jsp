@@ -80,13 +80,6 @@
 		              <div class="plant-card__body">
 		                <div class="plant-card__name">${p.plant_name_kor}</div>
 		                <div class="plant-card__sci">${p.plant_name}</div>
-		                <div class="meta-row">
-		                  <span class="meta"><span class="meta__label">조회수</span><span class="meta__value">${p.plant_searchcount}</span></span>
-		                  <span class="meta-row__sep">|</span>
-		                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">??</span></span>
-		                  <span class="meta-row__sep">|</span>
-		                  <span class="meta"><span class="meta__label">집사수</span><span class="meta__value">??</span></span>
-		                </div>
 	              	  </div>
 	                </a>
                 </c:forEach>
@@ -111,14 +104,14 @@
             	<c:forEach items="${popularQuestions}" var="q">
 	            	<a class="qa-card" href="/qna/detail?qna_id=${q.id}">
 		              <div class="qa-card__title">${q.title}</div>
-		                <div class="meta-row meta-row--between">
+		                <p class="qa-card__excerpt">${q.preview}</p>
+		                <div class="meta-row">
 		                  <span class="meta"><span class="meta__label">답글수</span><span class="meta__value">${q.answers}</span></span>
 		                  <span class="meta-row__sep">|</span>
 		                  <span class="meta"><span class="meta__label">조회수</span><span class="meta__value">${q.views}</span></span>
 		                  <span class="meta-row__sep">|</span>
 		                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">${q.likes}</span></span>
 		                </div>
-		                <p class="qa-card__excerpt">${q.preview}</p>
 	                </a>
                 </c:forEach>
              </c:otherwise>
@@ -140,9 +133,9 @@
             </c:when>
             <c:otherwise>
             	<c:forEach items="${popularPeople}" var="h">
-	            	<a class="user-card" href="#">
+	            	<a class="user-card" href="javascript:void(0);" data-user-id="${h.user_id}" onclick="handleUserClick(this)">
 		              <div class="user-card__thumb">
-		              	<img src="" alt="" loading="lazy" />
+		              	<img src="/user/getProfile?fileName=${h.profile}" loading="lazy" />
 		              </div>
 		              <div class="user-card__body">
 		                <c:choose>
