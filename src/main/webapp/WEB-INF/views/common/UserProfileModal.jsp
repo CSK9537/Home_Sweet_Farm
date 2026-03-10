@@ -56,19 +56,19 @@
           </div>
 
           <div class="upm-box">
-            <div class="upm-box-title">답변수</div>
+            <div class="upm-box-title">답변</div>
             <div class="upm-stats">
               <div class="upm-stat">
                 <div class="upm-num" id="upmTotalAnswers">0</div>
                 <div class="upm-label">전체 답변</div>
               </div>
               <div class="upm-stat">
-                <div class="upm-num" id="upmTotalViews">0</div>
-                <div class="upm-label">조회수</div>
-              </div>
-              <div class="upm-stat">
                 <div class="upm-num" id="upmAcceptedAnswers">0</div>
                 <div class="upm-label">채택 답변</div>
+              </div>
+              <div class="upm-stat">
+                <div class="upm-num" id="upmTotalAnswerLikes">0</div>
+                <div class="upm-label">좋아요</div>
               </div>
             </div>
           </div>

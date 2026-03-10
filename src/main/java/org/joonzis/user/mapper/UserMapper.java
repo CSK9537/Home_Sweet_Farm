@@ -88,4 +88,7 @@ public interface UserMapper {
     public int deletionUserByList(@Param("list")List<Integer> userIdList);
     // 마이페이지용 DTO 조회
     public MypageProfileDTO getProfileInfo(int user_id);
+    
+    // 총 좋아요 수 랭킹(rank 등수 만큼)
+    public List<Integer> getAnswerLikesPeopleRanking(int rank);
 }

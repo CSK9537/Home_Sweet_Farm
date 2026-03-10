@@ -1,5 +1,7 @@
 package org.joonzis.user.service;
 
+import java.util.List;
+
 import org.joonzis.user.dto.MypageProfileDTO;
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
@@ -48,4 +50,7 @@ public interface UserService {
 	
 	// 마이페이지 정보
 	public MypageProfileDTO getProfileInfo(int userId);
+	
+	// 총 좋아요 수 랭킹들의 정보
+	public List<MypageProfileDTO> answerLikesPeopleRankingInfo(int rank);
 }

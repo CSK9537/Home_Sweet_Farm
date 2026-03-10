@@ -129,7 +129,7 @@
         <!-- 인기 답변자 -->
         <section class="section">
           <header class="section__header">
-            <h3 class="section__title">인기 답변자(좋아요가 많은 답변자)</h3>
+            <h3 class="section__title">인기 답변자</h3>
             <a class="section__more" href="/qna/people">전체보기</a>
           </header>
 
@@ -139,20 +139,27 @@
             	<div class="empty-state">데이터가 없습니다.</div>
             </c:when>
             <c:otherwise>
-            	<c:forEach items="${popularPlants}" var="h">
+            	<c:forEach items="${popularPeople}" var="h">
 	            	<a class="user-card" href="#">
 		              <div class="user-card__thumb">
 		              	<img src="" alt="" loading="lazy" />
 		              </div>
 		              <div class="user-card__body">
-		                <div class="user-card__name">Sophie Bennett</div>
-		                <p class="user-card__bio">A Product Designer focused on intuitive user experiences.</p>
+		                <c:choose>
+		                  <c:when test="${not empty h.nickname}">
+		                    <div class="user-card__name">${h.nickname}</div>
+		               	  </c:when>
+		              	  <c:otherwise>
+		                    <div class="user-card__name">${h.username}</div>
+		              	  </c:otherwise>
+		                </c:choose>
+		                <p class="user-card__bio">${h.intro}</p>
 		                <div class="meta-row">
-		                  <span class="meta"><span class="meta__label">답변수</span><span class="meta__value">??</span></span>
+		                  <span class="meta"><span class="meta__label">답변수</span><span class="meta__value">${h.totalAnswers}</span></span>
 		                  <span class="meta-row__sep">|</span>
-		                  <span class="meta"><span class="meta__label">채택수</span><span class="meta__value">??</span></span>
+		                  <span class="meta"><span class="meta__label">채택수</span><span class="meta__value">${h.acceptedAnswers}</span></span>
 		                  <span class="meta-row__sep">|</span>
-		                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">??</span></span>
+		                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">${h.totalAnswerLikes}</span></span>
 		                </div>
 	              	  </div>
 	                </a>

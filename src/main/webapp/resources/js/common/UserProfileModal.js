@@ -3,7 +3,7 @@
 const GlobalProfileModal = (function() {
   let backdrop, modal, closeBtn;
   let avatarImg, nicknameTxt, gradeTxt, chatLink, introTxt, currentGradeTxt;
-  let totalAnswers, totalViews, acceptedAnswers;
+  let totalAnswers, acceptedAnswers, totalAnswerLikes;
   let gradeStep1, gradeStep2, gradeStep3;
   let recentPostsList, recentQuestionsList;
 
@@ -24,8 +24,8 @@ const GlobalProfileModal = (function() {
     gradeStep3 = document.getElementById('upmGradeStep3');
     
     totalAnswers = document.getElementById('upmTotalAnswers');
-    totalViews = document.getElementById('upmTotalViews');
     acceptedAnswers = document.getElementById('upmAcceptedAnswers');
+    totalAnswerLikes = document.getElementById('upmTotalAnswerLikes');
     
     recentPostsList = document.getElementById('upmRecentPosts');
     recentQuestionsList = document.getElementById('upmRecentQuestions');
@@ -74,8 +74,8 @@ const GlobalProfileModal = (function() {
     // 4. 자기소개 및 통계 세팅
     introTxt.textContent = data.intro || '등록된 자기소개가 없습니다.';
     totalAnswers.textContent = data.totalAnswers || 0;
-    totalViews.textContent = data.totalViews || 0;
     acceptedAnswers.textContent = data.acceptedAnswers || 0;
+    totalAnswerLikes.textContent = data.totalAnswerLikes || 0;
 
     // 5. 최근 작성한 글 렌더링 (최대 3개)
     recentPostsList.innerHTML = '';
