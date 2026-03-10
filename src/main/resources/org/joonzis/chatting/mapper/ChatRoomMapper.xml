@@ -70,6 +70,7 @@
 
 	</select>
 
+<!-- 채팅 상대 유저 아이디 조회 -->
 	<select id="selectOtherUserId" resultType="int">
 		SELECT
 			CASE
@@ -81,6 +82,7 @@
 		WHERE room_id = #{room_id}
 	</select>
 	
+
 	<select id="findMaxGroupId" resultType="long">
 	    SELECT NVL(MAX(group_id), 0) 
 	    FROM tbl_msg 
@@ -96,6 +98,15 @@
 	    )
 	    <![CDATA[WHERE rn > #{offset} AND rn <= #{offset} + #{size}]]>
 	    ORDER BY msg_id ASC
+	</select>
+	
+	<!-- 메세지 행 알아내기 -->
+	<select id="getMessageRowNum" resultType="int">
+    SELECT rn FROM (
+        SELECT msg_id, ROW_NUMBER() OVER (ORDER BY msg_id DESC) as rn
+        FROM tbl_msg
+        WHERE room_id = #{room_id} AND is_active = 'Y'
+    ) WHERE msg_id = #{msg_id}
 	</select>
 
 

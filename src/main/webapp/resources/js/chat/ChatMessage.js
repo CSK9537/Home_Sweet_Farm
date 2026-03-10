@@ -1,5 +1,4 @@
 import { chatState } from "./ChatState.js";
-import { jumpToMessage, updateSearchCounter } from "./ChatSearch.js";
 import { isScrollBottom } from "./ChatScroll.js";
 import { updateRoomListRealtime } from "./ChatUI.js";
 
@@ -39,7 +38,6 @@ export async function loadMessages(room_id, offset = 0, size = 40, prepend = fal
     }
 
     if (firstLoad) {
-        container.innerHTML = "";
         roomState.appendedMsgSet.clear();
         roomState.loadedCount = 0;
         roomState.hasMore = true;
@@ -105,19 +103,40 @@ export async function loadMessages(room_id, offset = 0, size = 40, prepend = fal
                 container.scrollTop = (container.scrollHeight - oldScrollHeight) + oldScrollTop;
             });
         } else {
-            container.appendChild(fragment);
-            if (firstLoad || isScrollBottom()) {
-                container.scrollTop = container.scrollHeight;
+            if (firstLoad) {
+                // 1. 기존 내용을 새 데이터(fragment)로 교체
+                container.replaceChildren(fragment);
+                
+                // 2. [추가] 즉시 스크롤을 맨 아래로 이동 (검색 점프 중이 아닐 때만)
+                if (!chatState.search.isSearchJump) {
+                    container.scrollTop = container.scrollHeight;
+                }
+            } else {
+                container.appendChild(fragment);
+            }
+
+            // 3. 공통 하단 스크롤 로직 (첫 로딩이거나 이미 바닥 근처일 때)
+            if ((firstLoad || isScrollBottom()) && !chatState.search.isSearchJump) {
+                // DOM 렌더링을 위해 약간의 여유를 줌
+                requestAnimationFrame(() => {
+                    container.scrollTop = container.scrollHeight;
+                });
+
+                // 이미지 로딩 대응
                 const images = container.querySelectorAll('.chat-thumbnail');
                 let loadedImages = 0;
                 if (images.length > 0) {
                     images.forEach(img => {
-                        img.onload = () => {
+                        if (img.complete) { // 이미 캐시된 이미지 대응
                             loadedImages++;
-                            if (loadedImages === images.length) {
-                                container.scrollTop = container.scrollHeight;
-                            }
-                        };
+                        } else {
+                            img.onload = () => {
+                                loadedImages++;
+                                if (loadedImages === images.length) {
+                                    container.scrollTop = container.scrollHeight;
+                                }
+                            };
+                        }
                     });
                 }
             }
@@ -175,12 +194,12 @@ export function appendMessage(data, prepend = false, fragment = null) {
         const dateBox = document.createElement("div");
         dateBox.className = "chat-date-box";
         dateBox.textContent = dateStr;
-        
+
         if (prepend) container.prepend(dateBox);
         else container.appendChild(dateBox);
-        
+
         roomState.lastDateKey = dateStr;
-    }else if (fragment) {
+    } else if (fragment) {
         roomState.lastDateKey = dateStr;
     }
 
@@ -279,7 +298,7 @@ export async function sendMessage(content) {
             // 1. 응답이 XML인 경우 (방어 로직)
             if (text.trim().startsWith("<")) {
                 console.warn("[WARN] 서버가 XML을 반환했습니다. 수동 파싱을 시도합니다.");
-                
+
                 // 간단한 정규식으로 XML 내부 데이터 추출 (필요한 것만)
                 const roomIdMatch = text.match(/<room_id>(.*?)<\/room_id>/);
                 const senderIdMatch = text.match(/<sender_id>(.*?)<\/sender_id>/);
@@ -293,7 +312,7 @@ export async function sendMessage(content) {
                     created_at: createdAtMatch ? createdAtMatch[1] : new Date().toISOString(),
                     msg_type: "TEXT"
                 };
-            } 
+            }
             // 2. 정상적인 JSON인 경우
             else {
                 savedMsg = JSON.parse(text);
@@ -303,10 +322,10 @@ export async function sendMessage(content) {
             if (String(chatState.session.currentRoomId) === "0") {
                 console.log("[DEBUG] 가상방 세션 갱신:", savedMsg.room_id);
                 chatState.session.currentRoomId = savedMsg.room_id;
-                
+
                 const messagesContainer = document.getElementById("messages");
                 if (messagesContainer) messagesContainer.innerHTML = "";
-                
+
                 // 새 방 번호로 웹소켓 구독 갱신
                 if (typeof subscribeRoom === "function") {
                     subscribeRoom(savedMsg.room_id);
@@ -328,7 +347,7 @@ export async function sendMessage(content) {
 
 function prepareMessageMeta(data) {
     const rawDate = data.created_at ? data.created_at : new Date();
-    
+
     let date;
     if (typeof rawDate === 'string') {
         date = new Date(rawDate.replace(/\.0$/, "").replace(" ", "T"));
@@ -419,31 +438,6 @@ function renderImage(box, data, sameGroup, roomState) {
     }
 
     return !sameGroup;
-}
-
-// 그룹 안 이미지 개수에 따라 레이아웃 적용
-function updateImageLayout(container) {
-    const images = container.querySelectorAll("img");
-
-    // 레이아웃 적용
-    if (images.length === 1) {
-        container.style.display = "block";
-        container.style.width = "180px";
-        container.style.gap = "0";
-        images[0].style.width = "100%";
-        images[0].style.height = "auto";
-    } else if (images.length > 1) {
-        container.style.display = "grid";
-        container.style.gridTemplateColumns = "repeat(2, 1fr)";
-        container.style.gap = "4px";
-        container.style.width = "260px";
-        images.forEach(img => {
-            img.style.width = "100%";
-            img.style.height = "auto";
-            img.style.objectFit = "cover";
-        });
-    }
-    container.classList.remove("loading");
 }
 
 export function initSendMessageEvents() {

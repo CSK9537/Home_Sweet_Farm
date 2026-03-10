@@ -1,7 +1,7 @@
 import { chatState } from "./ChatState.js";
 import { appendMessage, loadMessages, markAsRead } from "./ChatMessage.js";
 import { subscribeRoom } from "./ChatWebSocket.js";
-import { updateSearchCounter } from "./ChatSearch.js";
+import { updateSearchCounter, resetSearchUI } from "./ChatSearch.js";
 
 // 내 정보
 export function initMyUserInfo(textData) {
@@ -177,11 +177,19 @@ export function loadChatRooms() {
                 chatListContainer.appendChild(item);
 
                 item.addEventListener('click', () => {
+                    resetChatInput();
                     chatState.session.currentRoomId = room.room_id;
                     chatState.session.receiverId = room.other_user_id;
 
                     if (chatState.socket.roomSubscription) chatState.socket.roomSubscription.unsubscribe();
                     subscribeRoom(chatState.session.currentRoomId);
+
+                    if (chatState.search.isSearchMode) {
+                        const searchIdsJson = item.dataset.search_msg_ids;
+                        chatState.search.searchMsgIds = searchIdsJson ? JSON.parse(searchIdsJson) : [];
+                        chatState.search.currentSearchIndex = -1;
+                        updateSearchCounter();
+                    }
 
                     document.getElementById("empty-view").style.display = "none";
                     document.getElementById("chat-view").style.display = "flex";
@@ -206,11 +214,11 @@ export function loadChatRooms() {
             const urlParams = new URLSearchParams(window.location.search);
             const targetRoomId = urlParams.get('room_id');
             const targetUserId = urlParams.get('target_id');
-            const targetUserName = urlParams.get('target_name');
 
             if (targetRoomId && targetRoomId !== "0") {
                 const targetItem = chatListContainer.querySelector(`[data-room_id="${targetRoomId}"]`);
                 if (targetItem) {
+                    resetChatInput();
                     targetItem.click();
                 }
             }
@@ -219,18 +227,21 @@ export function loadChatRooms() {
 
                 if (existingRoom) {
                     const targetItem = chatListContainer.querySelector(`[data-room_id="${existingRoom.room_id}"]`);
-                    if (targetItem) targetItem.click();
+                    if (targetItem) {
+                        targetItem.click();
+                    }
                 } else {
+                    resetChatInput();
                     initVirtualRoom(targetUserId);
-                }
 
-                const messagesContainer = document.getElementById("messages");
-                if (messagesContainer) {
-                    messagesContainer.innerHTML = `
+                    const messagesContainer = document.getElementById("messages");
+                    if (messagesContainer) {
+                        messagesContainer.innerHTML = `
                             <div style="text-align:center; padding:40px; color:#888;">
                                 <p>신규 대화입니다.</p>
                                 <small>메시지를 보내면 대화방이 생성됩니다.</small>
                             </div>`;
+                    }
                 }
             }
 
@@ -328,45 +339,34 @@ export function updateRoomListRealtime(msg) {
     chatListContainer.prepend(item);
 }
 
+function resetChatInput() {
+    const chatInput = document.getElementById("chat-textarea"); 
+    if (chatInput) {
+        chatInput.value = "";
+        chatInput.style.height = "auto";
+        
+        const counter = document.getElementById("char-count");
+        if (counter) counter.innerText = "0/1000";
+    }
+}
+
+
+//---------------------- init ----------------------------
+
 export function initTabs() {
     const tabAll = document.getElementById('tab-all');
     const tabSearch = document.getElementById('tab-search');
     const searchBox = document.querySelector('.chat-search-box');
-    const searchInput = document.getElementById("search-input");
 
     tabAll.addEventListener('click', () => {
         tabAll.classList.add('active');
         tabSearch.classList.remove('active');
         searchBox.style.display = 'none';
 
-        if (searchInput) searchInput.value = "";
+        if (typeof resetSearchUI === "function") {
+            resetSearchUI(); 
+        }
 
-        // 채팅방 전체 다시 표시
-        document.querySelectorAll(".chat-item").forEach(item => {
-            item.dataset.jump_msg_id = "";
-            item.dataset.search_msg_ids = "[]";
-        });
-
-        // 검색 하이라이트 제거
-        document.querySelectorAll(".highlight-search, .highlight-jump").forEach(el => {
-            const box = el.closest(".message-box");
-            if (box && box.dataset.original) {
-                box.innerText = box.dataset.original;
-                delete box.dataset.original;
-            } else {
-                el.replaceWith(el.innerText); // fallback
-            }
-        });
-
-        // 검색 상태 초기화
-        chatState.search.isSearchMode = false;
-        chatState.search.searchMsgIds = [];
-        chatState.search.currentSearchIndex = -1;
-        chatState.search.currentSearchKeyword = "";
-        chatState.scroll.jumpMsgId = null;
-        chatState.search.isSearchJump = false;
-
-        updateSearchCounter();
         loadChatRooms();
     });
 
@@ -374,6 +374,9 @@ export function initTabs() {
         tabSearch.classList.add('active');
         tabAll.classList.remove('active');
         searchBox.style.display = 'flex';
+        
+        const searchInput = searchBox.querySelector("input");
+        if(searchInput) searchInput.focus();
     });
 }
 
@@ -440,11 +443,6 @@ export function initCharCount() {
     });
 }
 
-
-
-
-
-
 export async function initTargetInfo() {
     const urlParams = new URLSearchParams(window.location.search);
     const targetId = urlParams.get('target_id');
@@ -475,7 +473,8 @@ export async function initTargetInfo() {
 
 export async function initVirtualRoom(targetUserId) {
     if (!targetUserId) return;
-
+    resetChatInput();
+    
     console.log("[DEBUG] 가상 채팅방 활성화 프로세스 시작. ID:", targetUserId);
 
     chatState.session.currentRoomId = 0;

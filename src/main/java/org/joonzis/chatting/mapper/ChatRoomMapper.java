@@ -11,4 +11,5 @@ public interface ChatRoomMapper {
 	int selectOtherUserId(@Param("room_id") int room_id, @Param("sender_id") int sender_id);
 	long findMaxGroupId(@Param("room_id") int room_id);
 	List<MsgVO> selectMessagesWithPaging(@Param("room_id")int room_id, @Param("user_id")int user_id, @Param("size")int size,@Param("offset") int offset);
+	int getMessageRowNum(@Param("room_id")int room_id, @Param("msg_id")long msg_id);
 }
