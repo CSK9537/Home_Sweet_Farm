@@ -27,9 +27,9 @@ public class MypageProfileDTO {
 	private String email;		// 이메일 주소
 	private String address;		//주소
 	
-	private Integer totalAnswers;// 총 답변 수
-	private Integer totalViews;	// 총 조회수
-	private Integer acceptedAnswers;// 채택된 답변 수
+	private Integer totalAnswers;		// 총 답변 수
+	private Integer acceptedAnswers;	// 채택된 답변 수
+	private Integer totalAnswerLikes;	// 답변 좋아요 수
 	
 	private List<CommunityPostCardDTO> posts; // 최신 게시글
 	private List<CommunityPostCardDTO> quests; // 최신 질문글

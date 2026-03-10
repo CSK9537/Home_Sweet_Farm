@@ -112,19 +112,19 @@
                 </div>
                 
                 <div class="box">
-                  <div class="box-title">답변수</div>
+                  <div class="box-title">답변</div>
                   <div class="stats">
                     <div class="stat">
                       <div class="num">${empty profileUser.totalAnswers ? 0 : profileUser.totalAnswers}</div>
                       <div class="label">전체 답변</div>
                     </div>
                     <div class="stat">
-                      <div class="num">${empty profileUser.totalViews ? 0 : profileUser.totalViews}</div>
-                      <div class="label">조회수</div>
-                    </div>
-                    <div class="stat">
                       <div class="num">${empty profileUser.acceptedAnswers ? 0 : profileUser.acceptedAnswers}</div>
                       <div class="label">채택 답변</div>
+                    </div>
+                    <div class="stat">
+                      <div class="num">${empty profileUser.totalAnswerLikes ? 0 : profileUser.totalAnswerLikes}</div>
+                      <div class="label">좋아요</div>
                     </div>
                   </div>
                 </div>

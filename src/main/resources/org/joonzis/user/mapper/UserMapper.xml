@@ -248,7 +248,7 @@
 		<result property="email" column="email"/>
 		<result property="address" column="address"/>
 		<result property="totalAnswers" column="totalAnswers"/>
-		<result property="totalViews" column="totalViews"/>
+		<result property="totalAnswerLikes" column="totalAnswerLikes"/>
 		<result property="acceptedAnswers" column="acceptedAnswers"/>
 		<collection property="aspect" ofType="string">
 			<result column="hashtag_name"/>
@@ -320,7 +320,7 @@
         g.grade,
         h.hashtag_name,
         NVL(b.totalAnswers, 0) AS totalAnswers,
-        NVL(b.totalViews, 0) AS totalViews,
+        NVL(b.totalAnswerLikes, 0) AS totalAnswerLikes,
         NVL(b.acceptedAnswers, 0) AS acceptedAnswers,
         pCard.BOARD_ID as pBOARD_ID,
         pCard.TITLE as pTITLE, 
@@ -345,8 +345,8 @@
             SELECT
                 user_id,
                 COUNT(CASE WHEN board_type = 'A' THEN 1 END) AS totalAnswers,
-                SUM(view_count) AS totalViews,
-                COUNT(CASE WHEN is_selected = 'Y' THEN 1 END) AS acceptedAnswers
+                SUM(CASE WHEN board_type = 'A' THEN like_count ELSE 0 END) AS totalAnswerLikes,
+                COUNT(CASE WHEN board_type = 'A' AND is_selected = 'Y' THEN 1 END) AS acceptedAnswers
             FROM
                 tbl_board
             GROUP BY
@@ -374,4 +374,23 @@
     WHERE 
         u.user_id = #{user_id}
 </select>
+	<select id="getAnswerLikesPeopleRanking" resultType="Integer">
+		SELECT * FROM (
+		    SELECT 
+		        u.USER_ID
+		    FROM tbl_user u
+		    JOIN (
+		        SELECT 
+		            USER_ID, 
+		            SUM(LIKE_COUNT) AS TOTAL_ANSWER_LIKES
+		        FROM tbl_board
+		        WHERE BOARD_TYPE = 'A' 
+		          AND IS_ACTIVE = 'Y'
+		        GROUP BY USER_ID
+		    ) a ON u.USER_ID = a.USER_ID
+		    ORDER BY a.TOTAL_ANSWER_LIKES DESC
+		)
+		WHERE ROWNUM &lt;= #{rank}
+	</select>
+
 </mapper>

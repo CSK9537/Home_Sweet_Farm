@@ -5,7 +5,7 @@
 <button class="tmp">클릭</button>
 <script>
 document.querySelector('.tmp').addEventListener('click', (e) => {
-	GlobalProfileModal.open(123123);
+	GlobalProfileModal.open(632);
 });
 </script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />
