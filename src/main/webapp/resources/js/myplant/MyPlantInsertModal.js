@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 디바운싱: 타이핑 후 200ms 대기 후 서버 요청
     debounceTimeout = setTimeout(() => {
-      fetch('/search/plant?q=' + encodeURIComponent(keyword))
+      fetch('/search/plantsimple?q=' + encodeURIComponent(keyword))
         .then(res => {
           if (!res.ok) throw new Error("검색 응답 오류");
           return res.json();

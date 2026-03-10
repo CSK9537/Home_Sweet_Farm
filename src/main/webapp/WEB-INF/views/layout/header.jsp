@@ -25,10 +25,10 @@
 	      </a>
 	
 	      <!-- 검색 (데스크탑/태블릿에서만 사용, 모바일에서는 CSS로 숨김) -->
-	      <form class="fsearch" method="get">
-	          <span class="fsearch__icon" aria-hidden="true"></span>
-	          <input type="text" class="fsearch__input" name="q" placeholder="식물, 스토어, 커뮤니티, Q&A 검색" autocomplete="off" />
-	      </form> 
+	      <form class="fsearch" action="/searchResult" method="get">
+            <span class="fsearch__icon" aria-hidden="true"></span>
+            <input type="text" class="fsearch__input" name="q" placeholder="식물, 스토어, 커뮤니티, Q&A 검색" autocomplete="off" />
+          </form>
 		   
 		    <div class="auth auth--desktop">
 				<c:choose>

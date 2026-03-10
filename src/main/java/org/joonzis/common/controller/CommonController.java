@@ -54,14 +54,4 @@ public class CommonController {
 	public String privacy() {
 		return "law/Personal";
 	}
-	@RequestMapping("/search")
-	public String search(@RequestParam(value = "q", required = false) String q,
-						@RequestParam(value = "main", required = false) String main,
-						@RequestParam(value = "sub", required = false) String sub,
-						Model model) {
-		model.addAttribute("q", q);
-		model.addAttribute("main", main);
-		model.addAttribute("sub", sub);
-		return "common/SearchResult";
-	}
 }
