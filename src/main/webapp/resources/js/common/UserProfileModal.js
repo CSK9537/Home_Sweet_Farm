@@ -1,6 +1,6 @@
 /* UserProfileModal.js */
 
-const GlobalProfileModal = (function() {
+const GlobalProfileModal = (function () {
   let backdrop, modal, closeBtn;
   let avatarImg, nicknameTxt, gradeTxt, chatLink, introTxt, currentGradeTxt;
   let totalAnswers, acceptedAnswers, totalAnswerLikes;
@@ -11,33 +11,33 @@ const GlobalProfileModal = (function() {
     backdrop = document.getElementById('upmBackdrop');
     modal = document.getElementById('upmModal');
     closeBtn = document.getElementById('upmCloseBtn');
-    
+
     avatarImg = document.getElementById('upmAvatar');
     nicknameTxt = document.getElementById('upmNickname');
     gradeTxt = document.getElementById('upmGrade');
     chatLink = document.getElementById('upmChatLink');
     introTxt = document.getElementById('upmIntro');
-    
+
     currentGradeTxt = document.getElementById('upmCurrentGrade');
     gradeStep1 = document.getElementById('upmGradeStep1');
     gradeStep2 = document.getElementById('upmGradeStep2');
     gradeStep3 = document.getElementById('upmGradeStep3');
-    
+
     totalAnswers = document.getElementById('upmTotalAnswers');
     acceptedAnswers = document.getElementById('upmAcceptedAnswers');
     totalAnswerLikes = document.getElementById('upmTotalAnswerLikes');
-    
+
     recentPostsList = document.getElementById('upmRecentPosts');
     recentQuestionsList = document.getElementById('upmRecentQuestions');
 
-    if(closeBtn) closeBtn.addEventListener('click', close);
-    if(backdrop) backdrop.addEventListener('click', close);
+    if (closeBtn) closeBtn.addEventListener('click', close);
+    if (backdrop) backdrop.addEventListener('click', close);
   }
 
   function close() {
     backdrop.hidden = true;
     modal.hidden = true;
-    document.body.style.overflow = ''; 
+    document.body.style.overflow = '';
   }
 
   function bindData(data) {
@@ -65,10 +65,16 @@ const GlobalProfileModal = (function() {
 
     // 3. 채팅 링크
     if (data.user_id) {
-      chatLink.href = `/chat?targetId=${data.user_id}`;
+      chatLink.onclick = (e) => {
+        e.preventDefault();
+        if (typeof initVirtualRoom === "function") {
+          initVirtualRoom(data.user_id);
+          close();
+        } else {
+          location.href = `/chat?target_id=${data.user_id}`;
+        }
+      };
       chatLink.style.display = 'inline-flex';
-    } else {
-      chatLink.style.display = 'none';
     }
 
     // 4. 자기소개 및 통계 세팅
@@ -116,7 +122,7 @@ const GlobalProfileModal = (function() {
 
   return {
     init: init,
-    open: function(userId) {
+    open: function (userId) {
       if (!modal) init();
 
       fetch(`/user/profileData`, {
@@ -126,20 +132,20 @@ const GlobalProfileModal = (function() {
         },
         body: new URLSearchParams({ userId: userId })
       })
-      .then(response => {
-        if (!response.ok) throw new Error('유저 정보를 불러올 수 없습니다.');
-        return response.json();
-      })
-      .then(data => {
-        bindData(data);
-        document.body.style.overflow = 'hidden';
-        backdrop.hidden = false;
-        modal.hidden = false;
-      })
-      .catch(error => {
-        showCustomToast("오류가 발생했습니다.", "error");
-        console.error(error);
-      });
+        .then(response => {
+          if (!response.ok) throw new Error('유저 정보를 불러올 수 없습니다.');
+          return response.json();
+        })
+        .then(data => {
+          bindData(data);
+          document.body.style.overflow = 'hidden';
+          backdrop.hidden = false;
+          modal.hidden = false;
+        })
+        .catch(error => {
+          showCustomToast("오류가 발생했습니다.", "error");
+          console.error(error);
+        });
     }
   };
 })();

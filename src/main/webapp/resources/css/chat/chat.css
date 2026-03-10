@@ -5,6 +5,7 @@
 body {
     margin: 0;
     background-color: #6B7B61;
+    overflow: hidden;
     /* 이미지 배경 색상 */
 }
 
