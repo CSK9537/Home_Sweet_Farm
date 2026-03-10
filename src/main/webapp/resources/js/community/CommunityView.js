@@ -443,6 +443,148 @@
   }
 
   /* =========================
+   * Replies (댓글)
+   * ========================= */
+
+  // 댓글 등록 함수
+  function doReplySubmit() {
+    var contentEl = $('#replyContent');
+    var content = (contentEl.value || '').trim();
+
+    var loginUserId = $('#loginUserId') ? $('#loginUserId').value : '';
+
+    if (!loginUserId || loginUserId === "0" || loginUserId === "") {
+      alert('로그인이 필요한 서비스입니다.');
+      return;
+    }
+
+    if (!content) {
+      toast('댓글 내용을 입력해주세요.');
+      contentEl.focus();
+      return;
+    }
+
+    fetch(ctx + '/replies/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        board_id: boardId,
+        user_id: safeInt(loginUserId),
+        content: content
+      })
+    })
+      .then(function (res) {
+        if (res.ok) {
+          alert('댓글이 등록되었습니다.');
+          location.reload();
+        }
+      });
+  }
+
+  // 대댓글(답글) 토글 및 데이터 불러오기 함수
+  function toggleReplyList(btn) {
+    var item = btn.closest('.cv-comment-item');
+    if (!item) return;
+    var replyArea = item.querySelector('.js-replies');
+    if (!replyArea) return;
+
+    var isHidden = replyArea.style.display === 'none';
+
+    if (isHidden) {
+      var parentId = item.getAttribute('data-reply-id');
+      var listUl = replyArea.querySelector('.cv-reply-list');
+
+      listUl.innerHTML = '<li class="cv-reply-loading">불러오는 중...</li>';
+
+      fetch(ctx + '/replies/child/' + parentId)
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+
+          // 1. 답글 개수 실시간 업데이트
+          var countEl = btn.querySelector('.js-reply-count');
+          if (countEl && data) {
+            countEl.textContent = data.length;
+          }
+
+          // 2. 답글 목록 그리기
+          var html = '';
+          if (data && data.length > 0) {
+            data.forEach(function (reply) {
+              var regDate = new Date(reply.reg_date).toLocaleDateString();
+              var writerName = reply.writer_name || '익명';
+              var profileImgTag = '';
+
+              // 프로필 이미지 처리
+              if (reply.profile_filename) {
+                var imgSrc = ctx + '/user/getProfile?fileName=' + encodeURIComponent(reply.profile_filename);
+                profileImgTag = '<img src="' + imgSrc + '" style="width:30px; height:30px; border-radius:50%; vertical-align:middle; margin-right:5px; object-fit:cover;">';
+              } else {
+                profileImgTag = '<div style="width:30px; height:30px; border-radius:50%; background:#ddd; display:inline-block; vertical-align:middle; margin-right:5px;"></div>';
+              }
+
+              html += '<li class="cv-reply-item" style="padding:8px 0; border-bottom:1px dotted #eee; list-style:none;">';
+              html += '  <div class="cv-reply-body">';
+              html += '    ' + profileImgTag;
+              html += '    <strong style="font-size:13px;">' + writerName + '</strong>';
+              html += '    <p style="margin:5px 0 5px 35px; font-size:14px; color:#444;">' + reply.content + '</p>';
+              html += '    <small style="margin-left:35px; color:#999;">' + regDate + '</small>';
+              html += '  </div>';
+              html += '</li>';
+            });
+          } else {
+            html = '<li class="cv-reply-empty" style="padding:10px; color:#999;">등록된 답글이 없습니다.</li>';
+          }
+          listUl.innerHTML = html;
+        })
+        .catch(function (err) {
+          console.error('대댓글 로드 실패:', err);
+          listUl.innerHTML = '<li class="cv-error">목록을 불러오지 못했습니다.</li>';
+        });
+
+      replyArea.style.display = 'block';
+    } else {
+      replyArea.style.display = 'none';
+    }
+
+    var caret = btn.querySelector('.cv-caret');
+    if (caret) caret.textContent = isHidden ? '▴' : '▾';
+  }
+  // 대댓글 등록 함수
+  function doChildReplySubmit(btn) {
+    var item = btn.closest('.cv-comment-item');
+    var parentId = item ? item.getAttribute('data-reply-id') : null;
+    var input = item ? item.querySelector('.js-reply-input') : null;
+    var content = (input.value || '').trim();
+    var loginUserId = $('#loginUserId') ? $('#loginUserId').value : '';
+
+    if (!loginUserId) {
+      toast('로그인이 필요합니다.');
+      return;
+    }
+    if (!content) {
+      toast('답글 내용을 입력해주세요.');
+      return;
+    }
+
+    fetch(ctx + '/replies/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        board_id: boardId,
+        user_id: safeInt(loginUserId),
+        parent_reply_id: safeInt(parentId),
+        content: content
+      })
+    })
+      .then(function (res) {
+        if (res.ok) {
+          alert('답글이 등록되었습니다.');
+          location.reload();
+        }
+      });
+  }
+
+  /* =========================
    * Button Bindings
    * ========================= */
 
@@ -516,6 +658,11 @@
         doBoardReport(bid);
       });
     }
+    // 댓글 등록 버튼
+    var btnReplySubmit = $('#btnReplySubmit');
+    if (btnReplySubmit) {
+      btnReplySubmit.addEventListener('click', doReplySubmit);
+    }
   }
 
   /* =========================
@@ -571,6 +718,29 @@
         return;
       }
 
+      var replyToggleBtn = t.closest('.js-reply-toggle');
+      if (replyToggleBtn) {
+        toggleReplyList(replyToggleBtn);
+        return;
+      }
+
+      // 답글 등록 버튼
+      var childReplySubmitBtn = t.closest('.js-reply-submit');
+      if (childReplySubmitBtn) {
+        doChildReplySubmit(childReplySubmitBtn);
+        return;
+      }
+
+      // '답글' 버튼 클릭 시 입력창으로 포커스
+      var replyFocusBtn = t.closest('.js-reply-btn');
+      if (replyFocusBtn) {
+        var item = replyFocusBtn.closest('.cv-comment-item');
+        var replyArea = item.querySelector('.js-replies');
+        replyArea.style.display = 'block';
+        item.querySelector('.js-reply-input').focus();
+        return;
+      }
+
       closeUserPop();
       closeAllMoreMenus();
     });
@@ -584,6 +754,35 @@
     initBoardTypeBreadcrumb();
     bindButtons();
     bindDelegatedEvents();
+    refreshAllReplyCounts();
+  }
+
+  function refreshAllReplyCounts() {
+    // 모든 답글 토글 버튼을 찾습니다.
+    var replyButtons = $all('.js-reply-toggle');
+
+    replyButtons.forEach(function (btn) {
+      var item = btn.closest('.cv-comment-item');
+      if (!item) return;
+
+      var parentId = item.getAttribute('data-reply-id');
+      var countEl = btn.querySelector('.js-reply-count');
+
+      if (parentId && countEl) {
+        // 서버에 해당 댓글의 대댓글 목록을 요청
+        fetch(ctx + '/replies/child/' + parentId)
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (data) {
+              // 실제 데이터 개수로 화면의 '0'을 바꿈
+              countEl.textContent = data.length;
+            }
+          })
+          .catch(function (err) {
+            console.error('개수 업데이트 실패:', err);
+          });
+      }
+    });
   }
 
   if (document.readyState === 'loading') {
@@ -592,3 +791,4 @@
     init();
   }
 })();
+

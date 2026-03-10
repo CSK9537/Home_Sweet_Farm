@@ -63,6 +63,16 @@ export function updateMyHeaderProfile() {
     const myInfo = chatState.session.loginUser;
     if (!myInfo) return;
 
+    const accountDiv = document.querySelector('.account');
+    if (accountDiv) {
+        accountDiv.style.cursor = 'pointer';
+        accountDiv.onclick = () => {
+            if (window.GlobalProfileModal) {
+                window.GlobalProfileModal.open(myInfo.user_id);
+            }
+        };
+    }
+
     const myDisplayName = myInfo.nickname || myInfo.username || "내 계정";
     document.getElementById("my-profile-name").innerText = myDisplayName;
 
@@ -203,6 +213,27 @@ export function loadChatRooms() {
                     const headerImg = document.querySelector('.chat-header img');
                     if (headerImg) headerImg.src = profileSrc;
 
+                    const chatHeaderLeft = document.getElementById('chat-user-header');
+
+                    chatHeaderLeft.onclick = function () {
+                        // [추가] 만약 전역 객체에 등록이 안 되어 있다면 수동으로 찾아서 연결
+                        if (!window.GlobalProfileModal && typeof GlobalProfileModal !== 'undefined') {
+                            window.GlobalProfileModal = GlobalProfileModal;
+                        }
+
+                        const targetId = chatState.session.receiverId;
+                        console.log("[DEBUG] 헤더 클릭됨. 타겟 ID:", targetId);
+
+                        if (window.GlobalProfileModal && targetId && targetId !== "0") {
+                            window.GlobalProfileModal.open(targetId);
+                        } else {
+                            console.error("[ERROR] 모달을 열 수 없습니다.", {
+                                modalExists: !!window.GlobalProfileModal,
+                                targetId: targetId
+                            });
+                        }
+                    };
+
                     loadMessages(chatState.session.currentRoomId, 0, 40, false, true)
                         .then(() => {
                             markAsRead(room.room_id);
@@ -340,11 +371,11 @@ export function updateRoomListRealtime(msg) {
 }
 
 function resetChatInput() {
-    const chatInput = document.getElementById("chat-textarea"); 
+    const chatInput = document.getElementById("chat-textarea");
     if (chatInput) {
         chatInput.value = "";
         chatInput.style.height = "auto";
-        
+
         const counter = document.getElementById("char-count");
         if (counter) counter.innerText = "0/1000";
     }
@@ -364,7 +395,7 @@ export function initTabs() {
         searchBox.style.display = 'none';
 
         if (typeof resetSearchUI === "function") {
-            resetSearchUI(); 
+            resetSearchUI();
         }
 
         loadChatRooms();
@@ -374,9 +405,9 @@ export function initTabs() {
         tabSearch.classList.add('active');
         tabAll.classList.remove('active');
         searchBox.style.display = 'flex';
-        
+
         const searchInput = searchBox.querySelector("input");
-        if(searchInput) searchInput.focus();
+        if (searchInput) searchInput.focus();
     });
 }
 
@@ -445,7 +476,7 @@ export function initCharCount() {
 
 export async function initTargetInfo() {
     const urlParams = new URLSearchParams(window.location.search);
-    const targetId = urlParams.get('target_id');
+    const targetId = urlParams.get('target_id') || urlParams.get('targetId');
     const roomId = urlParams.get('room_id'); // 기존 방 번호가 있을 수도 있음
 
     // 신규 채팅(가상방 0)이거나, 방 번호만 있고 이름이 없는 경우 처리
@@ -474,7 +505,7 @@ export async function initTargetInfo() {
 export async function initVirtualRoom(targetUserId) {
     if (!targetUserId) return;
     resetChatInput();
-    
+
     console.log("[DEBUG] 가상 채팅방 활성화 프로세스 시작. ID:", targetUserId);
 
     chatState.session.currentRoomId = 0;
@@ -509,6 +540,27 @@ export async function initVirtualRoom(targetUserId) {
             headerImg.src = getProfileUrl(userData.profile_filename);
         }
 
+        const chatHeaderLeft = document.getElementById('chat-user-header');
+
+        chatHeaderLeft.onclick = function () {
+            // [추가] 만약 전역 객체에 등록이 안 되어 있다면 수동으로 찾아서 연결
+            if (!window.GlobalProfileModal && typeof GlobalProfileModal !== 'undefined') {
+                window.GlobalProfileModal = GlobalProfileModal;
+            }
+
+            const targetId = chatState.session.receiverId;
+            console.log("[DEBUG] 헤더 클릭됨. 타겟 ID:", targetId);
+
+            if (window.GlobalProfileModal && targetId && targetId !== "0") {
+                window.GlobalProfileModal.open(targetId);
+            } else {
+                console.error("[ERROR] 모달을 열 수 없습니다.", {
+                    modalExists: !!window.GlobalProfileModal,
+                    targetId: targetId
+                });
+            }
+        };
+
         document.getElementById("empty-view").style.display = "none";
         document.getElementById("chat-view").style.display = "flex";
 
@@ -527,4 +579,3 @@ export async function initVirtualRoom(targetUserId) {
         console.error("[ERROR] 상대방 정보를 불러오는데 실패했습니다:", error);
     }
 }
-

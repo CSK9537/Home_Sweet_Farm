@@ -383,3 +383,38 @@ function clearFindProcess() {
         credentials: "same-origin"
     }).catch(err => console.error("세션 초기화 실패", err));
 }
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. 로그인 화면 엔터 (아이디/비밀번호 입력 시)
+  const loginInputs = [document.querySelector("#loginId"), document.querySelector("#loginPw")];
+  loginInputs.forEach(input => {
+    if (input) {
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const btn = document.querySelector("#loginBtn");
+          if (btn) btn.click();
+        }
+      });
+    }
+  });
+
+  // 2. 비밀번호 재설정 화면 엔터 (새 비번/비번 확인 입력 시)
+  const resetInputs = [document.querySelector("#modifyPw"), document.querySelector("#modifyPw2")];
+  resetInputs.forEach(input => {
+    if (input) {
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const btn = document.querySelector("#pwModifyBtn");
+          // 버튼이 활성화(disabled가 아님) 상태일 때만 클릭 실행
+          if (btn && !btn.disabled) {
+            e.preventDefault();
+            btn.click();
+          }
+        }
+      });
+    }
+  });
+
+});

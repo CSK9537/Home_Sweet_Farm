@@ -76,7 +76,7 @@
 					</div>
 					<div id="chat-view" style="display: none; flex-direction: column; height: 100%;">
 						<div class="chat-header">
-							<div class="user-left" style="display: flex; align-items: center;">
+							<div id="chat-user-header" class="user-left" style="display: flex; align-items: center; cursor: pointer;">
 								<img src="/resources/image/default_profile.png" alt="유저">
 								<div class="user-info">
 									<span class="name"></span> <span class="role"></span>
@@ -168,7 +168,7 @@
 				</div>
 			</div>
 
-
+			<jsp:include page="/WEB-INF/views/common/UserProfileModal.jsp" />
 		</body>
 		<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
