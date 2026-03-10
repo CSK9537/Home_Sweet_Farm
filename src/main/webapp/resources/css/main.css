@@ -235,10 +235,6 @@
   flex-wrap: wrap;
 }
 
-.meta-row--between {
-  justify-content: space-between;
-}
-
 .meta-row__sep {
   color: var(--color-main-line);
   font-size: 12px;
@@ -325,6 +321,10 @@
   min-height: 240px;
 }
 
+.qa-card .meta-row {
+  margin-top: auto;
+}
+
 .qa-card__title {
   font-size: 18px;
   font-weight: 700;
@@ -337,11 +337,6 @@
   overflow: hidden;
 }
 
-.qa-card .meta-row {
-  padding: 12px 0;
-  border-top: 1px dashed var(--color-main-line);
-  border-bottom: 1px dashed var(--color-main-line);
-}
 
 .qa-card__excerpt {
   margin: 0;
@@ -368,13 +363,29 @@
 }
 
 .user-card__thumb {
-  height: 160px;
-  background: var(--color-main-soft); /* 유저 기본 배경색 */
+  width: 100px;
+  height: 100px;
+  margin: 20px auto;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--color-main-soft);
+  background: #ffffff;
+}
+
+.user-card__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-card:hover .user-card__thumb img {
+  transform: scale(1.05);
 }
 
 .user-card__body {
   padding: 20px 16px;
   display: flex;
+  margin: auto;
   flex-direction: column;
   gap: 12px;
   flex-grow: 1;
@@ -383,6 +394,7 @@
 .user-card__name {
   font-size: 18px;
   font-weight: 700;
+  margin: auto;
   color: var(--color-bg-main);
   white-space: nowrap;
   overflow: hidden;
