@@ -1,19 +1,12 @@
 .email-auth-modal { display: none; position: fixed; inset: 0; z-index: 9999; }
 .email-auth-modal.is-open { display: block; }
 
-.email-auth-modal__dim { position: absolute; inset: 0; background: rgba(44, 62, 45, 0.4); backdrop-filter: blur(2px); }
+.email-auth-modal__dim { position: absolute; inset: 0; }
 
 .email-auth-modal__card {
   position: relative; width: min(500px, calc(100% - 40px));
-  margin: 100px auto; border-radius: var(--radius-lg, 16px); background: #ffffff;
-  box-shadow: var(--shadow-lg); /* 변수 적용 */
+  margin: 100px auto;
   overflow: hidden;
-  animation: modalScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes modalScale {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
 }
 
 .email-auth-modal__head { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; background: var(--color-bg-card); color: var(--color-bg-main); border-bottom: 1px solid var(--color-main-soft); }

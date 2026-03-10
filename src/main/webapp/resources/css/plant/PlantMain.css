@@ -3,9 +3,15 @@
 /* =========================
    헤더 영역
 ========================= */
-.plant__header { margin-top: 0; margin-bottom: 24px; }
+.plant__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 0 20px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--color-main-line);
+}
 .plant__title { margin: 0 0 12px; font-size: 26px; font-weight: 800; color: var(--color-bg-main); letter-spacing: -0.02em; }
-.plant__divider { height: 2px; background: var(--color-main-line); border-radius: 2px; }
 
 /* =========================
    섹션 영역

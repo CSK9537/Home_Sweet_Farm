@@ -1,250 +1,65 @@
 /* MyPlantRecommend.css */
 
 .mpr-card {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 60px 40px;
-  box-sizing: border-box;
-  min-height: 600px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  width: 100%; max-width: 800px; margin: 0 auto;
+  padding: 50px 60px; box-sizing: border-box;
+  min-height: 600px; display: flex; flex-direction: column; justify-content: center;
 }
 
 /* 화면 전환 공통 제어 */
-.mpr-step {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  animation: mprFadeIn 0.5s ease-out forwards;
-}
-.mpr-step.is-active {
-  display: flex;
-}
+.mpr-step { display: none; flex-direction: column; align-items: center; animation: mprFadeIn 0.5s ease-out forwards; }
+.mpr-step.is-active { display: flex; }
+@keyframes mprFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes mprFadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+/* 1. 인트로 화면 */
+.mpr-intro__icon { font-size: 80px; margin-bottom: 20px; animation: floatPlant 3s ease-in-out infinite; }
+@keyframes floatPlant { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-/* =========================
-   1. 인트로 화면
-========================= */
-.mpr-intro__icon {
-  font-size: 80px;
-  margin-bottom: 20px;
-  animation: floatPlant 3s ease-in-out infinite;
-}
-@keyframes floatPlant {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
+.mpr-intro__title { font-size: 32px; font-weight: 900; color: var(--color-bg-main); margin: 0 0 16px 0; text-align: center; letter-spacing: -0.02em; }
+.mpr-intro__desc { font-size: 16px; color: var(--color-main-muted); text-align: center; line-height: 1.6; margin-bottom: 40px; }
 
-.mpr-intro__title {
-  font-size: 32px;
-  font-weight: 900;
-  color: var(--color-bg-main);
-  margin: 0 0 16px 0;
-  text-align: center;
-  letter-spacing: -0.02em;
-}
+/* 2. 질문 화면 */
+.mpr-progress { width: 100%; height: 8px; background: var(--color-main-soft); border-radius: 999px; margin-bottom: 40px; overflow: hidden; }
+.mpr-progress__bar { height: 100%; background: var(--color-bg-main); width: 0%; transition: width 0.4s ease; border-radius: 999px; }
 
-.mpr-intro__desc {
-  font-size: 16px;
-  color: var(--color-main-muted);
-  text-align: center;
-  line-height: 1.6;
-  margin-bottom: 40px;
-}
+.mpr-qna { width: 100%; max-width: 500px; text-align: center; }
+.mpr-qna__num { font-size: 18px; font-weight: 900; color: var(--color-focus, #e2874a); margin-bottom: 10px; }
+.mpr-qna__title { font-size: 24px; font-weight: 800; color: var(--color-text-main); margin: 0 0 40px 0; line-height: 1.4; word-break: keep-all; }
 
-
-/* =========================
-   2. 질문 화면
-========================= */
-.mpr-progress {
-  width: 100%;
-  height: 8px;
-  background: var(--color-main-soft);
-  border-radius: 999px;
-  margin-bottom: 40px;
-  overflow: hidden;
-}
-.mpr-progress__bar {
-  height: 100%;
-  background: var(--color-bg-main);
-  width: 0%;
-  transition: width 0.4s ease;
-  border-radius: 999px;
-}
-
-.mpr-qna {
-  width: 100%;
-  max-width: 500px;
-  text-align: center;
-}
-.mpr-qna__num {
-  font-size: 18px;
-  font-weight: 900;
-  color: var(--color-focus, #e2874a);
-  margin-bottom: 10px;
-}
-.mpr-qna__title {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--color-text-main);
-  margin: 0 0 40px 0;
-  line-height: 1.4;
-  word-break: keep-all;
-}
-
-.mpr-qna__options {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+.mpr-qna__options { display: flex; flex-direction: column; gap: 16px; }
 .mpr-option-btn {
-  width: 100%;
-  padding: 20px;
-  background: #ffffff;
-  border: 2px solid var(--color-main-line);
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-text-main);
-  cursor: pointer;
-  transition: all 0.2s ease;
+  width: 100%; padding: 20px; background: #ffffff; border: 2px solid var(--color-main-line);
+  border-radius: 16px; font-size: 16px; font-weight: 700; color: var(--color-text-main);
+  cursor: pointer; transition: all 0.2s ease;
 }
-.mpr-option-btn:hover {
-  background: var(--color-main-soft);
-  border-color: var(--color-bg-main);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(107, 123, 97, 0.1);
-}
+.mpr-option-btn:hover { background: var(--color-main-soft); border-color: var(--color-bg-main); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 
-
-/* =========================
-   3. 결과 화면
-========================= */
-.mpr-result__head {
-  text-align: center;
-  margin-bottom: 30px;
-}
-.mpr-result__subtitle {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-main-muted);
-}
-.mpr-result__title {
-  font-size: 36px;
-  font-weight: 900;
-  color: var(--color-bg-main);
-  margin: 8px 0 0 0;
-}
+/* 3. 결과 화면 */
+.mpr-result__head { text-align: center; margin-bottom: 30px; }
+.mpr-result__subtitle { font-size: 16px; font-weight: 700; color: var(--color-main-muted); }
+.mpr-result__title { font-size: 36px; font-weight: 900; color: var(--color-bg-main); margin: 8px 0 0 0; }
 
 .mpr-result__card {
-  width: 100%;
-  max-width: 480px;
-  border: 1px solid var(--color-main-soft);
-  border-radius: 20px;
-  background: #ffffff;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(107, 123, 97, 0.08);
-  margin-bottom: 40px;
+  width: 100%; max-width: 480px; border: 1px solid var(--color-main-soft); border-radius: 20px;
+  background: #ffffff; overflow: hidden; box-shadow: var(--shadow-md); margin-bottom: 40px;
 }
-.mpr-result__thumb {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background: var(--color-main-soft);
-}
-.mpr-result__thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.mpr-result__thumb { width: 100%; aspect-ratio: 4 / 3; background: var(--color-main-soft); }
+.mpr-result__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.mpr-result__info { padding: 24px; text-align: center; }
+.mpr-result__tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.mpr-result__tag { padding: 6px 12px; background: rgba(107, 123, 97, 0.1); color: var(--color-bg-main); border-radius: 999px; font-size: 13px; font-weight: 800; }
+.mpr-result__desc { font-size: 15px; color: var(--color-text-main); line-height: 1.6; margin: 0; word-break: keep-all; }
 
-.mpr-result__info {
-  padding: 24px;
-  text-align: center;
-}
-.mpr-result__tags {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-.mpr-result__tag {
-  padding: 6px 12px;
-  background: rgba(107, 123, 97, 0.1);
-  color: var(--color-bg-main);
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 800;
-}
-.mpr-result__desc {
-  font-size: 15px;
-  color: var(--color-text-main);
-  line-height: 1.6;
-  margin: 0;
-  word-break: keep-all;
-}
+/* 하단 버튼 배치 (모양과 색상은 globals.css에서 제어) */
+.mpr-result__actions { display: flex; gap: 16px; width: 100%; max-width: 480px; }
+.mpr-result__actions .btn-large { flex: 1; }
 
-.mpr-result__actions {
-  display: flex;
-  gap: 16px;
-  width: 100%;
-  max-width: 480px;
-}
-
-
-/* =========================
-   공통 버튼 (Primary / Ghost)
-========================= */
-.btn-large {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 56px;
-  padding: 0 32px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 800;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-.btn-large--primary {
-  background: var(--color-bg-main);
-  color: #ffffff;
-}
-.btn-large--primary:hover {
-  background: #5a6851;
-  box-shadow: 0 6px 16px rgba(107, 123, 97, 0.2);
-  transform: translateY(-2px);
-}
-.btn-large--ghost {
-  background: #ffffff;
-  color: var(--color-bg-main);
-  border-color: var(--color-main-line);
-}
-.btn-large--ghost:hover {
-  background: var(--color-main-soft);
-  border-color: var(--color-bg-main);
-  transform: translateY(-2px);
-}
-
-
-/* =========================
-   반응형
-========================= */
+/* 반응형 */
 @media (max-width: 767px) {
   .mpr-card { padding: 40px 20px; min-height: 80vh; }
   .mpr-intro__title { font-size: 26px; }
   .mpr-qna__title { font-size: 20px; }
   .mpr-result__title { font-size: 28px; }
   .mpr-result__actions { flex-direction: column; }
-  .btn-large { width: 100%; flex: none; }
+  .mpr-result__actions .btn-large { width: 100%; flex: none; }
 }

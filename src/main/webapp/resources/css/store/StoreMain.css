@@ -35,9 +35,6 @@
    상품 그리드 및 로우 (Grid & Row)
 ========================= */
 .hot-row { width: 100%; display: flex; gap: 20px; overflow-x: auto; padding: 10px 4px; }
-.hot-row::-webkit-scrollbar { height: 6px; }
-.hot-row::-webkit-scrollbar-thumb { background: var(--color-main-line); border-radius: 999px; }
-.hot-row::-webkit-scrollbar-track { background: transparent; }
 .grid-4x2 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; width: 100%; padding: 4px; }
 
 /* =========================

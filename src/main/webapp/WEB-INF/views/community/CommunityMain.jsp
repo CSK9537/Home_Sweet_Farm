@@ -33,8 +33,6 @@
         </div>
       </div>
 
-      <div class="top-divider"></div>
-
       <div id="communityMainSections"
            data-more-api="${pageContext.request.contextPath}/community/main/more"
            data-default-img="${DEFAULT_POST_IMG}">
