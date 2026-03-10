@@ -185,4 +185,5 @@
 	  </div>
 	  <div class=hiddenMsg id="serverMsg" data-msg="${msg}"></div>
 	  <div class=hiddenMsg id="serverMsgType" data-msgType="${msgType}"></div>
+	  <jsp:include page="/WEB-INF/views/common/UserProfileModal.jsp" />
 	</header>

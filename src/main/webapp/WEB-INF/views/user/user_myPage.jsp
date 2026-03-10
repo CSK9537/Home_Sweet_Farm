@@ -33,7 +33,14 @@
             </button>
 
             <div class="left-profile-meta">
-              <div class="nickname" id="leftNickname"><c:out value="${profileUser.nickname}" /></div>
+              <c:choose>
+                <c:when test="${not empty profileUser.nickname}">
+                  <div class="nickname" id="leftNickname"><c:out value="${profileUser.nickname}" /></div>
+                </c:when>
+                <c:otherwise>
+                  <div class="nickname" id="leftNickname"><c:out value="${profileUser.username}" /></div>
+                </c:otherwise>
+              </c:choose>
               <div class="grade"><c:out value="${profileUser.gradeName}" /></div>
               <a class="chat-link" href="${ctx}/chat">채팅하기</a>
             </div>

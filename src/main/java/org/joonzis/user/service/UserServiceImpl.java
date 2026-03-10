@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService{
 	}
 	
 	@Override
-	public MypageProfileDTO getProfile(int userId) {
+	public MypageProfileDTO getProfileInfo(int userId) {
 		return usermapper.getProfileInfo(userId);
 	}
 }

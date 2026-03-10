@@ -238,6 +238,7 @@
 	<resultMap type="org.joonzis.user.dto.MypageProfileDTO" id="mypageProfileDTO">
 		<id property="user_id" column="user_id"/>
 		<result property="profile" column="profile_filename"/>
+		<result property="username" column="username"/>
 		<result property="nickname" column="nickname"/>
 		<result property="gradeName" column="grade"/>
 		<result property="name" column="name"/>
@@ -308,6 +309,7 @@
     SELECT
         u.user_id,
         u.profile_filename,
+        u.username,
         u.nickname,
         u.name,
         u.brith_date,
@@ -356,7 +358,7 @@
                 SELECT PC.*, ROW_NUMBER() OVER (ORDER BY PC.BOARD_ID DESC) as rnum 
                 FROM (<include refid="PostsQuery" />) PC
                 WHERE PC.USER_ID = #{user_id} 
-                  AND PC.BOARD_TYPE != 'Q' -- 질문글 제외 (혹은 특정 타입 지정)
+                  AND PC.BOARD_TYPE = 'G' -- 질문글 제외 (혹은 특정 타입 지정)
             ) WHERE rnum &lt;= 3
         ) pCard ON u.user_id = pCard.USER_ID
 
