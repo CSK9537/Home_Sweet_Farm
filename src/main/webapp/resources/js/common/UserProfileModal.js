@@ -137,7 +137,7 @@ const GlobalProfileModal = (function() {
         modal.hidden = false;
       })
       .catch(error => {
-        alert(error.message);
+        showCustomToast("오류가 발생했습니다.", "error");
         console.error(error);
       });
     }

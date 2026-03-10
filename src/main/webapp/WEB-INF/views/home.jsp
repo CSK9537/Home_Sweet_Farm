@@ -4,5 +4,8 @@
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 <button class="tmp">클릭</button>
 <script>
+document.querySelector('.tmp').addEventListener('click', (e) => {
+	GlobalProfileModal.open(123123);
+});
 </script>
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />
