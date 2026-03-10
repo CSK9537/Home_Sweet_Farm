@@ -76,7 +76,8 @@
         <div class="people-grid">
           <c:forEach var="u" items="${topUsers}">
             <a class="top-user"
-               href="<c:url value='/user/profile/${u.userId}'/>">
+               href="${u.userId}"
+               id="topUser-${u.userId}">
               <div class="top-user__rank">${u.rank}</div>
               <div class="top-user__avatar">
                 <img src="${u.img}" alt="profile">
@@ -125,18 +126,18 @@
         data.list.forEach(u => {
           const item = document.createElement('a');
           item.className = 'top-user';
-          item.href = `${pageContext.request.contextPath}/user/profile/` + u.userId;
+          item.href = u.userId;
           
           item.innerHTML = `
             <div class="top-user__avatar">
-              <img src="\${u.img}" alt="profile">
+              <img src="\\${u.img}" alt="profile">
             </div>
-            <div class="top-user__name">\${u.name}</div>
+            <div class="top-user__name">\\${u.name}</div>
             <div class="top-user__meta">
-              <span class="pill">\${u.badge}</span>
+              <span class="pill">\\${u.badge}</span>
             </div>
             <div class="top-user__point">
-              채택 <b>\${Number(u.point).toLocaleString()}</b>
+              채택 <b>\\${Number(u.point).toLocaleString()}</b>
             </div>
           `;
           container.appendChild(item);
@@ -155,8 +156,22 @@
 
   document.getElementById('btnLoadMore').addEventListener('click', loadActiveUsers);
 
-  // 초기 로드
-  document.addEventListener('DOMContentLoaded', loadActiveUsers);
+  // 초기 로드 시 실행 및 이벤트 바인딩
+  document.addEventListener('DOMContentLoaded', function() {
+    loadActiveUsers();
+    
+    // 동적 요소 및 정적 요소 모두에서 이벤트 작동을 위해 이벤트 위임 사용
+    document.addEventListener('click', function(e) {
+      const topUser = e.target.closest('.top-user');
+      if (topUser) {
+        e.preventDefault();
+        const userId = topUser.getAttribute('href');
+        if (userId) {
+          GlobalProfileModal.open(userId);
+        }
+      }
+    });
+  });
 </script>
 
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />

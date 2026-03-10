@@ -45,7 +45,7 @@
 
         <div class="top-users">
           <c:forEach var="u" items="${topUsers}">
-            <a class="top-user" href="">
+            <a class="top-user" href="${u.userId}" id="topUser_${u.userId}">
               <div class="top-user__rank">${u.rank}</div>
               <div class="top-user__avatar">
                 <img src="user/getProfile?fileName=${u.img}" alt="profile">

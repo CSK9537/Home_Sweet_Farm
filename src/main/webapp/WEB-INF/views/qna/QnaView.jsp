@@ -25,7 +25,7 @@
 
         <div class="cv-meta">
           <div class="cv-writer">
-            <div class="cv-avatar">
+            <div class="cv-avatar js-user-trigger" data-user-id="${board.user_id}" style="cursor: pointer;">
               <img src="${pageContext.request.contextPath}/user/getProfile?fileName=${board.writer_profile != null ? board.writer_profile : 'default_profile.png'}" alt="profile">
             </div>
             <div class="cv-writer-info">
@@ -67,7 +67,7 @@
         </div>
       </div>
 
-      <!-- [2] 질문 댓글 영역 (본문용 댓글) -->
+      <%-- [2] 질문 댓글 영역 (본문용 댓글) - QnA 처리 방침에 따라 제거
       <div class="cv-comments qv-question-comments">
         <div class="cv-section-title">질문 댓글</div>
         <div class="cv-comment-write">
@@ -97,6 +97,7 @@
             </ul>
         </div>
       </div>
+      --%>
 
       <div class="cv-divider" style="margin: 40px 0;"></div>
 
@@ -128,7 +129,7 @@
 
             <div class="cv-meta">
               <div class="cv-writer">
-                <div class="cv-avatar cv-avatar-sm">
+                <div class="cv-avatar cv-avatar-sm js-user-trigger" data-user-id="${ans.user_id}" style="cursor: pointer;">
                   <img src="${pageContext.request.contextPath}/user/getProfile?fileName=${ans.writer_profile != null ? ans.writer_profile : 'default_profile.png'}" alt="profile">
                 </div>
                 <div class="cv-writer-info">
@@ -161,7 +162,7 @@
                </div>
             </div>
 
-            <!-- 답변별 댓글 영역 (비동기) -->
+            <%-- 답변별 댓글 영역 (비동기) - QnA 처리 방침에 따라 제거
             <div class="qv-comment-container">
               <button type="button" class="qv-comment-toggle-btn js-reply-toggle" data-answer-id="${ans.board_id}">
                 댓글 <span class="js-reply-count">${ans.reply_cnt}</span>개 보기 ▾
@@ -177,6 +178,7 @@
                 </div>
               </div>
             </div>
+            --%>
           </div>
         </c:forEach>
       </div>
