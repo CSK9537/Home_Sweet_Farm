@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -165,6 +166,20 @@ public class ChatController {
 		int user_id = getUserId(session);
 		return chatService.searchRooms(user_id, keyword, type);
 	}
+	
+	@GetMapping(value = "/rooms/{room_id}/message-offset/{msg_id}", produces = "application/json; charset=UTF-8")
+	public ResponseEntity<Map<String, Integer>> getMessageOffset(
+	        @PathVariable int room_id,
+	        @PathVariable long msg_id) {
+	    
+	    int rowNum = chatRoomMapper.getMessageRowNum(room_id, msg_id);
+	    
+	    // 명시적으로 Map 생성
+	    Map<String, Integer> response = new HashMap<>();
+	    response.put("offset", rowNum);
+	    
+	    return ResponseEntity.ok(response);
+	}
 
 	/**
      * 이미지/파일 업로드
@@ -177,6 +192,7 @@ public class ChatController {
             @RequestParam("file") MultipartFile file,
             @RequestParam int room_id,
             @RequestParam String msg_type,
+            @RequestParam(value = "client_group_id", required = false, defaultValue = "0") long client_group_id,
             @RequestParam(value = "receiver_id", required = false, defaultValue = "0") int receiver_id,
             HttpSession session
     ) throws IOException {
@@ -216,7 +232,7 @@ public class ChatController {
 	        msg.setIs_active("Y");
 
 	        // 4. DB 저장
-	        long group_id = chatService.getNextGroupId(room_id);
+	        long group_id = (client_group_id > 0) ? client_group_id : chatService.getNextGroupId(room_id);
 	        MsgVO savedMsg = chatService.sendFileMessage(sender_id, receiver_id, room_id, msg, group_id);
 	        
 	        int actualRoomId = savedMsg.getRoom_id();
