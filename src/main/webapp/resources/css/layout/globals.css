@@ -1,17 +1,24 @@
 @import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+/* 폰트 임포트를 글로벌에서 한 번에 처리 */
+@import url("https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap");
 
-/* 1. 디자인 토큰 (변수 설정) */
 :root {
   /* Colors */
   --color-bg-main: #6b7b61; 
   --color-bg-card: #f4f2ed; 
   --color-text-main: #2c3e2d; 
   --color-focus: #3a533b;
+  --color-hover: #4a5743; /* 추가: 공통 호버 컬러 */
   
-  /* 투명도 베리에이션 (헤더, 테두리, 호버 효과 공통 사용) */
+  /* 투명도 베리에이션 */
   --color-main-soft: rgba(107, 123, 97, 0.10);
   --color-main-line: rgba(107, 123, 97, 0.45);
   --color-main-muted: rgba(107, 123, 97, 0.75);
+
+  /* Shadows (추가: 그림자 통일) */
+  --shadow-sm: 0 4px 15px rgba(107, 123, 97, 0.08); /* 모바일 및 작은 요소 */
+  --shadow-md: 0 10px 30px rgba(107, 123, 97, 0.06); /* 헤더, 드롭다운 등 */
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08); /* 메인 컨텐츠 카드 */
 
   /* Spacing & Radius */
   --spacing-sm: 20px;
@@ -23,7 +30,7 @@
 
 * {
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; /* Mac 환경 폰트 렌더링 개선 */
+  -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
 }
 
@@ -33,12 +40,10 @@ body {
   height: 100%;
   background-color: var(--color-bg-main);
   color: var(--color-text-main);
-  /* 깔끔한 모던 폰트 적용 (Pretendard 또는 시스템 기본 폰트) */
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
   line-height: 1.5;
 }
 
-/* 폼 요소 포커스 스타일 통일 */
 button:focus-visible,
 input:focus-visible,
 a:focus-visible {
@@ -48,88 +53,218 @@ a:focus-visible {
 
 a {
   text-decoration: none;
-  color: inherit; /* 링크가 텍스트 색상을 따라가도록 설정 */
+  color: inherit;
 }
 
 /* ------ 토스트 메시지 관련 css ------ */
-.swal2-container {
-    z-index: 999999 !important; 
-}
+.swal2-container { z-index: 999999 !important; }
+.swal2-container.swal2-bottom { bottom: 0px !important; }
+.swal2-toast { display: flex !important; align-items: center !important; }
 
-/* 메시지 위치(아랫쪽) 조정 */
-.swal2-container.swal2-bottom {
-    bottom: 0px !important; /* 원하는 만큼 위치 조정 (기본값은 0) */
-}
-
-.swal2-toast {
-	display: flex !important;
-	align-items: center !important; 
-}
-
-/* 메세지 */
 .swal2-toast .swal2-title {
 	margin: 5px !important;
 	padding: 0 !important;
 	align-items: center !important;
 	display: flex !important;
-	line-height: 1.4 !important; /* 줄 간격 조절 (글씨가 길어질 경우 대비) */
-	font-size: 15px !important; /* 원하는 폰트 크기로 변경 (기본은 약 14~15px) */
-	font-weight: 400 !important; /* 글자 굵기 조절 (normal, bold 등) */
+	line-height: 1.4 !important;
+	font-size: 15px !important;
+	font-weight: 400 !important;
 }
 
-/* 아이콘 */
 .swal2-toast .swal2-icon {
 	margin-top: 1px !important;
 	margin-bottom: 1px !important;
 	margin-right: 7px !important;
-	transform: scale(0.7); /* 1이 기본 크기, 0.8은 80% 크기로 축소 */
+	transform: scale(0.7);
 }
 
-/* 버튼들을 감싸는 컨테이너의 상하 여백 제거 및 중앙 정렬 강제 */
 .swal2-toast .swal2-actions {
     margin-top: 0 !important;
     margin-bottom: 0 !important;
     display: flex !important;
-    align-items: center !important; /* 수직 중앙 정렬 */
-    height: 100% !important;        /* 부모 높이에 꽉 채우기 */
+    align-items: center !important;
+    height: 100% !important;
 }
 
-/* 버튼들의 상하 마진 제거 */
 .swal2-toast .swal2-styled {
     margin-top: 0 !important;
     margin-bottom: 0 !important;
-    align-self: center !important;  /* 스스로를 수직 중앙에 배치 */
+    align-self: center !important;
 }
 
-/* 아이콘 애니메이션 차단 */
-.swal2-icon,
-.swal2-icon * {
-	animation: none !important;
-	transition: none !important;
-}
+.swal2-icon, .swal2-icon * { animation: none !important; transition: none !important; }
 
-/* 메시지 나타나는 애니메이션 (0.5초 동안 부드럽게) */
-.my-fade-in {
-	animation: fadeIn 0.5s ease-in-out;
-}
-
+.my-fade-in { animation: fadeIn 0.5s ease-in-out; }
 @keyframes fadeIn {
-	from { opacity: 0; /* transform: translateY(20px); */ }
-	to { opacity: 1; t/* ransform: translateY(0); */ }
+	from { opacity: 0; }
+	to { opacity: 1; }
 }
 
-/* 메시지 사라지는 애니메이션 (0.5초 동안 부드럽게) */
-.my-fade-out {
-	animation: fadeOut 0.5s ease-in-out;
-}
-
+.my-fade-out { animation: fadeOut 0.5s ease-in-out; }
 @keyframes fadeOut {
- 	from { opacity: 1; /* transform: translateY(0); */ }
-	to { opacity: 0; /* transform: translateY(20px); */ }
+ 	from { opacity: 1; }
+	to { opacity: 0; }
 }
 
-/* jsp에서 msg수신부 숨김 처리 */
-.hiddenMsg{
-	display: none;
+.hiddenMsg { display: none; }
+
+
+/* =========================================
+   [ 통합 버튼 시스템 (Global Buttons) ]
+   - 각 페이지에 흩어진 버튼들을 여기서 일괄 제어합니다.
+========================================= */
+
+/* 1. 버튼 공통 베이스 (정렬, 트랜지션, 폰트) */
+:is(.mp-btn, .cal-btn, .email-auth-btn-outline, .email-auth-btn-primary, .btn, .btn-write, .btn-more, .store-more__btn, .community__backBtn, .mpm-btn--secondary) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
 }
-/* --------- 토스트 css 종료 --------- */
+
+/* 2. 크기 및 모양 (각 화면별 의도된 사이즈 존중) */
+/* 대형 (48px) */
+:is(.mp-btn, .email-auth-btn-outline, .email-auth-btn-primary, .store-more__btn, .mpm-btn--secondary) {
+  height: 48px; padding: 0 24px; font-size: 15px; border-radius: 12px;
+}
+/* 중형 (44px) */
+:is(.btn, .btn-more) {
+  height: 44px; padding: 0 24px; font-size: 14px; border-radius: 10px;
+}
+/* 소형 (40px) */
+:is(.cal-btn, .community__backBtn, .btn-write) {
+  height: 40px; padding: 0 18px; font-size: 14px; border-radius: 8px;
+}
+/* 알약 형태 (완전 둥근 모서리) */
+:is(.btn-more, .store-more__btn) {
+  border-radius: 999px;
+}
+
+/* 3. Primary 타입 (메인 컬러 채워짐) */
+:is(.mp-btn--primary, .cal-btn--primary, .email-auth-btn-primary, .btn--primary, .btn-write) {
+  background: var(--color-bg-main);
+  color: #ffffff;
+}
+:is(.mp-btn--primary, .cal-btn--primary, .email-auth-btn-primary, .btn--primary, .btn-write):not(:disabled):hover {
+  background: var(--color-hover);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+/* 4. Ghost 타입 (흰 배경 + 테두리) */
+:is(.mp-btn--ghost, .cal-btn--ghost, .email-auth-btn-outline, .btn--ghost, .btn-more, .store-more__btn, .community__backBtn, .mpm-btn--secondary) {
+  background: #ffffff;
+  color: var(--color-bg-main);
+  border-color: var(--color-main-line);
+}
+:is(.mp-btn--ghost, .cal-btn--ghost, .email-auth-btn-outline, .btn--ghost, .btn-more, .store-more__btn, .community__backBtn, .mpm-btn--secondary):not(:disabled):hover {
+  background: var(--color-main-soft);
+  border-color: var(--color-bg-main);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 5. 비활성화 (Disabled) 상태 공통 */
+button:disabled, a.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* 6. 서브/작은 텍스트 버튼들 (더보기, 링크 등) */
+:is(.qna-section__link, .block-more, .cm-viewBtn) {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #ffffff;
+  border: 1px solid var(--color-main-line);
+  border-radius: 999px; /* 알약 형태 */
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-bg-main);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+:is(.qna-section__link, .block-more, .cm-viewBtn):hover,
+.cm-viewBtn.is-active {
+  background: var(--color-main-soft);
+  border-color: var(--color-bg-main);
+  color: var(--color-bg-main);
+}
+
+/* 7. 페이지네이션(번호 이동) 버튼 통합 */
+:is(.pg-btn, .pg-num) {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--color-main-line);
+  background: #ffffff;
+  color: var(--color-text-main);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex; align-items: center; justify-content: center;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+:is(.pg-btn, .pg-num):hover,
+.pg-num:not(.active):not(.pg-num--active):hover {
+  background: var(--color-main-soft);
+  border-color: var(--color-bg-main);
+  color: var(--color-bg-main);
+}
+:is(.pg-num.active, .pg-num--active) {
+  background: var(--color-bg-main);
+  border-color: var(--color-bg-main);
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+
+/* =========================================
+   [ 통합 입력폼 시스템 (Global Inputs) ]
+   - 텍스트 입력창, 검색창, 셀렉트 박스의 공통 스타일
+========================================= */
+
+/* 1. 공통 뼈대 (배경, 글자색, 아웃라인 제거, 트랜지션) */
+:is(.fsearch__input, .msearch__input, .email-auth-input, .mpm-modal__search-input, .store-search__input, .select) {
+  background: #ffffff;
+  color: var(--color-text-main);
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+/* 2. 포커스(클릭) 상태 - 테두리 메인컬러 & 부드러운 빛 퍼짐 */
+:is(.fsearch__input, .msearch__input, .email-auth-input, .mpm-modal__search-input, .store-search__input, .select):focus,
+.msearch:focus-within {
+  border-color: var(--color-bg-main) !important;
+  box-shadow: 0 0 0 3px var(--color-main-soft) !important;
+}
+
+/* 3. 플레이스홀더 (안내 텍스트) 색상 통일 */
+:is(.fsearch__input, .msearch__input, .email-auth-input, .mpm-modal__search-input, .store-search__input)::placeholder {
+  color: var(--color-main-muted);
+}
+
+/* 4. 네모난 폼 입력창 베이스 (이메일 인증, 모달 검색 등) */
+:is(.email-auth-input, .mpm-modal__search-input) {
+  width: 100%;
+  height: 48px;
+  border: 1px solid var(--color-main-line);
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* 5. 둥근 검색창 베이스 (스토어, 헤더 등) */
+:is(.fsearch__input, .store-search__input) {
+  border: 2px solid var(--color-main-line);
+  border-radius: 999px;
+}

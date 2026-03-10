@@ -1,186 +1,67 @@
 /* UserProfileModal.css */
+.upm-backdrop { position: fixed; inset: 0; background: rgba(44, 62, 45, 0.4); backdrop-filter: blur(2px); z-index: 9999; }
+.upm-modal { position: fixed; inset: 0; display: grid; place-items: center; z-index: 9999; padding: 20px; }
+.upm-modal[hidden], .upm-backdrop[hidden] { display: none !important; }
 
-.upm-backdrop {
-  position: fixed; inset: 0; 
-  background: rgba(44, 62, 45, 0.4); 
-  backdrop-filter: blur(2px); 
-  z-index: 9990;
-}
-.upm-modal { 
-  position: fixed; inset: 0; 
-  display: grid; place-items: center; 
-  z-index: 9991; 
-  padding: 20px;
-}
-.upm-modal[hidden], .upm-backdrop[hidden] { 
-  display: none !important; 
-}
-
-/* 모달 카드: 크기 유지하되 스크롤 발생을 최소화 */
 .upm-modal-card {
-  width: 100%;
-  max-width: 760px;
-  max-height: 95vh;
-  display: flex;
-  flex-direction: column;
-  background: #ffffff; 
-  border-radius: var(--radius-lg, 16px);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.15); 
-  animation: upmFadeIn 0.3s ease-out; 
+  width: 100%; max-width: 760px; max-height: 95vh; display: flex; flex-direction: column;
+  background: #ffffff; border-radius: var(--radius-lg, 16px);
+  box-shadow: var(--shadow-lg); /* 변수 적용 */
+  animation: modalScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 애니메이션 통일 */
   overflow: hidden;
 }
-@keyframes upmFadeIn {
-  from { opacity: 0; transform: translateY(20px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+
+@keyframes modalScale {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
-.upm-modal-head {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 12px 20px; /* 약간 줄임 */
-  background: var(--color-bg-card, #f9f9f9); 
-  border-bottom: 1px solid var(--color-main-soft, #e0e0e0);
-  flex-shrink: 0;
-}
-.upm-modal-head h3 { 
-  margin: 0; font-size: 15px; font-weight: 800; color: var(--color-bg-main, #2c3e2d); 
-}
-.upm-icon-btn { 
-  border: 0; background: transparent; font-size: 24px; cursor: pointer; 
-  color: var(--color-main-muted, #888); line-height: 1; padding: 0; 
-}
+/* 헤더 여백을 다른 모달과 비슷하게 맞춤 */
+.upm-modal-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: var(--color-bg-card, #f9f9f9); border-bottom: 1px solid var(--color-main-soft, #e0e0e0); flex-shrink: 0; }
+.upm-modal-head h3 { margin: 0; font-size: 15px; font-weight: 800; color: var(--color-bg-main, #2c3e2d); }
+.upm-icon-btn { border: 0; background: transparent; font-size: 24px; cursor: pointer; color: var(--color-main-muted, #888); line-height: 1; padding: 0; }
 .upm-icon-btn:hover { color: var(--color-bg-main, #2c3e2d); }
 
-.upm-modal-body { 
-  padding: 20px; /* 기존 24px에서 축소 */
-  display: flex; 
-  flex-direction: column; 
-  gap: 16px; /* 기존 20px에서 축소 */
-  overflow-y: auto;
-}
+.upm-modal-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
 
-/* 상단 프로필 */
-.upm-left-profile {
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-  padding-bottom: 16px; border-bottom: 1px solid var(--color-main-soft, #e0e0e0);
-}
-.upm-avatar-btn {
-  border: none; background: transparent; padding: 0; cursor: default;
-}
-.upm-avatar {
-  width: 80px; height: 80px; /* 100px -> 80px 로 축소 */
-  border-radius: 50%; object-fit: cover;
-  border: 2px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-.upm-left-profile-meta {
-  text-align: center; display: flex; flex-direction: column; gap: 4px; align-items: center;
-}
+.upm-left-profile { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--color-main-soft, #e0e0e0); }
+.upm-avatar-btn { border: none; background: transparent; padding: 0; cursor: default; }
+.upm-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+.upm-left-profile-meta { text-align: center; display: flex; flex-direction: column; gap: 4px; align-items: center; }
 .upm-nickname { font-weight: 800; font-size: 18px; color: var(--color-bg-main, #2c3e2d); }
 .upm-grade { font-size: 12px; font-weight: 700; color: var(--color-focus, #e2874a); }
 
-.upm-chat-link {
-  display: inline-flex; align-items: center; justify-content: center;
-  margin-top: 4px; height: 28px; padding: 0 14px; border-radius: 6px;
-  background: var(--color-bg-main, #2c3e2d); color: #ffffff;
-  font-size: 12px; font-weight: 700; text-decoration: none;
-  transition: all 0.2s ease;
-}
-.upm-chat-link:hover {
-  background: #5a6851; box-shadow: 0 4px 10px rgba(107,123,97,0.2); transform: translateY(-2px);
-}
+.upm-chat-link { display: inline-flex; align-items: center; justify-content: center; margin-top: 4px; height: 28px; padding: 0 14px; border-radius: 6px; background: var(--color-bg-main, #2c3e2d); color: #ffffff; font-size: 12px; font-weight: 700; text-decoration: none; transition: all 0.2s ease; }
+.upm-chat-link:hover { background: var(--color-hover); box-shadow: var(--shadow-sm); transform: translateY(-2px); } /* 변수 적용 */
 
-/* 2단 그리드 레이아웃 */
-.upm-profile-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px; /* 기존 24px에서 축소 */
-  align-items: start;
-}
-@media (max-width: 600px) {
-  .upm-profile-grid { grid-template-columns: 1fr; }
-}
+.upm-profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 600px) { .upm-profile-grid { grid-template-columns: 1fr; } }
+.upm-profile-col, .upm-right-column { display: flex; flex-direction: column; gap: 12px; }
 
-.upm-profile-col, .upm-right-column {
-  display: flex; flex-direction: column; gap: 12px; /* 16px에서 축소 */
-}
+.upm-box { border: 1px solid var(--color-main-soft, #e0e0e0); border-radius: 10px; padding: 14px; background: #ffffff; }
+.upm-box-title { font-weight: 800; color: var(--color-text-main, #333); font-size: 13px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed var(--color-main-line, #ddd); }
+.upm-pre-text { font-size: 12px; color: var(--color-text-main, #333); line-height: 1.5; white-space: pre-wrap; word-break: break-word; min-height: 30px; }
 
-/* 공통 박스 */
-.upm-box {
-  border: 1px solid var(--color-main-soft, #e0e0e0); 
-  border-radius: 10px; padding: 14px; /* 약간 축소 */
-  background: #ffffff;
-}
-.upm-box-title {
-  font-weight: 800; color: var(--color-text-main, #333); font-size: 13px;
-  margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed var(--color-main-line, #ddd);
-}
-.upm-pre-text {
-  font-size: 12px; color: var(--color-text-main, #333); line-height: 1.5;
-  white-space: pre-wrap; word-break: break-word; min-height: 30px;
-}
-
-/* 등급 바 */
-.upm-grade-progress {
-  display: flex; justify-content: space-between; align-items: center;
-  position: relative; margin: 12px 0; padding: 0 10px;
-}
-.upm-grade-line {
-  position: absolute; top: 50%; left: 16px; right: 16px; height: 3px;
-  background: #e0e0e0; transform: translateY(-50%); z-index: 1; border-radius: 2px;
-}
-.upm-grade-step {
-  position: relative; z-index: 2; display: flex; flex-direction: column;
-  align-items: center; gap: 6px; opacity: 0.4; transition: opacity 0.3s;
-}
+.upm-grade-progress { display: flex; justify-content: space-between; align-items: center; position: relative; margin: 12px 0; padding: 0 10px; }
+.upm-grade-line { position: absolute; top: 50%; left: 16px; right: 16px; height: 3px; background: #e0e0e0; transform: translateY(-50%); z-index: 1; border-radius: 2px; }
+.upm-grade-step { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 6px; opacity: 0.4; transition: opacity 0.3s; }
 .upm-grade-step.active { opacity: 1; }
-.upm-grade-icon {
-  width: 32px; height: 32px; border-radius: 50%; background: #f4f5f4;
-  display: flex; justify-content: center; align-items: center; font-size: 16px;
-  border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-.upm-grade-step.active .upm-grade-icon {
-  background: #fff; border-color: var(--color-bg-main, #2c3e2d);
-}
+.upm-grade-icon { width: 32px; height: 32px; border-radius: 50%; background: #f4f5f4; display: flex; justify-content: center; align-items: center; font-size: 16px; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+.upm-grade-step.active .upm-grade-icon { background: #fff; border-color: var(--color-bg-main, #2c3e2d); }
 .upm-grade-label { font-size: 11px; font-weight: 700; color: #333; }
-.upm-grade-desc {
-  text-align: center; font-size: 12px; color: #555; margin-top: 10px;
-}
+.upm-grade-desc { text-align: center; font-size: 12px; color: #555; margin-top: 10px; }
 .upm-grade-desc b { color: var(--color-focus, #e2874a); font-weight: 800; }
 
-/* 통계 */
-.upm-stats {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-}
-.upm-stat {
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-}
+.upm-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.upm-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .upm-num { font-size: 18px; font-weight: 900; color: var(--color-bg-main, #2c3e2d); }
 .upm-label { font-size: 11px; font-weight: 600; color: var(--color-main-muted, #888); }
 
-/* 최근 글 / 질문 리스트 스타일 */
-.upm-recent-list {
-  list-style: none; padding: 0; margin: 0;
-}
-.upm-recent-list li {
-  border-bottom: 1px solid var(--color-main-soft, #f0f0f0);
-}
-.upm-recent-list li:last-child {
-  border-bottom: none;
-}
-.upm-recent-list li a {
-  display: block; padding: 8px 4px; /* 12px -> 8px 로 상하 여백 축소 */
-  text-decoration: none; transition: background 0.2s;
-}
-.upm-recent-list li a:hover {
-  background: #f9f9f9; border-radius: 6px;
-}
-.upm-post-title {
-  font-size: 13px; /* 14px -> 13px */
-  font-weight: 700; color: var(--color-text-main, #333);
-  margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.upm-post-meta {
-  font-size: 11px; color: var(--color-main-muted, #888);
-}
-.upm-empty-list {
-  padding: 16px 0; text-align: center; font-size: 12px; color: #999; border: none !important;
-}
+.upm-recent-list { list-style: none; padding: 0; margin: 0; }
+.upm-recent-list li { border-bottom: 1px solid var(--color-main-soft, #f0f0f0); }
+.upm-recent-list li:last-child { border-bottom: none; }
+.upm-recent-list li a { display: block; padding: 8px 4px; text-decoration: none; transition: background 0.2s; }
+.upm-recent-list li a:hover { background: #f9f9f9; border-radius: 6px; }
+.upm-post-title { font-size: 13px; font-weight: 700; color: var(--color-text-main, #333); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.upm-post-meta { font-size: 11px; color: var(--color-main-muted, #888); }
+.upm-empty-list { padding: 16px 0; text-align: center; font-size: 12px; color: #999; border: none !important; }

@@ -1,482 +1,88 @@
 /* MyPlantMain.css */
+.myplants { width: 100%; gap: 20px; }
+.content-card.myplants { align-items: stretch; padding-bottom: 40px; }
 
-/* 공통 (글로벌 변수는 global.css에 정의되어 있으므로 제거/매핑) */
-.myplants { 
-  width: 100%; 
-  gap: 20px; 
-}
-.content-card.myplants { 
-  align-items: stretch; 
-  padding-bottom: 40px; /* 리스트 하단 여백 추가 */
-}
+.myplants__header { display: flex; justify-content: space-between; align-items: center; padding: 0 0 20px; border-bottom: 2px solid var(--color-main-line); margin-bottom: 20px; }
+.myplants__title { margin: 0; font-size: 26px; font-weight: 800; color: var(--color-bg-main); letter-spacing: -0.02em; }
 
-/* =========================
-   헤더 (Header)
-========================= */
-.myplants__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0 20px;
-  border-bottom: 2px solid var(--color-main-line);
-  margin-bottom: 20px;
-}
-.myplants__title {
-  margin: 0;
-  font-size: 26px;
-  font-weight: 800;
-  color: var(--color-bg-main);
-  letter-spacing: -0.02em;
-}
+.myplants-empty { min-height: 360px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px; text-align: center; background: #ffffff; border: 2px dashed var(--color-main-line); border-radius: var(--radius-lg, 16px); margin-top: 10px; }
+.myplants-empty__title { margin: 0; font-size: 20px; font-weight: 800; color: var(--color-bg-main); }
+.myplants-empty__desc { margin: 0 0 10px 0; font-size: 15px; color: var(--color-main-muted); }
 
-/* =========================
-   버튼 (Button) - 글로벌 스타일과 통일
-========================= */
-.mp-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 48px; /* 다른 버튼들과 높이 통일 */
-  padding: 0 24px;
-  font-size: 15px;
-  font-weight: 700;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  text-decoration: none;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
+.myplants-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 20px; }
 
-.mp-btn--primary { 
-  background: var(--color-bg-main); 
-  color: #ffffff; 
-}
-.mp-btn--primary:hover {
-  background: #5a6851;
-  box-shadow: 0 4px 12px rgba(107, 123, 97, 0.2);
-  transform: translateY(-2px);
-}
-.mp-btn--primary:active {
-  transform: translateY(0);
-}
+.plant-item { display: grid; grid-template-columns: 180px 200px 1fr minmax(0, 200px); column-gap: 30px; align-items: center; padding: 24px; background: #ffffff; border-radius: var(--radius-lg, 16px); border: 1px solid var(--color-main-soft); box-shadow: var(--shadow-sm); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.plant-item:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: var(--color-main-line); }
 
-.mp-btn--ghost { 
-  background: #ffffff; 
-  color: var(--color-bg-main); 
-  border-color: var(--color-main-line); 
-}
-.mp-btn--ghost:hover {
-  background: var(--color-main-soft);
-  border-color: var(--color-bg-main);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(107, 123, 97, 0.1);
-}
+.plant-item__thumb { width: 180px; height: 180px; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--color-main-soft); }
+.plant-item__thumb img { width: 100%; height: 100%; object-fit: cover; }
 
-/* 상세보기, 삭제 버튼 (블록 형태) */
-.mp-btn--block {
-  width: 100%;
-}
+.plant-item__info { display: flex; flex-direction: column; gap: 16px; color: var(--color-bg-main); }
+.plant-item__nickname { font-size: 20px; font-weight: 800; color: var(--color-bg-main); }
+.plant-item__names { display: flex; flex-direction: column; gap: 4px; }
+.plant-item__korean { font-size: 15px; font-weight: 700; opacity: 0.9; }
+.plant-item__latin { font-size: 13px; font-style: italic; color: var(--color-main-muted); }
 
+.plant-item__status { align-self: stretch; display: flex; flex-direction: column; justify-content: center; border-left: 1px dashed var(--color-main-line); padding-left: 30px; }
+.plant-item__status-title { font-size: 14px; font-weight: 700; color: var(--color-main-muted); margin-bottom: 16px; }
 
-/* =========================
-   빈 화면 (Empty State)
-========================= */
-.myplants-empty {
-  min-height: 360px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  text-align: center;
-  background: #ffffff;
-  border: 2px dashed var(--color-main-line);
-  border-radius: var(--radius-lg, 16px);
-  margin-top: 10px;
-}
-.myplants-empty__title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--color-bg-main);
-}
-.myplants-empty__desc {
-  margin: 0 0 10px 0;
-  font-size: 15px;
-  color: var(--color-main-muted);
-}
+.status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+.status { display: flex; align-items: center; gap: 10px; }
+.status__label { width: 32px; height: 32px; object-fit: contain; background: var(--color-main-soft); border-radius: 8px; padding: 4px; }
 
+.status__value { font-weight: 800; font-size: 14px; white-space: nowrap; }
+.status__value--good { color: #2d8647; }
+.status__value--warn { color: #e2874a; }
+.status__value--bad { color: #d64040; }
 
-/* =========================
-   리스트 (List)
-========================= */
-.myplants-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
+.plant-item__actions { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 12px; height: 100%; }
+.plant-item__since { font-size: 14px; color: var(--color-main-muted); margin-bottom: 8px; text-align: center; width: 100%; }
+.plant-item__since strong { font-size: 16px; color: var(--color-bg-main); font-weight: 800; }
 
-/* 개별 카드 (Card) */
-.plant-item {
-  display: grid;
-  grid-template-columns: 180px 200px 1fr minmax(0, 200px);
-  column-gap: 30px;
-  align-items: center;
-  padding: 24px;
-  background: #ffffff;
-  border-radius: var(--radius-lg, 16px);
-  border: 1px solid var(--color-main-soft);
-  box-shadow: 0 4px 15px rgba(107, 123, 97, 0.04);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.plant-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(107, 123, 97, 0.1);
-  border-color: var(--color-main-line);
-}
-
-/* 썸네일 */
-.plant-item__thumb {
-  width: 180px;
-  height: 180px;
-  border-radius: 12px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-main-soft);
-}
-.plant-item__thumb img { 
-  width: 100%; 
-  height: 100%; 
-  object-fit: cover; 
-}
-
-/* 정보 영역 */
-.plant-item__info {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  color: var(--color-bg-main);
-}
-.plant-item__nickname { 
-  font-size: 20px; 
-  font-weight: 800; 
-  color: var(--color-bg-main); 
-}
-.plant-item__names { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 4px; 
-}
-.plant-item__korean { 
-  font-size: 15px; 
-  font-weight: 700; 
-  opacity: 0.9;
-}
-.plant-item__latin { 
-  font-size: 13px; 
-  font-style: italic; 
-  color: var(--color-main-muted); 
-}
-
-/* 상태 영역 (Status) */
-.plant-item__status {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  border-left: 1px dashed var(--color-main-line);
-  padding-left: 30px;
-}
-.plant-item__status-title { 
-  font-size: 14px; 
-  font-weight: 700;
-  color: var(--color-main-muted);
-  margin-bottom: 16px; 
-}
-
-.status-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 20px;
-}
-.status { 
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-}
-.status__label {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  background: var(--color-main-soft);
-  border-radius: 8px;
-  padding: 4px;
-}
-
-/* 센서 상태 텍스트 컬러 (세련된 톤으로 조정) */
-.status__value { 
-  font-weight: 800; 
-  font-size: 14px; 
-  white-space: nowrap; 
-}
-.status__value--good { color: #2d8647; } /* 안정적인 녹색 */
-.status__value--warn { color: #e2874a; } /* 기존 포커스 컬러(오렌지) 활용 */
-.status__value--bad { color: #d64040; }  /* 너무 쨍하지 않은 빨강 */
-
-/* 액션 버튼 영역 */
-.plant-item__actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 12px;
-  height: 100%;
-}
-.plant-item__since {
-  font-size: 14px;
-  color: var(--color-main-muted);
-  margin-bottom: 8px;
-  text-align: center;
-  width: 100%;
-}
-.plant-item__since strong {
-  font-size: 16px;
-  color: var(--color-bg-main);
-  font-weight: 800;
-}
-
-
-/* =========================
-   나의 식물 추가 모달 (Modal)
-========================= */
-.mpm-modal {
-  position: fixed;
-  inset: 0;
-  display: none;
-  z-index: 9999;
-}
+.mpm-modal { position: fixed; inset: 0; display: none; z-index: 9999; }
 .mpm-modal.is-open { display: block; }
+.mpm-modal__backdrop { position: absolute; inset: 0; background: rgba(44, 62, 45, 0.4); backdrop-filter: blur(2px); }
 
-.mpm-modal__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(44, 62, 45, 0.4);
-  backdrop-filter: blur(2px);
-}
+.mpm-modal__dialog { position: relative; width: min(600px, calc(100% - 40px)); margin: 80px auto; background: #ffffff; border-radius: var(--radius-lg, 16px); box-shadow: var(--shadow-lg); padding: 30px; animation: modalScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes modalScale { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-.mpm-modal__dialog {
-  position: relative;
-  width: min(600px, calc(100% - 40px));
-  margin: 80px auto;
-  background: #ffffff;
-  border-radius: var(--radius-lg, 16px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-  padding: 30px;
-  animation: modalScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
+.mpm-modal__header { margin-bottom: 20px; }
+.mpm-modal__title { margin: 0; font-size: 24px; font-weight: 800; color: var(--color-bg-main); }
 
-@keyframes modalScale {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+.mpm-modal__search { position: relative; margin-bottom: 20px; }
+.mpm-modal__search-input { padding: 0 16px 0 40px; }
+.mpm-modal__search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--color-main-muted); font-size: 16px; }
 
-.mpm-modal__header { 
-  margin-bottom: 20px; 
-}
-.mpm-modal__title {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--color-bg-main);
-}
+.mpm-list { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; border: 1px solid var(--color-main-line); border-radius: 12px; }
+.mpm-item { border-bottom: 1px solid var(--color-main-soft); }
+.mpm-item:last-child { border-bottom: none; }
+.mpm-item__row { display: flex; align-items: center; gap: 16px; padding: 12px 16px; cursor: pointer; transition: background 0.2s; }
+.mpm-item__row:hover { background: var(--color-main-soft); }
+.mpm-item__row:has(.mpm-item__radio:checked) { background: rgba(107, 123, 97, 0.12); }
+.mpm-item__radio { position: absolute; opacity: 0; pointer-events: none; }
 
-/* 모달 내 검색창 */
-.mpm-modal__search {
-  position: relative;
-  margin-bottom: 20px;
-}
-.mpm-modal__search-input {
-  width: 100%;
-  height: 48px;
-  border-radius: 10px;
-  border: 1px solid var(--color-main-line);
-  background: #ffffff;
-  padding: 0 16px 0 40px;
-  outline: none;
-  font-size: 14px;
-  color: var(--color-bg-main);
-  transition: all 0.2s;
-}
-.mpm-modal__search-input::placeholder { color: var(--color-main-muted); }
-.mpm-modal__search-input:focus {
-  border-color: var(--color-bg-main);
-  box-shadow: 0 0 0 3px var(--color-main-soft);
-}
-.mpm-modal__search-icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-main-muted);
-  font-size: 16px;
-}
+.mpm-item__thumb { width: 48px; height: 48px; border-radius: 8px; overflow: hidden; background: var(--color-main-soft); flex: 0 0 auto; }
+.mpm-item__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.mpm-item__text { display: flex; flex-direction: column; gap: 4px; }
+.mpm-item__korean { font-size: 15px; font-weight: 700; color: var(--color-bg-main); }
+.mpm-item__latin { font-size: 12px; font-style: italic; color: var(--color-main-muted); }
 
-/* 모달 리스트 */
-.mpm-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid var(--color-main-line);
-  border-radius: 12px;
-}
+.mpm-selected-preview { display: flex; align-items: center; gap: 16px; padding: 16px; margin-top: 20px; background: var(--color-main-soft); border-radius: 12px; border: 1px dashed var(--color-bg-main); }
+.mpm-modal__footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+#confirmAddPlant:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; background: #ccc; }
 
-.mpm-item {
-  border-bottom: 1px solid var(--color-main-soft);
-}
-.mpm-item:last-child {
-  border-bottom: none;
-}
-
-.mpm-item__row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 12px 16px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.mpm-item__row:hover {
-  background: var(--color-main-soft);
-}
-
-/* 선택 강조 */
-.mpm-item__row:has(.mpm-item__radio:checked) {
-  background: rgba(107, 123, 97, 0.12); /* 약간 더 진한 배경 */
-}
-
-.mpm-item__radio {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.mpm-item__thumb {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--color-main-soft);
-  flex: 0 0 auto;
-}
-.mpm-item__thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.mpm-item__text {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.mpm-item__korean {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-bg-main);
-}
-.mpm-item__latin {
-  font-size: 12px;
-  font-style: italic;
-  color: var(--color-main-muted);
-}
-
-/* 선택한 식물 미리보기 박스 */
-.mpm-selected-preview {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  margin-top: 20px;
-  background: var(--color-main-soft);
-  border-radius: 12px;
-  border: 1px dashed var(--color-bg-main);
-}
-
-/* 모달 하단 버튼 */
-.mpm-modal__footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 24px;
-}
-
-.mpm-btn--secondary {
-  background: #ffffff;
-  color: var(--color-bg-main);
-  border-color: var(--color-main-line);
-}
-.mpm-btn--secondary:hover {
-  background: var(--color-main-soft);
-  border-color: var(--color-bg-main);
-}
-
-#confirmAddPlant:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-  background: #ccc;
-}
-
-
-/* =========================
-   반응형 (Responsive)
-========================= */
 @media (max-width: 1024px) {
-  .plant-item {
-    grid-template-columns: 160px 1fr minmax(0, 180px);
-    grid-template-areas:
-      "thumb info actions"
-      "thumb status actions";
-    row-gap: 20px;
-    align-items: start;
-  }
+  .plant-item { grid-template-columns: 160px 1fr minmax(0, 180px); grid-template-areas: "thumb info actions" "thumb status actions"; row-gap: 20px; align-items: start; }
   .plant-item__thumb { width: 160px; height: 160px; grid-area: thumb; }
   .plant-item__info { grid-area: info; }
-  .plant-item__status { 
-    grid-area: status; 
-    border-left: none; 
-    padding-left: 0; 
-    border-top: 1px dashed var(--color-main-line);
-    padding-top: 16px;
-  }
+  .plant-item__status { grid-area: status; border-left: none; padding-left: 0; border-top: 1px dashed var(--color-main-line); padding-top: 16px; }
   .plant-item__actions { grid-area: actions; justify-content: flex-start; }
 }
-
-@media (max-width: 767px) {
-  .plant-item {
-    grid-template-columns: 1fr;
-    grid-template-areas: "thumb" "info" "status" "actions";
-    padding: 20px;
-    row-gap: 16px;
-  }
+@media (max-width: 768px) {
+  .plant-item { grid-template-columns: 1fr; grid-template-areas: "thumb" "info" "status" "actions"; padding: 20px; row-gap: 16px; }
   .plant-item__thumb { width: 100%; height: 240px; }
   .plant-item__actions { align-items: stretch; }
   .plant-item__since { text-align: left; }
   .status-grid { gap: 12px; }
-  
-  .mpm-modal__dialog {
-    padding: 20px;
-    margin: 40px auto;
-  }
+  .mpm-modal__dialog { padding: 20px; margin: 40px auto; }
 }

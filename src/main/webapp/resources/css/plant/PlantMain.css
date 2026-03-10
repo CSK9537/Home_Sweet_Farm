@@ -1,328 +1,84 @@
-.plant {
-  width: 100%;
-}
+.plant { width: 100%; }
 
 /* =========================
    헤더 영역
 ========================= */
-.plant__header {
-  margin-bottom: 24px;
-}
-
-.plant__title {
-  margin: 0 0 12px;
-  font-size: 26px; /* 다른 페이지의 메인 타이틀 크기와 밸런스 맞춤 */
-  font-weight: 800;
-  color: var(--color-bg-main);
-  letter-spacing: -0.02em;
-}
-
-.plant__divider {
-  height: 2px;
-  background: var(--color-main-line);
-  border-radius: 2px;
-}
-
+.plant__header { margin-top: 0; margin-bottom: 24px; }
+.plant__title { margin: 0 0 12px; font-size: 26px; font-weight: 800; color: var(--color-bg-main); letter-spacing: -0.02em; }
+.plant__divider { height: 2px; background: var(--color-main-line); border-radius: 2px; }
 
 /* =========================
    섹션 영역
 ========================= */
-.plant-section {
-  margin-top: 24px;
-}
-
-.plant-section__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 0 16px;
-}
-
-.plant-section__title {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--color-bg-main);
-  position: relative;
-  padding-left: 16px;
-}
-
-.plant-section__title::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--color-focus, #e2874a); /* 포인트 컬러로 시선 유도 */
-}
-
+.plant-section { margin-top: 24px; }
+.plant-section__head { display: flex; align-items: center; justify-content: space-between; margin: 0 0 16px; }
+.plant-section__title { margin: 0; font-size: 18px; font-weight: 700; color: var(--color-bg-main); position: relative; padding-left: 16px; }
+.plant-section__title::before { content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; border-radius: 50%; background: var(--color-focus, #e2874a); }
 
 /* =========================
    그리드 공통
 ========================= */
-.plant-grid {
-  display: grid;
-  gap: 20px; /* 카드 간격을 조금 넓혀 시원한 느낌 부여 */
-  padding: 4px; /* 그림자 잘림 방지 */
-}
-
-/* Top3: 3열 */
-.plant-grid--top3 {
-  grid-template-columns: repeat(3, 1fr);
-  margin-bottom: 30px;
-}
-
-/* 하단: 4열 */
-.plant-grid--random {
-  grid-template-columns: repeat(4, 1fr);
-}
-
+.plant-grid { display: grid; gap: 20px; padding: 4px; }
+.plant-grid--top3 { grid-template-columns: repeat(3, 1fr); margin-bottom: 30px; }
+.plant-grid--random { grid-template-columns: repeat(4, 1fr); }
 
 /* =========================
-   식물 카드 (메인 페이지 스타일 통일)
+   식물 카드
 ========================= */
-.plant-card {
-  position: relative;
-  background: #ffffff;
-  border: 1px solid var(--color-main-soft);
-  border-radius: var(--radius-lg, 16px);
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(107, 123, 97, 0.04);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
-}
-
-.plant-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 30px rgba(107, 123, 97, 0.12);
-  border-color: var(--color-main-line);
-}
-
-.plant-card__link {
-  display: block;
-  color: inherit;
-  text-decoration: none;
-}
-
-.plant-card__thumb {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background: var(--color-main-soft);
-  overflow: hidden;
-}
-
-.plant-card--top .plant-card__thumb {
-  aspect-ratio: 16 / 9;
-}
-
-.plant-card__thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  z-index: 0;
-  transition: transform 0.5s ease;
-}
-
-.plant-card:hover .plant-card__thumb img {
-  transform: scale(1.05); /* 카드 호버 시 이미지 미세 줌 효과 */
-}
-
+.plant-card { position: relative; background: #ffffff; border: 1px solid var(--color-main-soft); border-radius: var(--radius-lg, 16px); overflow: hidden; box-shadow: var(--shadow-sm); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease; }
+.plant-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: var(--color-main-line); }
+.plant-card__link { display: block; color: inherit; text-decoration: none; }
+.plant-card__thumb { position: relative; width: 100%; aspect-ratio: 4 / 3; background: var(--color-main-soft); overflow: hidden; }
+.plant-card--top .plant-card__thumb { aspect-ratio: 16 / 9; }
+.plant-card__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; z-index: 0; transition: transform 0.5s ease; }
+.plant-card:hover .plant-card__thumb img { transform: scale(1.05); }
 
 /* =========================
    백과사전, 가이드 호버 텍스트
 ========================= */
-.text {
-  color: #ffffff;
-  position: absolute;
-  bottom: 8%;
-  font-size: 13px;
-  font-weight: 700;
-  pointer-events: none;
-  opacity: 0; 
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  z-index: 10;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* 가독성 확보 */
-}
-
+.text { color: #ffffff; position: absolute; bottom: 8%; font-size: 13px; font-weight: 700; pointer-events: none; opacity: 0; transition: opacity 0.4s ease, transform 0.4s ease; z-index: 10; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
 .left-text { left: 8%; transform: translateX(-10px); }
 .right-text { right: 8%; transform: translateX(10px); }
 
-/* 호버 영역 레이아웃 설정 */
-.hover-area-wrapper {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  display: flex;
-  z-index: 999;
-}
+.hover-area-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; z-index: 999; }
+.hover-area { flex: 1; height: 100%; cursor: pointer; }
+.plant-card__thumb::after { content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity 0.4s ease; pointer-events: none; z-index: 1; }
 
-.hover-area {
-  flex: 1; 
-  height: 100%;
-  cursor: pointer;
-}
-
-.plant-card__thumb::after {
-  content: "";
-  position: absolute;
-  inset: 0; /* 전체를 덮도록 변경하여 더 자연스러운 그라데이션 형성 */
-  opacity: 0; 
-  transition: opacity 0.4s ease;
-  pointer-events: none;
-  z-index: 1; 
-}
-
-/* 왼쪽 호버 시 */
-.plant-card:has(.hover-area--left:hover) .plant-card__thumb::after {
-  opacity: 0.8;
-  background: linear-gradient(to right, rgba(20, 30, 20, 0.8) 0%, rgba(0, 0, 0, 0) 70%);
-}
-.plant-card:has(.hover-area--left:hover) .left-text {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* 오른쪽 호버 시 */
-.plant-card:has(.hover-area--right:hover) .plant-card__thumb::after {
-  opacity: 0.8;
-  background: linear-gradient(to left, rgba(20, 30, 20, 0.8) 0%, rgba(0, 0, 0, 0) 70%);
-}
-.plant-card:has(.hover-area--right:hover) .right-text {
-  opacity: 1;
-  transform: translateX(0);
-}
-
+.plant-card:has(.hover-area--left:hover) .plant-card__thumb::after { opacity: 0.8; background: linear-gradient(to right, rgba(20, 30, 20, 0.8) 0%, rgba(0, 0, 0, 0) 70%); }
+.plant-card:has(.hover-area--left:hover) .left-text { opacity: 1; transform: translateX(0); }
+.plant-card:has(.hover-area--right:hover) .plant-card__thumb::after { opacity: 0.8; background: linear-gradient(to left, rgba(20, 30, 20, 0.8) 0%, rgba(0, 0, 0, 0) 70%); }
+.plant-card:has(.hover-area--right:hover) .right-text { opacity: 1; transform: translateX(0); }
 
 /* =========================
    랭크 배지
 ========================= */
-.plant-card__badge {
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 800;
-  z-index: 5;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.plant-card__badge--rank {
-  background: #f2c94c;
-  color: #1f2a1c;
-}
-
+.plant-card__badge { position: absolute; left: 12px; top: 12px; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 800; z-index: 5; box-shadow: var(--shadow-sm); }
+.plant-card__badge--rank { background: #f2c94c; color: #1f2a1c; }
 
 /* =========================
    본문 텍스트
 ========================= */
-.plant-card__body {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.plant-card__name {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-bg-main);
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.plant-card__sub {
-  margin: 0;
-  font-size: 13px;
-  font-style: normal; /* 이탤릭체 제거하여 모던함 강조 */
-  color: var(--color-main-muted);
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
+.plant-card__body { padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+.plant-card__name { margin: 0; font-size: 16px; font-weight: 700; color: var(--color-bg-main); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.plant-card__sub { margin: 0; font-size: 13px; font-style: normal; color: var(--color-main-muted); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* =========================
    더보기 버튼
 ========================= */
-.plant-section__more {
-  display: flex;
-  justify-content: center;
-  margin-top: 30px;
-}
-
-.btn-more {
-  appearance: none;
-  background: #ffffff;
-  border: 1px solid var(--color-main-line);
-  color: var(--color-bg-main);
-  height: 44px;
-  padding: 0 28px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-more:hover {
-  background: var(--color-main-soft);
-  border-color: var(--color-bg-main);
-  transform: translateY(-2px);
-}
-
-.btn-more:active {
-  transform: translateY(0);
-}
-
-.btn-more:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
+.plant-section__more { display: flex; justify-content: center; margin-top: 30px; }
 
 /* =========================
-   반응형
+   반응형 (640px 대신 768px로 모바일 분기점 통일)
 ========================= */
 @media (max-width: 1024px) {
-  .plant-grid--top3 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .plant-grid--random {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  .plant-grid--top3 { grid-template-columns: repeat(2, 1fr); }
+  .plant-grid--random { grid-template-columns: repeat(3, 1fr); }
 }
-
-@media (max-width: 640px) {
-  .plant__title {
-    font-size: 22px;
-  }
-  .plant-grid--top3 {
-    grid-template-columns: repeat(1, 1fr);
-  }
-  .plant-grid--random {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .plant-card__body {
-    padding: 12px;
-  }
-  .plant-card__name {
-    font-size: 15px;
-  }
-  .plant-card__sub {
-    font-size: 12px;
-  }
+@media (max-width: 768px) {
+  .plant__title { font-size: 22px; }
+  .plant-grid--top3 { grid-template-columns: repeat(1, 1fr); }
+  .plant-grid--random { grid-template-columns: repeat(2, 1fr); }
+  .plant-card__body { padding: 12px; }
+  .plant-card__name { font-size: 15px; }
+  .plant-card__sub { font-size: 12px; }
 }

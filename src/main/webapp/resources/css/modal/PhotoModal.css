@@ -1,33 +1,19 @@
 /* ===== Modal base ===== */
-.photo-modal { 
-  position: fixed; 
-  inset: 0; 
-  display: none; 
-  z-index: 9999; 
-}
-.photo-modal[aria-hidden="false"] { 
-  display: block; 
-}
+.photo-modal { position: fixed; inset: 0; display: none; z-index: 9999; }
+.photo-modal[aria-hidden="false"] { display: block; }
 
-/* 배경 블러 및 색상 통일 */
 .photo-modal__backdrop { 
-  position: absolute; 
-  inset: 0; 
-  background: rgba(44, 62, 45, 0.4);
-  backdrop-filter: blur(2px);
+  position: absolute; inset: 0; 
+  background: rgba(44, 62, 45, 0.4); backdrop-filter: blur(2px);
 }
 
 .photo-modal__panel {
-  position: relative;
-  width: min(500px, calc(100vw - 40px));
-  max-height: calc(100vh - 40px);
-  margin: 100px auto; /* 중앙 배치감 최적화 */
-  background: #ffffff;
+  position: relative; width: min(500px, calc(100vw - 40px)); max-height: calc(100vh - 40px);
+  margin: 100px auto; background: #ffffff;
   border-radius: var(--radius-lg, 16px);
   overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
+  box-shadow: var(--shadow-lg); /* 변수 적용 */
+  display: flex; flex-direction: column;
   animation: modalScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -37,280 +23,51 @@
 }
 
 .photo-modal__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px;
-  background: var(--color-bg-card);
-  border-bottom: 1px solid var(--color-main-soft);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px; background: var(--color-bg-card); border-bottom: 1px solid var(--color-main-soft);
 }
 
-.photo-modal__title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--color-bg-main);
-  margin: 0;
-}
+.photo-modal__title { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 800; color: var(--color-bg-main); margin: 0; }
 
-/* 우측 상단 텍스트 닫기 버튼 */
 .photo-modal__close {
-  background: transparent;
-  border: none;
-  color: var(--color-main-muted);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: color 0.2s ease;
-  padding: 0;
+  background: transparent; border: none; color: var(--color-main-muted); font-size: 14px; font-weight: 700; cursor: pointer; transition: color 0.2s ease; padding: 0;
 }
-.photo-modal__close:hover {
-  color: var(--color-bg-main);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
+.photo-modal__close:hover { color: var(--color-bg-main); text-decoration: underline; text-underline-offset: 4px; }
 
-.photo-modal__body { 
-  padding: 24px; 
-  overflow-y: auto; 
-}
+.photo-modal__body { padding: 24px; overflow-y: auto; }
 
-/* =========================================
-   업로드 영역 (Drop Zone)
-   ========================================= */
-.photo-upload-area {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
-}
+/* 업로드 영역 (Drop Zone) */
+.photo-upload-area { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
+.photo-add { background: #ffffff; border: 2px dashed var(--color-main-line); border-radius: 12px; cursor: pointer; min-height: 220px; width: 100%; display: flex; color: var(--color-bg-main); flex-direction: column; align-items: center; justify-content: center; transition: all 0.2s ease; }
+.photo-add:hover { background: var(--color-main-soft); border-color: var(--color-bg-main); }
+.photo-add__badge { width: 50px; height: 50px; border-radius: 50%; background: var(--color-main-soft); display: inline-flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 900; margin-bottom: 12px; color: var(--color-bg-main); transition: transform 0.2s ease, background 0.2s ease; }
+.photo-add:hover .photo-add__badge { transform: scale(1.1); background: #ffffff; box-shadow: var(--shadow-sm); }
+.photo-add__text { font-size: 16px; font-weight: 800; }
+.photo-add__sub { margin-top: 6px; font-size: 13px; color: var(--color-main-muted); }
 
-.photo-add {
-  background: #ffffff; 
-  border: 2px dashed var(--color-main-line); 
-  border-radius: 12px;
-  cursor: pointer;
-  min-height: 220px;
-  width: 100%;
-  display: flex;
-  color: var(--color-bg-main);
-  flex-direction: column; 
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease; 
-}
+/* 드래그 앤 드롭 피드백 */
+#photoGrid.is-dragover .photo-add { background-color: var(--color-main-soft); border-color: var(--color-bg-main); transform: scale(1.02); }
+#photoGrid.is-dragover * { pointer-events: none; }
 
-.photo-add:hover {
-  background: var(--color-main-soft);
-  border-color: var(--color-bg-main);
-}
+/* 미리보기 사진 디자인 */
+.photo-card { position: relative; width: 100%; max-width: 260px; aspect-ratio: 1 / 1; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid var(--color-main-soft); }
+.photo-card__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-card__remove { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; background-color: rgba(255, 255, 255, 0.9); color: var(--color-text-main); border: none; border-radius: 50%; cursor: pointer; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+.photo-card__remove:hover { background-color: #d64040; color: #ffffff; transform: scale(1.1); }
 
-.photo-add__badge {
-  width: 50px; 
-  height: 50px;
-  border-radius: 50%;
-  background: var(--color-main-soft);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 26px;
-  font-weight: 900;
-  margin-bottom: 12px;
-  color: var(--color-bg-main);
-  transition: transform 0.2s ease, background 0.2s ease;
-}
+#photoGrid.is-dragover .photo-card { transform: scale(1.02); border: 2px dashed var(--color-bg-main); box-shadow: var(--shadow-md); }
+#photoGrid.is-dragover .photo-card::after { content: ""; position: absolute; inset: 0; background: rgba(107, 123, 97, 0.4); z-index: 10; pointer-events: none; }
 
-.photo-add:hover .photo-add__badge {
-  transform: scale(1.1);
-  background: #ffffff;
-  box-shadow: 0 4px 10px rgba(107, 123, 97, 0.1);
-}
+/* 하단 메타 정보 */
+.photo-meta { display: flex; flex-direction: column; align-items: center; gap: 6px; background: var(--color-main-soft); border-radius: 12px; padding: 16px; text-align: center; }
+.photo-meta__hint { color: var(--color-bg-main); font-size: 14px; font-weight: 700; }
+.photo-meta__hint2 { color: var(--color-main-muted); font-size: 13px; }
 
-.photo-add__text { 
-  font-size: 16px; 
-  font-weight: 800; 
-}
-.photo-add__sub { 
-  margin-top: 6px; 
-  font-size: 13px; 
-  color: var(--color-main-muted); 
-}
+/* 푸터 */
+.photo-modal__footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
 
-
-/* =========================================
-   드래그 앤 드롭 피드백
-   ========================================= */
-#photoGrid.is-dragover .photo-add {
-  background-color: var(--color-main-soft); 
-  border-color: var(--color-bg-main); 
-  transform: scale(1.02);
-}
-
-#photoGrid.is-dragover * {
-  pointer-events: none;
-}
-
-
-/* =========================================
-   미리보기 사진 디자인
-   ========================================= */
-.photo-card {
-  position: relative;
-  width: 100%;
-  max-width: 260px;    
-  aspect-ratio: 1 / 1; 
-  margin: 0 auto;      
-  border-radius: 12px;  
-  overflow: hidden;    
-  box-shadow: 0 10px 30px rgba(107, 123, 97, 0.15); 
-  border: 1px solid var(--color-main-soft);
-}
-
-.photo-card__img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; 
-  display: block;
-}
-
-.photo-card__remove {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  background-color: rgba(255, 255, 255, 0.9);
-  color: var(--color-text-main);
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.photo-card__remove:hover {
-  background-color: #d64040; 
-  color: #ffffff;
-  transform: scale(1.1);
-}
-
-/* 미리보기 상태에서의 드래그 오버 */
-#photoGrid.is-dragover .photo-card {
-  transform: scale(1.02);
-  border: 2px dashed var(--color-bg-main); 
-  box-shadow: 0 15px 35px rgba(107, 123, 97, 0.2); 
-}
-
-#photoGrid.is-dragover .photo-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(107, 123, 97, 0.4); 
-  z-index: 10;
-  pointer-events: none; 
-}
-
-
-/* =========================================
-   하단 메타 정보
-   ========================================= */
-.photo-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  background: var(--color-main-soft);
-  border-radius: 12px;
-  padding: 16px;
-  text-align: center;
-}
-
-.photo-meta__hint { 
-  color: var(--color-bg-main); 
-  font-size: 14px; 
-  font-weight: 700;
-}
-.photo-meta__hint2 { 
-  color: var(--color-main-muted); 
-  font-size: 13px; 
-}
-
-
-/* =========================================
-   버튼 및 푸터 (모달 내 버튼 통일)
-   ========================================= */
-.photo-modal__footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 24px;
-}
-
-.mp-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 48px;
-  padding: 0 24px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-}
-
-/* 초기화 버튼 (Ghost) */
-.mp-btn--ghost {
-  background: #ffffff;
-  color: var(--color-bg-main);
-  border-color: var(--color-main-line);
-}
-.mp-btn--ghost:hover {
-  background: var(--color-main-soft);
-  border-color: var(--color-bg-main);
-  transform: translateY(-2px);
-}
-
-/* 전송 버튼 (Primary) */
-.mp-btn--primary {
-  background: var(--color-bg-main);
-  color: #ffffff;
-}
-.mp-btn--primary:not(:disabled):hover {
-  background: #5a6851;
-  box-shadow: 0 4px 12px rgba(107, 123, 97, 0.2);
-  transform: translateY(-2px);
-}
-
-/* 비활성화 상태 */
-#photoSubmitBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: #ccc;
-  box-shadow: none;
-  transform: none;
-}
-
-
-/* =========================================
-   Responsive
-   ========================================= */
-@media (max-width: 767px) {
-  .photo-modal__panel {
-    margin: 40px auto;
-  }
-  .photo-add {
-    min-height: 180px;
-  }
-  .photo-card {
-    max-width: 220px;
-  }
+@media (max-width: 768px) {
+  .photo-modal__panel { margin: 40px auto; }
+  .photo-add { min-height: 180px; }
+  .photo-card { max-width: 220px; }
 }
