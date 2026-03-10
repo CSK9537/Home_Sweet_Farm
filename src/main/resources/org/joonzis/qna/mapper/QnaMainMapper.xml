@@ -57,6 +57,7 @@
           -- CONTENT가 CLOB일 가능성 방어 (DBMS_LOB.SUBSTR)
           DBMS_LOB.SUBSTR(B.CONTENT, 120, 1) AS preview,
           NVL(B.VIEW_COUNT, 0) AS views,
+          NVL(B.LIKE_COUNT, 0) AS likes,
           (
             SELECT COUNT(*)
             FROM TBL_BOARD A

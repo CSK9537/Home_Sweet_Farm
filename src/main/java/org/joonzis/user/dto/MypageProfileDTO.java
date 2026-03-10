@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class MypageProfileDTO {
 	private int user_id;
 	private String profile;		// 프로필 사진명 (컬럼명은 profile_filename)
+	private String username;    // 아이디
 	private String nickname;	// 사용자 닉네임
 	private String gradeName;	// 등급명
 	private String name;		// 사용자의 실명

@@ -107,6 +107,15 @@ public class QnaMainServiceImpl implements QnaMainService {
         result.put("hasNext", endRow(page, pageSize) < total);
         return result;
     }
+    
+    // 메인 페이지용
+    @Override
+    public List<QnaFaqDTO> topQuestions() {
+    	Map<String, Object> Param = new HashMap<>();
+    	Param.put("startRow", 1);
+        Param.put("endRow", 3);
+    	return qnaMainMapper.selectFaqTopList(Param);
+    }
 
     /**
      * 프로필 이미지 경로 설정 (이미지 스트리밍 엔드포인트 사용)

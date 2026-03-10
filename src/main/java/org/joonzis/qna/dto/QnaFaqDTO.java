@@ -13,5 +13,6 @@ public class QnaFaqDTO {
     private String title;
     private String preview;
     private int views;
+    private int likes;
     private int answers;   // 답변 개수(= 자식글 수)
 }

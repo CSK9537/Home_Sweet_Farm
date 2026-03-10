@@ -3,6 +3,7 @@ package org.joonzis.common.controller;
 import java.util.List;
 
 import org.joonzis.plant.service.PlantService;
+import org.joonzis.qna.service.QnaMainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +20,8 @@ public class CommonController {
 	
 	@Autowired
 	private PlantService pservice;
+	@Autowired
+	private QnaMainService qservice;
 	
 	@RequestMapping("/home")
 	public String home() {
@@ -35,6 +38,7 @@ public class CommonController {
 			model.addAttribute("plantImages", "[]");
 		}
 		model.addAttribute("popularPlants", pservice.plantListByRank(3));
+		model.addAttribute("popularQuestions", qservice.topQuestions());
 		return "main";
 	}
 	@RequestMapping("/rules/use")
