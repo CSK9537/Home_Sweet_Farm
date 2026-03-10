@@ -64,25 +64,35 @@
           (
             SELECT MIN(F.SAVED_NAME) KEEP (
                      DENSE_RANK FIRST
-                     ORDER BY CASE WHEN F.IS_THUMBNAIL = 'Y' THEN 0 ELSE 1 END,
-                              F.FILE_ID ASC
+                     ORDER BY
+                       CASE WHEN F.IS_THUMBNAIL = 'Y' THEN 0 ELSE 1 END,
+                       CASE WHEN F.FILE_KIND = 'ATTACH' THEN 0 ELSE 1 END,
+                       F.FILE_ID ASC
                    )
             FROM TBL_BOARD_FILE F
             WHERE F.BOARD_ID = B.BOARD_ID
               AND F.IS_ACTIVE = 'Y'
-              AND F.CONTENT_TYPE LIKE 'image/%'
+              AND (
+                    F.CONTENT_TYPE = 'IMAGE'
+                 OR F.CONTENT_TYPE LIKE 'image/%'
+              )
           ) AS thumbSavedName,
 
           (
             SELECT MIN(F.SUB_DIR) KEEP (
                      DENSE_RANK FIRST
-                     ORDER BY CASE WHEN F.IS_THUMBNAIL = 'Y' THEN 0 ELSE 1 END,
-                              F.FILE_ID ASC
+                     ORDER BY
+                       CASE WHEN F.IS_THUMBNAIL = 'Y' THEN 0 ELSE 1 END,
+                       CASE WHEN F.FILE_KIND = 'ATTACH' THEN 0 ELSE 1 END,
+                       F.FILE_ID ASC
                    )
             FROM TBL_BOARD_FILE F
             WHERE F.BOARD_ID = B.BOARD_ID
               AND F.IS_ACTIVE = 'Y'
-              AND F.CONTENT_TYPE LIKE 'image/%'
+              AND (
+                    F.CONTENT_TYPE = 'IMAGE'
+                 OR F.CONTENT_TYPE LIKE 'image/%'
+              )
           ) AS thumbSubDir,
 
           (

@@ -1,8 +1,4 @@
 /* ===============================
-   CommunityForm.css
-   =============================== */
-
-/* ===============================
    상단 헤더
 =============================== */
 .insert-head {
@@ -326,6 +322,29 @@ input[type="file"].input {
   font-weight: 500;
 }
 
+.input-file {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.file-preview {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-preview-item {
+  padding: 10px 12px;
+  border: 1px solid #d8ddd2;
+  border-radius: 10px;
+  background: #fafcf8;
+  font-size: 14px;
+  color: #2f332b;
+  line-height: 1.4;
+}
 
 /* ===============================
    반응형

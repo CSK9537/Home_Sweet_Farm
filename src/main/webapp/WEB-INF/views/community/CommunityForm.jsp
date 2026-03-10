@@ -7,16 +7,10 @@
 <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
-<%-- =========================================================
-  ✅ Controller(/community/form) 정합
-  - model: mode, tempKey, boardType 내려옴
-  - POST : /community/write, /community/edit
-  - upload: /community/upload(file,tempKey,boardType)
-========================================================= --%>
-
 <c:set var="modeVal" value="${not empty mode ? mode : (empty post ? 'insert' : 'edit')}" />
 <c:set var="boardTypeVal"
        value="${not empty boardType ? boardType : (modeVal eq 'edit' ? post.board_type : param.type)}" />
+<c:set var="safeTempKey" value="${not empty tempKey ? tempKey : ''}" />
 
 <div class="page-shell">
   <section class="content-wrap">
@@ -58,26 +52,20 @@
             method="post"
             enctype="multipart/form-data">
 
-        <%-- mode / board_id --%>
         <input type="hidden" id="mode" value="${modeVal}">
+
         <c:if test="${modeVal eq 'edit'}">
           <input type="hidden" name="board_id" id="boardId" value="${post.board_id}">
         </c:if>
 
-        <%-- ✅ 컨트롤러(write/edit)가 요구: tempKey --%>
-        <input type="hidden" name="tempKey" id="tempKey" value="${tempKey}">
-
-        <%-- BoardVO 바인딩용 --%>
+        <input type="hidden" name="tempKey" id="tempKey" value="${safeTempKey}">
         <input type="hidden" name="board_type" id="boardType" value="${boardTypeVal}">
         <input type="hidden" name="parent_id" id="parentId"
                value="<c:out value='${modeVal eq "edit" ? post.parent_id : param.parentId}'/>">
 
-        <%-- ✅ 컨트롤러(write/edit)가 요구: contentHtml / tagsHidden --%>
         <input type="hidden" name="contentHtml" id="contentHtml">
         <input type="hidden" name="tagsHidden" id="tagsHidden"
-               value="<c:out value='${modeVal eq "edit" ? post.tags : ""}'/>">
-
-        <%-- (옵션) 업로드된 이미지 메타(추후 활용 가능) --%>
+               value="<c:out value='${modeVal eq "edit" ? editTags : ""}'/>">
         <input type="hidden" name="uploadedImagesJson" id="uploadedImagesJson" value="[]">
 
         <div class="form-row form-row--grid">
@@ -91,24 +79,21 @@
               <option value="A">답글</option>
             </select>
             <div class="hint">
-             	 커뮤니티 글쓰기(insert)에서는 G/T/S만 노출되며 변경 가능합니다. QnA(Q/A)는 자동 결정 및 변경 불가입니다.
+              커뮤니티 글쓰기(insert)에서는 G/T/S만 노출되며 변경 가능합니다. QnA(Q/A)는 자동 결정 및 변경 불가입니다.
             </div>
           </div>
 
           <div class="form-field">
             <label class="label">말머리</label>
-            <select class="select" name="category_id" id="headSelect">
+            <select class="select" name="category_id" id="headSelect" required>
               <option value="" data-for="G,Q">선택 안 함</option>
-
               <option value="120" data-for="G">일상</option>
               <option value="130" data-for="G">정보</option>
               <option value="140" data-for="G">후기</option>
               <option value="150" data-for="G">공지</option>
-
               <option value="160" data-for="T">판매</option>
               <option value="170" data-for="T">구매</option>
               <option value="180" data-for="S">나눔</option>
-
               <option value="190" data-for="Q">질문</option>
               <option value="200" data-for="A">답변</option>
             </select>
@@ -119,50 +104,55 @@
         <div class="form-row">
           <div class="form-field">
             <label class="label">제목</label>
-            <input class="input" type="text" name="title" id="title"
-                   placeholder="제목을 입력해 주세요." maxlength="200" required
-                   value="<c:out value='${modeVal eq "edit" ? post.title : ""}'/>">
+            <input type="text" name="title" class="input"
+                   value="<c:out value='${modeVal eq "edit" ? post.title : ""}'/>"
+                   maxlength="200" placeholder="제목을 입력해 주세요.">
           </div>
         </div>
 
-        <div class="form-row form-row--grid" id="tradeBox" style="display:none;">
+        <div class="form-row" id="tradeBox" style="display:none;">
           <div class="form-field">
             <label class="label">가격</label>
-            <input class="input" type="number" name="price" id="price"
-                   placeholder="예) 40000" min="0" step="100"
-                   value="<c:out value='${modeVal eq "edit" ? post.price : ""}'/>">
-            <div class="hint">중고거래(T)에서는 가격 사용을 권장합니다.</div>
+            <input type="number" name="price" id="price" class="input"
+                   value="<c:out value='${modeVal eq "edit" ? post.price : ""}'/>" min="0">
           </div>
 
           <div class="form-field">
             <label class="label">거래상태</label>
-            <select class="select" name="trade_status" id="tradeStatus">
-              <option value="P">진행중</option>
-              <option value="C">완료</option>
+            <select name="trade_status" id="tradeStatus" class="select">
+              <option value="">선택</option>
+              <option value="SALE">판매중</option>
+              <option value="RESERVED">예약중</option>
+              <option value="DONE">거래완료</option>
             </select>
-            <div class="hint">T/S에서만 의미가 있습니다.</div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label class="label" for="attachFiles">첨부파일</label>
+
+            <input type="file"
+                   name="attachFiles"
+                   id="attachFiles"
+                   class="input-file"
+                   multiple>
+
+            <div class="hint">여러 파일을 한 번에 첨부할 수 있습니다.</div>
+
+            <div id="filePreview" class="file-preview"></div>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label class="label">첨부파일(선택)</label>
-            <input class="input" type="file" name="attachFiles" id="attachFiles" multiple>
-            <div class="hint">
-		              이미지 파일은 자동 업로드되어 본문에 삽입되며, submit 시에는 첨부에서 제외됩니다(중복 저장 방지).<br/>
-		              문서/압축 등 비이미지 파일만 “첨부”로 제출됩니다.
-            </div>
-            <div id="fileList" class="file-list" style="display:none;"></div>
+            <label class="label">본문</label>
+            <div id="editor" class="editor-box"></div>
+
+            <c:if test="${modeVal eq 'edit'}">
+              <textarea id="initContent" style="display:none;"><c:out value="${post.content}" escapeXml="false"/></textarea>
+            </c:if>
           </div>
-        </div>
-
-        <div class="form-row">
-          <label class="label">본문</label>
-          <div id="editor" class="editor-box"></div>
-
-          <c:if test="${modeVal eq 'edit'}">
-            <textarea id="initContent" style="display:none;"><c:out value="${post.content}" escapeXml="false"/></textarea>
-          </c:if>
         </div>
 
         <div class="form-row">

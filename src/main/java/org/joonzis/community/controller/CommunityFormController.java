@@ -3,6 +3,7 @@ package org.joonzis.community.controller;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -12,8 +13,8 @@ import org.joonzis.community.service.CommunityFormService;
 import org.joonzis.community.vo.BoardVO;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
@@ -41,29 +42,28 @@ public class CommunityFormController {
 
     private int loginUserId(HttpSession session) {
         Object v = session.getAttribute("loginUser");
-        if(v instanceof UserVO)
-        	return ((UserVO)v).getUser_id();
-        else
-        	return 0;
+        if (v instanceof UserVO) {
+            return ((UserVO) v).getUser_id();
+        }
+        return 0;
     }
 
-    // ====== 폼 진입 ======
     @GetMapping("/form")
     public String form(
-            @RequestParam(defaultValue = "insert") String mode,  // insert|edit
+            @RequestParam(defaultValue = "insert") String mode,
             @RequestParam(required = false) Integer board_id,
-            @RequestParam(defaultValue = "G") String boardType,   // insert일 때만 의미
+            @RequestParam(defaultValue = "G") String boardType,
             HttpSession session,
             Model model
     ) {
         int uid = loginUserId(session);
 
-        // ✅ 페이지 단위 업로드 묶음키(새로 발급)
-        String tempKey = java.util.UUID.randomUUID().toString();
+        String tempKey = UUID.randomUUID().toString();
+
         model.addAttribute("mode", mode);
         model.addAttribute("tempKey", tempKey);
+        model.addAttribute("editTags", "");
 
-        // ===== edit 모드: 기존 게시글 로드 + 권한 체크 + boardType은 DB 기준 =====
         if ("edit".equalsIgnoreCase(mode)) {
             if (uid <= 0) return "redirect:/user/login";
             if (board_id == null) return "redirect:/community/main";
@@ -76,25 +76,28 @@ public class CommunityFormController {
             model.addAttribute("post", post);
             model.addAttribute("isOwner", isOwner);
             model.addAttribute("boardType", post.getBoard_type());
+            model.addAttribute("tempKey", tempKey);
+
             return "community/CommunityForm";
         }
 
-        // ===== insert 모드: boardType 파라미터 기준 =====
         model.addAttribute("boardType", boardType);
+        model.addAttribute("tempKey", tempKey);
+
         return "community/CommunityForm";
     }
 
-    // ====== 선업로드 ======
-    @PostMapping( 
-    		value= "/upload",
-    		produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+            value = "/upload",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseBody
     public ResponseEntity<?> upload(
             @RequestParam("file") MultipartFile file,
             @RequestParam("tempKey") String tempKey,
             @RequestParam("boardType") String boardType,
-            HttpServletRequest req) {
-
+            HttpServletRequest req
+    ) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("파일이 비어있습니다.");
         }
@@ -111,11 +114,11 @@ public class CommunityFormController {
         }
     }
 
-    // ====== 파일 스트리밍 ======
     @GetMapping("/file")
     public ResponseEntity<Resource> file(
             @RequestParam("subDir") String subDir,
-            @RequestParam("savedName") String savedName) throws IOException {
+            @RequestParam("savedName") String savedName
+    ) throws IOException {
 
         if (!savedName.matches("[a-zA-Z0-9._-]+")) {
             return ResponseEntity.badRequest().build();
@@ -138,7 +141,6 @@ public class CommunityFormController {
                 .body(resource);
     }
 
-    // ====== 해시태그 추천 ======
     @GetMapping("/hashtag/suggest")
     public ResponseEntity<java.util.List<String>> suggest(
             @RequestParam("q") String q,
@@ -147,7 +149,6 @@ public class CommunityFormController {
         return ResponseEntity.ok(formService.suggestHashtags(q, limit));
     }
 
-    // ====== 글 등록 ======
     @PostMapping("/write")
     public String write(BoardVO board,
                         @RequestParam("tempKey") String tempKey,
@@ -166,7 +167,6 @@ public class CommunityFormController {
         return "redirect:" + req.getContextPath() + "/qna/view?board_id=" + boardId;
     }
 
-    // ====== 글 수정 ======
     @PostMapping("/edit")
     public String edit(BoardVO board,
                        @RequestParam("tempKey") String tempKey,
@@ -177,7 +177,7 @@ public class CommunityFormController {
                        HttpServletRequest req) {
 
         int uid = loginUserId(session);
-        if (uid <= 0) return "redirect:/login";
+        if (uid <= 0) return "redirect:/user/login";
 
         board.setContent(contentHtml);
 

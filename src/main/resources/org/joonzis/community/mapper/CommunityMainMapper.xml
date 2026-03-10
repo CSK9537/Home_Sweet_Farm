@@ -34,25 +34,35 @@
       (
         SELECT MIN(TBL_BOARD_FILE.SAVED_NAME) KEEP (
                  DENSE_RANK FIRST
-                 ORDER BY CASE WHEN TBL_BOARD_FILE.IS_THUMBNAIL = 'Y' THEN 0 ELSE 1 END,
-                          TBL_BOARD_FILE.FILE_ID ASC
+                 ORDER BY
+                   CASE WHEN TBL_BOARD_FILE.IS_THUMBNAIL = 'Y' THEN 0 ELSE 1 END,
+                   CASE WHEN TBL_BOARD_FILE.FILE_KIND = 'ATTACH' THEN 0 ELSE 1 END,
+                   TBL_BOARD_FILE.FILE_ID ASC
                )
         FROM TBL_BOARD_FILE
         WHERE TBL_BOARD_FILE.BOARD_ID = TBL_BOARD.BOARD_ID
           AND TBL_BOARD_FILE.IS_ACTIVE = 'Y'
-          AND TBL_BOARD_FILE.CONTENT_TYPE LIKE 'image/%'
+          AND (
+                TBL_BOARD_FILE.CONTENT_TYPE = 'IMAGE'
+             OR TBL_BOARD_FILE.CONTENT_TYPE LIKE 'image/%'
+          )
       ) AS thumbSavedName,
 
       (
         SELECT MIN(TBL_BOARD_FILE.SUB_DIR) KEEP (
                  DENSE_RANK FIRST
-                 ORDER BY CASE WHEN TBL_BOARD_FILE.IS_THUMBNAIL = 'Y' THEN 0 ELSE 1 END,
-                          TBL_BOARD_FILE.FILE_ID ASC
+                 ORDER BY
+                   CASE WHEN TBL_BOARD_FILE.IS_THUMBNAIL = 'Y' THEN 0 ELSE 1 END,
+                   CASE WHEN TBL_BOARD_FILE.FILE_KIND = 'ATTACH' THEN 0 ELSE 1 END,
+                   TBL_BOARD_FILE.FILE_ID ASC
                )
         FROM TBL_BOARD_FILE
         WHERE TBL_BOARD_FILE.BOARD_ID = TBL_BOARD.BOARD_ID
           AND TBL_BOARD_FILE.IS_ACTIVE = 'Y'
-          AND TBL_BOARD_FILE.CONTENT_TYPE LIKE 'image/%'
+          AND (
+                TBL_BOARD_FILE.CONTENT_TYPE = 'IMAGE'
+             OR TBL_BOARD_FILE.CONTENT_TYPE LIKE 'image/%'
+          )
       ) AS thumbSubDir,
 
       (
