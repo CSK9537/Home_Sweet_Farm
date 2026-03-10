@@ -67,30 +67,37 @@
             </div>
 
             <div class="cv-writer-info">
-              <div class="cv-writer-line">
-                <a href="javascript:void(0)"
-                   class="js-user-trigger cv-nick"
-                   data-user_id="${board.user_id}"
-                   data-nickname="${board.writer}"
-                   data-user-id="${board.user_id}"
-                   data-user-nick="${board.writer}">
-                  ${board.writer}
-                </a>
-              </div>
-
-              <div class="cv-date-line">
-                <span class="cv-date">
-                  	작성 <fmt:formatDate value="${board.reg_date}" pattern="yyyy.MM.dd" />
-                </span>
-
-                <c:if test="${not empty board.update_date}">
-                  <span class="cv-dot">||</span>
-                  <span class="cv-updated">
-                    	수정 <fmt:formatDate value="${board.update_date}" pattern="yyyy.MM.dd" />
-                  </span>
-                </c:if>
-              </div>
-            </div>
+			  <div class="cv-writer-line cv-user-pop-wrap">
+			    <a href="javascript:void(0)"
+			       class="js-user-trigger cv-nick"
+			       data-user_id="${board.user_id}"
+			       data-nickname="${board.writer}"
+			       data-user-id="${board.user_id}"
+			       data-user-nick="${board.writer}">
+			      ${board.writer}
+			    </a>
+			
+			    <div class="cv-pop cv-user-pop js-inline-user-pop" style="display:none;">
+			      <button type="button" class="cv-pop-item" data-action="boardView">게시글보기</button>
+			      <button type="button" class="cv-pop-item" data-action="chat">채팅하기</button>
+			      <button type="button" class="cv-pop-item" data-action="report">프로필 신고하기</button>
+			      <button type="button" class="cv-pop-item cv-pop-danger" data-action="block">차단하기</button>
+			    </div>
+			  </div>
+			
+			  <div class="cv-date-line">
+			    <span class="cv-date">
+			      	작성 <fmt:formatDate value="${board.reg_date}" pattern="yyyy.MM.dd" />
+			    </span>
+			
+			    <c:if test="${not empty board.update_date}">
+			      <span class="cv-dot">||</span>
+			      <span class="cv-updated">
+			        	수정 <fmt:formatDate value="${board.update_date}" pattern="yyyy.MM.dd" />
+			      </span>
+			    </c:if>
+			  </div>
+			</div>
           </div>
 
           <div class="cv-stats">
@@ -254,22 +261,28 @@
 
                 <div class="cv-comment-body">
                   <div class="cv-comment-head">
-                    <a href="javascript:void(0)"
-                       class="js-user-trigger cv-nick"
-                       data-user_id="${r.user_id}"
-                       data-nickname="${r.writer}"
-                       data-user-id="${r.user_id}"
-                       data-user-nick="${r.writer}">
-                      ${r.writer}
-                    </a>
-
-                    <div class="cv-comment-head-right">
-                      <span class="cv-comment-date">
-                        <fmt:formatDate value="${r.reg_date}" pattern="yyyy.MM.dd" />
-                      </span>
-                      <button type="button" class="cv-icon-btn js-more-menu" aria-label="menu">⋮</button>
-                    </div>
-                  </div>
+					  <div class="cv-user-pop-wrap">
+					    <a href="javascript:void(0)"
+					       class="js-user-trigger cv-nick"
+					       data-user_id="${r.user_id}"
+					       data-nickname="${r.writer}"
+					       data-user-id="${r.user_id}"
+					       data-user-nick="${r.writer}">
+					      ${r.writer}
+					    </a>
+					
+					    <div class="cv-pop cv-user-pop js-inline-user-pop" style="display:none;">
+					      <button type="button" class="cv-pop-item" data-action="boardView">게시글보기</button>
+					      <button type="button" class="cv-pop-item" data-action="chat">채팅하기</button>
+					      <button type="button" class="cv-pop-item" data-action="report">프로필 신고하기</button>
+					      <button type="button" class="cv-pop-item cv-pop-danger" data-action="block">차단하기</button>
+					    </div>
+					  </div>
+					
+					  <span class="cv-comment-date">
+					    <fmt:formatDate value="${r.reg_date}" pattern="yyyy.MM.dd HH:mm" />
+					  </span>
+					</div>
 
                   <div class="cv-comment-text js-item-text">
                     <c:out value="${r.content}" />
@@ -314,13 +327,6 @@
           <div id="replyLoading" class="cv-loading" style="display:none;">불러오는 중...</div>
           <div id="replyEnd" class="cv-end" style="display:none;">마지막 댓글입니다.</div>
         </div>
-      </div>
-
-      <div id="userPop" class="cv-pop cv-user-pop" style="display:none;">
-        <button type="button" class="cv-pop-item" data-action="boardView">게시글보기</button>
-        <button type="button" class="cv-pop-item" data-action="chat">채팅하기</button>
-        <button type="button" class="cv-pop-item" data-action="report">프로필 신고하기</button>
-        <button type="button" class="cv-pop-item cv-pop-danger" data-action="block">차단하기</button>
       </div>
 
       <input type="hidden" id="board_id" value="${board.board_id}" />
