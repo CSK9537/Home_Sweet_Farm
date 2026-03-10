@@ -8,8 +8,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -304,6 +307,108 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         return rewriteHtmlTempToFinal(contentHtml, tempSubDir, finalSubDir, usedSaved);
     }
 
+    private List<String> normalizeTags(String tagsCsv) {
+        if (tagsCsv == null || tagsCsv.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Set<String> dedup = new LinkedHashSet<>();
+        String[] arr = tagsCsv.split(",");
+
+        for (String raw : arr) {
+            if (raw == null) continue;
+
+            String tag = raw.trim();
+            if (tag.isEmpty()) continue;
+
+            while (tag.startsWith("#")) {
+                tag = tag.substring(1).trim();
+            }
+
+            if (tag.isEmpty()) continue;
+
+            if (tag.length() > 20) {
+                tag = tag.substring(0, 20);
+            }
+
+            dedup.add(tag);
+        }
+
+        return new ArrayList<>(dedup);
+    }
+
+    private void saveBoardTags(int boardId, String tagsCsv) {
+        mapper.deleteBoardAspectsByBoardId(boardId);
+
+        List<String> tags = normalizeTags(tagsCsv);
+        if (tags.isEmpty()) {
+            return;
+        }
+
+        for (String tag : tags) {
+            Integer hashtagId = mapper.selectBoardHashtagIdByName(tag);
+
+            if (hashtagId == null) {
+                mapper.insertBoardHashtag(tag);
+                hashtagId = mapper.selectBoardHashtagIdByName(tag);
+            }
+
+            if (hashtagId != null) {
+                mapper.insertBoardAspect(boardId, hashtagId);
+            }
+        }
+    }
+
+    private void saveAttachFiles(int boardId, String boardType, MultipartFile[] attachFiles) {
+        if (attachFiles == null || attachFiles.length == 0) return;
+        if (boardType == null || boardType.trim().isEmpty()) boardType = "G";
+
+        Path dir = buildSaveDir(boardType);
+        String subDir = buildSubDir(boardType);
+
+        try {
+            Files.createDirectories(dir);
+        } catch (IOException e) {
+            throw new RuntimeException("attach dir create failed", e);
+        }
+
+        boolean thumbnailAssigned = false;
+
+        for (MultipartFile f : attachFiles) {
+            if (f == null || f.isEmpty()) continue;
+
+            String original = f.getOriginalFilename();
+            String saved = newSavedName(original);
+            String normalizedType = normalizeContentType(f.getContentType());
+
+            try {
+                f.transferTo(dir.resolve(saved).toFile());
+            } catch (IOException e) {
+                throw new RuntimeException("attach upload failed", e);
+            }
+
+            BoardFileVO vo = new BoardFileVO();
+            vo.setBoard_id(boardId);
+            vo.setOriginal_name(original);
+            vo.setSaved_name(saved);
+            vo.setFile_size((int) Math.min(Integer.MAX_VALUE, f.getSize()));
+            vo.setContent_type(normalizedType);
+            vo.setTemp_key(null);
+            vo.setSub_dir(subDir);
+            vo.setFile_kind("ATTACH");
+            vo.setIs_active("Y");
+
+            if (!thumbnailAssigned && "IMAGE".equals(normalizedType)) {
+                vo.setIs_thumbnail("Y");
+                thumbnailAssigned = true;
+            } else {
+                vo.setIs_thumbnail("N");
+            }
+
+            mapper.insertBoardFile(vo);
+        }
+    }
+
     @Override
     @Transactional
     public UploadResponseDTO uploadTempFile(MultipartFile file, String tempKey, String boardType) {
@@ -366,8 +471,8 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         }
 
         saveAttachFiles(nextId, board.getBoard_type(), attachFiles);
+        saveBoardTags(nextId, tagsCsv);
 
-        // 현재 mapper에는 tagsCsv 저장용 insert/update 메서드가 없어서 여기서는 사용하지 않음
         return nextId;
     }
 
@@ -397,66 +502,16 @@ public class CommunityFormServiceImpl implements CommunityFormService {
 
         mapper.updateBoard(board);
         saveAttachFiles(board.getBoard_id(), board.getBoard_type(), attachFiles);
+        saveBoardTags(board.getBoard_id(), tagsCsv);
 
-        // 현재 mapper에는 tagsCsv 저장용 insert/update 메서드가 없어서 여기서는 사용하지 않음
         return board.getBoard_id();
-    }
-
-    private void saveAttachFiles(int boardId, String boardType, MultipartFile[] attachFiles) {
-        if (attachFiles == null || attachFiles.length == 0) return;
-        if (boardType == null || boardType.trim().isEmpty()) boardType = "G";
-
-        Path dir = buildSaveDir(boardType);
-        String subDir = buildSubDir(boardType);
-
-        try {
-            Files.createDirectories(dir);
-        } catch (IOException e) {
-            throw new RuntimeException("attach dir create failed", e);
-        }
-
-        boolean thumbnailAssigned = false;
-
-        for (MultipartFile f : attachFiles) {
-            if (f == null || f.isEmpty()) continue;
-
-            String original = f.getOriginalFilename();
-            String saved = newSavedName(original);
-            String normalizedType = normalizeContentType(f.getContentType());
-
-            try {
-                f.transferTo(dir.resolve(saved).toFile());
-            } catch (IOException e) {
-                throw new RuntimeException("attach upload failed", e);
-            }
-
-            BoardFileVO vo = new BoardFileVO();
-            vo.setBoard_id(boardId);
-            vo.setOriginal_name(original);
-            vo.setSaved_name(saved);
-            vo.setFile_size((int) Math.min(Integer.MAX_VALUE, f.getSize()));
-            vo.setContent_type(normalizedType);
-            vo.setTemp_key(null);
-            vo.setSub_dir(subDir);
-            vo.setFile_kind("ATTACH");
-            vo.setIs_active("Y");
-
-            if (!thumbnailAssigned && "IMAGE".equals(normalizedType)) {
-                vo.setIs_thumbnail("Y");
-                thumbnailAssigned = true;
-            } else {
-                vo.setIs_thumbnail("N");
-            }
-
-            mapper.insertBoardFile(vo);
-        }
     }
 
     @Override
     public List<String> suggestHashtags(String q, int limit) {
         if (q == null) q = "";
         q = q.trim();
-        if (q.isEmpty()) return java.util.Collections.emptyList();
+        if (q.isEmpty()) return Collections.emptyList();
 
         if (limit <= 0) limit = 10;
         if (limit > 20) limit = 20;
@@ -467,6 +522,11 @@ public class CommunityFormServiceImpl implements CommunityFormService {
     @Override
     public BoardVO getBoardById(int boardId) {
         return mapper.selectBoardById(boardId);
+    }
+
+    @Override
+    public String getBoardTagsCsv(int boardId) {
+        return mapper.selectBoardTagsCsv(boardId);
     }
 
     @Override
@@ -489,6 +549,7 @@ public class CommunityFormServiceImpl implements CommunityFormService {
 
         mapper.deactivateFilesByBoardId(boardId);
         mapper.deactivateRepliesByBoardId(boardId);
+        mapper.deleteBoardAspectsByBoardId(boardId);
 
         return mapper.deactivateBoard(boardId, loginUserId) > 0;
     }

@@ -77,6 +77,7 @@ public class CommunityFormController {
             model.addAttribute("isOwner", isOwner);
             model.addAttribute("boardType", post.getBoard_type());
             model.addAttribute("tempKey", tempKey);
+            model.addAttribute("editTags", formService.getBoardTagsCsv(board_id));
 
             return "community/CommunityForm";
         }

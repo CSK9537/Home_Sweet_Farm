@@ -84,8 +84,7 @@
       AND IS_ACTIVE = 'Y'
   </select>
 
-  <select id="selectBoardOwnerUserId"
-          resultType="int">
+  <select id="selectBoardOwnerUserId" resultType="int">
     SELECT USER_ID
     FROM TBL_BOARD
     WHERE BOARD_ID = #{boardId}
@@ -125,39 +124,6 @@
     )
   </insert>
 
-  <select id="selectFilesByTempKey"
-          parameterType="string"
-          resultType="org.joonzis.community.vo.BoardFileVO">
-    SELECT
-      FILE_ID,
-      BOARD_ID,
-      ORIGINAL_NAME,
-      SAVED_NAME,
-      FILE_SIZE,
-      CONTENT_TYPE,
-      TEMP_KEY,
-      SUB_DIR,
-      FILE_KIND,
-      IS_ACTIVE,
-      IS_THUMBNAIL,
-      REG_DATE,
-      UPDATED_AT
-    FROM TBL_BOARD_FILE
-    WHERE TEMP_KEY  = #{temp_key, jdbcType=VARCHAR}
-      AND IS_ACTIVE = 'Y'
-    ORDER BY FILE_ID ASC
-  </select>
-
-  <update id="attachTempFilesToBoard">
-    UPDATE TBL_BOARD_FILE
-       SET BOARD_ID   = #{board_id, jdbcType=NUMERIC},
-           TEMP_KEY   = NULL,
-           UPDATED_AT = SYSDATE
-     WHERE TEMP_KEY   = #{temp_key, jdbcType=VARCHAR}
-       AND BOARD_ID   IS NULL
-       AND IS_ACTIVE  = 'Y'
-  </update>
-
   <update id="deactivateFilesByBoardId">
     UPDATE TBL_BOARD_FILE
        SET IS_ACTIVE  = 'N',
@@ -194,5 +160,54 @@
     )
     WHERE ROWNUM &lt;= #{limit}
   </select>
+
+  <!-- 수정 폼 진입 시 기존 태그 CSV 조회 -->
+  <select id="selectBoardTagsCsv" resultType="string">
+    SELECT LISTAGG(H.BOARD_HASHTAG_NAME, ',') WITHIN GROUP (ORDER BY H.BOARD_HASHTAG_NAME)
+    FROM TBL_BOARD_ASPECT A
+    JOIN TBL_BOARD_HASHTAG_LIST H
+      ON H.BOARD_HASHTAG_ID = A.BOARD_HASHTAG_ID
+    WHERE A.BOARD_ID = #{boardId}
+      AND NVL(H.IS_ACTIVE, 'Y') = 'Y'
+  </select>
+
+  <!-- 태그명으로 ID 찾기 -->
+  <select id="selectBoardHashtagIdByName" resultType="int">
+    SELECT BOARD_HASHTAG_ID
+    FROM TBL_BOARD_HASHTAG_LIST
+    WHERE BOARD_HASHTAG_NAME = #{tagName}
+      AND NVL(IS_ACTIVE, 'Y') = 'Y'
+  </select>
+
+  <!-- 없으면 태그 사전에 추가 -->
+  <insert id="insertBoardHashtag">
+    INSERT INTO TBL_BOARD_HASHTAG_LIST (
+      BOARD_HASHTAG_ID,
+      BOARD_HASHTAG_NAME,
+      IS_ACTIVE,
+      REG_DATE
+    ) VALUES (
+      SEQ_TBL_BOARD_HASHTAG_LIST.NEXTVAL,
+      #{tagName},
+      'Y',
+      SYSDATE
+    )
+  </insert>
+
+  <!-- 게시글-태그 연결 전부 삭제 후 재삽입 -->
+  <delete id="deleteBoardAspectsByBoardId">
+    DELETE FROM TBL_BOARD_ASPECT
+    WHERE BOARD_ID = #{boardId}
+  </delete>
+
+  <insert id="insertBoardAspect">
+    INSERT INTO TBL_BOARD_ASPECT (
+      BOARD_ID,
+      BOARD_HASHTAG_ID
+    ) VALUES (
+      #{boardId},
+      #{boardHashtagId}
+    )
+  </insert>
 
 </mapper>

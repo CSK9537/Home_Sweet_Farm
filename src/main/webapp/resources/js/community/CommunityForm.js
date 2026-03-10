@@ -307,10 +307,26 @@
         e.preventDefault();
         addTag(tagInput.value);
         tagInput.value = "";
-        if (tagSuggest) tagSuggest.style.display = "none";
+        if (tagSuggest) {
+          tagSuggest.innerHTML = "";
+          tagSuggest.style.display = "none";
+        }
       } else if (e.key === "Backspace" && !tagInput.value && tags.length) {
         tags.pop();
         renderTags();
+      }
+    });
+
+    tagInput.addEventListener("blur", function () {
+      var pending = (tagInput.value || "").trim();
+      if (!pending) return;
+
+      addTag(pending);
+      tagInput.value = "";
+
+      if (tagSuggest) {
+        tagSuggest.innerHTML = "";
+        tagSuggest.style.display = "none";
       }
     });
 
@@ -523,6 +539,18 @@
         return;
       }
 
+      if (tagInput) {
+        var pendingTag = (tagInput.value || "").trim();
+        if (pendingTag) {
+          addTag(pendingTag);
+          tagInput.value = "";
+          if (tagSuggest) {
+            tagSuggest.innerHTML = "";
+            tagSuggest.style.display = "none";
+          }
+        }
+      }
+
       var html = editor.getHTML();
       if (!html || html.replace(/<[^>]*>/g, "").trim().length === 0) {
         alert("본문을 입력해 주세요.");
@@ -544,6 +572,7 @@
       if (headSelect && !headSelect.value && (boardType === "T" || boardType === "S")) {
         alert("거래/나눔 게시판은 말머리를 선택해 주세요.");
         e.preventDefault();
+        return;
       }
     });
   }

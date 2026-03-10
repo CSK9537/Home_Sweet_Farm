@@ -28,6 +28,8 @@ public interface CommunityFormService {
 
     BoardVO getBoardById(int boardId);
 
+    String getBoardTagsCsv(int boardId);
+
     boolean isOwner(int boardId, int loginUserId);
 
     boolean deleteBoard(int boardId, int loginUserId);

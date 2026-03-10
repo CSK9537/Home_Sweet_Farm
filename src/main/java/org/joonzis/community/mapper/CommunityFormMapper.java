@@ -15,19 +15,14 @@ public interface CommunityFormMapper {
 
   int updateBoard(BoardVO board);
 
-  // edit 폼 진입 시 기존 게시글 로드
   BoardVO selectBoardById(@Param("boardId") int boardId);
 
-  // 작성자 검증(수정 권한 체크)
   Integer selectBoardOwnerUserId(@Param("boardId") int boardId);
 
-  // 게시글 삭제(소프트 삭제)
   int deactivateBoard(@Param("boardId") int boardId, @Param("loginUserId") int loginUserId);
 
-  // 게시글 첨부파일 비활성화
   int deactivateFilesByBoardId(@Param("boardId") int boardId);
 
-  // 게시글 댓글 비활성화
   int deactivateRepliesByBoardId(@Param("boardId") int boardId);
 
   // ====== File ======
@@ -35,4 +30,15 @@ public interface CommunityFormMapper {
 
   // ====== Hashtag Suggest ======
   List<String> selectHashtagSuggest(@Param("q") String q, @Param("limit") int limit);
+
+  // ====== Board Hashtag 저장 ======
+  String selectBoardTagsCsv(@Param("boardId") int boardId);
+
+  Integer selectBoardHashtagIdByName(@Param("tagName") String tagName);
+
+  int insertBoardHashtag(@Param("tagName") String tagName);
+
+  int deleteBoardAspectsByBoardId(@Param("boardId") int boardId);
+
+  int insertBoardAspect(@Param("boardId") int boardId, @Param("boardHashtagId") int boardHashtagId);
 }
