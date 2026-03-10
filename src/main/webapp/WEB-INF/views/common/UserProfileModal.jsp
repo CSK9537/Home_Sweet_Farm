@@ -13,7 +13,7 @@
     
     <div class="upm-modal-body scroll-box">
       <div class="upm-left-profile">
-        <button type="button" class="upm-avatar-btn" disabled>
+        <button type="button" class="upm-avatar-btn">
           <img class="upm-avatar" id="upmAvatar" src="${pageContext.request.contextPath}/resources/image/default_profile.png" alt="프로필 이미지"/>
         </button>
 

@@ -68,7 +68,7 @@
                value="<c:out value='${modeVal eq "edit" ? editTags : ""}'/>">
         <input type="hidden" name="uploadedImagesJson" id="uploadedImagesJson" value="[]">
 
-        <div class="form-row form-row--grid">
+        <div class="form-row--grid">
           <div class="form-field">
             <label class="label">게시판</label>
             <select class="select" id="typeSelect" disabled>
@@ -131,12 +131,14 @@
         <div class="form-row">
           <div class="form-field">
             <label class="label" for="attachFiles">첨부파일</label>
+            <div class="input-file-area">
+	            <input type="file"
+	                   name="attachFiles"
+	                   id="attachFiles"
+	                   class="input-file"
+	                   multiple>
+            </div>
 
-            <input type="file"
-                   name="attachFiles"
-                   id="attachFiles"
-                   class="input-file"
-                   multiple>
 
             <div class="hint">여러 파일을 한 번에 첨부할 수 있습니다.</div>
 

@@ -1,354 +1,137 @@
-/* OrderList.css */
-.order-list { 
-  position: relative; 
-  width: 100%; 
-}
+.order-list { position: relative; width: 100%; }
 
 /* =========================
-   카테고리 바 (StoreList와 통일)
+   카테고리 바
 ========================= */
 .category-bar {
-  margin-top: 10px;
-  width: 100%;
-  height: 48px;
-  background: var(--color-main-soft);
-  border: 1px dashed var(--color-main-line);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  box-sizing: border-box;
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; height: 48px; margin-top: 10px; padding: 0 20px;
+  border: 1px dashed var(--color-main-line); border-radius: 12px;
+  background: var(--color-main-soft); box-sizing: border-box;
 }
-.category-bar__title {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--color-bg-main);
-}
-.category-bar__path {
-  font-size: 13px;
-  color: var(--color-main-muted);
-  font-weight: 500;
-}
-.path-sep { 
-  margin: 0 8px; 
-  opacity: 0.5;
-}
-
+.category-bar__title { font-size: 15px; font-weight: 800; color: var(--color-bg-main); }
+.category-bar__path { font-size: 13px; font-weight: 500; color: var(--color-main-muted); }
+.path-sep { margin: 0 8px; opacity: 0.5; }
 
 /* =========================
-   주문 목록 컨테이너
+   주문 목록 컨테이너 & 개별 주문 카드
 ========================= */
-.order-list-container {
-  margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
+.order-list-container { display: flex; flex-direction: column; gap: 20px; margin-top: 24px; }
 
-
-/* =========================
-   개별 주문 카드
-========================= */
+/* .order-card (globals.css 카드 호버 통합) */
 .order-card {
-  border: 1px solid var(--color-main-soft);
-  background: #ffffff;
-  border-radius: var(--radius-lg, 16px);
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
-}
-.order-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 24px rgba(107, 123, 97, 0.1);
-  border-color: var(--color-main-line);
+  border: 1px solid var(--color-main-soft);
+  border-radius: var(--radius-lg, 16px);
+  background: #ffffff;
 }
 
-/* 주문 헤더 (주문일자, 주문번호) */
 .order-card__header {
-  padding: 16px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 20px; border-bottom: 1px solid var(--color-main-soft);
   background: var(--color-bg-card);
-  border-bottom: 1px solid var(--color-main-soft);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
-.order-date {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--color-bg-main);
-}
-.order-id {
-  font-size: 13px;
-  color: var(--color-main-muted);
-  font-weight: 500;
-}
+.order-date { font-size: 15px; font-weight: 800; color: var(--color-bg-main); }
+.order-id { font-size: 13px; font-weight: 500; color: var(--color-main-muted); }
 
-/* 주문 본문 (상품 리스트) */
-.order-card__body {
-  padding: 0;
-}
-.order-item {
-  display: flex;
-  padding: 20px;
-  border-bottom: 1px dashed var(--color-main-soft);
-  align-items: center;
-}
-.order-item:last-child {
-  border-bottom: none;
-}
+.order-card__body { padding: 0; }
+.order-item { display: flex; align-items: center; padding: 20px; border-bottom: 1px dashed var(--color-main-soft); }
+.order-item:last-child { border-bottom: none; }
 
 .order-item__thumb {
-  width: 84px;
-  height: 84px;
-  background: var(--color-main-soft);
-  border-radius: 10px;
-  overflow: hidden;
-  margin-right: 20px;
-  flex-shrink: 0;
-  border: 1px solid var(--color-main-line);
+  flex-shrink: 0; width: 84px; height: 84px; margin-right: 20px; overflow: hidden;
+  border: 1px solid var(--color-main-line); border-radius: 10px; background: var(--color-main-soft);
 }
-.order-item__thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.order-item__thumb img { width: 100%; height: 100%; object-fit: cover; }
 
-.order-item__info {
-  flex-grow: 1;
-}
-.order-item__name {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-text-main);
-  margin-bottom: 6px;
-}
-.order-item__price {
-  font-size: 14px;
-  color: var(--color-main-muted);
-}
+.order-item__info { flex-grow: 1; }
+.order-item__name { margin-bottom: 6px; font-size: 15px; font-weight: 700; color: var(--color-text-main); }
+.order-item__price { font-size: 14px; color: var(--color-main-muted); }
+.order-item__status { width: 120px; text-align: right; }
 
-.order-item__status {
-  width: 120px;
-  text-align: right;
-}
-
-/* 상태 뱃지 (파스텔 톤 고급화) */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 800;
-}
+/* 상태 뱃지 고유 스타일 */
+.status-badge { display: inline-flex; align-items: center; justify-content: center; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 800; }
 .status-badge--complete { background: rgba(45, 134, 71, 0.1); color: #2d8647; }
 .status-badge--waiting { background: rgba(226, 135, 74, 0.1); color: #e2874a; }
 .status-badge--cancel { background: rgba(214, 64, 64, 0.1); color: #d64040; }
 
-
-/* 주문 푸터 (총 결제 금액 및 버튼) */
 .order-card__footer {
-  padding: 16px 20px;
-  border-top: 1px solid var(--color-main-soft);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #ffffff;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 20px; border-top: 1px solid var(--color-main-soft); background: #ffffff;
 }
 
-/* 주문 취소 버튼 (Ghost 스타일 변형) */
+/* 주문 취소 버튼 (Danger 성격으로 인해 별도 유지) */
 .btn-cancel-order {
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid var(--color-main-line);
-  background: #ffffff;
-  color: var(--color-main-muted);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 8px 16px; border: 1px solid var(--color-main-line); border-radius: 8px;
+  background: #ffffff; color: var(--color-main-muted); font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;
 }
-.btn-cancel-order:hover {
-  background: #fff0f0;
-  color: #d64040;
-  border-color: #ffcdd2;
-}
+.btn-cancel-order:hover { background: #fff0f0; border-color: #ffcdd2; color: #d64040; }
 
-.total-label {
-  font-size: 13px;
-  color: var(--color-main-muted);
-  margin-right: 12px;
-}
-.total-price {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--color-bg-main);
-}
+.total-label { margin-right: 12px; font-size: 13px; color: var(--color-main-muted); }
+.total-price { font-size: 18px; font-weight: 800; color: var(--color-bg-main); }
 
 
 /* =========================
-   로딩 / 빈 상태
+   로딩 / 빈 상태 (globals.css 통합)
 ========================= */
-.loading-box, .empty-box {
-  width: 100%;
-  padding: 80px 20px;
-  text-align: center;
-  border: 2px dashed var(--color-main-line);
-  border-radius: var(--radius-lg, 16px);
-  color: var(--color-main-muted);
-  font-size: 15px;
-  font-weight: 500;
-  background: rgba(255, 255, 255, 0.5);
-}
-
+/* .loading-box, .empty-box 는 globals.css 디자인 시스템으로 통합되었습니다. */
 
 /* =========================
    모달 공통 스타일 (JS 동적 생성 대응)
 ========================= */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(44, 62, 45, 0.4);
-  backdrop-filter: blur(2px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-.modal-content {
-  background: #ffffff;
-  width: 90%;
-  max-width: 500px;
-  border-radius: var(--radius-lg, 16px);
-  overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-  animation: modalFadeIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
+/* .modal-overlay, .modal-content (외형은 globals.css 통합, 레이아웃/너비만 유지) */
+.modal-overlay { display: flex; align-items: center; justify-content: center; }
+.modal-content { width: 90%; max-width: 500px; }
 .modal-content--small { max-width: 400px; }
 
-@keyframes modalFadeIn {
-  from { opacity: 0; transform: translateY(20px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.modal-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--color-main-soft);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--color-bg-card);
-}
-.modal-title { font-weight: 800; color: var(--color-bg-main); font-size: 18px; }
-.modal-close { 
-  font-size: 26px; 
-  line-height: 1; 
-  cursor: pointer; 
-  color: var(--color-main-muted); 
-  transition: color 0.2s; 
-}
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--color-main-soft); background: var(--color-bg-card); }
+.modal-title { font-size: 18px; font-weight: 800; color: var(--color-bg-main); }
+.modal-close { padding: 0; border: none; background: transparent; font-size: 26px; line-height: 1; cursor: pointer; color: var(--color-main-muted); transition: color 0.2s; }
 .modal-close:hover { color: var(--color-bg-main); }
-
 .modal-body { padding: 24px; }
-
 
 /* =========================
    상세 주문 정보 (모달 내부)
 ========================= */
 .order-detail { display: flex; flex-direction: column; gap: 16px; }
+.order-detail__products { max-height: 240px; margin: 10px 0; padding: 10px 0; border-top: 1px dashed var(--color-main-line); border-bottom: 1px dashed var(--color-main-line); overflow-y: auto; }
 
-.order-detail__products {
-  margin: 10px 0;
-  padding: 10px 0;
-  border-top: 1px dashed var(--color-main-line);
-  border-bottom: 1px dashed var(--color-main-line);
-  max-height: 240px;
-  overflow-y: auto;
-}
-
-.modal-product {
-  display: flex;
-  align-items: center;
-  padding: 10px 0;
-}
+.modal-product { display: flex; align-items: center; padding: 10px 0; }
 .modal-product:last-child { border-bottom: none; }
-
-.modal-product__thumb {
-  width: 56px;
-  height: 56px;
-  background: var(--color-main-soft);
-  border: 1px solid var(--color-main-line);
-  border-radius: 8px;
-  overflow: hidden;
-  margin-right: 14px;
-  flex-shrink: 0;
-}
-.modal-product__thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
+.modal-product__thumb { flex-shrink: 0; width: 56px; height: 56px; margin-right: 14px; overflow: hidden; border: 1px solid var(--color-main-line); border-radius: 8px; background: var(--color-main-soft); }
+.modal-product__thumb img { width: 100%; height: 100%; object-fit: cover; }
 .modal-product__info { flex-grow: 1; text-align: right; }
 .modal-product__name { font-size: 14px; font-weight: 700; color: var(--color-text-main); }
-.modal-product__count { font-size: 13px; color: var(--color-main-muted); margin-top: 4px; }
+.modal-product__count { margin-top: 4px; font-size: 13px; color: var(--color-main-muted); }
 
-.order-detail__item { 
-  display: flex; 
-  justify-content: space-between; 
-  font-size: 14px; 
-}
-.order-detail__label { color: var(--color-main-muted); font-weight: 500; }
+.order-detail__item { display: flex; justify-content: space-between; font-size: 14px; }
+.order-detail__label { font-weight: 500; color: var(--color-main-muted); }
 .order-detail__value { font-weight: 700; color: var(--color-text-main); text-align: right; }
 
-.total-row {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 2px solid var(--color-main-soft);
-}
-.total-row .order-detail__value { color: var(--color-bg-main); font-size: 20px; font-weight: 900; }
-
+.total-row { margin-top: 16px; padding-top: 16px; border-top: 2px solid var(--color-main-soft); }
+.total-row .order-detail__value { font-size: 20px; font-weight: 900; color: var(--color-bg-main); }
 
 /* =========================
    취소 모달 (JS 동적 렌더링 영역)
 ========================= */
-.modal-desc { font-size: 14px; color: var(--color-text-main); margin-bottom: 12px; }
-.modal-textarea {
-  width: 100%; height: 100px; padding: 12px; border-radius: 8px;
-  border: 1px solid var(--color-main-line); resize: none; font-size: 14px; 
-  outline: none; box-sizing: border-box; font-family: inherit;
-  transition: all 0.2s ease;
-}
-.modal-textarea:focus { 
-  border-color: var(--color-bg-main); 
-  box-shadow: 0 0 0 3px var(--color-main-soft);
-}
+.modal-desc { margin-bottom: 12px; font-size: 14px; color: var(--color-text-main); }
+.modal-textarea { height: 100px; resize: none; }
 
-.modal-footer { margin-top: 24px; display: flex; gap: 10px; justify-content: flex-end; }
-.btn-confirm-cancel, .btn-close-cancel {
-  padding: 0 20px; height: 44px; border-radius: 8px; border: none; 
-  font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;
-}
-.btn-confirm-cancel { background: #d64040; color: #fff; }
-.btn-confirm-cancel:hover { background: #b53636; box-shadow: 0 4px 10px rgba(214, 64, 64, 0.2); transform: translateY(-2px); }
-
-.btn-close-cancel { background: #ffffff; color: var(--color-text-main); border: 1px solid var(--color-main-line); }
-.btn-close-cancel:hover { background: var(--color-main-soft); transform: translateY(-2px); }
+.modal-footer { display: flex; justify-content: flex-end; margin-top: 24px; gap: 10px; }
+.btn-confirm-cancel, .btn-close-cancel { height: 44px; padding: 0 20px; border-radius: 8px; font-size: 14px; }
+.btn-confirm-cancel { border: none; background: #d64040; color: #fff; }
+.btn-confirm-cancel:hover { background: #b53636; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(214, 64, 64, 0.2); }
 
 body.modal-open { overflow: hidden; }
-
 
 /* =========================
    반응형
 ========================= */
 @media (max-width: 767px) {
   .order-card__header { padding: 14px; }
-  .order-item { padding: 16px 14px; flex-direction: column; align-items: flex-start; }
+  .order-item { flex-direction: column; align-items: flex-start; padding: 16px 14px; }
   .order-item__thumb { margin-bottom: 12px; }
-  .order-item__status { width: auto; text-align: left; margin-top: 12px; }
+  .order-item__status { width: auto; margin-top: 12px; text-align: left; }
   .order-card__footer { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .footer-right { width: 100%; justify-content: space-between; }
+  .footer-right { display: flex; justify-content: space-between; width: 100%; }
 }

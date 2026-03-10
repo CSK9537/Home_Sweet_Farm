@@ -10,7 +10,6 @@
 
 			<div class="plant__header">
 				<h2 class="plant__title">식물</h2>
-				<div class="plant__divider"></div>
 			</div>
 
 			<section class="plant-section" data-section="popular">

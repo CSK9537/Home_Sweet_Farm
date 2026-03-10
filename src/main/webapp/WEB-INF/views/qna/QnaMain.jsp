@@ -29,9 +29,7 @@
           <span class="qna-divider">||</span>
           <a class="qna-menu" href="<c:url value='/qna/people'/>" data-tab="people">사람들</a>
         </div>
-
-        <!-- 굵은 라인 -->
-        <div class="qna-topline"></div>
+        
       </div>
 
       <!-- 1) 채택왕 -->
