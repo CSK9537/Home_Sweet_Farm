@@ -12,12 +12,14 @@
 
   <select id="selectBoard" resultType="org.joonzis.community.dto.CommunityViewDTO">
     SELECT
-      B.BOARD_ID    AS board_id,
-      B.USER_ID     AS user_id,
-      B.CATEGORY_ID AS category_id,
-      B.BOARD_TYPE  AS board_type,
-      B.TITLE       AS title,
-      B.CONTENT     AS content,
+      B.BOARD_ID      AS board_id,
+      B.USER_ID       AS user_id,
+      B.CATEGORY_ID   AS category_id,
+      B.BOARD_TYPE    AS board_type,
+      B.TITLE         AS title,
+      B.CONTENT       AS content,
+      B.PRICE         AS price,
+      B.TRADE_STATUS  AS trade_status,
       NVL(U.NICKNAME, U.USERNAME) AS writer,
       U.PROFILE_FILENAME AS writer_profile,
       NVL(B.VIEW_COUNT, 0) AS view_cnt,
@@ -34,8 +36,8 @@
           AND NVL(H.IS_ACTIVE, 'Y') = 'Y'
       ) AS hashtags,
 
-      B.REG_DATE    AS reg_date,
-      B.UPDATE_DATE AS update_date
+      B.REG_DATE      AS reg_date,
+      B.UPDATE_DATE   AS update_date
     FROM TBL_BOARD B
     LEFT JOIN TBL_USER U
       ON U.USER_ID = B.USER_ID

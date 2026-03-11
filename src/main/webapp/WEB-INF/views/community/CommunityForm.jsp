@@ -82,7 +82,7 @@
               <option value="A">답글</option>
             </select>
             <div class="hint">
-              커뮤니티 글쓰기(insert)에서는 G/T/S만 노출되며 변경 가능합니다. QnA(Q/A)는 자동 결정 및 변경 불가입니다.
+              	커뮤니티 글쓰기(insert)에서는 G/T/S만 노출되며 변경 가능합니다. QnA(Q/A)는 자동 결정 및 변경 불가입니다.
             </div>
           </div>
 
@@ -123,10 +123,8 @@
           <div class="form-field">
             <label class="label">거래상태</label>
             <select name="trade_status" id="tradeStatus" class="select">
-              <option value="">선택</option>
-              <option value="SALE">판매중</option>
-              <option value="RESERVED">예약중</option>
-              <option value="DONE">거래완료</option>
+              <option value="P">진행중</option>
+              <option value="C">거래완료</option>
             </select>
           </div>
         </div>
