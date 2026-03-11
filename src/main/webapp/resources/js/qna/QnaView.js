@@ -35,9 +35,23 @@
     var btnDelQ = $('#btnDeleteQuestion');
     if (btnDelQ) {
       btnDelQ.onclick = function() {
-        if (!confirm('정말 삭제하시겠습니까?')) return;
-        // AJAX 또는 폼 제출로 연동 필요
-        showCustomToast('삭제 기능은 개발 예정입니다.', 'info');
+        showCustomToast('정말 삭제하시겠습니까?', 'warning', true).then(result => {
+          if(result.isDismissed) return;
+        })
+        
+        // 폼을 생성하여 POST 방식으로 서브밋 (Controller가 redirect를 반환하므로)
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = ctx + '/qna/delete';
+        
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'boardId';
+        input.value = boardId;
+        
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
       };
     }
 
@@ -55,6 +69,16 @@
     document.addEventListener('click', function(e) {
       var t = e.target;
 
+      // [사용자 프로필 모달]
+      var userTrigger = t.closest('.js-user-trigger');
+      if (userTrigger) {
+        e.preventDefault();
+        var uid = userTrigger.getAttribute('data-user-id');
+        if (uid && typeof GlobalProfileModal !== 'undefined') {
+          GlobalProfileModal.open(uid);
+        }
+      }
+
       // [좋아요 버튼]
       if (t.classList.contains('js-board-like')) {
         var id = t.getAttribute('data-id');
@@ -64,9 +88,10 @@
       // [답변 채택]
       if (t.classList.contains('js-btn-select-answer')) {
         var aid = t.getAttribute('data-id');
-        if (confirm('이 답변을 채택하시겠습니까? 채택 후에는 변경할 수 없습니다.')) {
+        showCustomToast('이 답변을 채택하시겠습니까? 채택 후에는 변경할 수 없습니다.', 'warning', true).then(result => {
+          if(result.isDismissed) return;
           handleSelectAnswer(aid);
-        }
+        })
       }
 
       // [댓글 토글]
@@ -90,6 +115,60 @@
          var val = input.value.trim();
          if (!val) return showCustomToast('댓글 내용을 입력하세요.', 'warning');
          submitReply(pid, val, t.closest('.qv-question-comments, .js-answer-reply-box').querySelector('.js-reply-list'), input);
+      }
+
+      // [답변 삭제 버튼]
+      if (t.classList.contains('js-btn-delete-answer')) {
+        var ansId = t.getAttribute('data-id');
+        showCustomToast('답변을 삭제하시겠습니까?', 'warning', true).then(result => {
+          if(result.isConfirmed){
+            deleteAnswer(ansId);
+          }
+        })
+      }
+
+      // [답변 수정 버튼]
+      if (t.classList.contains('js-btn-edit-answer')) {
+        var ansItem = t.closest('.qv-answer-item');
+        var contentDiv = ansItem.querySelector('.cv-content');
+        var ansId = t.getAttribute('data-id');
+
+        // 이미 수정 모드인지 확인
+        if (t.classList.contains('is-editing')) {
+          // 수정 모드일 때는 '저장' 역할을 수행
+          var editedContent = contentDiv.querySelector('textarea').value;
+          if (!editedContent.trim()) {
+            showCustomToast('내용을 입력해주세요.', 'warning');
+            return;
+          }
+          editAnswer(ansId, editedContent);
+          return;
+        }
+
+        // 새롭게 수정 버튼을 누른 경우 (텍스트 입력창으로 변환)
+        showCustomToast('수정하시겠습니까?', 'warning', true).then(result => {
+          if (result.isDismissed) return;
+          
+          var oldContent = contentDiv.innerHTML.trim(); // 기존 텍스트
+          contentDiv.innerHTML = ''; 
+
+          var editInput = document.createElement('textarea');
+          editInput.className = 'cv-textarea';
+          editInput.style.width = '100%';
+          editInput.style.minHeight = '100px';
+          // html 태그가 남아있다면 제거하거나, 단순화를 위해 innerText 값을 가져오는 것이 좋습니다
+          // 서버에서 c:out escapeXml="false" 일 경우, \n이 <br>로 치환되었을 것을 고려
+          editInput.value = oldContent.replace(/<br\s*[\/]?>/gi, "\n"); 
+
+          contentDiv.appendChild(editInput);
+          editInput.focus();
+
+          // 버튼 이름 및 상태 변경
+          t.innerText = '저장';
+          t.classList.add('is-editing');
+          t.classList.add('cv-btn-primary'); // 시각적으로 띄우기위해 클래스 추가
+          t.classList.remove('cv-btn-ghost');
+        });
       }
     });
   }
@@ -120,7 +199,7 @@
     var html = "";
     replies.forEach(function(r) {
       html += '<li class="cv-comment-item" data-reply-id="' + r.reply_id + '">';
-      html += '  <div class="cv-comment-left"><div class="cv-avatar cv-avatar-sm"><span class="cv-avatar-fallback"></span></div></div>';
+      html += '  <div class="cv-comment-left"><div class="cv-avatar cv-avatar-sm js-user-trigger" data-user-id="' + r.user_id + '" style="cursor: pointer;"><span class="cv-avatar-fallback"></span></div></div>';
       html += '  <div class="cv-comment-body">';
       html += '    <div class="cv-comment-head">';
       html += '      <a href="javascript:void(0)" class="js-user-trigger cv-nick" data-user-id="' + r.user_id + '" data-user-nick="' + r.writer + '">' + r.writer + '</a>';
@@ -138,7 +217,7 @@
   // 답변 등록
   function submitAnswer(content) {
     if (!content || content.trim() === '') {
-      alert('답변 내용을 입력해주세요.');
+      showCustomToast('답변 내용을 입력해주세요.', 'warning');
       return;
     }
 
@@ -165,7 +244,7 @@
     // parentId로 질문 ID를 전달 (Controller 파라미터명에 맞춤)
     var params = 'parentId=' + boardId + '&content=' + encodeURIComponent(content);
     xhr.send(params);
-    location.href = ctx + '/qna/detail/' + boardId;
+    location.href = ctx + '/qna/detail?qna_id=' + boardId;
   }
 
   // 댓글 등록
@@ -210,6 +289,45 @@
   function handleLike(id, btn) {
     // 기존 좋아요 로직 이식
     showCustomToast('좋아요 처리 (ID: ' + id + ')', 'info');
+  }
+
+  // 답변 삭제 (REST API)
+  function deleteAnswer(ansId) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('DELETE', ctx + '/qna/AnswerDelete?boardId=' + ansId, true);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        showCustomToast('답변이 삭제되었습니다.', 'success').then(function() {
+          location.reload();
+        });
+      } else {
+        showCustomToast('삭제 처리에 실패했습니다. (Error: ' + xhr.status + ')', 'error');
+      }
+    };
+    xhr.send();
+  }
+
+  // 답변 수정 (REST API)
+  function editAnswer(ansId, content) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT', ctx + '/qna/AnswerEdit', true);
+    // 첨부파일이나 태그를 넘긴다면 FormData를 권장하지만, 간단한 텍스트 수정이라면 urlencoded 사용
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
+    var params = 'board_id=' + ansId + 
+                 '&contentHtml=' + encodeURIComponent(content) + 
+                 '&tempKey=';
+                 
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        showCustomToast('답변이 수정되었습니다.', 'success').then(function() {
+          location.reload();
+        });
+      } else {
+        showCustomToast('수정 처리에 실패했습니다. (Error: ' + xhr.status + ')', 'error');
+      }
+    };
+    xhr.send(params);
   }
 
 function formatDate(ts) {

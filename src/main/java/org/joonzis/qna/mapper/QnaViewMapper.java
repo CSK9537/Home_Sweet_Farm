@@ -13,4 +13,5 @@ public interface QnaViewMapper {
     List<QnaAnswerDTO> selectAnswers(@Param("board_id") int board_id);
     List<QnaReplyDTO> selectReplies(@Param("board_id") int board_id);
     int insertAnswer(@Param("uid") int uid, @Param("title") String title, @Param("content") String content, @Param("parentId") int parentId);
+    int deactivateAnswerByBoardId(int boardId);
 }

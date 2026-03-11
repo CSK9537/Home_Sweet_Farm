@@ -99,4 +99,12 @@
     	)
     </insert>
     
+    <update id="deactivateAnswerByBoardId">
+	 	 UPDATE TBL_BOARD
+	       SET IS_ACTIVE   = 'N',
+	           UPDATE_DATE = SYSDATE
+	     WHERE BOARD_ID    = #{boardId}
+	       AND BOARD_TYPE = 'A'
+	       AND IS_ACTIVE   = 'Y'
+    </update>
 </mapper>

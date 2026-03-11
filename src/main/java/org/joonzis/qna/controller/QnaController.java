@@ -28,8 +28,10 @@ import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -96,7 +98,7 @@ public class QnaController {
     		return "redirect:/user/loginView";
     	}
     	
-    	if(mode.equals("update") && board_id != null) {
+    	if(mode.equals("edit") && board_id != null) {
     		BoardVO board = formService.getBoardById(board_id);
     		model.addAttribute("board", board);
     	}
@@ -189,6 +191,18 @@ public class QnaController {
         return "redirect:/qna/detail?qna_id=" + board.getBoard_id();
     }
 
+    // ===== 질문글 삭제 ======
+    @PostMapping("/delete")
+    public String delete(
+    		@RequestParam("boardId") int boardId,
+    		HttpSession session) {
+    	int uid = loginUserId(session);
+    	if(uid == -1) return "redirect:/user/login";
+    	
+    	qnaViewService.deleteQuestion(boardId, uid);
+    	return "redirect:/qna/QnaList";
+    }
+    
     @GetMapping("/people")
     public String qnaPeople(HttpServletRequest request, Model model) {
         Map<String, Object> result = qnaMainService.getActiveUsersJson(1, request.getContextPath());
@@ -236,16 +250,50 @@ public class QnaController {
     		HttpSession session,
     		@RequestParam String content,
     		@RequestParam int parentId){
-    	UserVO user = (UserVO)session.getAttribute("loginUser");
-    	if(user == null) return new ResponseEntity<String>("need login",HttpStatus.BAD_GATEWAY);
-    	int uid = user.getUser_id();
+    	
+    	int uid = loginUserId(session);
+    	if (uid == -1) return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+    	
     	String title = "QnaAnswer" + UUID.randomUUID().toString();
     	
     	int result = qnaViewService.registerAnswer(uid, title, content, parentId);
-    	if(result > 0) {
+    	if(result > 0) {  
     		return new ResponseEntity<String>("success", HttpStatus.OK);
     	} else {
     		return new ResponseEntity<String>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
     	}
+    }
+    
+    // =====답변 수정 =====
+    @PutMapping(
+    		value = "/AnswerEdit",
+    		produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> answerEdit(BoardVO board,
+    		@RequestParam("tempKey") String tempKey,
+            @RequestParam(value = "attachFiles", required = false) MultipartFile[] attachFiles,
+            @RequestParam(value = "tagsHidden", required = false) String tagsCsv,
+            @RequestParam("contentHtml") String contentHtml,
+            HttpSession session,
+            HttpServletRequest req){
+    	int uid = loginUserId(session);
+    	if (uid == -1) return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+    	
+    	int boardId = formService.edit(board, uid, tempKey, attachFiles, tagsCsv);
+    	return new ResponseEntity<String>("success : " + boardId,HttpStatus.OK);
+    }
+    
+    // =====답변 삭제=====
+    @DeleteMapping(
+    		value= "/AnswerDelete",
+    		produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> answerRemove(
+    		@RequestParam("boardId") int boardId,
+    		HttpSession session){
+    	// 이미 프론트에서 작성한 유저인지 확인함
+    	int uid = loginUserId(session);
+    	if (uid == -1) return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+    	
+    	if(formService.deleteBoard(boardId, uid)) return new ResponseEntity<String>("success",HttpStatus.OK);
+    	else return new ResponseEntity<String>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
