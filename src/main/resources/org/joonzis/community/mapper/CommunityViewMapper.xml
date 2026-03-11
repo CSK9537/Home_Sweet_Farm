@@ -19,6 +19,7 @@
       B.TITLE       AS title,
       B.CONTENT     AS content,
       NVL(U.NICKNAME, U.USERNAME) AS writer,
+      U.PROFILE_FILENAME AS writer_profile,
       NVL(B.VIEW_COUNT, 0) AS view_cnt,
       NVL(B.LIKE_COUNT, 0) AS like_cnt,
       NVL(B.REPLY_CNT, 0)  AS reply_cnt,
@@ -141,7 +142,6 @@
     WHERE ROWNUM = 1
   </select>
 
-  <!-- 게시글 좋아요 여부 확인 -->
   <select id="countBoardLike" resultType="int">
     SELECT COUNT(*)
     FROM TBL_LIKE
@@ -150,7 +150,6 @@
       AND TARGET_ID = #{board_id}
   </select>
 
-  <!-- 게시글 좋아요 등록 -->
   <insert id="insertBoardLike">
     INSERT INTO TBL_LIKE (
       LIKE_ID,
@@ -168,7 +167,6 @@
     )
   </insert>
 
-  <!-- 게시글 좋아요 수 증가 -->
   <update id="increaseLikeCount">
     UPDATE TBL_BOARD
        SET LIKE_COUNT = NVL(LIKE_COUNT, 0) + 1

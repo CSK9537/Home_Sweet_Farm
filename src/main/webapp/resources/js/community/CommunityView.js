@@ -253,26 +253,23 @@
       location.href = ctx + '/community/list?writerId=' + encode(activeUser.user_id);
       closeUserPop();
 
-    } else if (action === 'chat') {
-      var loginUserInput = document.getElementById('loginUserId');
-      var myUserId = loginUserInput ? loginUserInput.value : '';
+    }  else if (action === 'chat') {
+        var loggedInInput = document.getElementById('isLoggedInStatus');
+        var isUserLoggedIn = (loggedInInput && loggedInInput.value === "true");
 
-      if (!myUserId) {
-        toast('로그인이 필요합니다.');
+        var chatUrl = ctx + '/chat?target_id=' + encode(activeUser.user_id);
+
+        if (isUserLoggedIn) {
+          // 1. 로그인 상태: 새 창(팝업)으로 채팅 열기
+          window.open(chatUrl);
+        } else {
+          // 2. 비로그인 상태: 현재 창에서 채팅 URL로 이동 
+          location.href = chatUrl;
+        }
+
         closeUserPop();
-        return;
-      }
 
-      if (String(activeUser.user_id) === String(myUserId)) {
-        toast('자신에게는 보낼 수 없습니다.');
-        closeUserPop();
-        return;
-      }
-
-      location.href = ctx + '/chat?target_id=' + encode(activeUser.user_id);
-      closeUserPop();
-
-    } else if (action === 'report') {
+      }else if (action === 'report') {
       toast('프로필 신고 기능은 연결이 필요합니다.');
       closeUserPop();
 

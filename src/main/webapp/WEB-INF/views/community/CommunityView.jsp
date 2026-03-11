@@ -55,42 +55,51 @@
 
                 <div class="cv-meta">
                   <div class="cv-writer">
-                    <div class="cv-avatar">
-                      <span class="cv-avatar-fallback"></span>
-                    </div>
-
-                    <div class="cv-writer-info">
-                      <div class="cv-writer-line cv-user-pop-wrap">
-                        <a href="javascript:void(0)" class="js-user-trigger cv-nick" data-user_id="${board.user_id}"
-                          data-nickname="${board.writer}" data-user-id="${board.user_id}"
-                          data-user-nick="${board.writer}">
-                          ${board.writer}
-                        </a>
-
-                        <div class="cv-pop cv-user-pop js-inline-user-pop" style="display:none;">
-                          <button type="button" class="cv-pop-item" data-action="boardView">게시글보기</button>
-                          <button type="button" class="cv-pop-item" data-action="chat">채팅하기</button>
-                          <button type="button" class="cv-pop-item" data-action="report">프로필 신고하기</button>
-                          <button type="button" class="cv-pop-item cv-pop-danger" data-action="block">차단하기</button>
-                        </div>
-                      </div>
-
-                      <div class="cv-date-line">
-                        <span class="cv-date">
-                          작성
-                          <fmt:formatDate value="${board.reg_date}" pattern="yyyy.MM.dd" />
-                        </span>
-
-                        <c:if test="${not empty board.update_date}">
-                          <span class="cv-dot">||</span>
-                          <span class="cv-updated">
-                            수정
-                            <fmt:formatDate value="${board.update_date}" pattern="yyyy.MM.dd" />
-                          </span>
-                        </c:if>
-                      </div>
-                    </div>
-                  </div>
+					  <button
+					    type="button"
+					    class="cv-avatar cv-avatar-btn"
+					    onclick="GlobalProfileModal.open('${board.user_id}')"
+					    aria-label="${board.writer} 프로필 보기"
+					    title="${board.writer} 프로필 보기">
+					
+					    <img
+					      src="${pageContext.request.contextPath}/user/getProfile?fileName=${not empty board.writer_profile ? board.writer_profile : 'default_profile.png'}"
+					      alt="${board.writer} 프로필 이미지"
+					      onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/resources/image/default_profile.png';" />
+					  </button>
+					
+					  <div class="cv-writer-info">
+					    <div class="cv-writer-line cv-user-pop-wrap">
+					      <a href="javascript:void(0)" class="js-user-trigger cv-nick" data-user_id="${board.user_id}"
+					        data-nickname="${board.writer}" data-user-id="${board.user_id}"
+					        data-user-nick="${board.writer}">
+					        ${board.writer}
+					      </a>
+					
+					      <div class="cv-pop cv-user-pop js-inline-user-pop" style="display:none;">
+					        <button type="button" class="cv-pop-item" data-action="boardView">게시글보기</button>
+					        <button type="button" class="cv-pop-item" data-action="chat">채팅하기</button>
+					        <button type="button" class="cv-pop-item" data-action="report">프로필 신고하기</button>
+					        <button type="button" class="cv-pop-item cv-pop-danger" data-action="block">차단하기</button>
+					      </div>
+					    </div>
+					
+					    <div class="cv-date-line">
+					      <span class="cv-date">
+					        작성
+					        <fmt:formatDate value="${board.reg_date}" pattern="yyyy.MM.dd" />
+					      </span>
+					
+					      <c:if test="${not empty board.update_date}">
+					        <span class="cv-dot">||</span>
+					        <span class="cv-updated">
+					          수정
+					          <fmt:formatDate value="${board.update_date}" pattern="yyyy.MM.dd" />
+					        </span>
+					      </c:if>
+					    </div>
+					  </div>
+					</div>
 
                   <div class="cv-stats">
                     <span>조회 <span id="viewCnt">${board.view_cnt}</span></span>
@@ -319,6 +328,7 @@
 
               <input type="hidden" id="board_id" value="${board.board_id}" />
               <input type="hidden" id="loginUserId" value="${loginUserId}" />
+              <input type="hidden" id="isLoggedInStatus" value="${not empty loginUserId}" />
               <input type="hidden" id="prev_id" value="${not empty prev ? prev.board_id : ''}" />
               <input type="hidden" id="next_id" value="${not empty next ? next.board_id : ''}" />
               <input type="hidden" id="board_tab" value="${boardTab}" />
