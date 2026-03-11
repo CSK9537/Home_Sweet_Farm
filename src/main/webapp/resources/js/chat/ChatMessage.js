@@ -106,7 +106,7 @@ export async function loadMessages(room_id, offset = 0, size = 40, prepend = fal
             if (firstLoad) {
                 // 1. 기존 내용을 새 데이터(fragment)로 교체
                 container.replaceChildren(fragment);
-                
+
                 // 2. [추가] 즉시 스크롤을 맨 아래로 이동 (검색 점프 중이 아닐 때만)
                 if (!chatState.search.isSearchJump) {
                     container.scrollTop = container.scrollHeight;
@@ -220,12 +220,25 @@ export function appendMessage(data, prepend = false, fragment = null) {
     else if (data.msg_type === "IMAGE") shouldAppendRow = renderImage(box, data, sameGroup, roomState);
 
     if (shouldAppendRow) {
+        const isSameUserAndTime = prevData &&
+            String(prevData.sender_id) === String(data.sender_id) &&
+            roomState.lastTimeStr === timeStr &&
+            roomState.lastDateKey === dateStr;
+
+        if (isSameUserAndTime && !prepend) {
+            const parent = fragment || container;
+            const lastRow = parent.lastElementChild;
+            if (lastRow && lastRow.classList.contains("message-row")) {
+                const prevTimeEl = lastRow.querySelector(".time");
+                if (prevTimeEl) prevTimeEl.remove();
+            }
+        }
         const row = createMessageRow(data);
         row.appendChild(box);
 
         const timeEl = document.createElement("div");
         timeEl.classList.add("time");
-        timeEl.innerText = data.group_id ? `${timeStr} (#${data.group_id})` : timeStr;
+        timeEl.innerText = data.group_id ? `${timeStr}` : timeStr;
         row.appendChild(timeEl);
 
         if (fragment) {

@@ -898,18 +898,16 @@ a{text-decoration: none; }
     background: #fff;
     padding: 20px;
     border-radius: 12px;
-
     max-width: 500px;
     width: 90%;
-
-    max-height: 80vh;
-    overflow-y: auto;
-
+    max-height: 85vh; 
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-
     transform: translateY(-20px);
     opacity: 0;
     transition: .25s;
+    overflow: hidden;
 }
 
 
@@ -935,8 +933,12 @@ body.modal-open .modal {
 #pendingFilesContainer {
     display: flex;
     flex-direction: column;
-    /* 세로로 쌓기 */
     gap: 10px;
+    flex: 1; 
+    overflow-y: auto; 
+    margin: 10px 0;
+    padding-right: 5px;
+    min-height: 150px;
 }
 
 #pendingFilesContainer div {
@@ -1150,7 +1152,7 @@ body.modal-open .modal {
 
 /* ===== 이미지 전용 ===== */
 #pendingFilesContainer .image-item {
-    flex: 1 1 calc(50% - 10px); 
+    flex: 0 0 calc(50% - 10px);
     max-width: calc(50% - 10px);
     aspect-ratio: 1 / 1;
     position: relative; 
