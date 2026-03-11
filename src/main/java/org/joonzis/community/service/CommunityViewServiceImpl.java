@@ -9,7 +9,6 @@ import org.joonzis.community.dto.CommunityViewDTO;
 import org.joonzis.community.mapper.CommunityViewMapper;
 import org.joonzis.community.vo.BoardFileVO;
 import org.joonzis.community.vo.CategoryVO;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,31 +82,27 @@ public class CommunityViewServiceImpl implements CommunityViewService {
 	@Override
 	@Transactional
 	public Map<String, Object> likeOnce(int board_id, int user_id) {
-		Map<String, Object> res = new HashMap<>();
+	    Map<String, Object> res = new HashMap<>();
 
-		try {
-			mapper.insertBoardLike(board_id, user_id);
-			mapper.increaseLikeCount(board_id);
+	    int exists = mapper.countBoardLike(board_id, user_id);
+	    if (exists > 0) {
+	        int like_cnt = mapper.selectLikeCount(board_id);
 
-			int like_cnt = mapper.selectLikeCount(board_id);
+	        res.put("ok", true);
+	        res.put("already", true);
+	        res.put("like_cnt", like_cnt);
+	        return res;
+	    }
 
-			res.put("ok", true);
-			res.put("already", false);
-			res.put("like_cnt", like_cnt);
-			return res;
+	    mapper.insertBoardLike(board_id, user_id);
+	    mapper.increaseLikeCount(board_id);
 
-		} catch (DuplicateKeyException e) {
-			int like_cnt = mapper.selectLikeCount(board_id);
+	    int like_cnt = mapper.selectLikeCount(board_id);
 
-			res.put("ok", true);
-			res.put("already", true);
-			res.put("like_cnt", like_cnt);
-			return res;
-
-		} catch (Exception e) {
-			log.error("좋아요 처리 실패 - board_id=" + board_id + ", user_id=" + user_id, e);
-			throw e;
-		}
+	    res.put("ok", true);
+	    res.put("already", false);
+	    res.put("like_cnt", like_cnt);
+	    return res;
 	}
 
 	@Override

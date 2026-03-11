@@ -48,20 +48,31 @@
   }
 
   function postForm(url, data) {
-    return fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      body: new URLSearchParams(data).toString()
-    }).then(function (r) {
-      if (!r.ok) {
-        throw new Error('HTTP ' + r.status);
-      }
-      return r.json();
-    });
-  }
+	  return fetch(url, {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+	      'X-Requested-With': 'XMLHttpRequest',
+	      'Accept': 'application/json'
+	    },
+	    body: new URLSearchParams(data).toString()
+	  }).then(function (r) {
+	    if (!r.ok) {
+	      throw new Error('HTTP ' + r.status);
+	    }
+
+	    var contentType = r.headers.get('content-type') || '';
+
+	    if (contentType.indexOf('application/json') > -1) {
+	      return r.json();
+	    }
+
+	    return r.text().then(function (text) {
+	      console.error('JSON이 아닌 응답:', text);
+	      throw new Error('INVALID_RESPONSE_FORMAT');
+	    });
+	  });
+	}
 
   /* =========================
    * Board Type / Breadcrumb
@@ -329,28 +340,34 @@
   }
 
   function doBoardLike(targetBoardId) {
-    postForm(ctx + '/community/like', { board_id: targetBoardId })
-      .then(function (res) {
-        if (!res || res.ok !== true) {
-          if (res && res.msg === 'LOGIN_REQUIRED') {
-            toast('로그인이 필요합니다.');
-          } else {
-            toast('좋아요 처리 중 오류가 발생했습니다.');
-          }
-          return;
-        }
+	  postForm(ctx + '/community/like', { board_id: targetBoardId })
+	    .then(function (res) {
+	      if (!res || res.ok !== true) {
+	        if (res && res.msg === 'LOGIN_REQUIRED') {
+	          toast('로그인이 필요합니다.');
+	        } else {
+	          toast('좋아요 처리 중 오류가 발생했습니다.');
+	        }
+	        return;
+	      }
 
-        if (typeof res.like_cnt !== 'undefined') {
-          syncLikeCount(res.like_cnt);
-        }
+	      if (typeof res.like_cnt !== 'undefined') {
+	        syncLikeCount(res.like_cnt);
+	      }
 
-        setLikeDisabled(true);
-      })
-      .catch(function (err) {
-        console.error('좋아요 요청 실패:', err);
-        toast('좋아요 요청 실패');
-      });
-  }
+	      setLikeDisabled(true);
+	    })
+	    .catch(function (err) {
+	      console.error('좋아요 요청 실패:', err);
+
+	      if (err && err.message === 'INVALID_RESPONSE_FORMAT') {
+	        toast('서버 응답 형식 오류');
+	        return;
+	      }
+
+	      toast('좋아요 요청 실패');
+	    });
+	}
 
   function bindLikeButton(btn) {
     if (!btn) return;
@@ -373,37 +390,42 @@
    * ========================= */
 
   function doBoardReport(targetBoardId) {
-    var reason = prompt('신고 사유를 입력하세요 (간단히)');
-    if (reason == null) return;
+	  var reason = prompt('신고 사유를 입력하세요 (간단히)');
+	  if (reason == null) return;
 
-    reason = (reason || '').trim();
-    if (!reason) {
-      toast('신고 사유를 입력해주세요.');
-      return;
-    }
+	  reason = (reason || '').trim();
+	  if (!reason) {
+	    toast('신고 사유를 입력해주세요.');
+	    return;
+	  }
 
-    postForm(ctx + '/community/report', {
-      board_id: targetBoardId,
-      reason: reason
-    })
-      .then(function (res) {
-        if (!res || res.ok !== true) {
-          if (res && res.msg === 'LOGIN_REQUIRED') {
-            toast('로그인이 필요합니다.');
-          } else {
-            toast('신고 처리 중 오류가 발생했습니다.');
-          }
-          return;
-        }
+	  postForm(ctx + '/community/report', {
+	    board_id: targetBoardId,
+	    reason: reason
+	  })
+	    .then(function (res) {
+	      if (!res || res.ok !== true) {
+	        if (res && res.msg === 'LOGIN_REQUIRED') {
+	          toast('로그인이 필요합니다.');
+	        } else {
+	          toast('신고 처리 중 오류가 발생했습니다.');
+	        }
+	        return;
+	      }
 
-        toast('신고가 접수되었습니다.');
-      })
-      .catch(function (err) {
-        console.error('신고 요청 실패:', err);
-        toast('신고 요청 실패');
-      });
-  }
+	      toast('신고가 접수되었습니다.');
+	    })
+	    .catch(function (err) {
+	      console.error('신고 요청 실패:', err);
 
+	      if (err && err.message === 'INVALID_RESPONSE_FORMAT') {
+	        toast('서버 응답 형식 오류');
+	        return;
+	      }
+
+	      toast('신고 요청 실패');
+	    });
+	}
   /* =========================
    * Delete
    * ========================= */
