@@ -94,18 +94,39 @@ public class ChatController {
 	@GetMapping(value = "/user/info/{targetId}", produces = "application/json; charset=UTF-8")
 	public ResponseEntity<?> getTargetUserInfo(@PathVariable int targetId) {
 	    
+	    // 1. 공개 프로필 정보 (profile_filename, grade_id 등 포함)
 	    UserDTO userDto = userService.selectPublicProfile(targetId); 
 	    
-	    if (userDto == null) {
+	    // 2. 상세 정보 (username 포함) - 기존 매퍼의 selectUser 쿼리 호출
+	    // 보통 서비스에 매핑된 메서드 명을 확인해 보세요. (예: selectUser 또는 getUser)
+	    UserVO userVo = userService.selectUser(targetId); 
+	    
+	    if (userDto == null && userVo == null) {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	    }
 	    
 	    Map<String, Object> result = new HashMap<>();
-	    result.put("user_id", userDto.getUser_id());
-	    result.put("username", ""); // UserDTO에 없으면 빈값
-	    result.put("nickname", userDto.getNickname());
-	    result.put("profile_filename", userDto.getProfile_filename() != null ? userDto.getProfile_filename() : "");
-	    result.put("grade_id", userDto.getGrade_id());
+	    
+	    // UserDTO에서 가져올 정보
+	    if (userDto != null) {
+	        result.put("user_id", userDto.getUser_id());
+	        result.put("nickname", userDto.getNickname());
+	        result.put("profile_filename", userDto.getProfile_filename() != null ? userDto.getProfile_filename() : "");
+	        result.put("grade_id", userDto.getGrade_id());
+	    }
+	    
+	    // UserVO에서 부족한 username 채워넣기
+	    if (userVo != null) {
+	        result.put("username", userVo.getUsername());
+	        
+	        // 혹시 userDto가 null일 경우를 대비해 최소한의 id 보장
+	        if (!result.containsKey("user_id")) {
+	            // UserVO 필드명에 따라 getId() 또는 getUser_id() 사용
+	            result.put("user_id", targetId); 
+	        }
+	    } else {
+	        result.put("username", ""); 
+	    }
 	    
 	    return ResponseEntity.ok(result);
 	}
