@@ -12,13 +12,16 @@
 
   <select id="selectBoard" resultType="org.joonzis.community.dto.CommunityViewDTO">
     SELECT
-      B.BOARD_ID    AS board_id,
-      B.USER_ID     AS user_id,
-      B.CATEGORY_ID AS category_id,
-      B.BOARD_TYPE  AS board_type,
-      B.TITLE       AS title,
-      B.CONTENT     AS content,
+      B.BOARD_ID      AS board_id,
+      B.USER_ID       AS user_id,
+      B.CATEGORY_ID   AS category_id,
+      B.BOARD_TYPE    AS board_type,
+      B.TITLE         AS title,
+      B.CONTENT       AS content,
+      B.PRICE         AS price,
+      B.TRADE_STATUS  AS trade_status,
       NVL(U.NICKNAME, U.USERNAME) AS writer,
+      U.PROFILE_FILENAME AS writer_profile,
       NVL(B.VIEW_COUNT, 0) AS view_cnt,
       NVL(B.LIKE_COUNT, 0) AS like_cnt,
       NVL(B.REPLY_CNT, 0)  AS reply_cnt,
@@ -33,8 +36,8 @@
           AND NVL(H.IS_ACTIVE, 'Y') = 'Y'
       ) AS hashtags,
 
-      B.REG_DATE    AS reg_date,
-      B.UPDATE_DATE AS update_date
+      B.REG_DATE      AS reg_date,
+      B.UPDATE_DATE   AS update_date
     FROM TBL_BOARD B
     LEFT JOIN TBL_USER U
       ON U.USER_ID = B.USER_ID
@@ -70,6 +73,26 @@
     WHERE BOARD_ID = #{board_id}
       AND NVL(IS_ACTIVE, 'Y') = 'Y'
     ORDER BY FILE_ID ASC
+  </select>
+
+  <select id="selectFileById" resultType="org.joonzis.community.vo.BoardFileVO">
+    SELECT
+      FILE_ID       AS file_id,
+      BOARD_ID      AS board_id,
+      FILE_SIZE     AS file_size,
+      ORIGINAL_NAME AS original_name,
+      SAVED_NAME    AS saved_name,
+      CONTENT_TYPE  AS content_type,
+      TEMP_KEY      AS temp_key,
+      SUB_DIR       AS sub_dir,
+      FILE_KIND     AS file_kind,
+      IS_ACTIVE     AS is_active,
+      IS_THUMBNAIL  AS is_thumbnail,
+      REG_DATE      AS reg_date,
+      UPDATED_AT    AS updated_at
+    FROM TBL_BOARD_FILE
+    WHERE FILE_ID = #{file_id}
+      AND NVL(IS_ACTIVE, 'Y') = 'Y'
   </select>
 
   <select id="selectRootReplies" resultType="org.joonzis.community.dto.CommunityReplyDTO">
@@ -121,7 +144,6 @@
     WHERE ROWNUM = 1
   </select>
 
-  <!-- 게시글 좋아요 여부 확인 -->
   <select id="countBoardLike" resultType="int">
     SELECT COUNT(*)
     FROM TBL_LIKE
@@ -130,7 +152,6 @@
       AND TARGET_ID = #{board_id}
   </select>
 
-  <!-- 게시글 좋아요 등록 -->
   <insert id="insertBoardLike">
     INSERT INTO TBL_LIKE (
       LIKE_ID,
@@ -148,7 +169,6 @@
     )
   </insert>
 
-  <!-- 게시글 좋아요 수 증가 -->
   <update id="increaseLikeCount">
     UPDATE TBL_BOARD
        SET LIKE_COUNT = NVL(LIKE_COUNT, 0) + 1

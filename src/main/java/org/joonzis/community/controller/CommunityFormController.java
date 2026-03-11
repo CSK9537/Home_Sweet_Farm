@@ -3,6 +3,9 @@ package org.joonzis.community.controller;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,11 +13,13 @@ import javax.servlet.http.HttpSession;
 
 import org.joonzis.community.dto.UploadResponseDTO;
 import org.joonzis.community.service.CommunityFormService;
+import org.joonzis.community.vo.BoardFileVO;
 import org.joonzis.community.vo.BoardVO;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
@@ -23,6 +28,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -63,6 +69,7 @@ public class CommunityFormController {
         model.addAttribute("mode", mode);
         model.addAttribute("tempKey", tempKey);
         model.addAttribute("editTags", "");
+        model.addAttribute("existingFiles", java.util.Collections.emptyList());
 
         if ("edit".equalsIgnoreCase(mode)) {
             if (uid <= 0) return "redirect:/user/login";
@@ -72,11 +79,14 @@ public class CommunityFormController {
             if (post == null) return "redirect:/community/main";
 
             boolean isOwner = formService.isOwner(board_id, uid);
+            List<BoardFileVO> existingFiles = formService.getBoardFiles(board_id);
 
             model.addAttribute("post", post);
             model.addAttribute("isOwner", isOwner);
             model.addAttribute("boardType", post.getBoard_type());
             model.addAttribute("tempKey", tempKey);
+            model.addAttribute("editTags", formService.getBoardTagsCsv(board_id));
+            model.addAttribute("existingFiles", existingFiles);
 
             return "community/CommunityForm";
         }
@@ -96,6 +106,7 @@ public class CommunityFormController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("tempKey") String tempKey,
             @RequestParam("boardType") String boardType,
+            @RequestParam(value = "purpose", defaultValue = "EDITOR") String purpose,
             HttpServletRequest req
     ) {
         if (file.isEmpty()) {
@@ -106,7 +117,7 @@ public class CommunityFormController {
         }
 
         try {
-            UploadResponseDTO dto = formService.uploadTempFile(file, tempKey, boardType);
+            UploadResponseDTO dto = formService.uploadTempFile(file, tempKey, boardType, purpose);
             String fullUrl = req.getContextPath() + dto.getUrl();
             return ResponseEntity.ok(new UploadResponseDTO(fullUrl, dto.getSavedName(), dto.getSubDir()));
         } catch (Exception e) {
@@ -117,7 +128,8 @@ public class CommunityFormController {
     @GetMapping("/file")
     public ResponseEntity<Resource> file(
             @RequestParam("subDir") String subDir,
-            @RequestParam("savedName") String savedName
+            @RequestParam("savedName") String savedName,
+            @RequestHeader(value = HttpHeaders.USER_AGENT, required = false) String userAgent
     ) throws IOException {
 
         if (!savedName.matches("[a-zA-Z0-9._-]+")) {
@@ -136,8 +148,11 @@ public class CommunityFormController {
             return ResponseEntity.notFound().build();
         }
 
+        MediaType mediaType = MediaTypeFactory.getMediaType(resource)
+                .orElse(MediaType.APPLICATION_OCTET_STREAM);
+
         return ResponseEntity.ok()
-                .contentType(MediaTypeFactory.getMediaType(resource).orElse(MediaType.APPLICATION_OCTET_STREAM))
+                .contentType(mediaType)
                 .body(resource);
     }
 
@@ -154,6 +169,8 @@ public class CommunityFormController {
                         @RequestParam("tempKey") String tempKey,
                         @RequestParam(value = "attachFiles", required = false) MultipartFile[] attachFiles,
                         @RequestParam(value = "tagsHidden", required = false) String tagsCsv,
+                        @RequestParam(value = "uploadedAttachFilesJson", required = false) String uploadedAttachFilesJson,
+                        @RequestParam(value = "thumbnailTarget", required = false) String thumbnailTarget,
                         @RequestParam("contentHtml") String contentHtml,
                         HttpSession session,
                         HttpServletRequest req) {
@@ -163,8 +180,17 @@ public class CommunityFormController {
 
         board.setContent(contentHtml);
 
-        int boardId = formService.write(board, uid, tempKey, attachFiles, tagsCsv);
-        return "redirect:" + req.getContextPath() + "/qna/view?board_id=" + boardId;
+        int boardId = formService.write(
+                board,
+                uid,
+                tempKey,
+                attachFiles,
+                tagsCsv,
+                uploadedAttachFilesJson,
+                thumbnailTarget
+        );
+
+        return "redirect:" + req.getContextPath() + "/community/view?board_id=" + boardId;
     }
 
     @PostMapping("/edit")
@@ -172,6 +198,9 @@ public class CommunityFormController {
                        @RequestParam("tempKey") String tempKey,
                        @RequestParam(value = "attachFiles", required = false) MultipartFile[] attachFiles,
                        @RequestParam(value = "tagsHidden", required = false) String tagsCsv,
+                       @RequestParam(value = "uploadedAttachFilesJson", required = false) String uploadedAttachFilesJson,
+                       @RequestParam(value = "existingDeletedFileIds", required = false) String existingDeletedFileIds,
+                       @RequestParam(value = "thumbnailTarget", required = false) String thumbnailTarget,
                        @RequestParam("contentHtml") String contentHtml,
                        HttpSession session,
                        HttpServletRequest req) {
@@ -181,7 +210,61 @@ public class CommunityFormController {
 
         board.setContent(contentHtml);
 
-        int boardId = formService.edit(board, uid, tempKey, attachFiles, tagsCsv);
+        int boardId = formService.edit(
+                board,
+                uid,
+                tempKey,
+                attachFiles,
+                tagsCsv,
+                uploadedAttachFilesJson,
+                existingDeletedFileIds,
+                thumbnailTarget
+        );
+
         return "redirect:" + req.getContextPath() + "/community/view?board_id=" + boardId;
+    }
+
+    @PostMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> delete(
+            @RequestParam("board_id") int boardId,
+            HttpSession session
+    ) {
+        Map<String, Object> res = new HashMap<>();
+        int uid = loginUserId(session);
+
+        if (uid <= 0) {
+            res.put("ok", false);
+            res.put("msg", "LOGIN_REQUIRED");
+            return ResponseEntity.ok(res);
+        }
+
+        try {
+            boolean deleted = formService.deleteBoard(boardId, uid);
+
+            if (!deleted) {
+                res.put("ok", false);
+                res.put("msg", "DELETE_FAILED");
+                return ResponseEntity.ok(res);
+            }
+
+            res.put("ok", true);
+            return ResponseEntity.ok(res);
+
+        } catch (SecurityException e) {
+            res.put("ok", false);
+            res.put("msg", "FORBIDDEN");
+            return ResponseEntity.ok(res);
+
+        } catch (IllegalArgumentException e) {
+            res.put("ok", false);
+            res.put("msg", "INVALID_REQUEST");
+            return ResponseEntity.ok(res);
+
+        } catch (Exception e) {
+            res.put("ok", false);
+            res.put("msg", "DELETE_FAILED");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+        }
     }
 }

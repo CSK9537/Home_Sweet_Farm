@@ -30,7 +30,7 @@
                 <div class="cv-breadcrumb">
                   <!-- 1) 커뮤니티 메인 -->
                   <a class="cv-bc-link" href="${pageContext.request.contextPath}/community/main">
-                    커뮤니티
+                    	커뮤니티
                   </a>
 
                   <span class="cv-sep">&gt;</span>
@@ -55,42 +55,51 @@
 
                 <div class="cv-meta">
                   <div class="cv-writer">
-                    <div class="cv-avatar">
-                      <span class="cv-avatar-fallback"></span>
-                    </div>
-
-                    <div class="cv-writer-info">
-                      <div class="cv-writer-line cv-user-pop-wrap">
-                        <a href="javascript:void(0)" class="js-user-trigger cv-nick" data-user_id="${board.user_id}"
-                          data-nickname="${board.writer}" data-user-id="${board.user_id}"
-                          data-user-nick="${board.writer}">
-                          ${board.writer}
-                        </a>
-
-                        <div class="cv-pop cv-user-pop js-inline-user-pop" style="display:none;">
-                          <button type="button" class="cv-pop-item" data-action="boardView">게시글보기</button>
-                          <button type="button" class="cv-pop-item" data-action="chat">채팅하기</button>
-                          <button type="button" class="cv-pop-item" data-action="report">프로필 신고하기</button>
-                          <button type="button" class="cv-pop-item cv-pop-danger" data-action="block">차단하기</button>
-                        </div>
-                      </div>
-
-                      <div class="cv-date-line">
-                        <span class="cv-date">
-                          작성
-                          <fmt:formatDate value="${board.reg_date}" pattern="yyyy.MM.dd" />
-                        </span>
-
-                        <c:if test="${not empty board.update_date}">
-                          <span class="cv-dot">||</span>
-                          <span class="cv-updated">
-                            수정
-                            <fmt:formatDate value="${board.update_date}" pattern="yyyy.MM.dd" />
-                          </span>
-                        </c:if>
-                      </div>
-                    </div>
-                  </div>
+					  <button
+					    type="button"
+					    class="cv-avatar cv-avatar-btn"
+					    onclick="GlobalProfileModal.open('${board.user_id}')"
+					    aria-label="${board.writer} 프로필 보기"
+					    title="${board.writer} 프로필 보기">
+					
+					    <img
+					      src="${pageContext.request.contextPath}/user/getProfile?fileName=${not empty board.writer_profile ? board.writer_profile : 'default_profile.png'}"
+					      alt="${board.writer} 프로필 이미지"
+					      onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/resources/image/default_profile.png';" />
+					  </button>
+					
+					  <div class="cv-writer-info">
+					    <div class="cv-writer-line cv-user-pop-wrap">
+					      <a href="javascript:void(0)" class="js-user-trigger cv-nick" data-user_id="${board.user_id}"
+					        data-nickname="${board.writer}" data-user-id="${board.user_id}"
+					        data-user-nick="${board.writer}">
+					        ${board.writer}
+					      </a>
+					
+					      <div class="cv-pop cv-user-pop js-inline-user-pop" style="display:none;">
+					        <button type="button" class="cv-pop-item" data-action="boardView">게시글보기</button>
+					        <button type="button" class="cv-pop-item" data-action="chat">채팅하기</button>
+					        <button type="button" class="cv-pop-item" data-action="report">프로필 신고하기</button>
+					        <button type="button" class="cv-pop-item cv-pop-danger" data-action="block">차단하기</button>
+					      </div>
+					    </div>
+					
+					    <div class="cv-date-line">
+					      <span class="cv-date">
+					        	작성
+					        <fmt:formatDate value="${board.reg_date}" pattern="yyyy.MM.dd" />
+					      </span>
+					
+					      <c:if test="${not empty board.update_date}">
+					        <span class="cv-dot">||</span>
+					        <span class="cv-updated">
+					          	수정
+					          <fmt:formatDate value="${board.update_date}" pattern="yyyy.MM.dd" />
+					        </span>
+					      </c:if>
+					    </div>
+					  </div>
+					</div>
 
                   <div class="cv-stats">
                     <span>조회 <span id="viewCnt">${board.view_cnt}</span></span>
@@ -98,13 +107,13 @@
 
                     <button type="button" class="cv-stat-btn" id="btnLikeStat" data-board-id="${board.board_id}" ${liked
                       ? "disabled='disabled'" : "" }>
-                      좋아요 <span id="likeCntStat">${board.like_cnt}</span>
+                      	좋아요 <span id="likeCntStat">${board.like_cnt}</span>
                     </button>
 
                     <span class="cv-bar">||</span>
 
                     <button type="button" class="cv-stat-btn" id="btnReplyStat">
-                      댓글 <span id="replyCntStat">${board.reply_cnt}</span>
+                      	댓글 <span id="replyCntStat">${board.reply_cnt}</span>
                     </button>
                   </div>
                 </div>
@@ -112,45 +121,49 @@
                 <div class="cv-divider"></div>
 
                 <c:if test="${board.board_type eq 'T' or board.board_type eq 'S'}">
-                  <div class="cv-market-box">
-                    <div class="cv-market-item">
-                      <span class="cv-market-label">거래유형</span>
-                      <span class="cv-market-value">
-                        <c:choose>
-                          <c:when test="${board.board_type eq 'T'}">중고거래</c:when>
-                          <c:when test="${board.board_type eq 'S'}">나눔</c:when>
-                        </c:choose>
-                      </span>
-                    </div>
-
-                    <div class="cv-market-item">
-                      <span class="cv-market-label">거래상태</span>
-                      <span class="cv-market-value">
-                        <c:choose>
-                          <c:when test="${board.trade_status eq 'C'}">완료</c:when>
-                          <c:otherwise>진행중</c:otherwise>
-                        </c:choose>
-                      </span>
-                    </div>
-
-                    <div class="cv-market-item cv-market-item--price">
-                      <span class="cv-market-label">가격</span>
-                      <span class="cv-market-price">
-                        <c:choose>
-                          <c:when test="${board.board_type eq 'S'}">
-                            나눔
-                          </c:when>
-                          <c:when test="${not empty board.price}">
-                            <fmt:formatNumber value="${board.price}" pattern="#,###" />원
-                          </c:when>
-                          <c:otherwise>
-                            가격 미정
-                          </c:otherwise>
-                        </c:choose>
-                      </span>
-                    </div>
-                  </div>
-                </c:if>
+				  <div class="cv-market-box">
+				    <div class="cv-market-item">
+				      <span class="cv-market-label">거래유형</span>
+				      <span class="cv-market-value">
+				        <c:choose>
+				          <c:when test="${category.category_name eq '판매'}">판매</c:when>
+				          <c:when test="${category.category_name eq '구매'}">구매</c:when>
+				          <c:when test="${category.category_name eq '나눔'}">나눔</c:when>
+				          <c:when test="${board.board_type eq 'S'}">나눔</c:when>
+				          <c:otherwise>중고거래</c:otherwise>
+				        </c:choose>
+				      </span>
+				    </div>
+				
+				    <div class="cv-market-item">
+				      <span class="cv-market-label">거래상태</span>
+				      <span class="cv-market-value">
+				        <c:choose>
+				          <c:when test="${board.trade_status eq 'P'}">진행중</c:when>
+				          <c:when test="${board.trade_status eq 'C'}">완료</c:when>
+				          <c:otherwise>-</c:otherwise>
+				        </c:choose>
+				      </span>
+				    </div>
+				
+				    <div class="cv-market-item cv-market-item--price">
+				      <span class="cv-market-label">가격</span>
+				      <span class="cv-market-price">
+				        <c:choose>
+				          <c:when test="${category.category_name eq '나눔' or board.board_type eq 'S'}">
+				            나눔
+				          </c:when>
+				          <c:when test="${not empty board.price}">
+				            <fmt:formatNumber value="${board.price}" pattern="#,###" />원
+				          </c:when>
+				          <c:otherwise>
+				            가격 미정
+				          </c:otherwise>
+				        </c:choose>
+				      </span>
+				    </div>
+				  </div>
+				</c:if>
 
                 <div class="cv-content">
                   <c:out value="${board.content}" escapeXml="false" />
@@ -190,7 +203,7 @@
                   <div class="cv-post-actions__left">
                     <button type="button" class="cv-btn cv-btn-ghost cv-like-btn" id="btnLikeBottom"
                       data-board-id="${board.board_id}" ${liked ? "disabled='disabled'" : "" }>
-                      좋아요 <span id="likeCntBottom">${board.like_cnt}</span>
+                      	좋아요 <span id="likeCntBottom">${board.like_cnt}</span>
                     </button>
 
                     <button type="button" class="cv-btn cv-btn-ghost" id="btnBoardList">목록</button>
@@ -198,7 +211,7 @@
                     <c:if test="${loginUserId != board.user_id}">
                       <button type="button" class="cv-btn cv-btn-ghost cv-report-btn" id="btnBoardReport"
                         data-board-id="${board.board_id}">
-                        신고
+                        	신고
                       </button>
                     </c:if>
                   </div>
@@ -280,15 +293,15 @@
 
                           <div class="cv-comment-actions">
                             <button type="button" class="cv-action-btn js-like-btn">
-                              좋아요 <span class="js-like-count">${r.like_cnt}</span>
+                              	좋아요 <span class="js-like-count">${r.like_cnt}</span>
                             </button>
 
                             <button type="button" class="cv-action-btn js-reply-btn" data-target-nick="${r.writer}">
-                              답글
+                              	답글
                             </button>
 
                             <button type="button" class="cv-action-btn js-reply-toggle">
-                              답글 <span class="js-reply-count">0</span>개 <span class="cv-caret">▾</span>
+                              	답글 <span class="js-reply-count">0</span>개 <span class="cv-caret">▾</span>
                             </button>
                           </div>
 
@@ -319,6 +332,7 @@
 
               <input type="hidden" id="board_id" value="${board.board_id}" />
               <input type="hidden" id="loginUserId" value="${loginUserId}" />
+              <input type="hidden" id="isLoggedInStatus" value="${not empty loginUserId}" />
               <input type="hidden" id="prev_id" value="${not empty prev ? prev.board_id : ''}" />
               <input type="hidden" id="next_id" value="${not empty next ? next.board_id : ''}" />
               <input type="hidden" id="board_tab" value="${boardTab}" />

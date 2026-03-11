@@ -60,8 +60,7 @@
        AND IS_ACTIVE    = 'Y'
   </update>
 
-  <select id="selectBoardById"
-          resultType="org.joonzis.community.vo.BoardVO">
+  <select id="selectBoardById" resultType="org.joonzis.community.vo.BoardVO">
     SELECT
       BOARD_ID,
       USER_ID,
@@ -84,16 +83,14 @@
       AND IS_ACTIVE = 'Y'
   </select>
 
-  <select id="selectBoardOwnerUserId"
-          resultType="int">
+  <select id="selectBoardOwnerUserId" resultType="int">
     SELECT USER_ID
     FROM TBL_BOARD
     WHERE BOARD_ID = #{boardId}
       AND IS_ACTIVE = 'Y'
   </select>
 
-  <insert id="insertBoardFile"
-          parameterType="org.joonzis.community.vo.BoardFileVO">
+  <insert id="insertBoardFile" parameterType="org.joonzis.community.vo.BoardFileVO">
     INSERT INTO TBL_BOARD_FILE (
       FILE_ID,
       BOARD_ID,
@@ -125,43 +122,86 @@
     )
   </insert>
 
-  <select id="selectFilesByTempKey"
-          parameterType="string"
-          resultType="org.joonzis.community.vo.BoardFileVO">
+  <select id="selectBoardFilesByBoardId" resultType="org.joonzis.community.vo.BoardFileVO">
     SELECT
-      FILE_ID,
-      BOARD_ID,
-      ORIGINAL_NAME,
-      SAVED_NAME,
-      FILE_SIZE,
-      CONTENT_TYPE,
-      TEMP_KEY,
-      SUB_DIR,
-      FILE_KIND,
-      IS_ACTIVE,
-      IS_THUMBNAIL,
-      REG_DATE,
-      UPDATED_AT
+      FILE_ID        AS file_id,
+      BOARD_ID       AS board_id,
+      ORIGINAL_NAME  AS original_name,
+      SAVED_NAME     AS saved_name,
+      FILE_SIZE      AS file_size,
+      CONTENT_TYPE   AS content_type,
+      TEMP_KEY       AS temp_key,
+      SUB_DIR        AS sub_dir,
+      FILE_KIND      AS file_kind,
+      IS_ACTIVE      AS is_active,
+      IS_THUMBNAIL   AS is_thumbnail,
+      REG_DATE       AS reg_date,
+      UPDATED_AT     AS updated_at
     FROM TBL_BOARD_FILE
-    WHERE TEMP_KEY  = #{temp_key, jdbcType=VARCHAR}
+    WHERE BOARD_ID = #{boardId}
       AND IS_ACTIVE = 'Y'
-    ORDER BY FILE_ID ASC
+    ORDER BY
+      CASE WHEN FILE_KIND = 'ATTACH' THEN 0 ELSE 1 END,
+      FILE_ID ASC
   </select>
 
-  <update id="attachTempFilesToBoard">
+  <update id="deactivateBoardFileById">
     UPDATE TBL_BOARD_FILE
-       SET BOARD_ID   = #{board_id, jdbcType=NUMERIC},
-           TEMP_KEY   = NULL,
-           UPDATED_AT = SYSDATE
-     WHERE TEMP_KEY   = #{temp_key, jdbcType=VARCHAR}
-       AND BOARD_ID   IS NULL
+       SET IS_ACTIVE  = 'N',
+           UPDATED_AT = SYSDATE,
+           IS_THUMBNAIL = 'N'
+     WHERE BOARD_ID   = #{boardId}
+       AND FILE_ID    = #{fileId}
        AND IS_ACTIVE  = 'Y'
   </update>
+
+  <update id="clearThumbnailByBoardId">
+    UPDATE TBL_BOARD_FILE
+       SET IS_THUMBNAIL = 'N',
+           UPDATED_AT   = SYSDATE
+     WHERE BOARD_ID     = #{boardId}
+       AND IS_ACTIVE    = 'Y'
+  </update>
+
+  <update id="setThumbnailByFileId">
+    UPDATE TBL_BOARD_FILE
+       SET IS_THUMBNAIL = 'Y',
+           UPDATED_AT   = SYSDATE
+     WHERE BOARD_ID     = #{boardId}
+       AND FILE_ID      = #{fileId}
+       AND IS_ACTIVE    = 'Y'
+  </update>
+
+  <select id="selectThumbnailFileId" resultType="int">
+    SELECT FILE_ID
+    FROM TBL_BOARD_FILE
+    WHERE BOARD_ID = #{boardId}
+      AND IS_ACTIVE = 'Y'
+      AND IS_THUMBNAIL = 'Y'
+      AND CONTENT_TYPE = 'IMAGE'
+      AND ROWNUM = 1
+  </select>
+
+  <select id="selectFirstActiveImageFileId" resultType="int">
+    SELECT FILE_ID
+    FROM (
+      SELECT FILE_ID
+      FROM TBL_BOARD_FILE
+      WHERE BOARD_ID = #{boardId}
+        AND IS_ACTIVE = 'Y'
+        AND CONTENT_TYPE = 'IMAGE'
+      ORDER BY
+        CASE WHEN FILE_KIND = 'ATTACH' THEN 0 ELSE 1 END,
+        FILE_ID ASC
+    )
+    WHERE ROWNUM = 1
+  </select>
 
   <update id="deactivateFilesByBoardId">
     UPDATE TBL_BOARD_FILE
        SET IS_ACTIVE  = 'N',
-           UPDATED_AT = SYSDATE
+           UPDATED_AT = SYSDATE,
+           IS_THUMBNAIL = 'N'
      WHERE BOARD_ID   = #{boardId}
        AND IS_ACTIVE  = 'Y'
   </update>
@@ -194,5 +234,50 @@
     )
     WHERE ROWNUM &lt;= #{limit}
   </select>
+
+  <select id="selectBoardTagsCsv" resultType="string">
+    SELECT LISTAGG(H.BOARD_HASHTAG_NAME, ',') WITHIN GROUP (ORDER BY H.BOARD_HASHTAG_NAME)
+    FROM TBL_BOARD_ASPECT A
+    JOIN TBL_BOARD_HASHTAG_LIST H
+      ON H.BOARD_HASHTAG_ID = A.BOARD_HASHTAG_ID
+    WHERE A.BOARD_ID = #{boardId}
+      AND NVL(H.IS_ACTIVE, 'Y') = 'Y'
+  </select>
+
+  <select id="selectBoardHashtagIdByName" resultType="int">
+    SELECT BOARD_HASHTAG_ID
+    FROM TBL_BOARD_HASHTAG_LIST
+    WHERE BOARD_HASHTAG_NAME = #{tagName}
+      AND NVL(IS_ACTIVE, 'Y') = 'Y'
+  </select>
+
+  <insert id="insertBoardHashtag">
+    INSERT INTO TBL_BOARD_HASHTAG_LIST (
+      BOARD_HASHTAG_ID,
+      BOARD_HASHTAG_NAME,
+      IS_ACTIVE,
+      REG_DATE
+    ) VALUES (
+      SEQ_TBL_BOARD_HASHTAG_LIST.NEXTVAL,
+      #{tagName},
+      'Y',
+      SYSDATE
+    )
+  </insert>
+
+  <delete id="deleteBoardAspectsByBoardId">
+    DELETE FROM TBL_BOARD_ASPECT
+    WHERE BOARD_ID = #{boardId}
+  </delete>
+
+  <insert id="insertBoardAspect">
+    INSERT INTO TBL_BOARD_ASPECT (
+      BOARD_ID,
+      BOARD_HASHTAG_ID
+    ) VALUES (
+      #{boardId},
+      #{boardHashtagId}
+    )
+  </insert>
 
 </mapper>

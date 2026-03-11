@@ -58,26 +58,111 @@
   var tradeBox = document.getElementById("tradeBox");
   var priceInput = document.getElementById("price");
   var tradeStatusEl = document.getElementById("tradeStatus");
+  var priceTextDisplay = document.getElementById("priceTextDisplay");
+  var priceHint = document.getElementById("priceHint");
 
-  function toggleTradeUI() {
+  if (priceInput && !priceTextDisplay) {
+    priceTextDisplay = document.createElement("div");
+    priceTextDisplay.id = "priceTextDisplay";
+    priceTextDisplay.className = "input input--readonly";
+    priceTextDisplay.style.display = "none";
+    priceTextDisplay.style.lineHeight = "44px";
+    priceTextDisplay.style.boxSizing = "border-box";
+    priceInput.parentNode.insertBefore(priceTextDisplay, priceInput.nextSibling);
+  }
+
+  if (priceInput && !priceHint) {
+    priceHint = document.createElement("div");
+    priceHint.id = "priceHint";
+    priceHint.className = "hint";
+    priceInput.parentNode.appendChild(priceHint);
+  }
+
+  var headSelect = document.getElementById("headSelect");
+
+  function getSelectedCategoryId() {
+    if (!headSelect) return "";
+    return String(headSelect.value || "").trim();
+  }
+
+  function isSellCategory() {
+    return getSelectedCategoryId() === "160";
+  }
+
+  function isBuyCategory() {
+    return getSelectedCategoryId() === "170";
+  }
+
+  function isShareCategory() {
+    return boardType === "S" || getSelectedCategoryId() === "180";
+  }
+
+  function syncMarketPriceUi() {
     var isTrade = (boardType === "T" || boardType === "S");
+    var isSell = isSellCategory();
+    var isBuy = isBuyCategory();
+    var isShare = isShareCategory();
 
     if (tradeBox) tradeBox.style.display = isTrade ? "" : "none";
 
     if (priceInput) {
-      priceInput.required = (boardType === "T");
-      priceInput.disabled = !isTrade;
-      if (!isTrade) priceInput.value = "";
+      priceInput.readOnly = false;
+      priceInput.disabled = false;
+      priceInput.required = false;
+      priceInput.style.display = "";
+
+      if (!isTrade) {
+        priceInput.disabled = true;
+        priceInput.value = "";
+        priceInput.placeholder = "가격을 입력해 주세요.";
+      } else if (isShare) {
+        priceInput.value = "";
+        priceInput.disabled = true;
+        priceInput.placeholder = "나눔";
+        priceInput.style.display = "none";
+      } else if (isSell) {
+        priceInput.required = true;
+        priceInput.placeholder = "판매 가격을 입력해 주세요.";
+      } else if (isBuy) {
+        priceInput.placeholder = "희망 가격(선택)";
+      } else {
+        priceInput.placeholder = "가격을 입력해 주세요.";
+      }
+    }
+
+    if (priceTextDisplay) {
+      priceTextDisplay.style.display = (isTrade && isShare) ? "block" : "none";
+      priceTextDisplay.textContent = "나눔";
+    }
+
+    if (priceHint) {
+      if (!isTrade) {
+        priceHint.textContent = "";
+      } else if (isShare) {
+        priceHint.textContent = "나눔글은 가격 입력이 차단되며 저장 시 '나눔'으로 처리됩니다.";
+      } else if (isSell) {
+        priceHint.textContent = "판매글은 가격 입력이 필수입니다.";
+      } else if (isBuy) {
+        priceHint.textContent = "구매글은 가격 입력이 선택사항입니다.";
+      } else {
+        priceHint.textContent = "판매글은 가격 필수, 구매글은 선택사항입니다.";
+      }
     }
 
     if (tradeStatusEl) {
       tradeStatusEl.disabled = !isTrade;
-      if (!isTrade) tradeStatusEl.value = "";
+      if (!isTrade) {
+        tradeStatusEl.value = "";
+      } else if (!tradeStatusEl.value) {
+        tradeStatusEl.value = "P";
+      }
     }
   }
-  toggleTradeUI();
 
-  var headSelect = document.getElementById("headSelect");
+  function toggleTradeUI() {
+    syncMarketPriceUi();
+  }
+  toggleTradeUI();
   function filterHeads() {
     if (!headSelect) return;
 
@@ -105,17 +190,14 @@
     } else {
       if (opts.length > 0 && opts[0].value === "") opts[0].hidden = false;
     }
-
-    if (boardType === "A") {
-      for (i = 0; i < opts.length; i++) {
-        if (!opts[i].hidden && opts[i].value === "501") {
-          headSelect.value = "501";
-          break;
-        }
-      }
-    }
   }
   filterHeads();
+
+  if (headSelect) {
+    headSelect.addEventListener("change", function () {
+      syncMarketPriceUi();
+    });
+  }
 
   var uploadedImages = [];
   var uploadedImagesJsonEl = document.getElementById("uploadedImagesJson");
@@ -139,11 +221,21 @@
       .replace(/'/g, "&#39;");
   }
 
+  function isImageType(contentType) {
+    if (!contentType) return false;
+    var ct = String(contentType).toLowerCase();
+    return ct === "image" || ct.indexOf("image/") === 0;
+  }
+
   function isImageFile(file) {
     return !!(file && file.type && file.type.toLowerCase().indexOf("image/") === 0);
   }
 
-  function uploadBlob(blob, done) {
+  function cssEscapeForSelector(s) {
+    return String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  }
+
+  function uploadBlob(blob, purpose, done) {
     var tk = getTempKey();
     if (!tk) {
       alert("tempKey가 없습니다. 페이지를 새로고침 후 다시 시도해 주세요.");
@@ -154,6 +246,7 @@
     fd.append("file", blob);
     fd.append("tempKey", tk);
     fd.append("boardType", boardType);
+    fd.append("purpose", purpose || "EDITOR");
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", ctx + "/community/upload", true);
@@ -192,7 +285,7 @@
     placeholder: "내용을 입력하세요.",
     hooks: {
       addImageBlobHook: function (blob, callback) {
-        uploadBlob(blob, function (res) {
+        uploadBlob(blob, "EDITOR", function (res) {
           callback(res.url, "image");
           setTimeout(function () {
             wrapNewestInsertedImage(res.url);
@@ -211,10 +304,7 @@
     if (headSelect && window.__INIT_CATEGORY__) headSelect.value = String(window.__INIT_CATEGORY__);
     var tradeStatusEl2 = document.getElementById("tradeStatus");
     if (tradeStatusEl2 && window.__INIT_TRADE_STATUS__) tradeStatusEl2.value = String(window.__INIT_TRADE_STATUS__);
-  }
-
-  function cssEscape(s) {
-    return String(s).replace(/"/g, '\\"');
+    syncMarketPriceUi();
   }
 
   function wrapNewestInsertedImage(url) {
@@ -222,7 +312,7 @@
       var root = editor.getRootElement ? editor.getRootElement() : document.querySelector("#editor");
       if (!root) return;
 
-      var imgs = root.querySelectorAll('img[src="' + cssEscape(url) + '"]');
+      var imgs = root.querySelectorAll('img[src="' + cssEscapeForSelector(url) + '"]');
       if (!imgs || imgs.length === 0) return;
 
       var target = null;
@@ -307,10 +397,26 @@
         e.preventDefault();
         addTag(tagInput.value);
         tagInput.value = "";
-        if (tagSuggest) tagSuggest.style.display = "none";
+        if (tagSuggest) {
+          tagSuggest.innerHTML = "";
+          tagSuggest.style.display = "none";
+        }
       } else if (e.key === "Backspace" && !tagInput.value && tags.length) {
         tags.pop();
         renderTags();
+      }
+    });
+
+    tagInput.addEventListener("blur", function () {
+      var pending = (tagInput.value || "").trim();
+      if (!pending) return;
+
+      addTag(pending);
+      tagInput.value = "";
+
+      if (tagSuggest) {
+        tagSuggest.innerHTML = "";
+        tagSuggest.style.display = "none";
       }
     });
 
@@ -376,35 +482,84 @@
 
   var attachFilesEl = document.getElementById("attachFiles");
   var filePreviewEl = document.getElementById("filePreview");
+  var uploadedAttachFilesJsonEl = document.getElementById("uploadedAttachFilesJson");
+  var existingDeletedFileIdsEl = document.getElementById("existingDeletedFileIds");
+  var thumbnailTargetEl = document.getElementById("thumbnailTarget");
+
+  var existingFiles = Array.isArray(window.__EXISTING_FILES__) ? window.__EXISTING_FILES__.slice() : [];
+  var deletedExistingFileIds = [];
   var uploadedAttachFiles = [];
 
-  function renderUploadedAttachPreview() {
-    if (!filePreviewEl) return;
-    filePreviewEl.innerHTML = "";
+  function setUploadedAttachFilesHidden() {
+    if (uploadedAttachFilesJsonEl) uploadedAttachFilesJsonEl.value = JSON.stringify(uploadedAttachFiles);
+  }
 
-    if (!uploadedAttachFiles.length) return;
+  function setDeletedExistingFileIdsHidden() {
+    if (existingDeletedFileIdsEl) existingDeletedFileIdsEl.value = deletedExistingFileIds.join(",");
+  }
 
-    uploadedAttachFiles.forEach(function (fileInfo, idx) {
-      var item = document.createElement("div");
-      item.className = "file-preview-item";
+  function getThumbnailTarget() {
+    return thumbnailTargetEl ? (thumbnailTargetEl.value || "") : "";
+  }
 
-      var text = document.createElement("span");
-      text.textContent = fileInfo.originalName + " (" + formatFileSize(fileInfo.size) + ")";
+  function setThumbnailTarget(v) {
+    if (thumbnailTargetEl) thumbnailTargetEl.value = v || "";
+  }
 
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = "삭제";
-      btn.style.marginLeft = "8px";
-      btn.addEventListener("click", function () {
-        removeFileFromEditor(fileInfo);
-        uploadedAttachFiles.splice(idx, 1);
-        renderUploadedAttachPreview();
-      });
+  function currentVisibleFiles() {
+    return existingFiles.filter(function (f) { return !f._deleted; }).concat(uploadedAttachFiles);
+  }
+  
+  function hasVisibleImageAttachment() {
+	    var files = currentVisibleFiles();
+	    for (var i = 0; i < files.length; i++) {
+	      var f = files[i];
+	      if (f && isImageType(f.contentType)) {
+	        return true;
+	      }
+	    }
+	    return false;
+	  }
 
-      item.appendChild(text);
-      item.appendChild(btn);
-      filePreviewEl.appendChild(item);
-    });
+	  function isMarketBoardWriteMode() {
+	    return mode === "insert" && (boardType === "T" || boardType === "S");
+	  }
+
+  function firstImageTarget(files) {
+    files = files || currentVisibleFiles();
+    for (var i = 0; i < files.length; i++) {
+      if (isImageType(files[i].contentType)) {
+        if (files[i].isExisting) return "existing:" + files[i].fileId;
+        return "temp:" + files[i].savedName;
+      }
+    }
+    return "";
+  }
+
+  function ensureThumbnailTargetValid() {
+    var visible = currentVisibleFiles();
+    var target = getThumbnailTarget();
+    var valid = false;
+
+    if (target) {
+      for (var i = 0; i < visible.length; i++) {
+        var f = visible[i];
+        if (!isImageType(f.contentType)) continue;
+
+        if (f.isExisting && target === ("existing:" + f.fileId)) {
+          valid = true;
+          break;
+        }
+        if (!f.isExisting && target === ("temp:" + f.savedName)) {
+          valid = true;
+          break;
+        }
+      }
+    }
+
+    if (!valid) {
+      setThumbnailTarget(firstImageTarget(visible));
+    }
   }
 
   function insertAttachmentHtmlAtCursor(fileInfo) {
@@ -452,7 +607,7 @@
 
     var escapedUrl = url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-    if (fileInfo.isImage) {
+    if (isImageType(fileInfo.contentType) || fileInfo.isImage) {
       html = html.replace(
         new RegExp("<p>\\s*<span[^>]*data-hsf-img=\"1\"[^>]*>\\s*<img[^>]*src=\"" + escapedUrl + "\"[^>]*>\\s*</span>\\s*</p>\\s*<p></p>", "gi"),
         ""
@@ -461,13 +616,21 @@
         new RegExp("<span[^>]*data-hsf-img=\"1\"[^>]*>\\s*<img[^>]*src=\"" + escapedUrl + "\"[^>]*>\\s*</span>", "gi"),
         ""
       );
+      html = html.replace(
+        new RegExp("<img[^>]*src=\"" + escapedUrl + "\"[^>]*>", "gi"),
+        ""
+      );
     } else {
       html = html.replace(
-        new RegExp("<p>\\s*<span[^>]*data-temp-file=\"1\"[^>]*>[^<]*<a[^>]*href=\"" + escapedUrl + "\"[^>]*>.*?</a>.*?</span>\\s*</p>\\s*<p></p>", "gi"),
+        new RegExp("<p>\\s*<span[^>]*data-temp-file=\"1\"[^>]*>.*?<a[^>]*href=\"" + escapedUrl + "\"[^>]*>.*?</a>.*?</span>\\s*</p>\\s*<p></p>", "gi"),
         ""
       );
       html = html.replace(
-        new RegExp("<span[^>]*data-temp-file=\"1\"[^>]*>[^<]*<a[^>]*href=\"" + escapedUrl + "\"[^>]*>.*?</a>.*?</span>", "gi"),
+        new RegExp("<span[^>]*data-temp-file=\"1\"[^>]*>.*?<a[^>]*href=\"" + escapedUrl + "\"[^>]*>.*?</a>.*?</span>", "gi"),
+        ""
+      );
+      html = html.replace(
+        new RegExp("<a[^>]*href=\"" + escapedUrl + "\"[^>]*>.*?</a>", "gi"),
         ""
       );
     }
@@ -475,9 +638,103 @@
     editor.setHTML(html);
   }
 
+  function renderFileList() {
+    if (!filePreviewEl) return;
+    filePreviewEl.innerHTML = "";
+
+    var files = currentVisibleFiles();
+    if (!files.length) return;
+
+    ensureThumbnailTargetValid();
+    var currentTarget = getThumbnailTarget();
+
+    files.forEach(function (fileInfo) {
+      var row = document.createElement("div");
+      row.className = "file-preview-item";
+
+      var left = document.createElement("div");
+      left.className = "file-preview-item__left";
+
+      if (isImageType(fileInfo.contentType)) {
+        var thumbWrap = document.createElement("label");
+        thumbWrap.className = "thumb-picker";
+
+        var radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "thumbnailPick";
+        radio.checked =
+          (fileInfo.isExisting && currentTarget === ("existing:" + fileInfo.fileId)) ||
+          (!fileInfo.isExisting && currentTarget === ("temp:" + fileInfo.savedName));
+
+        radio.addEventListener("change", function () {
+          if (fileInfo.isExisting) {
+            setThumbnailTarget("existing:" + fileInfo.fileId);
+          } else {
+            setThumbnailTarget("temp:" + fileInfo.savedName);
+          }
+        });
+
+        var span = document.createElement("span");
+        span.textContent = "썸네일";
+
+        thumbWrap.appendChild(radio);
+        thumbWrap.appendChild(span);
+        left.appendChild(thumbWrap);
+      } else {
+        var badge = document.createElement("span");
+        badge.className = "thumb-picker thumb-picker--empty";
+        badge.textContent = "파일";
+        left.appendChild(badge);
+      }
+
+      var text = document.createElement("span");
+      text.className = "file-preview-item__name";
+      text.textContent = fileInfo.originalName + " (" + formatFileSize(fileInfo.size) + ")";
+      left.appendChild(text);
+
+      var right = document.createElement("div");
+      right.className = "file-preview-item__right";
+
+      var typeBadge = document.createElement("span");
+      typeBadge.className = "file-kind-badge";
+      typeBadge.textContent = fileInfo.isExisting ? "기존파일" : "새파일";
+      right.appendChild(typeBadge);
+
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "file-delete-btn";
+      btn.textContent = "삭제";
+      btn.addEventListener("click", function () {
+        if (fileInfo.isExisting) {
+          fileInfo._deleted = true;
+          if (deletedExistingFileIds.indexOf(String(fileInfo.fileId)) === -1) {
+            deletedExistingFileIds.push(String(fileInfo.fileId));
+            setDeletedExistingFileIdsHidden();
+          }
+        } else {
+          uploadedAttachFiles = uploadedAttachFiles.filter(function (f) {
+            return !(f.savedName === fileInfo.savedName && f.subDir === fileInfo.subDir);
+          });
+          setUploadedAttachFilesHidden();
+        }
+
+        removeFileFromEditor(fileInfo);
+        ensureThumbnailTargetValid();
+        renderFileList();
+      });
+      right.appendChild(btn);
+
+      row.appendChild(left);
+      row.appendChild(right);
+      filePreviewEl.appendChild(row);
+    });
+  }
+
   function uploadAttachFileTemp(file, done) {
-    uploadBlob(file, function (res) {
+    uploadBlob(file, "ATTACH", function (res) {
       done({
+        isExisting: false,
+        fileId: 0,
         url: res.url,
         savedName: res.savedName || "",
         subDir: res.subDir || "",
@@ -489,6 +746,31 @@
     });
   }
 
+  existingFiles = existingFiles.map(function (f) {
+    return {
+      isExisting: true,
+      fileId: Number(f.fileId || 0),
+      url: f.url || "",
+      savedName: f.savedName || "",
+      subDir: f.subDir || "",
+      originalName: f.originalName || "",
+      size: Number(f.size || 0),
+      contentType: f.contentType || "",
+      fileKind: f.fileKind || "",
+      isImage: isImageType(f.contentType),
+      _deleted: false
+    };
+  });
+
+  for (var exIdx = 0; exIdx < existingFiles.length; exIdx++) {
+    if (existingFiles[exIdx].isImage && String(window.__EXISTING_FILES__[exIdx].isThumbnail || "N") === "Y") {
+      setThumbnailTarget("existing:" + existingFiles[exIdx].fileId);
+      break;
+    }
+  }
+
+  renderFileList();
+
   if (attachFilesEl) {
     attachFilesEl.addEventListener("change", function () {
       var files = attachFilesEl.files;
@@ -497,7 +779,13 @@
       Array.prototype.forEach.call(files, function (file) {
         uploadAttachFileTemp(file, function (fileInfo) {
           uploadedAttachFiles.push(fileInfo);
-          renderUploadedAttachPreview();
+          setUploadedAttachFilesHidden();
+
+          if (!getThumbnailTarget() && fileInfo.isImage) {
+            setThumbnailTarget("temp:" + fileInfo.savedName);
+          }
+
+          renderFileList();
           insertAttachmentHtmlAtCursor(fileInfo);
         });
       });
@@ -517,34 +805,79 @@
   }
 
   if (form) {
-    form.addEventListener("submit", function (e) {
-      if (mode === "edit" && !isOwner) {
-        e.preventDefault();
-        return;
-      }
+	    form.addEventListener("submit", function (e) {
+	      if (mode === "edit" && !isOwner) {
+	        e.preventDefault();
+	        return;
+	      }
 
-      var html = editor.getHTML();
-      if (!html || html.replace(/<[^>]*>/g, "").trim().length === 0) {
-        alert("본문을 입력해 주세요.");
-        e.preventDefault();
-        return;
-      }
+	      if (tagInput) {
+	        var pendingTag = (tagInput.value || "").trim();
+	        if (pendingTag) {
+	          addTag(pendingTag);
+	          tagInput.value = "";
+	          if (tagSuggest) {
+	            tagSuggest.innerHTML = "";
+	            tagSuggest.style.display = "none";
+	          }
+	        }
+	      }
 
-      html = normalizeResizableImages(html);
-      if (contentHtmlEl) contentHtmlEl.value = html;
+	      var html = editor.getHTML();
+	      if (!html || html.replace(/<[^>]*>/g, "").trim().length === 0) {
+	        alert("본문을 입력해 주세요.");
+	        e.preventDefault();
+	        return;
+	      }
 
-      setTagsHidden();
+	      html = normalizeResizableImages(html);
+	      if (contentHtmlEl) contentHtmlEl.value = html;
 
-      if (!getTempKey()) {
-        alert("tempKey가 없습니다. 페이지를 새로고침 후 다시 시도해 주세요.");
-        e.preventDefault();
-        return;
-      }
+	      setTagsHidden();
+	      setUploadedAttachFilesHidden();
+	      setDeletedExistingFileIdsHidden();
+	      ensureThumbnailTargetValid();
 
-      if (headSelect && !headSelect.value && (boardType === "T" || boardType === "S")) {
-        alert("거래/나눔 게시판은 말머리를 선택해 주세요.");
-        e.preventDefault();
-      }
-    });
-  }
+	      if (!getTempKey()) {
+	        alert("tempKey가 없습니다. 페이지를 새로고침 후 다시 시도해 주세요.");
+	        e.preventDefault();
+	        return;
+	      }
+
+	      if (headSelect && !headSelect.value && (boardType === "T" || boardType === "S")) {
+	        alert("거래/나눔 게시판은 말머리를 선택해 주세요.");
+	        e.preventDefault();
+	        return;
+	      }
+
+	      if (boardType === "T" || boardType === "S") {
+	        var categoryId = getSelectedCategoryId();
+	        var rawPrice = priceInput ? String(priceInput.value || "").trim() : "";
+
+	        if (!categoryId) {
+	          alert("거래/나눔 게시판은 말머리를 선택해 주세요.");
+	          e.preventDefault();
+	          return;
+	        }
+
+	        if (isMarketBoardWriteMode() && !hasVisibleImageAttachment()) {
+	          alert("벼룩시장 게시글은 이미지 첨부파일을 1개 이상 등록해야 합니다.");
+	          e.preventDefault();
+	          if (attachFilesEl) attachFilesEl.focus();
+	          return;
+	        }
+
+	        if (categoryId === "160" && !rawPrice) {
+	          alert("판매글은 가격 입력이 필수입니다.");
+	          e.preventDefault();
+	          if (priceInput) priceInput.focus();
+	          return;
+	        }
+
+	        if (categoryId === "180" || boardType === "S") {
+	          if (priceInput) priceInput.value = "";
+	        }
+	      }
+	    });
+	  }
 })();
