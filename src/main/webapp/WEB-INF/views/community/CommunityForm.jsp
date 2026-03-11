@@ -114,20 +114,32 @@
         </div>
 
         <div class="form-row" id="tradeBox" style="display:none;">
-          <div class="form-field">
-            <label class="label">가격</label>
-            <input type="number" name="price" id="price" class="input"
-                   value="<c:out value='${modeVal eq "edit" ? post.price : ""}'/>" min="0">
-          </div>
-
-          <div class="form-field">
-            <label class="label">거래상태</label>
-            <select name="trade_status" id="tradeStatus" class="select">
-              <option value="P">진행중</option>
-              <option value="C">거래완료</option>
-            </select>
-          </div>
-        </div>
+		  <div class="form-field">
+		    <label class="label">가격</label>
+		
+		    <input type="number"
+		           name="price"
+		           id="price"
+		           class="input"
+		           value="<c:out value='${modeVal eq "edit" ? post.price : ""}'/>"
+		           min="0"
+		           inputmode="numeric"
+		           placeholder="가격을 입력해 주세요.">
+		
+		    <div id="priceTextDisplay" class="hint" style="display:none;">나눔</div>
+		    <div id="priceHint" class="hint">
+		      	판매글은 가격 필수, 구매글은 선택사항, 나눔글은 가격 입력이 불가능합니다.
+		    </div>
+		  </div>
+		
+		  <div class="form-field">
+		    <label class="label">거래상태</label>
+		    <select name="trade_status" id="tradeStatus" class="select">
+		      <option value="P">진행중</option>
+		      <option value="C">거래완료</option>
+		    </select>
+		  </div>
+		</div>
 
         <div class="form-row">
           <div class="form-field">
@@ -139,7 +151,11 @@
                    class="input-file"
                    multiple>
 
-            <div class="hint">여러 파일을 첨부할 수 있습니다. 이미지 미리보기는 제공하지 않으며, 이미지 파일은 썸네일 선택이 가능합니다.</div>
+            <div class="hint">
+            	여러 파일을 첨부할 수 있습니다.
+			      이미지 미리보기는 제공하지 않으며, 이미지 파일은 썸네일 선택이 가능합니다.
+			      벼룩시장(중고거래/나눔) 게시글은 이미지 첨부파일이 1개 이상 필수입니다.
+			</div>
 
             <div id="filePreview" class="file-preview"></div>
           </div>

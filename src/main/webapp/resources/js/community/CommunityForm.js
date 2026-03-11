@@ -58,26 +58,111 @@
   var tradeBox = document.getElementById("tradeBox");
   var priceInput = document.getElementById("price");
   var tradeStatusEl = document.getElementById("tradeStatus");
+  var priceTextDisplay = document.getElementById("priceTextDisplay");
+  var priceHint = document.getElementById("priceHint");
 
-  function toggleTradeUI() {
+  if (priceInput && !priceTextDisplay) {
+    priceTextDisplay = document.createElement("div");
+    priceTextDisplay.id = "priceTextDisplay";
+    priceTextDisplay.className = "input input--readonly";
+    priceTextDisplay.style.display = "none";
+    priceTextDisplay.style.lineHeight = "44px";
+    priceTextDisplay.style.boxSizing = "border-box";
+    priceInput.parentNode.insertBefore(priceTextDisplay, priceInput.nextSibling);
+  }
+
+  if (priceInput && !priceHint) {
+    priceHint = document.createElement("div");
+    priceHint.id = "priceHint";
+    priceHint.className = "hint";
+    priceInput.parentNode.appendChild(priceHint);
+  }
+
+  var headSelect = document.getElementById("headSelect");
+
+  function getSelectedCategoryId() {
+    if (!headSelect) return "";
+    return String(headSelect.value || "").trim();
+  }
+
+  function isSellCategory() {
+    return getSelectedCategoryId() === "160";
+  }
+
+  function isBuyCategory() {
+    return getSelectedCategoryId() === "170";
+  }
+
+  function isShareCategory() {
+    return boardType === "S" || getSelectedCategoryId() === "180";
+  }
+
+  function syncMarketPriceUi() {
     var isTrade = (boardType === "T" || boardType === "S");
+    var isSell = isSellCategory();
+    var isBuy = isBuyCategory();
+    var isShare = isShareCategory();
 
     if (tradeBox) tradeBox.style.display = isTrade ? "" : "none";
 
     if (priceInput) {
-      priceInput.required = (boardType === "T");
-      priceInput.disabled = !isTrade;
-      if (!isTrade) priceInput.value = "";
+      priceInput.readOnly = false;
+      priceInput.disabled = false;
+      priceInput.required = false;
+      priceInput.style.display = "";
+
+      if (!isTrade) {
+        priceInput.disabled = true;
+        priceInput.value = "";
+        priceInput.placeholder = "가격을 입력해 주세요.";
+      } else if (isShare) {
+        priceInput.value = "";
+        priceInput.disabled = true;
+        priceInput.placeholder = "나눔";
+        priceInput.style.display = "none";
+      } else if (isSell) {
+        priceInput.required = true;
+        priceInput.placeholder = "판매 가격을 입력해 주세요.";
+      } else if (isBuy) {
+        priceInput.placeholder = "희망 가격(선택)";
+      } else {
+        priceInput.placeholder = "가격을 입력해 주세요.";
+      }
+    }
+
+    if (priceTextDisplay) {
+      priceTextDisplay.style.display = (isTrade && isShare) ? "block" : "none";
+      priceTextDisplay.textContent = "나눔";
+    }
+
+    if (priceHint) {
+      if (!isTrade) {
+        priceHint.textContent = "";
+      } else if (isShare) {
+        priceHint.textContent = "나눔글은 가격 입력이 차단되며 저장 시 '나눔'으로 처리됩니다.";
+      } else if (isSell) {
+        priceHint.textContent = "판매글은 가격 입력이 필수입니다.";
+      } else if (isBuy) {
+        priceHint.textContent = "구매글은 가격 입력이 선택사항입니다.";
+      } else {
+        priceHint.textContent = "판매글은 가격 필수, 구매글은 선택사항입니다.";
+      }
     }
 
     if (tradeStatusEl) {
       tradeStatusEl.disabled = !isTrade;
-      if (!isTrade) tradeStatusEl.value = "";
+      if (!isTrade) {
+        tradeStatusEl.value = "";
+      } else if (!tradeStatusEl.value) {
+        tradeStatusEl.value = "P";
+      }
     }
   }
-  toggleTradeUI();
 
-  var headSelect = document.getElementById("headSelect");
+  function toggleTradeUI() {
+    syncMarketPriceUi();
+  }
+  toggleTradeUI();
   function filterHeads() {
     if (!headSelect) return;
 
@@ -107,6 +192,12 @@
     }
   }
   filterHeads();
+
+  if (headSelect) {
+    headSelect.addEventListener("change", function () {
+      syncMarketPriceUi();
+    });
+  }
 
   var uploadedImages = [];
   var uploadedImagesJsonEl = document.getElementById("uploadedImagesJson");
@@ -213,6 +304,7 @@
     if (headSelect && window.__INIT_CATEGORY__) headSelect.value = String(window.__INIT_CATEGORY__);
     var tradeStatusEl2 = document.getElementById("tradeStatus");
     if (tradeStatusEl2 && window.__INIT_TRADE_STATUS__) tradeStatusEl2.value = String(window.__INIT_TRADE_STATUS__);
+    syncMarketPriceUi();
   }
 
   function wrapNewestInsertedImage(url) {
@@ -417,6 +509,21 @@
   function currentVisibleFiles() {
     return existingFiles.filter(function (f) { return !f._deleted; }).concat(uploadedAttachFiles);
   }
+  
+  function hasVisibleImageAttachment() {
+	    var files = currentVisibleFiles();
+	    for (var i = 0; i < files.length; i++) {
+	      var f = files[i];
+	      if (f && isImageType(f.contentType)) {
+	        return true;
+	      }
+	    }
+	    return false;
+	  }
+
+	  function isMarketBoardWriteMode() {
+	    return mode === "insert" && (boardType === "T" || boardType === "S");
+	  }
 
   function firstImageTarget(files) {
     files = files || currentVisibleFiles();
@@ -698,50 +805,79 @@
   }
 
   if (form) {
-    form.addEventListener("submit", function (e) {
-      if (mode === "edit" && !isOwner) {
-        e.preventDefault();
-        return;
-      }
+	    form.addEventListener("submit", function (e) {
+	      if (mode === "edit" && !isOwner) {
+	        e.preventDefault();
+	        return;
+	      }
 
-      if (tagInput) {
-        var pendingTag = (tagInput.value || "").trim();
-        if (pendingTag) {
-          addTag(pendingTag);
-          tagInput.value = "";
-          if (tagSuggest) {
-            tagSuggest.innerHTML = "";
-            tagSuggest.style.display = "none";
-          }
-        }
-      }
+	      if (tagInput) {
+	        var pendingTag = (tagInput.value || "").trim();
+	        if (pendingTag) {
+	          addTag(pendingTag);
+	          tagInput.value = "";
+	          if (tagSuggest) {
+	            tagSuggest.innerHTML = "";
+	            tagSuggest.style.display = "none";
+	          }
+	        }
+	      }
 
-      var html = editor.getHTML();
-      if (!html || html.replace(/<[^>]*>/g, "").trim().length === 0) {
-        alert("본문을 입력해 주세요.");
-        e.preventDefault();
-        return;
-      }
+	      var html = editor.getHTML();
+	      if (!html || html.replace(/<[^>]*>/g, "").trim().length === 0) {
+	        alert("본문을 입력해 주세요.");
+	        e.preventDefault();
+	        return;
+	      }
 
-      html = normalizeResizableImages(html);
-      if (contentHtmlEl) contentHtmlEl.value = html;
+	      html = normalizeResizableImages(html);
+	      if (contentHtmlEl) contentHtmlEl.value = html;
 
-      setTagsHidden();
-      setUploadedAttachFilesHidden();
-      setDeletedExistingFileIdsHidden();
-      ensureThumbnailTargetValid();
+	      setTagsHidden();
+	      setUploadedAttachFilesHidden();
+	      setDeletedExistingFileIdsHidden();
+	      ensureThumbnailTargetValid();
 
-      if (!getTempKey()) {
-        alert("tempKey가 없습니다. 페이지를 새로고침 후 다시 시도해 주세요.");
-        e.preventDefault();
-        return;
-      }
+	      if (!getTempKey()) {
+	        alert("tempKey가 없습니다. 페이지를 새로고침 후 다시 시도해 주세요.");
+	        e.preventDefault();
+	        return;
+	      }
 
-      if (headSelect && !headSelect.value && (boardType === "T" || boardType === "S")) {
-        alert("거래/나눔 게시판은 말머리를 선택해 주세요.");
-        e.preventDefault();
-        return;
-      }
-    });
-  }
+	      if (headSelect && !headSelect.value && (boardType === "T" || boardType === "S")) {
+	        alert("거래/나눔 게시판은 말머리를 선택해 주세요.");
+	        e.preventDefault();
+	        return;
+	      }
+
+	      if (boardType === "T" || boardType === "S") {
+	        var categoryId = getSelectedCategoryId();
+	        var rawPrice = priceInput ? String(priceInput.value || "").trim() : "";
+
+	        if (!categoryId) {
+	          alert("거래/나눔 게시판은 말머리를 선택해 주세요.");
+	          e.preventDefault();
+	          return;
+	        }
+
+	        if (isMarketBoardWriteMode() && !hasVisibleImageAttachment()) {
+	          alert("벼룩시장 게시글은 이미지 첨부파일을 1개 이상 등록해야 합니다.");
+	          e.preventDefault();
+	          if (attachFilesEl) attachFilesEl.focus();
+	          return;
+	        }
+
+	        if (categoryId === "160" && !rawPrice) {
+	          alert("판매글은 가격 입력이 필수입니다.");
+	          e.preventDefault();
+	          if (priceInput) priceInput.focus();
+	          return;
+	        }
+
+	        if (categoryId === "180" || boardType === "S") {
+	          if (priceInput) priceInput.value = "";
+	        }
+	      }
+	    });
+	  }
 })();

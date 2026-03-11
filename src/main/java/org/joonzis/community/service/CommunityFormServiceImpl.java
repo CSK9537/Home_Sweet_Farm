@@ -290,6 +290,71 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         }
     }
 
+    private boolean isSellCategory(Integer categoryId) {
+        return categoryId != null && categoryId.intValue() == 160;
+    }
+
+    private boolean isBuyCategory(Integer categoryId) {
+        return categoryId != null && categoryId.intValue() == 170;
+    }
+
+    private boolean isShareCategory(BoardVO board) {
+        if (board == null) return false;
+        if ("S".equalsIgnoreCase(board.getBoard_type())) return true;
+        return board.getCategory_id() != null && board.getCategory_id().intValue() == 180;
+    }
+
+    private void normalizeAndValidateMarketFields(BoardVO board) {
+        if (board == null) {
+            throw new IllegalArgumentException("board is null");
+        }
+
+        String boardType = board.getBoard_type();
+        boolean isMarket = "T".equalsIgnoreCase(boardType) || "S".equalsIgnoreCase(boardType);
+
+        if (!isMarket) {
+            board.setPrice(null);
+            board.setTrade_status(null);
+            return;
+        }
+
+        if (board.getTrade_status() == null || board.getTrade_status().trim().isEmpty()) {
+            board.setTrade_status("P");
+        } else {
+            board.setTrade_status(board.getTrade_status().trim().toUpperCase());
+        }
+
+        if (!"P".equals(board.getTrade_status()) && !"C".equals(board.getTrade_status())) {
+            board.setTrade_status("P");
+        }
+
+        if (isShareCategory(board)) {
+            board.setPrice(null);
+            return;
+        }
+
+        if (isSellCategory(board.getCategory_id())) {
+            if (board.getPrice() == null) {
+                throw new IllegalArgumentException("판매글은 가격 입력이 필수입니다.");
+            }
+            if (board.getPrice().intValue() < 0) {
+                throw new IllegalArgumentException("가격은 0 이상이어야 합니다.");
+            }
+            return;
+        }
+
+        if (isBuyCategory(board.getCategory_id())) {
+            if (board.getPrice() != null && board.getPrice().intValue() < 0) {
+                throw new IllegalArgumentException("가격은 0 이상이어야 합니다.");
+            }
+            return;
+        }
+
+        if (board.getPrice() != null && board.getPrice().intValue() < 0) {
+            throw new IllegalArgumentException("가격은 0 이상이어야 합니다.");
+        }
+    }
+
     private List<String> parseDeleteFileIds(String csv) {
         if (csv == null || csv.trim().isEmpty()) return Collections.emptyList();
 
@@ -561,6 +626,7 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         if (loginUserId <= 0) throw new SecurityException("login required");
 
         board.setUser_id(loginUserId);
+        normalizeAndValidateMarketFields(board);
 
         int nextId = mapper.selectBoardSeqNextVal();
         board.setBoard_id(nextId);
@@ -607,6 +673,7 @@ public class CommunityFormServiceImpl implements CommunityFormService {
             throw new SecurityException("not owner");
         }
 
+        normalizeAndValidateMarketFields(board);
         deactivateRequestedFiles(board.getBoard_id(), existingDeletedFileIds);
 
         FinalizeResult finalizeResult = finalizeTempFiles(
