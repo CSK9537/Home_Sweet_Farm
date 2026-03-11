@@ -129,17 +129,17 @@
           item.href = u.userId;
           
           item.innerHTML = `
-            <div class="top-user__avatar">
-              <img src="\\${u.img}" alt="profile">
-            </div>
-            <div class="top-user__name">\\${u.name}</div>
-            <div class="top-user__meta">
-              <span class="pill">\\${u.badge}</span>
-            </div>
-            <div class="top-user__point">
-              채택 <b>\\${Number(u.point).toLocaleString()}</b>
-            </div>
-          `;
+        	  <div class="top-user__avatar">
+        	    <img src="\${u.img}" alt="profile">
+        	  </div>
+        	  <div class="top-user__name">\${u.name}</div>
+        	  <div class="top-user__meta">
+        	    <span class="pill">\${u.badge}</span>
+        	  </div>
+        	  <div class="top-user__point">
+        	    채택 <b>\${Number(u.point).toLocaleString()}</b>
+        	  </div>
+        	`;
           container.appendChild(item);
         });
       }

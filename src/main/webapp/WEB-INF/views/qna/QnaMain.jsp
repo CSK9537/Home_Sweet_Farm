@@ -48,7 +48,7 @@
             <a class="top-user" href="${u.userId}" id="topUser_${u.userId}">
               <div class="top-user__rank">${u.rank}</div>
               <div class="top-user__avatar">
-                <img src="user/getProfile?fileName=${u.img}" alt="profile">
+                <img src="${u.img}" alt="profile">
               </div>
               <div class="top-user__name">${u.name}</div>
               <div class="top-user__meta">
