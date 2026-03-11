@@ -1,5 +1,10 @@
 package org.joonzis.community.controller;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +20,13 @@ import org.joonzis.community.service.CommunityViewService;
 import org.joonzis.community.vo.BoardFileVO;
 import org.joonzis.community.vo.CategoryVO;
 import org.joonzis.user.vo.UserVO;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +40,9 @@ import lombok.RequiredArgsConstructor;
 public class CommunityViewController {
 
 	private final CommunityViewService communityViewService;
+
+	@Value("${hsf.upload.root:\\\\192.168.0.153\\\\projecthsf}")
+	private String uploadRoot;
 
 	@GetMapping("/view")
 	public String view(@RequestParam("board_id") int board_id,
@@ -68,6 +83,49 @@ public class CommunityViewController {
 		model.addAttribute("liked", liked);
 
 		return "community/CommunityView";
+	}
+
+	@GetMapping("/file/download")
+	public ResponseEntity<Resource> download(@RequestParam("file_id") int fileId) throws IOException {
+		BoardFileVO file = communityViewService.getFile(fileId);
+
+		if (file == null) {
+			return ResponseEntity.notFound().build();
+		}
+
+		if (file.getSaved_name() == null || !file.getSaved_name().matches("[a-zA-Z0-9._-]+")) {
+			return ResponseEntity.badRequest().build();
+		}
+
+		Path basePath = Paths.get(uploadRoot, "board_upload").toAbsolutePath().normalize();
+		Path filePath = basePath.resolve(file.getSub_dir()).resolve(file.getSaved_name()).normalize();
+
+		if (!filePath.startsWith(basePath)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+
+		Resource resource = new UrlResource(filePath.toUri());
+		if (!resource.exists() || !resource.isReadable()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		String originalName = file.getOriginal_name();
+		if (originalName == null || originalName.trim().isEmpty()) {
+			originalName = file.getSaved_name();
+		}
+
+		String encodedName = URLEncoder.encode(originalName, StandardCharsets.UTF_8.name())
+				.replaceAll("\\+", "%20");
+
+		String contentDisposition = "attachment; filename=\"" 
+				+ encodedName + "\"; filename*=UTF-8''" + encodedName;
+
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+				.header(HttpHeaders.CONTENT_LENGTH, String.valueOf(resource.contentLength()))
+				.contentType(MediaTypeFactory.getMediaType(originalName)
+						.orElse(MediaType.APPLICATION_OCTET_STREAM))
+				.body(resource);
 	}
 
 	@PostMapping("/like")

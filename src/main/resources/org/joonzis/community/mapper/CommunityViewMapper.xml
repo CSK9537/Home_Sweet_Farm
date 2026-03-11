@@ -72,6 +72,26 @@
     ORDER BY FILE_ID ASC
   </select>
 
+  <select id="selectFileById" resultType="org.joonzis.community.vo.BoardFileVO">
+    SELECT
+      FILE_ID       AS file_id,
+      BOARD_ID      AS board_id,
+      FILE_SIZE     AS file_size,
+      ORIGINAL_NAME AS original_name,
+      SAVED_NAME    AS saved_name,
+      CONTENT_TYPE  AS content_type,
+      TEMP_KEY      AS temp_key,
+      SUB_DIR       AS sub_dir,
+      FILE_KIND     AS file_kind,
+      IS_ACTIVE     AS is_active,
+      IS_THUMBNAIL  AS is_thumbnail,
+      REG_DATE      AS reg_date,
+      UPDATED_AT    AS updated_at
+    FROM TBL_BOARD_FILE
+    WHERE FILE_ID = #{file_id}
+      AND NVL(IS_ACTIVE, 'Y') = 'Y'
+  </select>
+
   <select id="selectRootReplies" resultType="org.joonzis.community.dto.CommunityReplyDTO">
     SELECT
       R.REPLY_ID        AS reply_id,

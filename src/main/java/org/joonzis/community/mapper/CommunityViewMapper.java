@@ -17,6 +17,7 @@ public interface CommunityViewMapper {
 	CommunityViewDTO selectBoard(@Param("board_id") int board_id);
 	CategoryVO selectCategory(@Param("category_id") int category_id);
 	List<BoardFileVO> selectFiles(@Param("board_id") int board_id);
+	BoardFileVO selectFileById(@Param("file_id") int file_id);
 	List<CommunityReplyDTO> selectRootReplies(@Param("board_id") int board_id);
 
 	// 이전/다음글 : 현재 글과 같은 board_type만 조회

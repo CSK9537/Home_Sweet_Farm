@@ -46,6 +46,11 @@ public class CommunityViewServiceImpl implements CommunityViewService {
 	}
 
 	@Override
+	public BoardFileVO getFile(int file_id) {
+		return mapper.selectFileById(file_id);
+	}
+
+	@Override
 	public List<CommunityReplyDTO> getRootReplies(int board_id) {
 		return mapper.selectRootReplies(board_id);
 	}

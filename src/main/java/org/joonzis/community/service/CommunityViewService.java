@@ -14,6 +14,7 @@ public interface CommunityViewService {
 	CommunityViewDTO getBoard(int board_id);
 	CategoryVO getCategory(Integer category_id);
 	List<BoardFileVO> getFiles(int board_id);
+	BoardFileVO getFile(int file_id);
 	List<CommunityReplyDTO> getRootReplies(int board_id);
 
 	Map<String, Object> getPrevNext(int board_id);
