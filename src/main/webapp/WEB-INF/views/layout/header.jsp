@@ -127,8 +127,18 @@
 	
 	        <li class="gnb__sep">||</li>
 	        
-	        <li class="gnb__item"><a class="gnb__link" href="/chat">채팅</a></li>
-	        
+	        <li class="gnb__item">
+						<c:choose>
+							<c:when test="${not empty sessionScope.loginUser}">
+								<a class="gnb__link" href="/chat" 
+									onclick="window.open(this.href); return false;">채팅</a>
+							</c:when>
+							<c:otherwise>
+								<a class="gnb__link" href="/chat">채팅</a>
+							</c:otherwise>
+						</c:choose>
+					</li>
+
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
@@ -171,8 +181,16 @@
 	            <a href="/myplant/recommend">추천 가이드</a>
 	          </details>
 	
-	          <a class="mnav__link" href="/chat">채팅</a>
-	
+						<c:choose>
+							<c:when test="${not empty sessionScope.loginUser}">
+								<a class="mnav__link" href="/chat" 
+									onclick="window.open(this.href); return false;">채팅</a>
+							</c:when>
+							<c:otherwise>
+								<a class="mnav__link" href="/chat">채팅</a>
+							</c:otherwise>
+						</c:choose>
+
 	          <details class="mnav__item">
 	            <summary>Q&amp;A</summary>
 	            <a href="/qna/QnaList">질문들</a>
