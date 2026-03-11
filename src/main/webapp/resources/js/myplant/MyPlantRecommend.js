@@ -28,35 +28,35 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   ];
 
-  // 2. 결과 식물 데이터베이스 (필수: 몬스테라, 스킨답서스 포함)
+//2. 결과 식물 데이터베이스
   const plantResults = {
-    // 몬스테라: 반양지(M/H), 느긋함(L), 인테리어(interior)
     "monstera": {
       name: "몬스테라",
-      img: "https://picsum.photos/seed/monstera/600/450", // 임시 이미지
+      img: "/plant/image/Monstera deliciosa.jpeg",
       tags: ["#플랜테리어_끝판왕", "#멋진잎", "#초보자환영"],
-      desc: "크고 이국적인 잎이 매력적인 몬스테라는 집안 분위기를 단숨에 트로피컬하게 바꿔줍니다. 성장이 빠르고 생명력이 강해 초보 식집사에게도 적극 추천하는 식물이에요!"
+      desc: "크고 이국적인 잎이 매력적인 몬스테라는 집안 분위기를 단숨에 트로피컬하게 바꿔줍니다. 성장이 빠르고 생명력이 강해 초보 식집사에게도 적극 추천하는 식물이에요!",
+      link: "/plant/info/Monstera deliciosa" // 👈 이동할 식물 상세 페이지 주소 추가
     },
-    // 스킨답서스: 그늘(L), 느긋함(L) 상관없음, 공기정화(air)
     "scindapsus": {
       name: "스킨답서스",
-      img: "https://picsum.photos/seed/scindapsus/600/450", 
+      img: "/plant/image/Epipremnum aureum.jpeg", 
       tags: ["#생명력_갑", "#공기정화", "#음지식물"],
-      desc: "어디에 두어도 묵묵히 잘 자라는 최고의 순둥이 식물입니다. 일산화탄소 제거 능력이 탁월해 주방이나 화장실에 두기 좋고, 덩굴성으로 늘어져서 자라는 모습이 매우 우아해요."
+      desc: "어디에 두어도 묵묵히 잘 자라는 최고의 순둥이 식물입니다. 일산화탄소 제거 능력이 탁월해 주방이나 화장실에 두기 좋고, 덩굴성으로 늘어져서 자라는 모습이 매우 우아해요.",
+      link: "/plant/info/Epipremnum aureum" // 👈 추가
     },
-    // 바질/허브류: 햇빛(H), 부지런함(H)
-    "basil": {
-      name: "스위트 바질",
-      img: "https://picsum.photos/seed/basil/600/450",
-      tags: ["#요리활용", "#햇빛사랑", "#향긋함"],
-      desc: "햇빛을 듬뿍 받고 물을 자주 먹는 것을 좋아해요. 정성껏 키워 요리에 활용하는 재미까지 느낄 수 있는 향긋한 식물입니다."
+    "rosemary": {
+      name: "로즈메리",
+      img: "/plant/image/Salvia rosmarinus.jpeg",
+      tags: ["#요리활용", "#햇빛과바람", "#천연방향제"],
+      desc: "풍부한 햇빛과 시원한 통풍, 그리고 때맞춘 물주기가 필요한 '부지런한 식집사'용 식물이에요. 손끝을 스칠 때마다 나는 상쾌한 향기가 매력적이며, 스테이크나 파스타 등 요리에도 유용하게 쓰입니다.",
+      link: "/plant/info/Salvia rosmarinus" // 👈 추가
     },
-    // 산세베리아/스투키: 극강의 건조함
-    "stuckyi": {
-      name: "스투키",
-      img: "https://picsum.photos/seed/stuckyi/600/450",
-      tags: ["#귀차니즘_환영", "#전자파차단", "#깔끔한수형"],
-      desc: "물을 자주 주면 오히려 아파하는 식물이에요. 한 달에 한 번만 챙겨줘도 씩씩하게 자라는 모던한 인테리어 식물입니다."
+    "sansevieria": {
+      name: "산세베리아",
+      img: "/plant/image/Sansevieria trifasciata.jpeg",
+      tags: ["#천연공기청정기", "#침실추천", "#생명력최강"],
+      desc: "길쭉하게 뻗은 호랑이 무늬 잎이 시원시원한 매력을 주는 식물입니다. 밤에 산소를 듬뿍 내뿜어 침실에 두기 아주 좋으며, 건조함에 매우 강해 한 달에 한 번 정도만 물을 주며 무심하게 키워도 튼튼하게 자라납니다.",
+      link: "/plant/info/Sansevieria trifasciata" // 👈 추가
     }
   };
 
@@ -140,6 +140,8 @@ document.addEventListener("DOMContentLoaded", function() {
     resDesc.textContent = plant.desc;
     
     resTags.innerHTML = plant.tags.map(tag => `<span class="mpr-result__tag">${tag}</span>`).join("");
+    
+    btnGoStore.href = plant.link;
 
     switchStep(stepQuestion, stepResult);
   }
@@ -148,16 +150,16 @@ document.addEventListener("DOMContentLoaded", function() {
   function calculateResult(answers) {
     const [light, water, purpose] = answers; // Q1: light, Q2: water, Q3: purpose
 
-    // 햇빛 H, 물 H -> 바질
-    if (light === "H" && water === "H") return "basil";
+    // 햇빛 H, 물 H -> 로즈메리
+    if (light === "H" && water === "H") return "rosemary";
     
     // 햇빛 L, 물 L -> 스킨답서스 (음지+건조 최강)
     if (light === "L" && water === "L") return "scindapsus";
 
-    // 물 L, 인테리어 목적 -> 몬스테라 or 스투키
+    // 물 L, 인테리어 목적 -> 몬스테라 or 산세베리아
     if (water === "L") {
       if (purpose === "interior" && light !== "L") return "monstera";
-      return "stuckyi";
+      return "sansevieria";
     }
 
     // 공기정화 목적이면서 음지 가능 -> 스킨답서스

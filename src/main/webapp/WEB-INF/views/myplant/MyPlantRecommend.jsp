@@ -51,8 +51,8 @@
 
         <div class="mpr-result__actions">
           <button type="button" class="btn-large btn-large--ghost" id="btnRetry">다시 하기</button>
-          <a href="${pageContext.request.contextPath}/store/list" class="btn-large btn-large--primary" id="btnGoStore">
-            스토어에서 찾아보기
+          <a href="#" class="btn-large btn-large--primary" id="btnGoStore">
+          식물 정보 보기
           </a>
         </div>
       </div>
