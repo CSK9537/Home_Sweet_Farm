@@ -1,238 +1,50 @@
-/* ===== modal base (공통 모달 스타일 상속) ===== */
-.stats-modal { 
-  position: fixed; 
-  inset: 0; 
-  display: none; 
-  z-index: 9999; 
-}
-.stats-modal[aria-hidden="false"] { 
-  display: block; 
-}
-.stats-modal__backdrop { 
-  position: absolute; 
-  inset: 0; 
-  background: rgba(44, 62, 45, 0.4);
-  backdrop-filter: blur(2px);
-}
+/* ===== modal base ===== */
+.stats-modal { position: fixed; inset: 0; display: none; z-index: 9999; }
+.stats-modal[aria-hidden="false"] { display: block; }
+.stats-modal__backdrop { position: absolute; inset: 0; }
 
 .stats-modal__panel {
-  position: relative;
-  width: min(720px, calc(100vw - 40px));
-  height: min(880px, calc(100vh - 40px));
-  margin: 60px auto; /* 세로가 긴 모달이므로 margin-top 여유 있게 */
-  background: #ffffff;
-  border-radius: var(--radius-lg, 16px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  animation: modalScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative; width: min(720px, calc(100vw - 40px)); height: min(880px, calc(100vh - 40px));
+  margin: 60px auto;
+  overflow: hidden; display: flex; flex-direction: column;
 }
 
-@keyframes modalScale {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+.stats-modal__header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: var(--color-bg-card); border-bottom: 1px solid var(--color-main-soft); }
+.stats-modal__tabs { display: flex; gap: 10px; }
 
-/* ===== header ===== */
-.stats-modal__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px;
-  background: var(--color-bg-card);
-  border-bottom: 1px solid var(--color-main-soft);
-}
+.stats-tab, .stats-modal__close { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 18px; border-radius: 999px; font-size: 14px; font-weight: 700; border: 1px solid transparent; cursor: pointer; background: #ffffff; transition: all 0.2s ease; }
+.stats-tab:active, .stats-modal__close:active { transform: translateY(1px); }
+.stats-tab { border-color: var(--color-main-line); color: var(--color-main-muted); }
+.stats-tab:hover { background: var(--color-main-soft); color: var(--color-bg-main); border-color: var(--color-bg-main); }
+.stats-tab.is-active { background: var(--color-bg-main); color: #ffffff; border-color: var(--color-bg-main); box-shadow: var(--shadow-sm); } /* 변수 적용 */
 
-.stats-modal__tabs { 
-  display: flex; 
-  gap: 10px; 
-}
+.stats-modal__close { background: transparent; border: none; color: var(--color-main-muted); font-size: 14px; font-weight: 700; padding: 0; height: auto; min-width: auto; }
+.stats-modal__close:hover { color: var(--color-bg-main); background: transparent; border-color: transparent; text-decoration: underline; text-underline-offset: 4px; }
 
-/* ===== 탭 및 버튼 디자인 ===== */
-.stats-tab,
-.stats-modal__close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 40px;
-  padding: 0 18px;
-  border-radius: 999px; /* 알약 형태의 모던한 탭 */
-  font-size: 14px;
-  font-weight: 700;
-  border: 1px solid transparent;
-  cursor: pointer;
-  background: #ffffff;
-  transition: all 0.2s ease;
-}
-.stats-tab:active,
-.stats-modal__close:active { 
-  transform: translateY(1px); 
-}
+.stats-modal__body { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
+.stats-card { padding-bottom: 24px; border-bottom: 1px dashed var(--color-main-line); }
+.stats-card:last-of-type { border-bottom: none; padding-bottom: 0; }
+.stats-card__head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 12px; }
+.stats-card__title { margin: 0; font-size: 16px; font-weight: 800; color: var(--color-bg-main); }
 
-/* 기본(비활성) 탭 상태 */
-.stats-tab {
-  border-color: var(--color-main-line);
-  color: var(--color-main-muted);
-}
-.stats-tab:hover {
-  background: var(--color-main-soft);
-  color: var(--color-bg-main);
-  border-color: var(--color-bg-main);
-}
+.stats-detail-link { border: 0; background: transparent; cursor: pointer; font-size: 13px; color: var(--color-main-muted); padding: 4px 6px; font-weight: 500; transition: color 0.2s ease; }
+.stats-detail-link:hover { font-weight: 700; text-decoration: underline; text-underline-offset: 4px; color: var(--color-bg-main); }
 
-/* 활성(Active) 탭 상태 */
-.stats-tab.is-active {
-  background: var(--color-bg-main);
-  color: #ffffff;
-  border-color: var(--color-bg-main);
-  box-shadow: 0 4px 10px rgba(107, 123, 97, 0.2);
-}
+.stats-chart-wrap { background: var(--color-main-soft); border: 1px solid var(--color-main-line); border-radius: 12px; padding: 16px; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02); }
+.stats-chart { width: 100%; height: 180px; }
 
-/* 우측 상단 닫기 버튼 (텍스트형) */
-.stats-modal__close {
-  background: transparent;
-  border: none;
-  color: var(--color-main-muted);
-  font-size: 14px;
-  font-weight: 700;
-  padding: 0;
-  height: auto;
-  min-width: auto;
-}
-.stats-modal__close:hover {
-  color: var(--color-bg-main);
-  background: transparent;
-  border-color: transparent;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
+.stats-detail { margin-top: 16px; border: 1px solid var(--color-main-line); border-radius: 12px; background: #ffffff; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02); }
+.stats-detail__table { max-height: 240px; overflow-y: auto; }
+.stats-detail__thead, .stats-detail__tbody .row { display: grid; grid-template-columns: 1fr 140px; gap: 16px; padding: 12px 16px; font-size: 13px; }
+.stats-detail__thead { position: sticky; top: 0; background: var(--color-bg-card); border-bottom: 1px solid var(--color-main-line); font-weight: 800; color: var(--color-bg-main); z-index: 2; }
+.stats-detail__tbody .row { color: var(--color-text-main); border-bottom: 1px solid var(--color-main-soft); }
+.stats-detail__tbody .row:last-child { border-bottom: none; }
 
-
-/* ===== body ===== */
-.stats-modal__body { 
-  padding: 24px; 
-  overflow-y: auto; 
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-/* ===== section (개별 통계 카드) ===== */
-.stats-card { 
-  padding-bottom: 24px; 
-  border-bottom: 1px dashed var(--color-main-line); 
-}
-.stats-card:last-of-type { 
-  border-bottom: none; 
-  padding-bottom: 0;
-}
-
-.stats-card__head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-.stats-card__title { 
-  margin: 0; 
-  font-size: 16px; 
-  font-weight: 800; 
-  color: var(--color-bg-main); 
-}
-
-/* 상세 정보 보기 텍스트 링크 */
-.stats-detail-link {
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--color-main-muted);
-  padding: 4px 6px;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-.stats-detail-link:hover { 
-  font-weight: 700; 
-  text-decoration: underline; 
-  text-underline-offset: 4px;
-  color: var(--color-bg-main); 
-}
-
-/* 차트 영역 */
-.stats-chart-wrap {
-  background: var(--color-main-soft);
-  border: 1px solid var(--color-main-line);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
-}
-.stats-chart { 
-  width: 100%; 
-  height: 180px; 
-}
-
-/* 상세 데이터 테이블 */
-.stats-detail {
-  margin-top: 16px;
-  border: 1px solid var(--color-main-line);
-  border-radius: 12px;
-  background: #ffffff;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-}
-.stats-detail__table { 
-  max-height: 240px; 
-  overflow-y: auto; 
-}
-
-.stats-detail__thead,
-.stats-detail__tbody .row {
-  display: grid;
-  grid-template-columns: 1fr 140px;
-  gap: 16px;
-  padding: 12px 16px;
-  font-size: 13px;
-}
-.stats-detail__thead {
-  position: sticky;
-  top: 0;
-  background: var(--color-bg-card);
-  border-bottom: 1px solid var(--color-main-line);
-  font-weight: 800;
-  color: var(--color-bg-main);
-  z-index: 2;
-}
-.stats-detail__tbody .row {
-  color: var(--color-text-main);
-  border-bottom: 1px solid var(--color-main-soft);
-}
-.stats-detail__tbody .row:last-child { 
-  border-bottom: none; 
-}
-
-
-/* ===== mobile ===== */
-@media (max-width: 767px) {
-  .stats-modal__panel {
-    margin: 30px auto;
-  }
-  .stats-modal__header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-  .stats-modal__close {
-    align-self: flex-end;
-    position: absolute;
-    top: 20px;
-    right: 20px;
-  }
-  .stats-chart { 
-    height: 150px; 
-  }
-  .stats-detail__thead,
-  .stats-detail__tbody .row { 
-    grid-template-columns: 1fr 100px; 
-  }
+/* 모바일 분기점 768px로 통일 */
+@media (max-width: 768px) {
+  .stats-modal__panel { margin: 30px auto; }
+  .stats-modal__header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .stats-modal__close { align-self: flex-end; position: absolute; top: 20px; right: 20px; }
+  .stats-chart { height: 150px; }
+  .stats-detail__thead, .stats-detail__tbody .row { grid-template-columns: 1fr 100px; }
 }

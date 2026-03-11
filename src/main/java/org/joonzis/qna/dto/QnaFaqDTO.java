@@ -12,6 +12,8 @@ public class QnaFaqDTO {
     private int rank;      // 화면에서 1~n 표시
     private String title;
     private String preview;
+    private String writer;
     private int views;
+    private int likes;
     private int answers;   // 답변 개수(= 자식글 수)
 }

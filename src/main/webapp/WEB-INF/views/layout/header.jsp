@@ -25,10 +25,10 @@
 	      </a>
 	
 	      <!-- 검색 (데스크탑/태블릿에서만 사용, 모바일에서는 CSS로 숨김) -->
-	      <form class="fsearch" method="get">
-	          <span class="fsearch__icon" aria-hidden="true"></span>
-	          <input type="text" class="fsearch__input" name="q" placeholder="식물, 스토어, 커뮤니티, Q&A 검색" autocomplete="off" />
-	      </form> 
+	      <form class="fsearch" action="/searchResult" method="get">
+            <span class="fsearch__icon" aria-hidden="true"></span>
+            <input type="text" class="fsearch__input" name="q" placeholder="식물, 스토어, 커뮤니티, Q&A 검색" autocomplete="off" />
+          </form>
 		   
 		    <div class="auth auth--desktop">
 				<c:choose>
@@ -127,17 +127,27 @@
 	
 	        <li class="gnb__sep">||</li>
 	        
-	        <li class="gnb__item"><a class="gnb__link" href="/chat">채팅</a></li>
-	        
+	        <li class="gnb__item">
+						<c:choose>
+							<c:when test="${not empty sessionScope.loginUser}">
+								<a class="gnb__link" href="/chat" 
+									onclick="window.open(this.href); return false;">채팅</a>
+							</c:when>
+							<c:otherwise>
+								<a class="gnb__link" href="/chat">채팅</a>
+							</c:otherwise>
+						</c:choose>
+					</li>
+
 	        <li class="gnb__sep">||</li>
 	
 	        <li class="gnb__item has-sub">
 	          <a class="gnb__link" href="/qna">Q&amp;A</a>
 	          <div class="subbar">
 	            <div class="subbar__pill">
-	              <a class="subbar__link" href="#">질문들</a>
+	              <a class="subbar__link" href="/qna/QnaList">질문들</a>
 	              <span class="subbar__sep">||</span>
-	              <a class="subbar__link" href="#">사람들</a>
+	              <a class="subbar__link" href="/qna/people">사람들</a>
 	            </div>
 	          </div>
 	        </li>
@@ -171,12 +181,20 @@
 	            <a href="/myplant/recommend">추천 가이드</a>
 	          </details>
 	
-	          <a class="mnav__link" href="/chat">채팅</a>
-	
+						<c:choose>
+							<c:when test="${not empty sessionScope.loginUser}">
+								<a class="mnav__link" href="/chat" 
+									onclick="window.open(this.href); return false;">채팅</a>
+							</c:when>
+							<c:otherwise>
+								<a class="mnav__link" href="/chat">채팅</a>
+							</c:otherwise>
+						</c:choose>
+
 	          <details class="mnav__item">
 	            <summary>Q&amp;A</summary>
-	            <a href="#">질문들</a>
-	            <a href="#">사람들</a>
+	            <a href="/qna/QnaList">질문들</a>
+	            <a href="/qna/people">사람들</a>
 	          </details>
 	        </nav>
 	      </div>
@@ -185,4 +203,5 @@
 	  </div>
 	  <div class=hiddenMsg id="serverMsg" data-msg="${msg}"></div>
 	  <div class=hiddenMsg id="serverMsgType" data-msgType="${msgType}"></div>
+	  <jsp:include page="/WEB-INF/views/common/UserProfileModal.jsp" />
 	</header>

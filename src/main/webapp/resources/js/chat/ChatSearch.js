@@ -1,6 +1,8 @@
 import { chatState } from "./ChatState.js";
 import { loadMessages } from "./ChatMessage.js";
 
+let searchTimer;
+
 export function jumpToMessage(msgId, keyword) {
     document.querySelectorAll(".message-box .text-content").forEach(el => {
         if (el.dataset.original) {
@@ -12,7 +14,12 @@ export function jumpToMessage(msgId, keyword) {
     const container = document.getElementById("messages");
     const target = container.querySelector(`[data-msg_id="${msgId}"]`);
     if (!target) return;
-    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    const scrollBehavior = chatState.search.isSearchJump ? "auto" : "smooth";
+
+    target.scrollIntoView({
+        behavior: scrollBehavior,
+        block: "center"
+    });
 
     const box = target.querySelector(".message-box .text-content");
     if (!box) return;
@@ -63,105 +70,113 @@ export function updateSearchCounter() {
         `${chatState.search.currentSearchIndex + 1} / ${chatState.search.searchMsgIds.length}`;
 }
 
+// 실제 검색 실행 로직
+function executeSearch() {
+    const searchInput = document.querySelector(".chat-search-box input");
+    const searchTypeSelect = document.getElementById("searchType");
+    
+    if (!searchInput) return;
+
+    const keyword = searchInput.value.trim();
+    const searchType = searchTypeSelect.value;
+
+    if (!keyword) {
+        resetSearchUI();
+        return;
+    }
+
+    chatState.search.currentSearchKeyword = keyword.toLowerCase();
+    chatState.search.isSearchMode = true;
+
+    fetch(`/chat/rooms/search?keyword=${encodeURIComponent(keyword)}&type=${searchType}`)
+        .then(res => res.json())
+        .then(results => {
+            // [검증] 응답 시점의 키워드 확인 (레이스 컨디션 방지)
+            if (searchInput.value.trim().toLowerCase() !== chatState.search.currentSearchKeyword) return;
+
+            const resultMap = new Map();
+            results.forEach(r => {
+                const roomId = Number(r.room_id);
+                if (!resultMap.has(roomId)) resultMap.set(roomId, []);
+                if (r.search_msg_id) resultMap.get(roomId).push(r.search_msg_id);
+            });
+
+            const currentId = Number(chatState.session.currentRoomId);
+            chatState.search.searchMsgIds = resultMap.get(currentId) || [];
+            chatState.search.currentSearchIndex = -1;
+
+            // 목록 필터링
+            document.querySelectorAll(".chat-item").forEach(item => {
+                const roomId = Number(item.dataset.room_id);
+                if (resultMap.has(roomId)) {
+                    item.style.display = "flex";
+                    const msgIds = resultMap.get(roomId);
+                    item.dataset.jump_msg_id = msgIds[0] || "";
+                    item.dataset.search_msg_ids = JSON.stringify(msgIds);
+                } else {
+                    item.style.display = "none";
+                }
+            });
+            updateSearchCounter();
+        })
+        .catch(err => console.error("검색 중 오류:", err));
+}
+
+// 검색 UI 및 상태 초기화
+export function resetSearchUI() {
+    const searchInput = document.querySelector(".chat-search-box input");
+    if (searchInput) searchInput.value = "";
+    
+    chatState.search.searchMsgIds = [];
+    chatState.search.currentSearchIndex = -1;
+    chatState.search.isSearchMode = false;
+    chatState.search.currentSearchKeyword = "";
+    
+    document.querySelectorAll(".chat-item").forEach(item => {
+        item.style.display = "flex";
+    });
+    updateSearchCounter();
+}
+
 export function initSearchInput() {
     const searchInput = document.querySelector(".chat-search-box input");
     const searchTypeSelect = document.getElementById("searchType");
+    const tabAll = document.getElementById("tab-all"); // "전체보기" 탭
 
     searchInput.addEventListener("input", () => {
-        const keyword = searchInput.value.trim();
-        const searchType = searchTypeSelect.value;
-
-        if (!keyword) {
-            chatState.search.searchMsgIds = [];
-            chatState.search.currentSearchIndex = -1;
-            chatState.search.isSearchMode = false;
-            document.querySelectorAll(".chat-item").forEach(item => item.style.display = "flex");
-            updateSearchCounter();
-            return;
-        }
-
-        chatState.search.currentSearchKeyword = keyword.toLowerCase();
-        chatState.search.isSearchMode = true;
-
-        fetch(`/chat/rooms/search?keyword=${encodeURIComponent(keyword)}&type=${searchType}`)
-            .then(res => {
-                const contentType = res.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new TypeError("서버에서 JSON이 아닌 응답이 왔습니다.");
-                }
-                return res.json();
-            })
-            .then(results => {
-                console.log("[SEARCH RESULTS]", results);
-                const resultMap = new Map();
-
-                results.forEach(r => {
-                    const roomId = r.room_id;
-                    const msgId = r.search_msg_id;
-                    if (!resultMap.has(roomId)) resultMap.set(roomId, []);
-                    if (msgId) resultMap.get(roomId).push(msgId);
-                });
-
-                document.querySelectorAll(".chat-item").forEach(item => {
-                    const roomId = Number(item.dataset.room_id);
-
-                    if (resultMap.has(roomId)) {
-                        item.style.display = "flex";
-                        const msgIds = resultMap.get(roomId);
-                        item.dataset.jump_msg_id = msgIds[0] || "";
-                        item.dataset.search_msg_ids = JSON.stringify(msgIds);
-                    } else {
-                        item.style.display = "none";
-                        item.dataset.jump_msg_id = "";
-                        item.dataset.search_msg_ids = "[]";
-                    }
-                });
-
-                if (chatState.session.currentRoomId && resultMap.has(chatState.session.currentRoomId)) {
-                    chatState.search.searchMsgIds = resultMap.get(chatState.session.currentRoomId);
-                    chatState.search.currentSearchIndex = -1;
-                }
-                updateSearchCounter();
-            })
-            .catch(err => console.error("검색 중 오류 발생:", err));
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(executeSearch, 300);
     });
+
+    searchTypeSelect.addEventListener("change", () => {
+        clearTimeout(searchTimer);
+        executeSearch(); 
+    });
+
+    if (tabAll) {
+        tabAll.addEventListener("click", () => {
+            resetSearchUI();
+        });
+    }
 }
 
 export function initSearchKeydown() {
 
     const searchInput = document.querySelector(".chat-search-box input");
 
-    searchInput.addEventListener("keydown", (e) => {
+    searchInput.addEventListener("keydown", async (e) => {
 
         if (!chatState.search.isSearchMode || chatState.search.searchMsgIds.length === 0) return;
 
         if (e.key === "Enter" || e.key === "ArrowDown") {
 
             e.preventDefault();
-
             chatState.search.currentSearchIndex = (chatState.search.currentSearchIndex + 1) % chatState.search.searchMsgIds.length;
-
             const nextId = chatState.search.searchMsgIds[chatState.search.currentSearchIndex];
             if (!nextId) return;
-
             chatState.scroll.jumpMsgId = nextId;
-            chatState.search.isSearchJump = true;
 
-            const container = document.getElementById("messages");
-            const target = container.querySelector(
-                `[data-msg_id="${chatState.scroll.jumpMsgId}"]`
-            );
-
-            const doJump = () => {
-                jumpToMessage(chatState.scroll.jumpMsgId, chatState.search.currentSearchKeyword);
-            };
-
-            if (target) {
-                doJump();
-            } else {
-                loadMessages(chatState.session.currentRoomId);
-                setTimeout(doJump, 80);
-            }
+            await performSearchJump(nextId, chatState.search.currentSearchKeyword);
             updateSearchCounter();
         }
     });
@@ -169,7 +184,7 @@ export function initSearchKeydown() {
 }
 export function initNextSearchButton() {
 
-    document.getElementById("nextSearchBtn").addEventListener("click", () => {
+    document.getElementById("nextSearchBtn").addEventListener("click", async () => {
         if (!chatState.search.isSearchMode || chatState.search.searchMsgIds.length === 0) return;
 
         chatState.search.currentSearchIndex = (chatState.search.currentSearchIndex + 1) % chatState.search.searchMsgIds.length;
@@ -180,19 +195,51 @@ export function initNextSearchButton() {
         chatState.scroll.jumpMsgId = nextId;
         chatState.search.isSearchJump = true;
 
-        const container = document.getElementById("messages");
-        const target = container.querySelector(`[data-msg_id="${chatState.scroll.jumpMsgId}"]`);
+        await performSearchJump(nextId, chatState.search.currentSearchKeyword);
 
-        const doJump = () => {
-            jumpToMessage(chatState.scroll.jumpMsgId, chatState.search.currentSearchKeyword);
-        };
-
-        if (target) {
-            doJump();
-        } else {
-            loadMessages(chatState.session.currentRoomId);
-            setTimeout(doJump, 80);
-        }
         updateSearchCounter();
     });
+}
+
+export async function performSearchJump(msgId, keyword) {
+    const container = document.getElementById("messages");
+
+    container.style.transition = "none";
+    container.style.height = `${container.offsetHeight}px`;
+    container.style.opacity = "0.7"; 
+
+    chatState.search.isSearchJump = true;
+    let target = container.querySelector(`[data-msg_id="${msgId}"]`);
+
+    if (target) {
+        container.style.height = "";
+        container.style.opacity = "1";
+        jumpToMessage(msgId, keyword);
+    } else {
+        try {
+            const res = await fetch(`/chat/rooms/${chatState.session.currentRoomId}/message-offset/${msgId}`);
+            const data = await res.json();
+            const rowNum = data.offset;
+
+            if (rowNum > 0) {
+                const fetchSize = Math.ceil(rowNum / 40) * 40;
+
+
+                await loadMessages(chatState.session.currentRoomId, 0, fetchSize, false, true);
+
+                // 데이터 렌더링 후 점프
+                setTimeout(() => {
+                    container.style.height = "";
+                    container.style.opacity = "1";
+                    jumpToMessage(msgId, keyword);
+
+                    setTimeout(() => { chatState.search.isSearchJump = false; }, 200);
+                }, 150);
+            }
+        } catch (err) {
+            container.style.height = "";
+            container.style.opacity = "1";
+            chatState.search.isSearchJump = false;
+        }
+    }
 }

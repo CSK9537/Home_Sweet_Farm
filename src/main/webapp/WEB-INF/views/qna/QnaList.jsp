@@ -6,6 +6,13 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/qna/QnaList.css">
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
+<style>
+  .qna-tabs .qna-tab.active a {
+    color: #2ba61c; /* 초록색 */
+    font-weight: 700;
+  }
+</style>
+
 <div class="page-shell">
   <section class="content-wrap">
     <div class="content-card qna-card">
@@ -22,7 +29,7 @@
         <!-- 2줄: 질문들||사람들 -->
         <div class="qna-top__row2">
           <ul class="qna-tabs" id="qnaTabs">
-            <li class="qna-tab"><a href="<c:url value='/qna/QnaList'/>">질문들</a></li>
+            <li class="qna-tab active"><a href="<c:url value='/qna/QnaList'/>">질문들</a></li>
             <li class="qna-tab sep">||</li>
             <li class="qna-tab"><a href="<c:url value='/qna/people'/>">사람들</a></li>
           </ul>
@@ -36,9 +43,9 @@
         <div class="qna-cat__header">
           <div class="qna-cat__title">분야</div>
           <div class="qna-cat__today">
-            <span>오늘의 새 질문 <strong>10,025</strong></span>
+            <span>오늘의 새 질문 <strong><c:out value="${todayNewQuestionCnt}"></c:out></strong></span>
             <span class="dot">|</span>
-            <span>오늘의 답변 <strong>29,905</strong></span>
+            <span>오늘의 답변 <strong><c:out value="${todayNewAnswerCnt}"></c:out></strong></span>
           </div>
         </div>
 
@@ -116,7 +123,7 @@
                 </span>
               </div>
 
-              <div class="cell cell-cat"><c:out value="${q.tagName}"/></div>
+              <div class="cell cell-cat"><c:out value="${q.tagName != null ? q.tagName : '-'}"/></div>
               <div class="cell cell-like"><c:out value="${q.likeCount}"/></div>
               <div class="cell cell-ans"><c:out value="${q.answerCount}"/></div>
               <div class="cell cell-date"><c:out value="${q.createdAtLabel}"/></div>

@@ -3,44 +3,218 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.joonzis.user.mapper.MypageMapper">
+
+    <select id="countMyPosts" resultType="int">
+        SELECT COUNT(BOARD_ID) 
+        FROM tbl_board 
+        WHERE USER_ID = #{userId} 
+          AND IS_ACTIVE = 'Y'
+        <choose>
+            <when test="tab == 'free'">
+                AND BOARD_TYPE = 'G'
+            </when>
+            <when test="tab == 'market'">
+                AND BOARD_TYPE IN ('T', 'S')
+            </when>
+            <otherwise>
+                AND BOARD_TYPE IN ('G', 'T', 'S')
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectMyPosts" resultType="org.joonzis.user.dto.MyPageItemDTO">
+        SELECT "title", "moveUrl", "viewCount", "likeCount", "replyCnt"
+        FROM (
+            SELECT a.*, ROWNUM AS rnum
+            FROM (
+                SELECT 
+                    TITLE AS "title",
+                    '/community/view?board_id=' || BOARD_ID AS "moveUrl",
+                    VIEW_COUNT AS "viewCount",
+                    LIKE_COUNT AS "likeCount",
+                    REPLY_CNT AS "replyCnt"
+                FROM tbl_board
+                WHERE USER_ID = #{userId} 
+                  AND IS_ACTIVE = 'Y'
+                <choose>
+                    <when test="tab == 'free'">
+                        AND BOARD_TYPE = 'G'
+                    </when>
+                    <when test="tab == 'market'">
+                        AND BOARD_TYPE IN ('T', 'S')
+                    </when>
+                    <otherwise>
+                        AND BOARD_TYPE IN ('G', 'T', 'S')
+                    </otherwise>
+                </choose>
+                ORDER BY REG_DATE DESC
+            ) a
+            <![CDATA[
+            WHERE ROWNUM <= #{offset} + #{pageSize}
+        )
+        WHERE rnum > #{offset}
+        ]]>
+    </select>
+
+    <select id="countMyQuestions" resultType="int">
+        SELECT COUNT(BOARD_ID) 
+        FROM tbl_board 
+        WHERE USER_ID = #{userId} 
+          AND BOARD_TYPE = 'Q' 
+          AND IS_ACTIVE = 'Y'
+        <choose>
+            <when test="tab == 'open'">
+                AND (IS_SELECTED = 'N' OR IS_SELECTED IS NULL)
+            </when>
+            <when test="tab == 'solved'">
+                AND IS_SELECTED = 'Y'
+            </when>
+        </choose>
+    </select>
+
+    <select id="selectMyQuestions" resultType="org.joonzis.user.dto.MyPageItemDTO">
+        SELECT "title", "moveUrl", "viewCount", "likeCount", "replyCnt"
+        FROM (
+            SELECT a.*, ROWNUM AS rnum
+            FROM (
+                SELECT 
+                    TITLE AS "title",
+                    '/qna/detail?qna_id=' || BOARD_ID AS "moveUrl",
+                    VIEW_COUNT AS "viewCount",
+                    LIKE_COUNT AS "likeCount",
+                    REPLY_CNT AS "replyCnt"
+                FROM tbl_board
+                WHERE USER_ID = #{userId} 
+                  AND BOARD_TYPE = 'Q' 
+                  AND IS_ACTIVE = 'Y'
+                <choose>
+                    <when test="tab == 'open'">
+                        AND (IS_SELECTED = 'N' OR IS_SELECTED IS NULL)
+                    </when>
+                    <when test="tab == 'solved'">
+                        AND IS_SELECTED = 'Y'
+                    </when>
+                </choose>
+                ORDER BY REG_DATE DESC
+            ) a
+            <![CDATA[
+            WHERE ROWNUM <= #{offset} + #{pageSize}
+        )
+        WHERE rnum > #{offset}
+        ]]>
+    </select>
+
+    <select id="countMyAnswers" resultType="int">
+        SELECT COUNT(BOARD_ID) 
+        FROM tbl_board 
+        WHERE USER_ID = #{userId} 
+          AND BOARD_TYPE = 'A' 
+          AND IS_ACTIVE = 'Y'
+        <choose>
+            <when test="tab == 'accepted'">
+                AND IS_SELECTED = 'Y'
+            </when>
+        </choose>
+    </select>
+
+    <select id="selectMyAnswers" resultType="org.joonzis.user.dto.MyPageItemDTO">
+        SELECT "title", "moveUrl", "viewCount", "likeCount", "replyCnt"
+        FROM (
+            SELECT a.*, ROWNUM AS rnum
+            FROM (
+                SELECT 
+                    TITLE AS "title",
+                    '/qna/detail?qna_id=' || PARENT_ID AS "moveUrl",
+                    VIEW_COUNT AS "viewCount",
+                    LIKE_COUNT AS "likeCount",
+                    REPLY_CNT AS "replyCnt"
+                FROM tbl_board
+                WHERE USER_ID = #{userId} 
+                  AND BOARD_TYPE = 'A' 
+                  AND IS_ACTIVE = 'Y'
+                <choose>
+                    <when test="tab == 'accepted'">
+                        AND IS_SELECTED = 'Y'
+                    </when>
+                </choose>
+                ORDER BY REG_DATE DESC
+            ) a
+            <![CDATA[
+            WHERE ROWNUM <= #{offset} + #{pageSize}
+        )
+        WHERE rnum > #{offset}
+        ]]>
+    </select>
 	
-	<!-- 사용자가 작성한 글 -->
-	<select id="selectMyPosts" parameterType="int" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
-		SELECT
-        BOARD_ID AS boardId,
-        TITLE AS title,
-        USER_ID AS userId,
-        VIEW_COUNT AS viewCount,
-        REPLY_CNT AS replyCnt
-	    FROM tbl_board
-	    WHERE USER_ID = #{user_id}
-	    ORDER BY BOARD_ID DESC
-	</select>
+	<select id="countMyReplys" resultType="int">
+        SELECT COUNT(r.REPLY_ID) 
+        FROM tbl_reply r
+        JOIN tbl_board b ON r.BOARD_ID = b.BOARD_ID
+        WHERE r.USER_ID = #{userId} 
+          AND r.IS_ACTIVE = 'Y'
+          AND b.IS_ACTIVE = 'Y' <choose>
+            <when test="tab == 'community'">
+                AND b.BOARD_TYPE IN ('G', 'T', 'S')
+            </when>
+            <when test="tab == 'qna'">
+                AND b.BOARD_TYPE IN ('Q', 'A')
+            </when>
+        </choose>
+    </select>
+
+    <select id="selectMyReplys" resultType="org.joonzis.user.dto.MyPageReplyDTO">
+        SELECT "content", "reg_date"
+        FROM (
+            SELECT a.*, ROWNUM AS rnum
+            FROM (
+                SELECT 
+                    r.CONTENT AS "content",
+                    -- JS에서 보여주기 좋게 날짜 포맷팅을 DB 단에서 처리
+                    TO_CHAR(r.REG_DATE, 'YYYY-MM-DD HH24:MI') AS "reg_date"
+                FROM tbl_reply r
+                JOIN tbl_board b ON r.BOARD_ID = b.BOARD_ID
+                WHERE r.USER_ID = #{userId} 
+                  AND r.IS_ACTIVE = 'Y'
+                  AND b.IS_ACTIVE = 'Y'
+                <choose>
+                    <when test="tab == 'community'">
+                        AND b.BOARD_TYPE IN ('G', 'T', 'S')
+                    </when>
+                    <when test="tab == 'qna'">
+                        AND b.BOARD_TYPE IN ('Q', 'A')
+                    </when>
+                </choose>
+                ORDER BY r.REG_DATE DESC
+            ) a
+            <![CDATA[
+            WHERE ROWNUM <= #{offset} + #{pageSize}
+        )
+        WHERE rnum > #{offset}
+        ]]>
+    </select>
 	
-	<!-- 사용자가 작성한 댓글 -->
-	<select id="selectMyReply" parameterType="int" resultType="org.joonzis.community.vo.ReplyVO">
-		SELECT
-	        reply_id, board_id, user_id, 
-	        content, reg_date
-    	FROM tbl_reply
-    	WHERE user_id = #{value}
-    	ORDER BY reg_date ASC
-	</select>
 	
-	<!-- 사용자가 작성한 질문 -->
-	
-		
-	
-	
-	<!-- 마이페이지 수정-닉네임, 주소  -->
+	<!-- 마이페이지 - 개인 정보 수정 -->
 	<update id="updateMypage" parameterType="org.joonzis.user.vo.UserVO">
 		UPDATE TBL_USER
 		<set>
+		    <if test="name != null and name != ''">
+		        name = #{name},
+		    </if>
+		    <if test="brith_date != null">
+		        brith_date = #{brith_date},
+		    </if>
 		    <if test="nickname != null and nickname != ''">
 		        nickname = #{nickname},
 		    </if>
 		    <if test="address != null and address != ''">
 		        address = #{address},
+		    </if>
+		    <if test="phone != null and phone != ''">
+		        phone = #{phone},
+		    </if>
+		    <if test="email != null and email != ''">
+		        email = #{email},
 		    </if>
 		</set>
 		WHERE user_id = #{user_id}
@@ -66,11 +240,16 @@
 		  INSERT (user_id, hashtag_id) VALUES (s.user_id, s.hashtag_id)
 	</update>
 	
+	<!-- 마이페이지-프로필 이미지 파일 이름 가져오기 -->
+	<select id="getProfile" resultType="string">
+		SELECT profile_filename FROM tbl_user WHERE user_id = #{user_id}
+	</select>
+	
 	<!-- 마이페이지 수정-프로필 이미지 변경  -->
 	<update id="updateProfile">
 		UPDATE tbl_user
 		SET profile_filename = #{profile_filename}
-		WHERE user_id = #{userId}
+		WHERE user_id = #{user_id}
 	</update>
 	
 	<!-- 마이페이지 - 자기소개 수정 -->

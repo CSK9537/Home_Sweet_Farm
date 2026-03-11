@@ -62,7 +62,7 @@
         <!-- 인기 식물 -->
         <section class="section">
           <header class="section__header">
-            <h3 class="section__title">인기 식물(많이 키우는 식물)</h3>
+            <h3 class="section__title">인기 식물</h3>
             <a class="section__more" href="/plant">전체보기</a>
           </header>
 
@@ -80,13 +80,6 @@
 		              <div class="plant-card__body">
 		                <div class="plant-card__name">${p.plant_name_kor}</div>
 		                <div class="plant-card__sci">${p.plant_name}</div>
-		                <div class="meta-row">
-		                  <span class="meta"><span class="meta__label">조회수</span><span class="meta__value">${p.plant_searchcount}</span></span>
-		                  <span class="meta-row__sep">|</span>
-		                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">??</span></span>
-		                  <span class="meta-row__sep">|</span>
-		                  <span class="meta"><span class="meta__label">집사수</span><span class="meta__value">??</span></span>
-		                </div>
 	              	  </div>
 	                </a>
                 </c:forEach>
@@ -98,119 +91,79 @@
         <!-- 인기 질문 -->
         <section class="section">
           <header class="section__header">
-            <h3 class="section__title">많이 물어보는 질문(카테고리가 많은 Q&amp;A)</h3>
-            <a class="section__more" href="#">전체보기</a>
+            <h3 class="section__title">인기 질문</h3>
+            <a class="section__more" href="qna/QnaList">전체보기</a>
           </header>
 
           <div class="card-grid card-grid--3">
-            <%-- 데이터 없을 때 --%>
-            <%-- <div class="empty-state">데이터가 없습니다.</div> --%>
-
-            <a class="qa-card" href="#">
-              <div class="qa-card__title">질문 제목</div>
-
-              <div class="meta-row meta-row--between">
-                <span class="meta"><span class="meta__label">답글</span><span class="meta__value">48</span></span>
-                <span class="meta-row__sep">|</span>
-                <span class="meta"><span class="meta__label">조회수</span><span class="meta__value">312</span></span>
-                <span class="meta-row__sep">|</span>
-                <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">312</span></span>
-              </div>
-
-              <p class="qa-card__excerpt">
-                질문 내용 질문 내용 질문 내용 질문 내용 질문 내용…
-              </p>
-            </a>
-
-            <a class="qa-card" href="#">
-              <div class="qa-card__title">질문 제목</div>
-              <div class="meta-row meta-row--between">
-                <span class="meta"><span class="meta__label">답글</span><span class="meta__value">48</span></span>
-                <span class="meta-row__sep">|</span>
-                <span class="meta"><span class="meta__label">조회수</span><span class="meta__value">312</span></span>
-                <span class="meta-row__sep">|</span>
-                <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">312</span></span>
-              </div>
-              <p class="qa-card__excerpt">질문 내용…</p>
-            </a>
-
-            <a class="qa-card" href="#">
-              <div class="qa-card__title">질문 제목</div>
-              <div class="meta-row meta-row--between">
-                <span class="meta"><span class="meta__label">답글</span><span class="meta__value">48</span></span>
-                <span class="meta-row__sep">|</span>
-                <span class="meta"><span class="meta__label">조회수</span><span class="meta__value">312</span></span>
-                <span class="meta-row__sep">|</span>
-                <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">312</span></span>
-              </div>
-              <p class="qa-card__excerpt">질문 내용…</p>
-            </a>
-          </div>
-        </section>
+            <c:choose>
+            <c:when test="${empty popularQuestions}">
+            	<div class="empty-state">데이터가 없습니다.</div>
+            </c:when>
+            <c:otherwise>
+            	<c:forEach items="${popularQuestions}" var="q">
+	            	<a class="qa-card" href="/qna/detail?qna_id=${q.id}">
+		              <div class="qa-card__title">${q.title}</div>
+		                <p class="qa-card__excerpt">${q.preview}</p>
+		                <div class="meta-row">
+		                  <span class="meta"><span class="meta__label">답글수</span><span class="meta__value">${q.answers}</span></span>
+		                  <span class="meta-row__sep">|</span>
+		                  <span class="meta"><span class="meta__label">조회수</span><span class="meta__value">${q.views}</span></span>
+		                  <span class="meta-row__sep">|</span>
+		                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">${q.likes}</span></span>
+		                </div>
+	                </a>
+                </c:forEach>
+             </c:otherwise>
+             </c:choose>
+	       </div>
+	       </section>
 
         <!-- 인기 답변자 -->
         <section class="section">
           <header class="section__header">
-            <h3 class="section__title">인기 답변자(좋아요가 많은 답변자)</h3>
-            <a class="section__more" href="#">전체보기</a>
+            <h3 class="section__title">인기 답변자</h3>
+            <a class="section__more" href="/qna/people">전체보기</a>
           </header>
 
           <div class="card-grid card-grid--3">
-            <%-- 데이터 없을 때 --%>
-            <%-- <div class="empty-state">데이터가 없습니다.</div> --%>
-
-            <a class="user-card" href="#">
-              <div class="user-card__thumb" aria-hidden="true"></div>
-
-              <div class="user-card__body">
-                <div class="user-card__name">Sophie Bennett</div>
-                <p class="user-card__bio">A Product Designer focused on intuitive user experiences.</p>
-
-                <div class="meta-row">
-                  <span class="meta"><span class="meta__label">답변수</span><span class="meta__value">312</span></span>
-                  <span class="meta-row__sep">|</span>
-                  <span class="meta"><span class="meta__label">채택수</span><span class="meta__value">312</span></span>
-                  <span class="meta-row__sep">|</span>
-                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">312</span></span>
-                </div>
-              </div>
-            </a>
-
-            <a class="user-card" href="#">
-              <div class="user-card__thumb" aria-hidden="true"></div>
-              <div class="user-card__body">
-                <div class="user-card__name">Sophie Bennett</div>
-                <p class="user-card__bio">A Product Designer focused on intuitive user experiences.</p>
-                <div class="meta-row">
-                  <span class="meta"><span class="meta__label">답변수</span><span class="meta__value">312</span></span>
-                  <span class="meta-row__sep">|</span>
-                  <span class="meta"><span class="meta__label">채택수</span><span class="meta__value">312</span></span>
-                  <span class="meta-row__sep">|</span>
-                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">312</span></span>
-                </div>
-              </div>
-            </a>
-
-            <a class="user-card" href="#">
-              <div class="user-card__thumb" aria-hidden="true"></div>
-              <div class="user-card__body">
-                <div class="user-card__name">Sophie Bennett</div>
-                <p class="user-card__bio">A Product Designer focused on intuitive user experiences.</p>
-                <div class="meta-row">
-                  <span class="meta"><span class="meta__label">답변수</span><span class="meta__value">312</span></span>
-                  <span class="meta-row__sep">|</span>
-                  <span class="meta"><span class="meta__label">채택수</span><span class="meta__value">312</span></span>
-                  <span class="meta-row__sep">|</span>
-                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">312</span></span>
-                </div>
-              </div>
-            </a>
+            <c:choose>
+            <c:when test="${empty popularPlants}">
+            	<div class="empty-state">데이터가 없습니다.</div>
+            </c:when>
+            <c:otherwise>
+            	<c:forEach items="${popularPeople}" var="h">
+	            	<a class="user-card" href="javascript:void(0);" data-user-id="${h.user_id}" onclick="handleUserClick(this)">
+		              <div class="user-card__thumb">
+		              	<img src="/user/getProfile?fileName=${h.profile}" loading="lazy" />
+		              </div>
+		              <div class="user-card__body">
+		                <c:choose>
+		                  <c:when test="${not empty h.nickname}">
+		                    <div class="user-card__name">${h.nickname}</div>
+		               	  </c:when>
+		              	  <c:otherwise>
+		                    <div class="user-card__name">${h.username}</div>
+		              	  </c:otherwise>
+		                </c:choose>
+		                <p class="user-card__bio">${h.intro}</p>
+		                <div class="meta-row">
+		                  <span class="meta"><span class="meta__label">답변수</span><span class="meta__value">${h.totalAnswers}</span></span>
+		                  <span class="meta-row__sep">|</span>
+		                  <span class="meta"><span class="meta__label">채택수</span><span class="meta__value">${h.acceptedAnswers}</span></span>
+		                  <span class="meta-row__sep">|</span>
+		                  <span class="meta"><span class="meta__label">좋아요</span><span class="meta__value">${h.totalAnswerLikes}</span></span>
+		                </div>
+	              	  </div>
+	                </a>
+                </c:forEach>
+             </c:otherwise>
+             </c:choose>
           </div>
-        </section>
-
       </section>
     </section>
-  </div>
+    </section>
+</div>
 </div>
 <%@ include file="/WEB-INF/views/layout/footer.jsp" %>
 <script> window.plantImages = ${plantImages != null ? plantImages : '[]'}; </script>

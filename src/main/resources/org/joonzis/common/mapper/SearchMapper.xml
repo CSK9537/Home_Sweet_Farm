@@ -8,34 +8,8 @@
 		SELECT username, nickname, name FROM tbl_user WHERE user_id = #{user_id}
 	</select>
 	
-	<!-- 커뮤니티 검색 결과 출력 -->
-	<!-- 제목 검색 -->
-	<select id="searchBoardsByTitle" resultType="org.joonzis.community.vo.BoardVO">
-		<![CDATA[
-			SELECT * FROM tbl_board WHERE LOWER(title) LIKE LOWER('%' || #{q} || '%')
-			AND ROWNUM <= 10
-		]]>
-	</select>
-	<!-- 내용 검색 -->
-	<select id="searchBoardsByContent" resultType="org.joonzis.community.vo.BoardVO">
-		<![CDATA[
-			SELECT * FROM tbl_board WHERE LOWER(content) LIKE LOWER('%' || #{q} || '%')
-			AND ROWNUM <= 10
-		]]>
-	</select>
-	<!-- 작성자 검색 -->
-	<select id="searchBoardsByWriter" resultType="org.joonzis.community.vo.BoardVO">
-		<![CDATA[
-			SELECT * FROM tbl_board WHERE user_id =
-				(SELECT user_id FROM tbl_user
-				WHERE LOWER(username) LIKE LOWER('%' || #{q} || '%')
-				OR LOWER(nickname) LIKE LOWER('%' || #{q} || '%')
-				OR LOWER(name) LIKE LOWER('%' || #{q} || '%'))
-				AND ROWNUM <= 10
-		]]>
-	</select>
 	
-	<!-- 식물 검색(이름) 결과 출력 -->
+	<!-- 식물 검색(이름) 결과 출력 10개 -->
 	<select id="searchPlants" resultType="org.joonzis.plant.dto.SimplePlantDTO">
 		<![CDATA[
 			SELECT plant_id, plant_name, plant_name_kor, plant_image, plant_searchcount
@@ -45,11 +19,140 @@
 		]]>
 	</select>
 	
-	<!-- 스토어 검색(이름) 결과 출력 -->
-	<select id="searchProducts" resultType="org.joonzis.store.vo.ProductVO">
-		<![CDATA[
-			SELECT * FROM tbl_product WHERE LOWER(product_name) LIKE LOWER('%' || #{q} || '%')
-			AND ROWNUM <= 10
-		]]>
+	
+	<!-- 검색 결과 -->
+	<select id="searchPlantName" resultType="org.joonzis.plant.dto.SimplePlantDTO">
+		SELECT 
+			PLANT_ID,
+			PLANT_NAME,
+			PLANT_NAME_KOR,
+			PLANT_IMAGE,
+			PLANT_SEARCHCOUNT
+		FROM 
+			tbl_plant
+		WHERE 
+			PLANT_NAME LIKE '%' || #{q} || '%' 
+			OR PLANT_NAME_KOR LIKE '%' || #{q} || '%'
+		ORDER BY 
+			PLANT_SEARCHCOUNT DESC
 	</select>
+
+
+	<select id="searchProductName" resultType="org.joonzis.store.dto.ProductForListDTO">
+		SELECT 
+			p.PRODUCT_ID,
+			p.PRODUCT_NAME,
+			p.PRODUCT_PRICE,
+			p.PRODUCT_DELIVERY_PRICE,
+			NVL(p.PRODUCT_SALE, 0) AS product_sale,
+			
+			(SELECT SAVED_NAME FROM tbl_product_image 
+			 WHERE PRODUCT_ID = p.PRODUCT_ID AND IS_THUMBNAIL = 'Y' AND ROWNUM = 1) AS thumbnail,
+			
+			NVL((SELECT AVG(REVIEW_RATE) FROM tbl_product_review WHERE PRODUCT_ID = p.PRODUCT_ID), 0) AS product_rate,
+			(SELECT COUNT(*) FROM tbl_product_review WHERE PRODUCT_ID = p.PRODUCT_ID) AS review_count
+		FROM 
+			tbl_product p
+		WHERE 
+			p.PRODUCT_NAME LIKE '%' || #{q} || '%'
+		ORDER BY 
+			p.PRODUCT_ID DESC
+	</select>
+
+
+	<sql id="commSelectBase">
+		SELECT 
+			b.BOARD_ID AS boardId,
+			b.TITLE AS title,
+			(SELECT NICKNAME FROM tbl_user WHERE USER_ID = b.USER_ID) AS writer,
+			TO_CHAR(b.REG_DATE, 'YYYY-MM-DD') AS regDate,
+			DBMS_LOB.SUBSTR(b.CONTENT, 100, 1) AS contentPreview,
+			b.VIEW_COUNT AS viewCount,
+			b.LIKE_COUNT AS likeCount,
+			b.REPLY_CNT AS replyCnt,
+			b.BOARD_TYPE AS boardType,
+			b.TRADE_STATUS AS tradeStatus,
+			b.PRICE AS price,
+			CASE 
+				WHEN b.BOARD_TYPE = 'T' AND b.TRADE_STATUS = 'P' THEN 'sell'
+				WHEN b.BOARD_TYPE = 'S' AND b.TRADE_STATUS = 'P' THEN 'share'
+				WHEN (b.BOARD_TYPE = 'T' OR b.BOARD_TYPE = 'S') AND b.TRADE_STATUS = 'C' THEN 'done'
+				ELSE ''
+			END AS status,
+			'/community/detail?id=' || b.BOARD_ID AS moveUrl,
+			
+			(SELECT SAVED_NAME FROM tbl_board_file 
+			 WHERE BOARD_ID = b.BOARD_ID AND IS_THUMBNAIL = 'Y' AND IS_ACTIVE = 'Y' AND ROWNUM = 1) AS thumbSavedName,
+			(SELECT SUB_DIR FROM tbl_board_file 
+			 WHERE BOARD_ID = b.BOARD_ID AND IS_THUMBNAIL = 'Y' AND IS_ACTIVE = 'Y' AND ROWNUM = 1) AS thumbSubDir
+		FROM 
+			tbl_board b
+		WHERE 
+			b.IS_ACTIVE = 'Y'
+			AND b.BOARD_TYPE IN ('G', 'T', 'S')
+	</sql>
+
+	<select id="searchCommTitle" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
+		<include refid="commSelectBase"/>
+		AND b.TITLE LIKE '%' || #{q} || '%'
+		ORDER BY b.BOARD_ID DESC
+	</select>
+
+	<select id="searchCommContent" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
+		<include refid="commSelectBase"/>
+		AND DBMS_LOB.INSTR(b.CONTENT, #{q}) &gt; 0
+		ORDER BY b.BOARD_ID DESC
+	</select>
+
+	<select id="searchCommWriter" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
+		<include refid="commSelectBase"/>
+		AND b.USER_ID IN (
+			SELECT USER_ID 
+			FROM tbl_user 
+			WHERE NICKNAME LIKE '%' || #{q} || '%' 
+			   OR USERNAME LIKE '%' || #{q} || '%'
+		)
+		ORDER BY b.BOARD_ID DESC
+	</select>
+
+
+	<sql id="qnaSelectBase">
+		SELECT 
+			b.BOARD_ID AS id,
+			b.TITLE AS title,
+			DBMS_LOB.SUBSTR(b.CONTENT, 100, 1) AS preview,
+			(SELECT NICKNAME FROM tbl_user WHERE USER_ID = b.USER_ID) AS writer,
+			b.VIEW_COUNT AS views,
+			b.LIKE_COUNT AS likes,
+			(SELECT COUNT(*) FROM tbl_board WHERE PARENT_ID = b.BOARD_ID AND BOARD_TYPE = 'A' AND IS_ACTIVE = 'Y') AS answers
+		FROM 
+			tbl_board b
+		WHERE 
+			b.IS_ACTIVE = 'Y'
+			AND b.BOARD_TYPE = 'Q'
+	</sql>
+
+	<select id="searchQnaTitle" resultType="org.joonzis.qna.dto.QnaFaqDTO">
+		<include refid="qnaSelectBase"/>
+		AND b.TITLE LIKE '%' || #{q} || '%'
+		ORDER BY b.BOARD_ID DESC
+	</select>
+
+	<select id="searchQnaContent" resultType="org.joonzis.qna.dto.QnaFaqDTO">
+		<include refid="qnaSelectBase"/>
+		AND DBMS_LOB.INSTR(b.CONTENT, #{q}) &gt; 0
+		ORDER BY b.BOARD_ID DESC
+	</select>
+
+	<select id="searchQnaWriter" resultType="org.joonzis.qna.dto.QnaFaqDTO">
+		<include refid="qnaSelectBase"/>
+		AND b.USER_ID IN (
+			SELECT USER_ID 
+			FROM tbl_user 
+			WHERE NICKNAME LIKE '%' || #{q} || '%' 
+			   OR USERNAME LIKE '%' || #{q} || '%'
+		)
+		ORDER BY b.BOARD_ID DESC
+	</select>
+
 </mapper>

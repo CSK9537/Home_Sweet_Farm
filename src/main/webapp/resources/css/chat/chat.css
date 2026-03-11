@@ -5,6 +5,7 @@
 body {
     margin: 0;
     background-color: #6B7B61;
+    overflow: hidden;
     /* 이미지 배경 색상 */
 }
 
@@ -419,17 +420,28 @@ a{text-decoration: none; }
     transition: .2s;
 }
 
-.chat-header .role {
-    background-color: red;
-    color: #fff;
-    font-size: 0.75em;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: bold;
-
+.badge-role {
     display: inline-block;
-    text-align: center;
-    margin-top: 2px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+/* 고수 (초록색) */
+.badge-gosu {
+    background-color: #e6f4ea;
+    color: #1e8e3e;
+    border: 1px solid #1e8e3e;
+}
+
+/* 전문가 (빨간색) */
+.badge-pro {
+    background-color: #fce8e6;
+    color: #d93025;
+    border: 1px solid #d93025;
 }
 
 /* 3선 메뉴 버튼 */
@@ -524,15 +536,15 @@ a{text-decoration: none; }
 }
 
 .chat-date-box {
-    width: 180px;
+    width: 190px;
     background-color: #6B715D;
     color: #fff;
     text-align: center;
-    padding: 5px 0;
+    padding: 5px;
     border-radius: 10px;
     align-self: center;
     margin-bottom: 10px;
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .chat-messages {
@@ -839,14 +851,18 @@ a{text-decoration: none; }
     gap: 16px;
 }
 
-.empty-logo {
-    width: 80px;
-    opacity: 0.6;
+.empty-content .logo__text{
+  font-family: "Great Vibes", cursive;
+  font-size: 40px;
+  line-height: 1;
+  color: #6B7B61;
+  opacity:0.7;
 }
 
 .empty-text {
     font-size: 16px;
     color: #888;
+    opacity: 0.7;
 }
 
 

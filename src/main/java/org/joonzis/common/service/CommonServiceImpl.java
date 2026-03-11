@@ -1,5 +1,8 @@
 package org.joonzis.common.service;
 
-public class CommonServiceImpl {
+import org.springframework.stereotype.Service;
 
+@Service
+public class CommonServiceImpl implements CommonService{
+	
 }

@@ -6,7 +6,9 @@
 		<head>
 			<meta charset="UTF-8">
 			<title>Insert title here</title>
+
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/chat/chat.css">
+			<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/layout/globals.css">
 			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 		</head>
@@ -20,19 +22,19 @@
 						</a>
 					</div>
 					<div class="account">
-						<img src="https://via.placeholder.com/40" alt="프로필"> <span class="username">내계정</span>
+						<img id="my-profile-img" src="" alt="프로필">
+						<span id="my-profile-name" class="username">로드 중...</span>
 					</div>
 				</div>
 			</header>
+
 			<div class="chat-container">
-
-
 				<!-- 좌측 채팅 목록 -->
 				<div class="chat-list">
 					<div class="chat-list-header">
 						<div class="chat-list-tabs">
 							<div class="tab active" id="tab-all">전체보기</div>
-							<div class="tab" id="tab-search" style="pointer-events: none; opacity: 0.5;">검색하기</div>
+							<div class="tab" id="tab-search">검색하기</div>
 						</div>
 					</div>
 
@@ -70,14 +72,14 @@
 				<div class="chat-main">
 					<div id="empty-view" class="empty-view">
 						<div class="empty-content">
-							<img src="/resources/img/logo.png" alt="logo" class="empty-logo">
+							<span class="logo__text">Home Sweet Farm</span>
 							<div class="empty-text">채팅방을 선택해주세요.</div>
 						</div>
 					</div>
 					<div id="chat-view" style="display: none; flex-direction: column; height: 100%;">
 						<div class="chat-header">
-							<div class="user-left" style="display: flex; align-items: center;">
-								<img src="https://via.placeholder.com/40" alt="유저">
+							<div id="chat-user-header" class="user-left" style="display: flex; align-items: center; cursor: pointer;">
+								<img src="/resources/image/default_profile.png" alt="유저">
 								<div class="user-info">
 									<span class="name"></span> <span class="role"></span>
 								</div>
@@ -153,6 +155,9 @@
 				<!-- 숨겨진 input -->
 				<input type="file" id="imageInput" accept="image/*" multiple hidden />
 				<input type="file" id="fileInput" multiple hidden />
+				<input type="hidden" id="hidden_room_id" value="${room_id}">
+				<input type="hidden" id="hidden_target_id" value="${target_id}">
+				<input type="hidden" id="hidden_my_id" value="${user_id}">
 			</div>
 			<!-- 이미지 확대 modal -->
 			<div id="imagePreviewModal" class="modal">
@@ -165,7 +170,7 @@
 				</div>
 			</div>
 
-
+			<jsp:include page="/WEB-INF/views/common/UserProfileModal.jsp" />
 		</body>
 		<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>

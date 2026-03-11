@@ -1,6 +1,9 @@
 package org.joonzis.user.service;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.joonzis.user.dto.MypageProfileDTO;
 import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.mapper.UserMapper;
@@ -137,7 +140,18 @@ public class UserServiceImpl implements UserService{
 	}
 	
 	@Override
-	public MypageProfileDTO getProfile(int userId) {
+	public MypageProfileDTO getProfileInfo(int userId) {
 		return usermapper.getProfileInfo(userId);
+	}
+	
+	@Override
+	public List<MypageProfileDTO> answerLikesPeopleRankingInfo(int rank) {
+		List<Integer> user_id_list = usermapper.getAnswerLikesPeopleRanking(rank);
+		List<MypageProfileDTO> rankingList = new ArrayList<MypageProfileDTO>();
+		for(int user_id : user_id_list) {
+			MypageProfileDTO dto = usermapper.getProfileInfo(user_id);
+			rankingList.add(dto);
+		}
+		return rankingList;
 	}
 }

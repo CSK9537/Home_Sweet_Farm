@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -41,11 +42,11 @@ public class ChatController {
 	@Autowired
 	private SimpMessagingTemplate messagingTemplate;
 	@Autowired
-	private MsgService msgService;
-	@Autowired
 	private ChatRoomMapper chatRoomMapper;
 	@Autowired
 	private ChatRoomUserMapper chatRoomUserMapper;
+	@Autowired
+	private org.joonzis.user.service.UserService userService;
 
 	/**
 	 * 메세지 전송 (텍스트만)
@@ -84,6 +85,26 @@ public class ChatController {
 		int user_id = getUserId(session);
 		int page = offset / size;
 		return chatService.getMessages(user_id, room_id, page, size);
+	}
+	
+	/**
+	 * 상대방 유저 정보 조회 (이름 등)
+	 */
+	@GetMapping(value = "/user/info/{targetId}", produces = "application/json; charset=UTF-8")
+	public ResponseEntity<?> getTargetUserInfo(@PathVariable int targetId) {
+	    UserVO user = userService.selectUser(targetId); 
+	    
+	    if (user == null) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	    }
+	    
+	    return ResponseEntity.ok(Map.of(
+	        "user_id", user.getUser_id(),
+	        "username", user.getUsername(),
+	        "nickname", user.getNickname() != null ? user.getNickname() : "",
+	        "profile_filename", user.getProfile_filename() != null ? user.getProfile_filename() : "",
+	        "grade_id", user.getGrade_id()
+	    ));
 	}
 
 	/**
@@ -145,6 +166,20 @@ public class ChatController {
 		int user_id = getUserId(session);
 		return chatService.searchRooms(user_id, keyword, type);
 	}
+	
+	@GetMapping(value = "/rooms/{room_id}/message-offset/{msg_id}", produces = "application/json; charset=UTF-8")
+	public ResponseEntity<Map<String, Integer>> getMessageOffset(
+	        @PathVariable int room_id,
+	        @PathVariable long msg_id) {
+	    
+	    int rowNum = chatRoomMapper.getMessageRowNum(room_id, msg_id);
+	    
+	    // 명시적으로 Map 생성
+	    Map<String, Integer> response = new HashMap<>();
+	    response.put("offset", rowNum);
+	    
+	    return ResponseEntity.ok(response);
+	}
 
 	/**
      * 이미지/파일 업로드
@@ -157,6 +192,8 @@ public class ChatController {
             @RequestParam("file") MultipartFile file,
             @RequestParam int room_id,
             @RequestParam String msg_type,
+            @RequestParam(value = "client_group_id", required = false, defaultValue = "0") long client_group_id,
+            @RequestParam(value = "receiver_id", required = false, defaultValue = "0") int receiver_id,
             HttpSession session
     ) throws IOException {
 
@@ -195,13 +232,15 @@ public class ChatController {
 	        msg.setIs_active("Y");
 
 	        // 4. DB 저장
-	        long group_id = chatService.getNextGroupId(room_id);
-	        MsgVO savedMsg = chatService.sendFileMessage(sender_id, room_id, msg, group_id);
+	        long group_id = (client_group_id > 0) ? client_group_id : chatService.getNextGroupId(room_id);
+	        MsgVO savedMsg = chatService.sendFileMessage(sender_id, receiver_id, room_id, msg, group_id);
 	        
-	        messagingTemplate.convertAndSend("/topic/room." + room_id, savedMsg);
-	        int receiver_id = chatRoomMapper.selectOtherUserId(room_id, sender_id); 
+	        int actualRoomId = savedMsg.getRoom_id();
+	        int targetId = (receiver_id > 0) ? receiver_id : chatRoomMapper.selectOtherUserId(actualRoomId, sender_id);
+	        
+	        messagingTemplate.convertAndSend("/topic/room." + actualRoomId, savedMsg);
 	        messagingTemplate.convertAndSend("/topic/user." + sender_id, savedMsg);
-	        messagingTemplate.convertAndSend("/topic/user." + receiver_id, savedMsg);
+	        messagingTemplate.convertAndSend("/topic/user." + targetId, savedMsg);
 	
 	        return ResponseEntity.ok(savedMsg);
         }catch (IOException e) {

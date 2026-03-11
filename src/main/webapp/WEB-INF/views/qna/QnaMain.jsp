@@ -19,7 +19,7 @@
           </div>
 
           <div class="qna-toprow__right">
-            <a class="btn btn--primary" href="<c:url value='/community/CommunityForm'/>">질문하기</a>
+            <a class="btn btn--primary" href="<c:url value='/qna/ask'/>">질문하기</a>
           </div>
         </div>
 
@@ -29,9 +29,7 @@
           <span class="qna-divider">||</span>
           <a class="qna-menu" href="<c:url value='/qna/people'/>" data-tab="people">사람들</a>
         </div>
-
-        <!-- 굵은 라인 -->
-        <div class="qna-topline"></div>
+        
       </div>
 
       <!-- 1) 채택왕 -->
@@ -45,13 +43,10 @@
 
         <div class="top-users">
           <c:forEach var="u" items="${topUsers}">
-            <a class="top-user"
-               href="<c:url value='/mypage/profile'>
-                        <c:param name='userId' value='${u.userId}'/>
-                     </c:url>">
+            <a class="top-user" href="">
               <div class="top-user__rank">${u.rank}</div>
               <div class="top-user__avatar">
-                <img src="${u.img}" alt="profile">
+                <img src="user/getProfile?fileName=${u.img}" alt="profile">
               </div>
               <div class="top-user__name">${u.name}</div>
               <div class="top-user__meta">
@@ -75,7 +70,7 @@
 
         <div class="faq-grid">
           <c:forEach var="f" items="${faqTopList}">
-            <a class="faq-item" href="<c:url value='/qna/detail'><c:param name='qnaId' value='${f.id}'/></c:url>">
+            <a class="faq-item" href="<c:url value='/qna/detail'><c:param name='qna_id' value='${f.id}'/></c:url>">
               <div class="faq-item__num">${f.rank}</div>
               <div class="faq-item__body">
                 <div class="faq-item__title">${f.title}</div>
@@ -128,7 +123,7 @@
           </div>
 
           <c:forEach var="q" items="${waitingList}">
-            <a class="waiting-row" href="<c:url value='/qna/detail'><c:param name='qnaId' value='${q.id}'/></c:url>">
+            <a class="waiting-row" href="<c:url value='/qna/detail'><c:param name='qna_id' value='${q.id}'/></c:url>">
               <div class="col col-title">
                 <span class="title-text">${q.title}</span>
                 <c:if test="${q.isNew}">

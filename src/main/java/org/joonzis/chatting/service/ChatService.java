@@ -16,6 +16,6 @@ public interface ChatService {
 	public int createRoom(int user1_id, int user2_id);
 	public Long getFirstUnreadMsgId(int user_id, int room_id);
 	public List<RoomSearchResultDTO> searchRooms(int user_id, String keyword, String type);
-	public MsgVO sendFileMessage(int sender_id, int room_id, MsgVO msgVO, long group_id);
+	public MsgVO sendFileMessage(int sender_id,int receiver_id, int room_id, MsgVO msgVO, long group_id);
 	public long getNextGroupId(int room_id);
 }

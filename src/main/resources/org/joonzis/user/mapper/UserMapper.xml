@@ -238,6 +238,7 @@
 	<resultMap type="org.joonzis.user.dto.MypageProfileDTO" id="mypageProfileDTO">
 		<id property="user_id" column="user_id"/>
 		<result property="profile" column="profile_filename"/>
+		<result property="username" column="username"/>
 		<result property="nickname" column="nickname"/>
 		<result property="gradeName" column="grade"/>
 		<result property="name" column="name"/>
@@ -247,7 +248,7 @@
 		<result property="email" column="email"/>
 		<result property="address" column="address"/>
 		<result property="totalAnswers" column="totalAnswers"/>
-		<result property="totalViews" column="totalViews"/>
+		<result property="totalAnswerLikes" column="totalAnswerLikes"/>
 		<result property="acceptedAnswers" column="acceptedAnswers"/>
 		<collection property="aspect" ofType="string">
 			<result column="hashtag_name"/>
@@ -308,6 +309,7 @@
     SELECT
         u.user_id,
         u.profile_filename,
+        u.username,
         u.nickname,
         u.name,
         u.brith_date,
@@ -318,7 +320,7 @@
         g.grade,
         h.hashtag_name,
         NVL(b.totalAnswers, 0) AS totalAnswers,
-        NVL(b.totalViews, 0) AS totalViews,
+        NVL(b.totalAnswerLikes, 0) AS totalAnswerLikes,
         NVL(b.acceptedAnswers, 0) AS acceptedAnswers,
         pCard.BOARD_ID as pBOARD_ID,
         pCard.TITLE as pTITLE, 
@@ -343,8 +345,8 @@
             SELECT
                 user_id,
                 COUNT(CASE WHEN board_type = 'A' THEN 1 END) AS totalAnswers,
-                SUM(view_count) AS totalViews,
-                COUNT(CASE WHEN is_selected = 'Y' THEN 1 END) AS acceptedAnswers
+                SUM(CASE WHEN board_type = 'A' THEN like_count ELSE 0 END) AS totalAnswerLikes,
+                COUNT(CASE WHEN board_type = 'A' AND is_selected = 'Y' THEN 1 END) AS acceptedAnswers
             FROM
                 tbl_board
             GROUP BY
@@ -356,7 +358,7 @@
                 SELECT PC.*, ROW_NUMBER() OVER (ORDER BY PC.BOARD_ID DESC) as rnum 
                 FROM (<include refid="PostsQuery" />) PC
                 WHERE PC.USER_ID = #{user_id} 
-                  AND PC.BOARD_TYPE != 'Q' -- 질문글 제외 (혹은 특정 타입 지정)
+                  AND PC.BOARD_TYPE = 'G' -- 질문글 제외 (혹은 특정 타입 지정)
             ) WHERE rnum &lt;= 3
         ) pCard ON u.user_id = pCard.USER_ID
 
@@ -372,4 +374,23 @@
     WHERE 
         u.user_id = #{user_id}
 </select>
+	<select id="getAnswerLikesPeopleRanking" resultType="Integer">
+		SELECT * FROM (
+		    SELECT 
+		        u.USER_ID
+		    FROM tbl_user u
+		    JOIN (
+		        SELECT 
+		            USER_ID, 
+		            SUM(LIKE_COUNT) AS TOTAL_ANSWER_LIKES
+		        FROM tbl_board
+		        WHERE BOARD_TYPE = 'A' 
+		          AND IS_ACTIVE = 'Y'
+		        GROUP BY USER_ID
+		    ) a ON u.USER_ID = a.USER_ID
+		    ORDER BY a.TOTAL_ANSWER_LIKES DESC
+		)
+		WHERE ROWNUM &lt;= #{rank}
+	</select>
+
 </mapper>

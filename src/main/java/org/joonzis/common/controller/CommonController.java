@@ -3,6 +3,8 @@ package org.joonzis.common.controller;
 import java.util.List;
 
 import org.joonzis.plant.service.PlantService;
+import org.joonzis.qna.service.QnaMainService;
+import org.joonzis.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +21,10 @@ public class CommonController {
 	
 	@Autowired
 	private PlantService pservice;
+	@Autowired
+	private QnaMainService qservice;
+	@Autowired
+	private UserService uservice;
 	
 	@RequestMapping("/home")
 	public String home() {
@@ -35,6 +41,9 @@ public class CommonController {
 			model.addAttribute("plantImages", "[]");
 		}
 		model.addAttribute("popularPlants", pservice.plantListByRank(3));
+		model.addAttribute("popularQuestions", qservice.topQuestions());
+		model.addAttribute("popularPeople", uservice.answerLikesPeopleRankingInfo(3));
+		
 		return "main";
 	}
 	@RequestMapping("/rules/use")
@@ -44,15 +53,5 @@ public class CommonController {
 	@RequestMapping("/rules/privacy")
 	public String privacy() {
 		return "law/Personal";
-	}
-	@RequestMapping("/search")
-	public String search(@RequestParam(value = "q", required = false) String q,
-						@RequestParam(value = "main", required = false) String main,
-						@RequestParam(value = "sub", required = false) String sub,
-						Model model) {
-		model.addAttribute("q", q);
-		model.addAttribute("main", main);
-		model.addAttribute("sub", sub);
-		return "common/SearchResult";
 	}
 }

@@ -16,7 +16,10 @@
 			ELSE r.user1_id
 		END AS other_user_id,
 
-		u.nickname AS other_user_name,
+		u.username AS other_user_username,  
+        u.nickname AS other_user_nickname,
+		u.grade_id AS other_user_grade_id,
+		u.profile_filename AS other_user_profile,
 
 		m.content AS last_msg,
 		m.msg_type AS last_msg_type,
@@ -67,6 +70,7 @@
 
 	</select>
 
+<!-- 채팅 상대 유저 아이디 조회 -->
 	<select id="selectOtherUserId" resultType="int">
 		SELECT
 			CASE
@@ -78,8 +82,9 @@
 		WHERE room_id = #{room_id}
 	</select>
 	
+
 	<select id="findMaxGroupId" resultType="long">
-	    SELECT MAX(group_id) 
+	    SELECT NVL(MAX(group_id), 0) 
 	    FROM tbl_msg 
 	    WHERE room_id = #{room_id}
 	</select>
@@ -93,6 +98,15 @@
 	    )
 	    <![CDATA[WHERE rn > #{offset} AND rn <= #{offset} + #{size}]]>
 	    ORDER BY msg_id ASC
+	</select>
+	
+	<!-- 메세지 행 알아내기 -->
+	<select id="getMessageRowNum" resultType="int">
+    SELECT rn FROM (
+        SELECT msg_id, ROW_NUMBER() OVER (ORDER BY msg_id DESC) as rn
+        FROM tbl_msg
+        WHERE room_id = #{room_id} AND is_active = 'Y'
+    ) WHERE msg_id = #{msg_id}
 	</select>
 
 

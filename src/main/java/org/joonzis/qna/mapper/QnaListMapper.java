@@ -1,5 +1,6 @@
 package org.joonzis.qna.mapper;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 import org.joonzis.qna.dto.QnaListDTO;
@@ -14,4 +15,6 @@ public interface QnaListMapper {
     
     // 상위 태그 목록 조회
     List<TagTopListDTO> selectQnaTagTopList();
+
+	Map<String, Object> getCountTodayQna(Date valueOf);
 }

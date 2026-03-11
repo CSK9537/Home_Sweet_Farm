@@ -65,3 +65,8 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+function handleUserClick(element) {
+    const id = element.getAttribute('data-user-id');
+    GlobalProfileModal.open(id);
+}

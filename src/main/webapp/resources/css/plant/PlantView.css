@@ -5,15 +5,16 @@
 }
 
 /* =========================
-   HERO (상단 식물 요약)
+   HERO (상단 식물 요약) - PlantMain과 일치
 ========================= */
 .pv-hero {
   width: 100%;
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
   gap: 40px;
-  padding-bottom: 30px;
-  border-bottom: 1px solid var(--color-main-line);
+  padding: 0 0 20px;
+  border-bottom: 2px solid var(--color-main-line);
+  margin-bottom: 20px;
 }
 
 .pv-hero__left {
@@ -23,7 +24,7 @@
 }
 
 .pv-title {
-  font-size: 36px;
+  font-size: 26px; /* PlantMain 타이틀과 일치 */
   font-weight: 800;
   line-height: 1.2;
   margin: 0;
@@ -35,7 +36,7 @@
   margin-top: 8px;
   font-size: 16px;
   color: var(--color-main-muted);
-  font-style: italic; /* 학명/영어명은 이탤릭체로 구분감 부여 */
+  font-style: italic; 
 }
 
 .pv-desc {
@@ -78,7 +79,7 @@
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: var(--radius-lg, 16px);
-  box-shadow: 0 10px 30px rgba(107, 123, 97, 0.15); /* 이미지 뎁스 추가 */
+  box-shadow: 0 10px 30px rgba(107, 123, 97, 0.15); 
   border: 1px solid var(--color-main-soft);
   display: block;
 }
@@ -120,63 +121,41 @@
 
 
 /* =========================
-   버튼 공통
-========================= */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 24px;
-  height: 48px;
-  border-radius: 12px;
-  text-decoration: none;
-  cursor: pointer;
-  user-select: none;
-  font-size: 15px;
-  font-weight: 700;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-}
-
-.btn-primary {
-  background: var(--color-bg-main);
-  color: #ffffff;
-}
-
-.btn-primary:hover {
-  background: #5a6851;
-  box-shadow: 0 4px 12px rgba(107, 123, 97, 0.2);
-  transform: translateY(-2px);
-}
-.btn-primary:active {
-  transform: translateY(0);
-}
-
-
-/* =========================
    공통 박스 섹션
 ========================= */
 .pv-box {
   width: 100%;
-  margin-top: 30px;
-  padding-top: 30px;
+  margin-top: 24px;
+  padding-top: 24px;
   border-top: 1px solid var(--color-main-line);
 }
 
 .pv-box__head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
+  margin: 0 0 16px;
 }
 
+/* 섹션 타이틀 (PlantMain의 동그란 점 디자인 적용) */
 .pv-h2 {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--color-bg-main);
   margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-bg-main);
+  position: relative;
+  padding-left: 16px;
+}
+.pv-h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-focus, #e2874a);
 }
 
 
@@ -222,91 +201,40 @@
 /* =========================
    아이콘 스펙 영역 (SPEC GRID)
 ========================= */
-.pv-spec {
-  width: 100%;
-  margin-top: 30px;
-}
-
+.pv-spec { width: 100%; margin-top: 30px; }
 .pv-spec__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;
 }
 
 .spec-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px;
-  border: 1px solid var(--color-main-soft);
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex; align-items: center; gap: 14px; padding: 16px;
+  border: 1px solid var(--color-main-soft); border-radius: 12px; background: #ffffff;
 }
-
-.spec-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(107, 123, 97, 0.08);
-}
-
 .spec-ico {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-main-soft);
-  color: var(--color-bg-main);
-  font-size: 20px;
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--color-main-soft); color: var(--color-bg-main); font-size: 20px;
 }
-
-.spec-k {
-  font-size: 12px;
-  color: var(--color-main-muted);
-  margin-bottom: 2px;
-}
-
-.spec-v {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-bg-main);
-}
+.spec-k { font-size: 12px; color: var(--color-main-muted); margin-bottom: 2px; }
+.spec-v { font-size: 15px; font-weight: 700; color: var(--color-bg-main); }
 
 
 /* =========================
    문화/가치 섹션 (ARTICLE)
 ========================= */
-.pv-article { 
-  width: 100%; 
-}
+.pv-article { width: 100%; }
 
 .pv-h3 {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-bg-main);
-  margin: 24px 0 8px;
-  display: flex;
-  align-items: center;
+  font-size: 16px; font-weight: 700; color: var(--color-bg-main);
+  margin: 24px 0 8px; display: flex; align-items: center;
 }
 .pv-h3::before {
-  content: "";
-  display: inline-block;
-  width: 4px;
-  height: 16px;
-  background: var(--color-focus, #e2874a);
-  border-radius: 2px;
-  margin-right: 8px;
+  content: ""; display: inline-block; width: 4px; height: 16px;
+  background: var(--color-focus, #e2874a); border-radius: 2px; margin-right: 8px;
 }
-
 .pv-p {
-  font-size: 15px;
-  line-height: 1.8;
-  white-space: pre-line;
-  color: var(--color-text-main);
-  margin: 0 0 16px 12px; /* 들여쓰기 느낌 */
-  opacity: 0.9;
+  font-size: 15px; line-height: 1.8; white-space: pre-line;
+  color: var(--color-text-main); margin: 0 0 16px 12px; opacity: 0.9;
 }
 
 
@@ -314,118 +242,41 @@
    연관 식물 (SIMILAR)
 ========================= */
 .pv-sim-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;
 }
 
 .pv-sim-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  text-decoration: none;
-  color: inherit;
-  border: 1px solid var(--color-main-soft);
-  border-radius: 12px;
-  background: #ffffff;
-  padding: 10px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit;
+  border: 1px solid var(--color-main-soft); border-radius: 12px; background: #ffffff; padding: 10px;
 }
-
-.pv-sim-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(107, 123, 97, 0.1);
-  border-color: var(--color-main-line);
-}
-
 .pv-sim-thumb {
-  width: 72px;
-  height: 72px;
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--color-main-soft);
-  flex-shrink: 0;
+  width: 72px; height: 72px; border-radius: 8px; overflow: hidden; background: var(--color-main-soft); flex-shrink: 0;
 }
-
-.pv-sim-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.pv-sim-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.pv-sim-name { 
-  font-weight: 800; 
-  font-size: 15px; 
-  color: var(--color-bg-main);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.pv-sim-sub { 
-  font-size: 13px; 
-  color: var(--color-main-muted); 
-  margin-top: 4px; 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.pv-sim-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pv-sim-body { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+.pv-sim-name { font-weight: 800; font-size: 15px; color: var(--color-bg-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pv-sim-sub { font-size: 13px; color: var(--color-main-muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 
 /* =========================
-   EMPTY STATE (데이터 없음)
+   EMPTY STATE (데이터 없음) - 내부 요소만 남김
 ========================= */
-.pv-empty {
-  width: 100%;
-  padding: 60px 20px;
-  text-align: center;
-  background: #ffffff;
-  border: 1px dashed var(--color-main-line);
-  border-radius: var(--radius-lg, 16px);
-}
-
-.pv-empty h2 {
-  font-size: 20px;
-  color: var(--color-bg-main);
-  margin-bottom: 10px;
-}
-
-.pv-empty p {
-  font-size: 14px;
-  color: var(--color-main-muted);
-  margin-bottom: 24px;
-}
+.pv-empty h2 { font-size: 20px; color: var(--color-bg-main); margin-bottom: 10px; }
+.pv-empty p { font-size: 14px; color: var(--color-main-muted); margin-bottom: 24px; }
 
 
 /* =========================
    RESPONSIVE
 ========================= */
 @media (max-width: 1024px) {
-  .pv-hero { 
-    grid-template-columns: 1fr; 
-    gap: 24px;
-  }
-  .pv-hero__right {
-    justify-content: flex-start;
-  }
-  .pv-thumb { 
-    max-width: 240px; 
-  }
-  .pv-sim-grid { 
-    grid-template-columns: repeat(2, minmax(0, 1fr)); 
-  }
+  .pv-hero { grid-template-columns: 1fr; gap: 24px; }
+  .pv-hero__right { justify-content: flex-start; }
+  .pv-thumb { max-width: 240px; }
+  .pv-sim-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 767px) {
-  .pv-title { font-size: 28px; }
+  .pv-title { font-size: 24px; }
   .pv-desc { font-size: 14px; }
   .pv-thumb { max-width: 100%; }
   

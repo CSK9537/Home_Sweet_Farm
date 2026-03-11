@@ -167,7 +167,7 @@ public class CommunityFormController {
         board.setContent(contentHtml);
 
         int boardId = formService.write(board, uid, tempKey, attachFiles, tagsCsv);
-        return "redirect:" + req.getContextPath() + "/community/view?board_id=" + boardId;
+        return "redirect:" + req.getContextPath() + "/qna/view?board_id=" + boardId;
     }
 
     @PostMapping("/edit")

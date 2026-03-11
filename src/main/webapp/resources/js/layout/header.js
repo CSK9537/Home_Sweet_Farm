@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const q = safeTrim(qInput ? qInput.value : "");
         const params = new URLSearchParams();
         if (q) params.set("q", q);
-        if (!(q == "" || q == null || q.length < 2)) window.location.href = "/search?" + params.toString();
+        if (!(q == "" || q == null || q.length < 2)) window.location.href = "/searchResult";
         qInput.blur();
       }
     });

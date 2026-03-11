@@ -311,9 +311,8 @@ public class UserController {
 	}
 	
 	
-	/*
-	 * 마이페이지, 프로필
-	 * */
+	
+	// 마이페이지
 	@GetMapping("/mypage")
 	public String moveMypage(HttpSession session, Model model) {
 
@@ -324,7 +323,7 @@ public class UserController {
 		}
 		int user_id = loginUser.getUser_id();
 		
-		MypageProfileDTO profileUser = uservice.getProfile(user_id);
+		MypageProfileDTO profileUser = uservice.getProfileInfo(user_id);
 		
 		boolean isOwner = (loginUser != null);
 		model.addAttribute("isOwner", isOwner);
@@ -332,15 +331,19 @@ public class UserController {
 	    return "user/user_myPage";
 	}
 
-	
-	
+	// 프로필 데이터 가져오기
+	@ResponseBody
+	@PostMapping(value = "/profileData", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<MypageProfileDTO> profileData(@RequestParam("userId") String user_id) {
+		MypageProfileDTO profileUser = uservice.getProfileInfo(Integer.parseInt(user_id));
+		return ResponseEntity.ok(profileUser);
+	}
 	
 	//2)공개형 프로필
 	@GetMapping("/profile/{userId}") //url예시: http://localhost:8081/user/profile/65
 	public String publicProfile(@PathVariable int userId, Model model) {
-		 UserDTO profile =
-		uservice.selectPublicProfile(userId);
-		 model.addAttribute("profile", profile);
+		UserDTO profile = uservice.selectPublicProfile(userId);
+		model.addAttribute("profile", profile);
 		return "userTest/publicProfile";
-		}
+	}
 }

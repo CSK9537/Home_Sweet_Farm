@@ -1,8 +1,11 @@
 package org.joonzis.qna.controller;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,8 +14,10 @@ import javax.servlet.http.HttpSession;
 import org.joonzis.community.dto.UploadResponseDTO;
 import org.joonzis.community.service.CommunityFormService;
 import org.joonzis.community.vo.BoardVO;
+import org.joonzis.qna.dto.QnaViewDTO;
 import org.joonzis.qna.service.QnaListService;
 import org.joonzis.qna.service.QnaMainService;
+import org.joonzis.qna.service.QnaViewService;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -41,29 +46,26 @@ public class QnaController {
     
     private final QnaMainService qnaMainService;
     private final QnaListService qnaListService;
+    private final QnaViewService qnaViewService;
     private final CommunityFormService formService;
 
     @RequestMapping("")
     public String qnaMain(
             HttpServletRequest request,
             Model model,
-            Integer faqPage,
-            Integer waitingPage,
-            String waitingSort
+            @RequestParam(value = "faqPage", required = false) Integer faqPage,
+            @RequestParam(value = "waitingPage", required = false) Integer waitingPage,
+            @RequestParam(value = "waitingSort", required = false) String waitingSort
     ) {
         int fp = (faqPage == null || faqPage < 1) ? 1 : faqPage;
         int wp = (waitingPage == null || waitingPage < 1) ? 1 : waitingPage;
         String sort = (waitingSort == null || waitingSort.trim().isEmpty()) ? "recent" : waitingSort;
 
-        String ctx = request.getContextPath();
-
-        // QnaMain.jsp에서 사용하는 모델 키들 그대로 세팅
-        qnaMainService.fillQnaMainModel(model, fp, wp, sort, ctx);
-
+        qnaMainService.fillQnaMainModel(model, fp, wp, sort, request.getContextPath());
         return "qna/QnaMain";
     }
 
-    @RequestMapping("/QnaList")
+    @GetMapping("/QnaList")
     public String qnaList(
             Model model,
             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -75,15 +77,12 @@ public class QnaController {
         qnaListService.fillQnaListModel(model, page, category, query, sortKey, sortDir);
         return "qna/QnaList";
     }
-    
-    private Integer loginUserId(HttpSession session) {
-    	UserVO user = (UserVO)session.getAttribute("loginUser");
-    	int user_id = 0;
-    	if(user == null) return null;
-    	user_id = user.getUser_id();
-    	return user_id;
+
+    private int loginUserId(HttpSession session) {
+        UserVO user = (UserVO) session.getAttribute("loginUser");
+        return (user != null) ? user.getUser_id() : -1;
     }
-    
+
     @GetMapping("/ask")
     public String qnaForm(
     		@RequestParam(defaultValue = "insert") String mode,
@@ -92,136 +91,161 @@ public class QnaController {
     		HttpSession session,
     		Model model) {
     	
-    	// 임시 로그인 확인
-    	Integer uid = loginUserId(session);
-    	if(uid == null) return "redirect:/user/login";
-    	
-    	String tempKey = UUID.randomUUID().toString();
-    	model.addAttribute("mode", mode);
-    	model.addAttribute("tempKey",tempKey);
-    	
-    	BoardVO question = null;
-    	boolean isOwner = false;
-    	if("edit".equalsIgnoreCase(mode)) {
-    		if(board_id == null || board_id.equals("")) return "redirect:/qna";
-    		
-    		// 질문 글 데이터 가져오기
-    		question = formService.getBoardById(board_id);
-    		// 작성자인지 확인 여부
-    		isOwner = formService.isOwner(board_id, uid);
-    		
-    		model.addAttribute("question", question);
-    		model.addAttribute("isOwner", isOwner);
-    		boardType = question.getBoard_type();
+    	int user_id = loginUserId(session);
+    	if(user_id == -1) {
+    		return "redirect:/user/loginView";
     	}
+    	
+    	if(mode.equals("update") && board_id != null) {
+    		BoardVO board = formService.getBoardById(board_id);
+    		model.addAttribute("board", board);
+    	}
+    	
+    	model.addAttribute("mode", mode);
     	model.addAttribute("boardType", boardType);
+    	model.addAttribute("tempKey", UUID.randomUUID().toString());
+    	
     	return "qna/QnaForm";
     }
-    
+
     // ====== 선업로드 ======
-    @PostMapping( 
-    		value= "/upload",
-    		produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> upload(
+    public ResponseEntity<UploadResponseDTO> upload(
             @RequestParam("file") MultipartFile file,
             @RequestParam("tempKey") String tempKey,
-            @RequestParam("boardType") String boardType,
-            HttpServletRequest req) {
-
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("파일이 비어있습니다.");
-        }
-        if (tempKey == null || tempKey.isBlank()) {
-            return ResponseEntity.badRequest().body("tempKey가 필요합니다.");
-        }
-
-        try {
-            UploadResponseDTO dto = formService.uploadTempFile(file, tempKey, boardType);
-            String fullUrl = req.getContextPath() + dto.getUrl();
-            return ResponseEntity.ok(new UploadResponseDTO(fullUrl, dto.getSavedName(), dto.getSubDir()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("업로드 실패");
-        }
+            @RequestParam("boardType") String boardType) {
+        UploadResponseDTO res = formService.uploadTempFile(file, tempKey, boardType);
+        return ResponseEntity.ok(res);
     }
 
     // ====== 파일 스트리밍 ======
     @GetMapping("/file")
+    @ResponseBody
     public ResponseEntity<Resource> file(
             @RequestParam("subDir") String subDir,
-            @RequestParam("savedName") String savedName) throws IOException {
+            @RequestParam("savedName") String savedName) {
+        try {
+            Path path = Paths.get(uploadRoot, subDir, savedName);
+            Resource resource = new UrlResource(path.toUri());
 
-        if (!savedName.matches("[a-zA-Z0-9._-]+")) {
-            return ResponseEntity.badRequest().build();
+            if (!resource.exists() || !resource.isReadable()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            String contentType = MediaTypeFactory.getMediaType(resource).orElse(MediaType.APPLICATION_OCTET_STREAM).toString();
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(resource);
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
-        Path basePath = Paths.get(uploadRoot, "board_upload").toAbsolutePath().normalize();
-        Path filePath = basePath.resolve(subDir).resolve(savedName).normalize();
-
-        if (!filePath.startsWith(basePath)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        Resource resource = new UrlResource(filePath.toUri());
-        if (!resource.exists()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok()
-                .contentType(MediaTypeFactory.getMediaType(resource).orElse(MediaType.APPLICATION_OCTET_STREAM))
-                .body(resource);
     }
 
     // ====== 해시태그 추천 ======
-    @GetMapping("/hashtag/suggest")
-    public ResponseEntity<java.util.List<String>> suggest(
+    @GetMapping(value = "/suggest-tags", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public List<String> suggest(
             @RequestParam("q") String q,
             @RequestParam(defaultValue = "10") int limit
     ) {
-        return ResponseEntity.ok(formService.suggestHashtags(q, limit));
+        return formService.suggestHashtags(q, limit);
     }
-    
+
     // ====== 글 등록 ======
     @PostMapping("/write")
     public String write(BoardVO board,
                         @RequestParam("tempKey") String tempKey,
-                        @RequestParam(value = "attachFiles", required = false) MultipartFile[] attachFiles,
-                        @RequestParam(value = "tagsHidden", required = false) String tagsCsv,
+                        @RequestParam(value="tagNames", required=false) String tagNames,
                         @RequestParam("contentHtml") String contentHtml,
                         HttpSession session,
                         HttpServletRequest req) {
+        int userId = loginUserId(session);
+        if (userId == -1) return "redirect:/user/loginView";
 
-        Integer uid = loginUserId(session);
-        if (uid == null) return "redirect:/user/login";
-
+        board.setUser_id(userId);
         board.setContent(contentHtml);
 
-        int boardId = formService.write(board, uid, tempKey, attachFiles, tagsCsv);
-        return "redirect:" + req.getContextPath() + "/qna/detail?board_id=" + boardId;
+        formService.write(board, userId, tempKey, null, tagNames);
+        return "redirect:/qna/QnaList";
     }
 
     // ====== 글 수정 ======
     @PostMapping("/edit")
     public String edit(BoardVO board,
                        @RequestParam("tempKey") String tempKey,
-                       @RequestParam(value = "attachFiles", required = false) MultipartFile[] attachFiles,
-                       @RequestParam(value = "tagsHidden", required = false) String tagsCsv,
+                       @RequestParam(value="tagNames", required=false) String tagNames,
                        @RequestParam("contentHtml") String contentHtml,
                        HttpSession session,
                        HttpServletRequest req) {
+        int userId = loginUserId(session);
+        if (userId == -1) return "redirect:/user/loginView";
 
-        Integer uid = loginUserId(session);
-        if (uid == null) return "redirect:/user/login";
-
+        board.setUser_id(userId);
         board.setContent(contentHtml);
 
-        int boardId = formService.edit(board, uid, tempKey, attachFiles, tagsCsv);
-        return "redirect:" + req.getContextPath() + "/qna/detail?board_id=" + boardId;
+        formService.edit(board, userId, tempKey, null, tagNames);
+        return "redirect:/qna/detail?qna_id=" + board.getBoard_id();
+    }
+
+    @GetMapping("/people")
+    public String qnaPeople(HttpServletRequest request, Model model) {
+        Map<String, Object> result = qnaMainService.getActiveUsersJson(1, request.getContextPath());
+        model.addAllAttributes(result);
+        return "qna/QnaPeople";
+    }
+
+    @GetMapping(value = "/people/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getPeopleList(
+            @RequestParam(defaultValue = "1") int page,
+            HttpServletRequest request) {
+        String ctx = request.getContextPath();
+        Map<String, Object> result = qnaMainService.getActiveUsersJson(page, ctx);
+        return ResponseEntity.ok(result);
     }
     
     // ===== 질문글 상세 보기 ======
     @GetMapping("/detail")
-    public String qnaDetail() {
-    	return "qna/QnaView";
+    public String qnaDetail(@RequestParam("qna_id") int qna_id, Model model, HttpSession session) {
+        QnaViewDTO qnaView = qnaViewService.getQnaView(qna_id);
+        
+        if (qnaView == null) {
+            return "redirect:/qna/QnaList";
+        }
+        
+        model.addAttribute("board", qnaView.getBoard());
+        model.addAttribute("answerList", qnaView.getAnswerList());
+        model.addAttribute("replyList", qnaView.getReplyList());
+        
+        // 로그인 정보 (JSP에서 사용 예정)
+        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+        if (loginUser != null) {
+            model.addAttribute("loginUserId", loginUser.getUser_id());
+        }
+        
+        return "qna/QnaView";
+    }
+    
+    // =====답변 달기=====
+    @PostMapping(
+    		value="/AnswerWrite",
+    		produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> answerAdd(
+    		HttpSession session,
+    		@RequestParam String content,
+    		@RequestParam int parentId){
+    	UserVO user = (UserVO)session.getAttribute("loginUser");
+    	if(user == null) return new ResponseEntity<String>("need login",HttpStatus.BAD_GATEWAY);
+    	int uid = user.getUser_id();
+    	String title = "QnaAnswer" + UUID.randomUUID().toString();
+    	
+    	int result = qnaViewService.registerAnswer(uid, title, content, parentId);
+    	if(result > 0) {
+    		return new ResponseEntity<String>("success", HttpStatus.OK);
+    	} else {
+    		return new ResponseEntity<String>("fail", HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
     }
 }

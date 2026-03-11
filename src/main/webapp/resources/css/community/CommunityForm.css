@@ -2,20 +2,20 @@
    상단 헤더
 =============================== */
 .insert-head {
-  width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
   margin-bottom: 24px;
   padding-bottom: 16px;
   border-bottom: 2px solid var(--color-main-line);
 }
 
 .insert-title {
+  margin: 0;
+  color: var(--color-bg-main);
   font-size: 24px;
   font-weight: 800;
-  color: var(--color-bg-main);
-  margin: 0;
   letter-spacing: -0.02em;
 }
 
@@ -26,61 +26,26 @@
 
 /* ===============================
    버튼 (Button 공통)
-=============================== */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 44px;
-  padding: 0 24px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-}
-
-/* 등록 버튼 (Primary) */
-.btn--primary {
-  background: var(--color-bg-main);
-  color: #ffffff;
-}
-.btn--primary:hover {
-  background: #5a6851;
-  box-shadow: 0 4px 10px rgba(107, 123, 97, 0.2);
-  transform: translateY(-2px);
-}
-
-/* 취소 버튼 (Ghost) */
-.btn--ghost {
-  background: #ffffff;
-  color: var(--color-bg-main);
-  border-color: var(--color-main-line);
-}
-.btn--ghost:hover {
-  background: var(--color-main-soft);
-  border-color: var(--color-bg-main);
-  transform: translateY(-2px);
-}
-
+  ===============================
+  * .btn, .btn--primary, .btn--ghost 관련 코드는 
+  * globals.css의 [통합 버튼 시스템]으로 이관되어 안전하게 제거되었습니다. 
+*/
 
 /* ===============================
    경고 박스
 =============================== */
 .warn-box {
   width: 100%;
+  margin-bottom: 20px;
   padding: 16px;
   border: 1px dashed #d64040;
-  background: rgba(214, 64, 64, 0.05);
   border-radius: 12px;
+  background: rgba(214, 64, 64, 0.05);
   color: #d64040;
-  font-weight: 800;
   font-size: 14px;
-  margin-bottom: 20px;
+  font-weight: 800;
   text-align: center;
 }
-
 
 /* ===============================
    폼 영역
@@ -97,56 +62,31 @@
 
 .form-field { 
   width: 100%; 
+  margin-bottom: 24px; 
 }
 
 .label {
   display: block;
-  font-weight: 800;
-  font-size: 14px;
-  color: var(--color-bg-main);
   margin-bottom: 10px;
+  color: var(--color-bg-main);
+  font-size: 14px;
+  font-weight: 800;
 }
 
-/* 인풋 및 셀렉트 박스 */
-.input, .select {
-  width: 100%;
-  height: 48px;
-  border: 1px solid var(--color-main-line);
-  border-radius: 10px;
-  padding: 0 16px;
-  outline: none;
-  background: #ffffff;
-  transition: all 0.2s ease;
-  color: var(--color-text-main);
-  font-size: 15px;
-  box-sizing: border-box;
-  font-family: inherit;
-}
-.input::placeholder {
-  color: var(--color-main-muted);
-}
-.input:focus, .select:focus {
-  border-color: var(--color-bg-main);
-  box-shadow: 0 0 0 3px var(--color-main-soft);
-}
-
-.select:disabled,
-.input:disabled {
+/* * input, select의 기본 테두리, 배경, 포커스 등은 globals.css에서 처리됩니다.
+  * Form 파일 고유의 disabled 상태만 남겨 유지합니다.
+*/
+.input:disabled,
+.select:disabled {
   background: var(--color-bg-card);
   color: var(--color-main-muted);
   cursor: not-allowed;
 }
 
-/* 파일 업로드 인풋 특화 조정 */
-input[type="file"].input {
-  padding: 10px 16px; /* 파일 버튼과의 정렬을 위해 패딩 조절 */
-  cursor: pointer;
-}
-
 .hint {
-  font-size: 12px;
-  color: var(--color-main-muted);
   margin-top: 8px;
+  color: var(--color-main-muted);
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -155,9 +95,9 @@ input[type="file"].input {
    에디터 
 =============================== */
 .editor-box {
+  overflow: hidden;
   border: 1px solid var(--color-main-line);
   border-radius: 12px;
-  overflow: hidden;
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
@@ -169,19 +109,21 @@ input[type="file"].input {
 
 #editor .hsf-img-wrap {
   display: inline-block;
-  max-width: 100%;
-  resize: both; 
   overflow: auto; 
+  max-width: 100%;
+  padding: 4px;
   border: 1px dashed var(--color-main-line);
   border-radius: 10px;
-  padding: 4px;
   background: #ffffff;
   vertical-align: top;
+  resize: both; 
   transition: border-color 0.2s;
 }
+
 #editor .hsf-img-wrap:hover {
   border-color: var(--color-bg-main);
 }
+
 #editor .hsf-img-wrap img.hsf-img {
   display: block;
   width: 100%;
@@ -195,16 +137,16 @@ input[type="file"].input {
 =============================== */
 .file-list {
   margin-top: 12px;
+  padding: 12px 16px;
   border: 1px solid var(--color-main-soft);
   border-radius: 10px;
-  padding: 12px 16px;
   background: var(--color-bg-card);
 }
 
 .file-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 8px 0;
   border-bottom: 1px dashed var(--color-main-line);
 }
@@ -213,17 +155,18 @@ input[type="file"].input {
 }
 
 .file-item__name {
+  color: var(--color-text-main);
   font-size: 13px;
   font-weight: 700;
-  color: var(--color-text-main);
 }
+
 .file-item__tag {
-  font-size: 11px;
-  font-weight: 800;
   padding: 4px 10px;
   border-radius: 999px;
   background: var(--color-main-soft);
   color: var(--color-bg-main);
+  font-size: 11px;
+  font-weight: 800;
 }
 
 
@@ -237,39 +180,40 @@ input[type="file"].input {
 .tag-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
   margin-bottom: 12px;
+  gap: 8px;
 }
 
 .tag-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   padding: 6px 12px 6px 16px;
+  border: 1px solid var(--color-main-line);
   border-radius: 999px;
   background: var(--color-main-soft);
-  border: 1px solid var(--color-main-line);
-  font-weight: 700;
-  font-size: 13px;
   color: var(--color-bg-main);
+  font-size: 13px;
+  font-weight: 700;
+  gap: 6px;
 }
 
 .tag-del {
-  border: 0;
-  background: #ffffff;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
-  cursor: pointer;
-  line-height: 1;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: #ffffff;
   color: var(--color-bg-main);
-  transition: all 0.2s ease;
   font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
+
 .tag-del:hover {
   background: #d64040;
   color: #ffffff;
@@ -278,32 +222,34 @@ input[type="file"].input {
 /* 추천 박스 */
 .tag-suggest {
   position: absolute;
-  left: 0;
-  right: 0;
   top: 100%;
+  right: 0;
+  left: 0;
+  overflow: hidden;
   margin-top: 8px;
-  background: #ffffff;
   border: 1px solid var(--color-main-line);
   border-radius: 12px;
+  background: #ffffff;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  overflow: hidden;
   z-index: 100;
 }
 
 .tag-suggest-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 12px 16px;
-  cursor: pointer;
+  color: var(--color-text-main);
   font-size: 14px;
   font-weight: 700;
-  color: var(--color-text-main);
+  cursor: pointer;
   transition: background 0.15s ease;
 }
+
 .tag-suggest-item:not(:last-child) {
   border-bottom: 1px solid var(--color-main-soft);
 }
+
 .tag-suggest-item:hover {
   background: var(--color-main-soft);
   color: var(--color-bg-main);
@@ -316,6 +262,9 @@ input[type="file"].input {
   text-align: center;
 }
 
+/* ===============================
+   기타 파일 첨부 영역
+=============================== */
 .muted {
   color: var(--color-main-muted);
   font-size: 12px;
@@ -329,10 +278,17 @@ input[type="file"].input {
   font-size: 14px;
 }
 
+.input-file-area {
+  padding: 5px 5px 11px 11px;
+  border: 1px solid var(--color-main-line);
+  border-radius: 10px;
+  background: #ffffff;
+}
+
 .file-preview {
-  margin-top: 10px;
   display: flex;
   flex-direction: column;
+  margin-top: 10px;
   gap: 8px;
 }
 
@@ -341,8 +297,8 @@ input[type="file"].input {
   border: 1px solid #d8ddd2;
   border-radius: 10px;
   background: #fafcf8;
-  font-size: 14px;
   color: #2f332b;
+  font-size: 14px;
   line-height: 1.4;
 }
 
@@ -360,7 +316,7 @@ input[type="file"].input {
     gap: 16px;
   }
   .insert-actions {
-    width: 100%;
     justify-content: flex-end;
+    width: 100%;
   }
 }

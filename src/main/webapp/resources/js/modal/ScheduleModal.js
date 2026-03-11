@@ -378,7 +378,7 @@ function renderScheduleList(){
     var emoji = TYPE_EMOJI[ev.type] || "🗓️";
 
     li.innerHTML =
-      '<div><div class="cal-list__title">' + emoji + ' [' + ev.type + '] ' + ev.title + '</div></div>' +
+      '<div><div class="cal-list__title">' + emoji + ev.title + '</div></div>' +
       '<button class="cal-list__del" type="button">삭제</button>';
 
     li.querySelector(".cal-list__del").addEventListener("click", function(){

@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class MypageProfileDTO {
 	private int user_id;
 	private String profile;		// 프로필 사진명 (컬럼명은 profile_filename)
+	private String username;    // 아이디
 	private String nickname;	// 사용자 닉네임
 	private String gradeName;	// 등급명
 	private String name;		// 사용자의 실명
@@ -26,9 +27,9 @@ public class MypageProfileDTO {
 	private String email;		// 이메일 주소
 	private String address;		//주소
 	
-	private Integer totalAnswers;// 총 답변 수
-	private Integer totalViews;	// 총 조회수
-	private Integer acceptedAnswers;// 채택된 답변 수
+	private Integer totalAnswers;		// 총 답변 수
+	private Integer acceptedAnswers;	// 채택된 답변 수
+	private Integer totalAnswerLikes;	// 답변 좋아요 수
 	
 	private List<CommunityPostCardDTO> posts; // 최신 게시글
 	private List<CommunityPostCardDTO> quests; // 최신 질문글
