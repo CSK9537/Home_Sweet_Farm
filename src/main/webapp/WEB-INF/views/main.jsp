@@ -16,7 +16,7 @@
         <section class="hero">
         <h2 class="hero__title">
           	Home Sweet Farm 에 어서오세요.<br/>
-          	식물집사로 거듭나기 위한 정보들을 얻어가세요.
+          	식집사로 거듭나기 위한 정보들을 얻어가세요.
         </h2>
         
         <div class="hero__grid">
@@ -37,8 +37,9 @@
         <c:otherwise>
         <section class="hero">
 		  <h2 class="hero__title">
-			반갑습니다, ${sessionScope.loginUser.username}님!<br/>
-	      </h2>
+          	Home Sweet Farm 에 어서오세요.<br/>
+          	식집사로 거듭나기 위한 정보들을 얻어가세요.
+          </h2>
 	      <div class="hero__grid">
           <article class="hero-slide" aria-label="식물 사진 슬라이드">
             <div class="hero-slide__media">
@@ -46,8 +47,8 @@
             </div>
           </article>
 	      <a class="hero-cta" href="/myplant" role="button">
-	                   곧 어떤 식물의 일정이 다가올지<br/>
-	                   내 식물들의 대략적인 상태 출력<br/><br/>
+	                   나의 식물들이 걱정되시나요?<br/><br/>
+	        Home Sweet Farm<br/>관리 서비스가 있습니다.<br/><br/>
 	        <span class="hero-cta__link">나의 식물 관리하기</span>
 	      </a>
 	      </div>
