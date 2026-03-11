@@ -4,13 +4,22 @@
 .stats-modal__backdrop { position: absolute; inset: 0; }
 
 .stats-modal__panel {
-  position: relative; width: min(720px, calc(100vw - 40px)); height: min(880px, calc(100vh - 40px));
+  position: relative; width: min(720px, calc(100vw - 40px)); height: min(700px, calc(100vh - 40px));
   margin: 60px auto;
   overflow: hidden; display: flex; flex-direction: column;
 }
 
 .stats-modal__header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: var(--color-bg-card); border-bottom: 1px solid var(--color-main-soft); }
-.stats-modal__tabs { display: flex; gap: 10px; }
+.stats-modal__tabs { 
+  display: flex; 
+  align-items: center; /* 자식 요소들을 세로 중앙 정렬 */
+  gap: 10px; 
+}
+.stats-modal__title{ font-size: 18px; font-weight: 800; color: var(--color-bg-main); margin: 0; }
+.stats-modal__tabs .stats-modal__title {
+  margin-right: 16px; /* 버튼들과의 거리 조정 (원하는 만큼 숫자 조절 가능) */
+  margin-bottom: 0;
+}
 
 .stats-tab, .stats-modal__close { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 18px; border-radius: 999px; font-size: 14px; font-weight: 700; border: 1px solid transparent; cursor: pointer; background: #ffffff; transition: all 0.2s ease; }
 .stats-tab:active, .stats-modal__close:active { transform: translateY(1px); }
