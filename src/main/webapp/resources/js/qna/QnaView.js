@@ -244,7 +244,7 @@
     // parentId로 질문 ID를 전달 (Controller 파라미터명에 맞춤)
     var params = 'parentId=' + boardId + '&content=' + encodeURIComponent(content);
     xhr.send(params);
-    location.href = ctx + '/qna/detail/' + boardId;
+    location.href = ctx + '/qna/detail?qna_id=' + boardId;
   }
 
   // 댓글 등록
