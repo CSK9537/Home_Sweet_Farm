@@ -3,6 +3,8 @@ package org.joonzis.community.controller;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -184,5 +186,49 @@ public class CommunityFormController {
 
         int boardId = formService.edit(board, uid, tempKey, attachFiles, tagsCsv);
         return "redirect:" + req.getContextPath() + "/community/view?board_id=" + boardId;
+    }
+
+    @PostMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> delete(
+            @RequestParam("board_id") int boardId,
+            HttpSession session
+    ) {
+        Map<String, Object> res = new HashMap<>();
+        int uid = loginUserId(session);
+
+        if (uid <= 0) {
+            res.put("ok", false);
+            res.put("msg", "LOGIN_REQUIRED");
+            return ResponseEntity.ok(res);
+        }
+
+        try {
+            boolean deleted = formService.deleteBoard(boardId, uid);
+
+            if (!deleted) {
+                res.put("ok", false);
+                res.put("msg", "DELETE_FAILED");
+                return ResponseEntity.ok(res);
+            }
+
+            res.put("ok", true);
+            return ResponseEntity.ok(res);
+
+        } catch (SecurityException e) {
+            res.put("ok", false);
+            res.put("msg", "FORBIDDEN");
+            return ResponseEntity.ok(res);
+
+        } catch (IllegalArgumentException e) {
+            res.put("ok", false);
+            res.put("msg", "INVALID_REQUEST");
+            return ResponseEntity.ok(res);
+
+        } catch (Exception e) {
+            res.put("ok", false);
+            res.put("msg", "DELETE_FAILED");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+        }
     }
 }
