@@ -37,18 +37,31 @@
             </div>
             <c:choose>
               <c:when test="${not empty plantResults}">
-                <div class="search-result-grid">
-                  <c:forEach var="p" items="${plantResults}">
-                    <a href="/plant/info/${p.plant_name}" class="item-card">
-                      <div class="item-card__thumb"><img src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" /></div>
-                      <div class="item-card__body">
-                        <div class="item-card__title">${p.plant_name_kor}</div>
-                        <div class="item-card__sub">${p.plant_name}</div>
-                      </div>
-                    </a>
-                  </c:forEach>
-                </div>
-              </c:when>
+				  <div class="search-result-grid">
+				    <c:forEach var="p" items="${plantResults}">
+				      <div class="item-card plant-result-card">
+				        
+				        <div class="hover-area-wrapper">
+				          <div class="hover-area hover-area--left" onclick="location.href='/plant/info/${p.plant_name}'"></div>
+				          <div class="hover-area hover-area--right" onclick="location.href='/plant/guide/${p.plant_name}'"></div>
+				        </div>
+				        
+				        <div class="item-card__link">
+				          <div class="item-card__thumb">
+				            <img src="/plant/image/${p.plant_image}" alt="${p.plant_name_kor}" loading="lazy" />
+				            <span class="text left-text">백과사전</span>
+				            <span class="text right-text">가이드</span>
+				          </div>
+				          <div class="item-card__body">
+				            <div class="item-card__title">${p.plant_name_kor}</div>
+				            <div class="item-card__sub">${p.plant_name}</div>
+				          </div>
+				        </div>
+				        
+				      </div>
+				    </c:forEach>
+				  </div>
+				</c:when>
               <c:otherwise><div class="search-result-empty">일치하는 식물 정보가 없습니다.</div></c:otherwise>
             </c:choose>
           </section>

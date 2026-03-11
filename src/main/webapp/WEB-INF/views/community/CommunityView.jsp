@@ -260,10 +260,16 @@
                         data-writer-nick="${r.writer}">
 
                         <div class="cv-comment-left">
-                          <div class="cv-avatar cv-avatar-sm">
-                            <span class="cv-avatar-fallback"></span>
-                          </div>
-                        </div>
+						  <button type="button" class="cv-avatar cv-avatar-sm cv-avatar-btn" 
+						          onclick="GlobalProfileModal.open('${r.user_id}')" 
+						          aria-label="${r.writer} 프로필 보기" 
+						          title="${r.writer} 프로필 보기">
+						    <img src="${pageContext.request.contextPath}/user/getProfile?fileName=${not empty r.profile_filename ? r.profile_filename : 'default_profile.png'}"
+						         alt="${r.writer} 프로필 이미지"
+						         onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/resources/image/default_profile.png';"
+						         style="width:100%; height:100%; border-radius:50%; object-fit:cover;" />
+						  </button>
+						</div>
 
                         <div class="cv-comment-body">
                           <div class="cv-comment-head">

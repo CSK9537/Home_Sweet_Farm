@@ -21,7 +21,7 @@
 	
 	
 	<!-- 검색 결과 -->
-	<select id="searchPlantName" resultType="org.joonzis.plant.dto.SimplePlantDTO">
+    <select id="searchPlantName" resultType="org.joonzis.plant.dto.SimplePlantDTO">
 		SELECT 
 			PLANT_ID,
 			PLANT_NAME,
@@ -31,12 +31,11 @@
 		FROM 
 			tbl_plant
 		WHERE 
-			PLANT_NAME LIKE '%' || #{q} || '%' 
-			OR PLANT_NAME_KOR LIKE '%' || #{q} || '%'
+			LOWER(PLANT_NAME) LIKE '%' || LOWER(#{q}) || '%' 
+			OR LOWER(PLANT_NAME_KOR) LIKE '%' || LOWER(#{q}) || '%'
 		ORDER BY 
 			PLANT_SEARCHCOUNT DESC
 	</select>
-
 
 	<select id="searchProductName" resultType="org.joonzis.store.dto.ProductForListDTO">
 		SELECT 
@@ -54,11 +53,10 @@
 		FROM 
 			tbl_product p
 		WHERE 
-			p.PRODUCT_NAME LIKE '%' || #{q} || '%'
+			LOWER(p.PRODUCT_NAME) LIKE '%' || LOWER(#{q}) || '%'
 		ORDER BY 
 			p.PRODUCT_ID DESC
 	</select>
-
 
 	<sql id="commSelectBase">
 		SELECT 
@@ -94,13 +92,13 @@
 
 	<select id="searchCommTitle" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
 		<include refid="commSelectBase"/>
-		AND b.TITLE LIKE '%' || #{q} || '%'
+		AND LOWER(b.TITLE) LIKE '%' || LOWER(#{q}) || '%'
 		ORDER BY b.BOARD_ID DESC
 	</select>
 
 	<select id="searchCommContent" resultType="org.joonzis.community.dto.CommunityPostCardDTO">
 		<include refid="commSelectBase"/>
-		AND DBMS_LOB.INSTR(b.CONTENT, #{q}) &gt; 0
+		AND DBMS_LOB.INSTR(LOWER(b.CONTENT), LOWER(#{q})) &gt; 0
 		ORDER BY b.BOARD_ID DESC
 	</select>
 
@@ -109,12 +107,11 @@
 		AND b.USER_ID IN (
 			SELECT USER_ID 
 			FROM tbl_user 
-			WHERE NICKNAME LIKE '%' || #{q} || '%' 
-			   OR USERNAME LIKE '%' || #{q} || '%'
+			WHERE LOWER(NICKNAME) LIKE '%' || LOWER(#{q}) || '%' 
+			   OR LOWER(USERNAME) LIKE '%' || LOWER(#{q}) || '%'
 		)
 		ORDER BY b.BOARD_ID DESC
 	</select>
-
 
 	<sql id="qnaSelectBase">
 		SELECT 
@@ -134,13 +131,13 @@
 
 	<select id="searchQnaTitle" resultType="org.joonzis.qna.dto.QnaFaqDTO">
 		<include refid="qnaSelectBase"/>
-		AND b.TITLE LIKE '%' || #{q} || '%'
+		AND LOWER(b.TITLE) LIKE '%' || LOWER(#{q}) || '%'
 		ORDER BY b.BOARD_ID DESC
 	</select>
 
 	<select id="searchQnaContent" resultType="org.joonzis.qna.dto.QnaFaqDTO">
 		<include refid="qnaSelectBase"/>
-		AND DBMS_LOB.INSTR(b.CONTENT, #{q}) &gt; 0
+		AND DBMS_LOB.INSTR(LOWER(b.CONTENT), LOWER(#{q})) &gt; 0
 		ORDER BY b.BOARD_ID DESC
 	</select>
 
@@ -149,8 +146,8 @@
 		AND b.USER_ID IN (
 			SELECT USER_ID 
 			FROM tbl_user 
-			WHERE NICKNAME LIKE '%' || #{q} || '%' 
-			   OR USERNAME LIKE '%' || #{q} || '%'
+			WHERE LOWER(NICKNAME) LIKE '%' || LOWER(#{q}) || '%' 
+			   OR LOWER(USERNAME) LIKE '%' || LOWER(#{q}) || '%'
 		)
 		ORDER BY b.BOARD_ID DESC
 	</select>

@@ -180,8 +180,13 @@
 
 /* 답글(대댓글) 영역 */
 .cv-replies { margin-top: 16px; padding-left: 16px; border-left: 2px solid var(--color-main-soft); }
-.cv-reply-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; gap: 12px; }
-.cv-reply-item { display: flex; margin-top: 12px; }
+.cv-reply-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.cv-reply-item { 
+  display: flex; 
+  flex-direction: column; 
+  padding: 12px 0; 
+  border-bottom: 1px dotted var(--color-main-line); 
+}
 .cv-reply-item[data-ui-level="1"] { margin-left: 0; }
 .cv-reply-item[data-ui-level="2"] { margin-left: 24px; }
 .cv-reply-item[data-ui-level="3"] { margin-left: 48px; }
@@ -193,6 +198,69 @@
 
 /* cv-input (globals.css Form 뼈대 통합, 고유 사이즈만 유지) */
 .cv-input { flex: 1; height: 40px; border-radius: 8px; }
+
+.cv-reply-item:last-child { border-bottom: none; }
+
+/* 대댓글 상단 (프로필 + 닉네임 + 날짜) */
+.cv-reply-head { 
+  display: flex; 
+  justify-content: space-between; /* 왼쪽(프로필)과 오른쪽(날짜) 양끝 배치 */
+  align-items: flex-start; 
+  margin-bottom: 6px; 
+}
+
+/* 왼쪽 프로필과 닉네임 묶음 */
+.cv-reply-head-left {
+  display: flex;
+  align-items: center;
+}
+
+/* 대댓글 프로필 이미지 버튼 */
+.cv-reply-avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-right: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.cv-reply-avatar-btn img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  vertical-align: middle;
+  border: 1px solid var(--color-main-soft);
+  transition: box-shadow 0.2s;
+}
+.cv-reply-avatar-btn:hover img {
+  box-shadow: 0 0 0 2px rgba(107, 123, 97, 0.15); /* 기존 테마 연동 */
+}
+
+/* 대댓글 내 닉네임 폰트 조정 */
+.cv-reply-head .cv-nick { font-size: 13px; font-weight: 700; }
+
+/* 대댓글 본문 및 날짜 (프로필 이미지 너비만큼 들여쓰기) */
+.cv-reply-content { 
+  padding-left: 40px; /* 이미지 너비 32px + 여백 8px */
+}
+.cv-reply-content p { 
+  margin: 0 0 4px 0; 
+  font-size: 14px; 
+  color: var(--color-text-main); 
+  line-height: 1.5; 
+}
+
+/* 대댓글 날짜 (우측 정렬용) */
+.cv-reply-date { 
+  color: var(--color-main-muted); 
+  font-size: 12px; 
+  white-space: nowrap; /* 날짜가 좁아져도 줄바꿈되지 않게 방지 */
+  margin-top: 4px; /* 닉네임과 수직 위치를 살짝 맞추기 위한 여백 */
+}
 
 /* =========================
    팝업 메뉴

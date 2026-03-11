@@ -159,6 +159,9 @@
 
   var activeUser = null;
   var activeUserPop = null;
+  var activeUserPopWrap = null; // 유저 팝업의 원래 부모 기억용
+  var activeMorePop = null;     // 더보기 팝업 기억용
+  var activeMorePopWrap = null; // 더보기 팝업의 원래 부모 기억용
 
   var prevId =
     safeInt($('#prev_id') && $('#prev_id').value) ||
@@ -227,12 +230,39 @@
     var pop = wrap.querySelector('.js-inline-user-pop');
     if (!pop) return;
 
-    closeUserPop();
+    closeUserPop(); // 열려있는 건 닫고 원래 자리로 복구
 
     activeUser = readUserFromTrigger(triggerEl);
     activeUserPop = pop;
+    activeUserPopWrap = wrap;
 
+    // 1. 스크롤 영역에 잘리지 않도록 body의 맨 끝으로 임시 이동
+    document.body.appendChild(pop);
+
+    // 2. 높이 계산을 위해 잠깐 보이게 처리
     pop.style.display = 'block';
+    pop.style.position = 'absolute';
+    pop.style.zIndex = '99999';
+    pop.style.margin = '0';
+    
+    // 가로 길이
+    pop.style.setProperty('min-width', '130px', 'important');
+    pop.style.setProperty('width', '130px', 'important');
+
+    // 3. 문서 전체 기준의 절대 좌표 계산
+    var rect = triggerEl.getBoundingClientRect();
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    var popHeight = pop.offsetHeight || 160;
+
+    // 화면 바닥에 닿을 것 같으면 위로 열림
+    if (rect.bottom + popHeight > window.innerHeight) {
+      pop.style.top = (rect.top + scrollTop - popHeight - 8) + 'px';
+    } else {
+      pop.style.top = (rect.bottom + scrollTop + 8) + 'px';
+    }
+    pop.style.left = (rect.left + scrollLeft) + 'px';
+
     pop.classList.add('is-open');
   }
 
@@ -240,9 +270,13 @@
     if (activeUserPop) {
       activeUserPop.classList.remove('is-open');
       activeUserPop.style.display = 'none';
+      // 💡 닫을 때는 원래 있던 HTML 요소 안으로 다시 쏙 넣어줌
+      if (activeUserPopWrap) {
+        activeUserPopWrap.appendChild(activeUserPop);
+      }
     }
-
     activeUserPop = null;
+    activeUserPopWrap = null;
     activeUser = null;
   }
 
@@ -284,35 +318,54 @@
    * ========================= */
 
   function closeAllMoreMenus() {
-    $all('.moreMenu.is-open, .cv-more-menu.is-open, .js-more-menu-panel.is-open, .js-more-pop')
-      .forEach(function (el) {
-        el.classList.remove('is-open');
-        el.style.display = 'none';
-      });
+    if (activeMorePop) {
+      activeMorePop.classList.remove('is-open');
+      activeMorePop.style.display = 'none';
+      if (activeMorePopWrap) {
+        activeMorePopWrap.appendChild(activeMorePop);
+      }
+    }
+    activeMorePop = null;
+    activeMorePopWrap = null;
   }
 
   function toggleMoreMenu(btnEl) {
     var item = btnEl.closest('.cv-comment-item, li');
     if (!item) return;
 
+    // 이미 body로 이동해 있다면 activeMorePop에서 찾고, 아니면 요소 안에서 찾음
     var menu = item.querySelector('.js-more-pop');
+    if (!menu && activeMorePopWrap === item) menu = activeMorePop;
     if (!menu) return;
 
-    var isOpen = menu.style.display === 'block';
+    var isOpen = menu.classList.contains('is-open');
 
     closeAllMoreMenus();
+    closeUserPop();
 
     if (!isOpen) {
+      activeMorePop = menu;
+      activeMorePopWrap = item;
+
+      document.body.appendChild(menu);
       menu.style.display = 'block';
-      menu.classList.add('is-open');
+      menu.style.position = 'absolute';
+      menu.style.zIndex = '99999';
 
       var rect = btnEl.getBoundingClientRect();
       var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+      var menuHeight = menu.offsetHeight || 120;
 
-      menu.style.position = 'absolute';
-      menu.style.top = (rect.bottom + scrollTop + 8) + 'px';
-      menu.style.left = (rect.left + scrollLeft) + 'px';
+      if (rect.bottom + menuHeight > window.innerHeight) {
+        menu.style.top = (rect.top + scrollTop - menuHeight - 8) + 'px';
+      } else {
+        menu.style.top = (rect.bottom + scrollTop + 8) + 'px';
+      }
+      // 더보기 메뉴는 버튼의 우측 정렬
+      menu.style.left = (rect.right + scrollLeft - menu.offsetWidth) + 'px';
+      
+      menu.classList.add('is-open');
     }
   }
 
@@ -529,25 +582,72 @@
           var html = '';
           if (data && data.length > 0) {
             data.forEach(function (reply) {
-              var regDate = new Date(reply.reg_date).toLocaleDateString();
-              var writerName = reply.writer_name || '익명';
-              var profileImgTag = '';
-
-              // 프로필 이미지 처리
-              if (reply.profile_filename) {
-                var imgSrc = ctx + '/user/getProfile?fileName=' + encodeURIComponent(reply.profile_filename);
-                profileImgTag = '<img src="' + imgSrc + '" style="width:30px; height:30px; border-radius:50%; vertical-align:middle; margin-right:5px; object-fit:cover;">';
+              // 날짜 포맷팅 (YYYY.MM.DD HH:mm)
+              var rd = reply.reg_date;
+              var formattedDate = '';
+              
+              if (Array.isArray(rd)) {
+                // 백엔드에서 배열 형식 [년, 월, 일, 시, 분, 초] 로 넘어올 때
+                var y = rd[0];
+                var m = String(rd[1]).padStart(2, '0');
+                var d = String(rd[2]).padStart(2, '0');
+                var h = String(rd[3] || 0).padStart(2, '0'); // 시, 분이 없을 경우 0으로 처리
+                var min = String(rd[4] || 0).padStart(2, '0');
+                formattedDate = y + '.' + m + '.' + d + ' ' + h + ':' + min;
               } else {
-                profileImgTag = '<div style="width:30px; height:30px; border-radius:50%; background:#ddd; display:inline-block; vertical-align:middle; margin-right:5px;"></div>';
+                // 백엔드에서 문자열이나 타임스탬프로 넘어올 때
+                var dObj = new Date(rd);
+                var y = dObj.getFullYear();
+                var m = String(dObj.getMonth() + 1).padStart(2, '0');
+                var d = String(dObj.getDate()).padStart(2, '0');
+                var h = String(dObj.getHours()).padStart(2, '0');
+                var min = String(dObj.getMinutes()).padStart(2, '0');
+                formattedDate = y + '.' + m + '.' + d + ' ' + h + ':' + min;
               }
+              
+              // 1. 사용자 ID와 닉네임 변수 세팅
+              var userId = reply.user_id || '';
+              var writerName = reply.writer || reply.writer_name || '익명';
 
-              html += '<li class="cv-reply-item" style="padding:8px 0; border-bottom:1px dotted #eee; list-style:none;">';
-              html += '  <div class="cv-reply-body">';
-              html += '    ' + profileImgTag;
-              html += '    <strong style="font-size:13px;">' + writerName + '</strong>';
-              html += '    <p style="margin:5px 0 5px 35px; font-size:14px; color:#444;">' + reply.content + '</p>';
-              html += '    <small style="margin-left:35px; color:#999;">' + regDate + '</small>';
-              html += '  </div>';
+              // 2. 프로필 이미지
+              var imgSrc = reply.profile_filename
+                ? ctx + '/user/getProfile?fileName=' + encodeURIComponent(reply.profile_filename)
+                : ctx + '/resources/image/default_profile.png';
+
+              var profileImgTag =
+                '<button type="button" class="cv-reply-avatar-btn" onclick="GlobalProfileModal.open(\'' + userId + '\')" title="' + writerName + ' 프로필 보기">' +
+                '  <img src="' + imgSrc + '" alt="' + writerName + ' 프로필">' +
+                '</button>';
+
+              // 3. 닉네임 영역
+              var nicknameHtml =
+                '<div class="cv-user-pop-wrap">' +
+                '  <a href="javascript:void(0)" class="js-user-trigger cv-nick" data-user_id="' + userId + '" data-nickname="' + writerName + '">' + writerName + '</a>' +
+                '  <div class="cv-pop cv-user-pop js-inline-user-pop" style="display:none;">' +
+                '    <button type="button" class="cv-pop-item" data-action="boardView">게시글보기</button>' +
+                '    <button type="button" class="cv-pop-item" data-action="chat">채팅하기</button>' +
+                '    <button type="button" class="cv-pop-item" data-action="report">프로필 신고하기</button>' +
+                '    <button type="button" class="cv-pop-item cv-pop-danger" data-action="block">차단하기</button>' +
+                '  </div>' +
+                '</div>';
+
+                // 4. 최종 HTML 조립
+                html += '<li class="cv-reply-item">';
+                
+                // 상단 영역: 왼쪽(프로필+닉네임) / 오른쪽(날짜)
+                html += '  <div class="cv-reply-head">';
+                html += '    <div class="cv-reply-head-left">';
+                html += '      ' + profileImgTag;
+                html += '      ' + nicknameHtml;
+                html += '    </div>';
+                html += '    <span class="cv-reply-date">' + formattedDate + '</span>';
+                html += '  </div>';
+                
+                // 하단 영역: 내용
+                html += '  <div class="cv-reply-content">';
+                html += '    <p>' + reply.content + '</p>';
+                html += '  </div>';
+              
               html += '</li>';
             });
           } else {
@@ -694,11 +794,9 @@
 
       var trigger = t.closest ? t.closest('.js-user-trigger') : null;
       if (trigger) {
-        var wrap = trigger.closest('.cv-user-pop-wrap');
-        var sameWrap =
-          activeUserPop &&
-          wrap &&
-          activeUserPop.closest('.cv-user-pop-wrap') === wrap;
+    	var wrap = trigger.closest('.cv-user-pop-wrap');
+        // 💡 팝업이 밖으로 나갔으므로 저장해둔 activeUserPopWrap 변수와 비교합니다.
+        var sameWrap = activeUserPopWrap && (activeUserPopWrap === wrap);
 
         if (sameWrap && activeUserPop.classList.contains('is-open')) {
           closeUserPop();
@@ -763,6 +861,14 @@
       closeUserPop();
       closeAllMoreMenus();
     });
+    
+    var commentScrollArea = document.querySelector('.cv-comment-scroll');
+    if (commentScrollArea) {
+      commentScrollArea.addEventListener('scroll', function() {
+        closeUserPop();
+        closeAllMoreMenus();
+      });
+    }
   }
 
   /* =========================

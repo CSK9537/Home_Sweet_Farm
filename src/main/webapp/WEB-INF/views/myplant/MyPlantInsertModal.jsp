@@ -12,7 +12,6 @@
       </div>
 
       <div class="mpm-modal__search">
-        <span class="mpm-modal__search-icon" aria-hidden="true">⌕</span>
         <input type="text" id="plantSearchInput" class="mpm-modal__search-input" placeholder="식물 검색" autocomplete="off" />
       </div>
 

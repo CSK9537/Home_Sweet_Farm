@@ -275,6 +275,7 @@
   <div class="stats-modal__panel" role="dialog" aria-modal="true" aria-label="통계 정보 모달">
     <header class="stats-modal__header">
       <div class="stats-modal__tabs" role="tablist" aria-label="통계 기간">
+        <div class="stats-modal__title">나의 식물 데이터</div>
         <button type="button" class="stats-tab is-active" data-range="HOURLY" role="tab" aria-selected="true">시간별</button>
         <button type="button" class="stats-tab" data-range="DAILY" role="tab" aria-selected="false">일별</button>
         <button type="button" class="stats-tab" data-range="MONTHLY" role="tab" aria-selected="false">월별</button>
