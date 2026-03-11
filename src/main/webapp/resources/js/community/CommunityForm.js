@@ -105,15 +105,6 @@
     } else {
       if (opts.length > 0 && opts[0].value === "") opts[0].hidden = false;
     }
-
-    if (boardType === "A") {
-      for (i = 0; i < opts.length; i++) {
-        if (!opts[i].hidden && opts[i].value === "501") {
-          headSelect.value = "501";
-          break;
-        }
-      }
-    }
   }
   filterHeads();
 
@@ -139,11 +130,21 @@
       .replace(/'/g, "&#39;");
   }
 
+  function isImageType(contentType) {
+    if (!contentType) return false;
+    var ct = String(contentType).toLowerCase();
+    return ct === "image" || ct.indexOf("image/") === 0;
+  }
+
   function isImageFile(file) {
     return !!(file && file.type && file.type.toLowerCase().indexOf("image/") === 0);
   }
 
-  function uploadBlob(blob, done) {
+  function cssEscapeForSelector(s) {
+    return String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  }
+
+  function uploadBlob(blob, purpose, done) {
     var tk = getTempKey();
     if (!tk) {
       alert("tempKey가 없습니다. 페이지를 새로고침 후 다시 시도해 주세요.");
@@ -154,6 +155,7 @@
     fd.append("file", blob);
     fd.append("tempKey", tk);
     fd.append("boardType", boardType);
+    fd.append("purpose", purpose || "EDITOR");
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", ctx + "/community/upload", true);
@@ -192,7 +194,7 @@
     placeholder: "내용을 입력하세요.",
     hooks: {
       addImageBlobHook: function (blob, callback) {
-        uploadBlob(blob, function (res) {
+        uploadBlob(blob, "EDITOR", function (res) {
           callback(res.url, "image");
           setTimeout(function () {
             wrapNewestInsertedImage(res.url);
@@ -213,16 +215,12 @@
     if (tradeStatusEl2 && window.__INIT_TRADE_STATUS__) tradeStatusEl2.value = String(window.__INIT_TRADE_STATUS__);
   }
 
-  function cssEscape(s) {
-    return String(s).replace(/"/g, '\\"');
-  }
-
   function wrapNewestInsertedImage(url) {
     try {
       var root = editor.getRootElement ? editor.getRootElement() : document.querySelector("#editor");
       if (!root) return;
 
-      var imgs = root.querySelectorAll('img[src="' + cssEscape(url) + '"]');
+      var imgs = root.querySelectorAll('img[src="' + cssEscapeForSelector(url) + '"]');
       if (!imgs || imgs.length === 0) return;
 
       var target = null;
@@ -392,35 +390,69 @@
 
   var attachFilesEl = document.getElementById("attachFiles");
   var filePreviewEl = document.getElementById("filePreview");
+  var uploadedAttachFilesJsonEl = document.getElementById("uploadedAttachFilesJson");
+  var existingDeletedFileIdsEl = document.getElementById("existingDeletedFileIds");
+  var thumbnailTargetEl = document.getElementById("thumbnailTarget");
+
+  var existingFiles = Array.isArray(window.__EXISTING_FILES__) ? window.__EXISTING_FILES__.slice() : [];
+  var deletedExistingFileIds = [];
   var uploadedAttachFiles = [];
 
-  function renderUploadedAttachPreview() {
-    if (!filePreviewEl) return;
-    filePreviewEl.innerHTML = "";
+  function setUploadedAttachFilesHidden() {
+    if (uploadedAttachFilesJsonEl) uploadedAttachFilesJsonEl.value = JSON.stringify(uploadedAttachFiles);
+  }
 
-    if (!uploadedAttachFiles.length) return;
+  function setDeletedExistingFileIdsHidden() {
+    if (existingDeletedFileIdsEl) existingDeletedFileIdsEl.value = deletedExistingFileIds.join(",");
+  }
 
-    uploadedAttachFiles.forEach(function (fileInfo, idx) {
-      var item = document.createElement("div");
-      item.className = "file-preview-item";
+  function getThumbnailTarget() {
+    return thumbnailTargetEl ? (thumbnailTargetEl.value || "") : "";
+  }
 
-      var text = document.createElement("span");
-      text.textContent = fileInfo.originalName + " (" + formatFileSize(fileInfo.size) + ")";
+  function setThumbnailTarget(v) {
+    if (thumbnailTargetEl) thumbnailTargetEl.value = v || "";
+  }
 
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = "삭제";
-      btn.style.marginLeft = "8px";
-      btn.addEventListener("click", function () {
-        removeFileFromEditor(fileInfo);
-        uploadedAttachFiles.splice(idx, 1);
-        renderUploadedAttachPreview();
-      });
+  function currentVisibleFiles() {
+    return existingFiles.filter(function (f) { return !f._deleted; }).concat(uploadedAttachFiles);
+  }
 
-      item.appendChild(text);
-      item.appendChild(btn);
-      filePreviewEl.appendChild(item);
-    });
+  function firstImageTarget(files) {
+    files = files || currentVisibleFiles();
+    for (var i = 0; i < files.length; i++) {
+      if (isImageType(files[i].contentType)) {
+        if (files[i].isExisting) return "existing:" + files[i].fileId;
+        return "temp:" + files[i].savedName;
+      }
+    }
+    return "";
+  }
+
+  function ensureThumbnailTargetValid() {
+    var visible = currentVisibleFiles();
+    var target = getThumbnailTarget();
+    var valid = false;
+
+    if (target) {
+      for (var i = 0; i < visible.length; i++) {
+        var f = visible[i];
+        if (!isImageType(f.contentType)) continue;
+
+        if (f.isExisting && target === ("existing:" + f.fileId)) {
+          valid = true;
+          break;
+        }
+        if (!f.isExisting && target === ("temp:" + f.savedName)) {
+          valid = true;
+          break;
+        }
+      }
+    }
+
+    if (!valid) {
+      setThumbnailTarget(firstImageTarget(visible));
+    }
   }
 
   function insertAttachmentHtmlAtCursor(fileInfo) {
@@ -468,7 +500,7 @@
 
     var escapedUrl = url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-    if (fileInfo.isImage) {
+    if (isImageType(fileInfo.contentType) || fileInfo.isImage) {
       html = html.replace(
         new RegExp("<p>\\s*<span[^>]*data-hsf-img=\"1\"[^>]*>\\s*<img[^>]*src=\"" + escapedUrl + "\"[^>]*>\\s*</span>\\s*</p>\\s*<p></p>", "gi"),
         ""
@@ -477,13 +509,21 @@
         new RegExp("<span[^>]*data-hsf-img=\"1\"[^>]*>\\s*<img[^>]*src=\"" + escapedUrl + "\"[^>]*>\\s*</span>", "gi"),
         ""
       );
+      html = html.replace(
+        new RegExp("<img[^>]*src=\"" + escapedUrl + "\"[^>]*>", "gi"),
+        ""
+      );
     } else {
       html = html.replace(
-        new RegExp("<p>\\s*<span[^>]*data-temp-file=\"1\"[^>]*>[^<]*<a[^>]*href=\"" + escapedUrl + "\"[^>]*>.*?</a>.*?</span>\\s*</p>\\s*<p></p>", "gi"),
+        new RegExp("<p>\\s*<span[^>]*data-temp-file=\"1\"[^>]*>.*?<a[^>]*href=\"" + escapedUrl + "\"[^>]*>.*?</a>.*?</span>\\s*</p>\\s*<p></p>", "gi"),
         ""
       );
       html = html.replace(
-        new RegExp("<span[^>]*data-temp-file=\"1\"[^>]*>[^<]*<a[^>]*href=\"" + escapedUrl + "\"[^>]*>.*?</a>.*?</span>", "gi"),
+        new RegExp("<span[^>]*data-temp-file=\"1\"[^>]*>.*?<a[^>]*href=\"" + escapedUrl + "\"[^>]*>.*?</a>.*?</span>", "gi"),
+        ""
+      );
+      html = html.replace(
+        new RegExp("<a[^>]*href=\"" + escapedUrl + "\"[^>]*>.*?</a>", "gi"),
         ""
       );
     }
@@ -491,9 +531,103 @@
     editor.setHTML(html);
   }
 
+  function renderFileList() {
+    if (!filePreviewEl) return;
+    filePreviewEl.innerHTML = "";
+
+    var files = currentVisibleFiles();
+    if (!files.length) return;
+
+    ensureThumbnailTargetValid();
+    var currentTarget = getThumbnailTarget();
+
+    files.forEach(function (fileInfo) {
+      var row = document.createElement("div");
+      row.className = "file-preview-item";
+
+      var left = document.createElement("div");
+      left.className = "file-preview-item__left";
+
+      if (isImageType(fileInfo.contentType)) {
+        var thumbWrap = document.createElement("label");
+        thumbWrap.className = "thumb-picker";
+
+        var radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "thumbnailPick";
+        radio.checked =
+          (fileInfo.isExisting && currentTarget === ("existing:" + fileInfo.fileId)) ||
+          (!fileInfo.isExisting && currentTarget === ("temp:" + fileInfo.savedName));
+
+        radio.addEventListener("change", function () {
+          if (fileInfo.isExisting) {
+            setThumbnailTarget("existing:" + fileInfo.fileId);
+          } else {
+            setThumbnailTarget("temp:" + fileInfo.savedName);
+          }
+        });
+
+        var span = document.createElement("span");
+        span.textContent = "썸네일";
+
+        thumbWrap.appendChild(radio);
+        thumbWrap.appendChild(span);
+        left.appendChild(thumbWrap);
+      } else {
+        var badge = document.createElement("span");
+        badge.className = "thumb-picker thumb-picker--empty";
+        badge.textContent = "파일";
+        left.appendChild(badge);
+      }
+
+      var text = document.createElement("span");
+      text.className = "file-preview-item__name";
+      text.textContent = fileInfo.originalName + " (" + formatFileSize(fileInfo.size) + ")";
+      left.appendChild(text);
+
+      var right = document.createElement("div");
+      right.className = "file-preview-item__right";
+
+      var typeBadge = document.createElement("span");
+      typeBadge.className = "file-kind-badge";
+      typeBadge.textContent = fileInfo.isExisting ? "기존파일" : "새파일";
+      right.appendChild(typeBadge);
+
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "file-delete-btn";
+      btn.textContent = "삭제";
+      btn.addEventListener("click", function () {
+        if (fileInfo.isExisting) {
+          fileInfo._deleted = true;
+          if (deletedExistingFileIds.indexOf(String(fileInfo.fileId)) === -1) {
+            deletedExistingFileIds.push(String(fileInfo.fileId));
+            setDeletedExistingFileIdsHidden();
+          }
+        } else {
+          uploadedAttachFiles = uploadedAttachFiles.filter(function (f) {
+            return !(f.savedName === fileInfo.savedName && f.subDir === fileInfo.subDir);
+          });
+          setUploadedAttachFilesHidden();
+        }
+
+        removeFileFromEditor(fileInfo);
+        ensureThumbnailTargetValid();
+        renderFileList();
+      });
+      right.appendChild(btn);
+
+      row.appendChild(left);
+      row.appendChild(right);
+      filePreviewEl.appendChild(row);
+    });
+  }
+
   function uploadAttachFileTemp(file, done) {
-    uploadBlob(file, function (res) {
+    uploadBlob(file, "ATTACH", function (res) {
       done({
+        isExisting: false,
+        fileId: 0,
         url: res.url,
         savedName: res.savedName || "",
         subDir: res.subDir || "",
@@ -505,6 +639,31 @@
     });
   }
 
+  existingFiles = existingFiles.map(function (f) {
+    return {
+      isExisting: true,
+      fileId: Number(f.fileId || 0),
+      url: f.url || "",
+      savedName: f.savedName || "",
+      subDir: f.subDir || "",
+      originalName: f.originalName || "",
+      size: Number(f.size || 0),
+      contentType: f.contentType || "",
+      fileKind: f.fileKind || "",
+      isImage: isImageType(f.contentType),
+      _deleted: false
+    };
+  });
+
+  for (var exIdx = 0; exIdx < existingFiles.length; exIdx++) {
+    if (existingFiles[exIdx].isImage && String(window.__EXISTING_FILES__[exIdx].isThumbnail || "N") === "Y") {
+      setThumbnailTarget("existing:" + existingFiles[exIdx].fileId);
+      break;
+    }
+  }
+
+  renderFileList();
+
   if (attachFilesEl) {
     attachFilesEl.addEventListener("change", function () {
       var files = attachFilesEl.files;
@@ -513,7 +672,13 @@
       Array.prototype.forEach.call(files, function (file) {
         uploadAttachFileTemp(file, function (fileInfo) {
           uploadedAttachFiles.push(fileInfo);
-          renderUploadedAttachPreview();
+          setUploadedAttachFilesHidden();
+
+          if (!getThumbnailTarget() && fileInfo.isImage) {
+            setThumbnailTarget("temp:" + fileInfo.savedName);
+          }
+
+          renderFileList();
           insertAttachmentHtmlAtCursor(fileInfo);
         });
       });
@@ -562,6 +727,9 @@
       if (contentHtmlEl) contentHtmlEl.value = html;
 
       setTagsHidden();
+      setUploadedAttachFilesHidden();
+      setDeletedExistingFileIdsHidden();
+      ensureThumbnailTargetValid();
 
       if (!getTempKey()) {
         alert("tempKey가 없습니다. 페이지를 새로고침 후 다시 시도해 주세요.");

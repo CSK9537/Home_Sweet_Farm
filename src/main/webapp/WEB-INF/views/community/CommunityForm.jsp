@@ -67,8 +67,11 @@
         <input type="hidden" name="tagsHidden" id="tagsHidden"
                value="<c:out value='${modeVal eq "edit" ? editTags : ""}'/>">
         <input type="hidden" name="uploadedImagesJson" id="uploadedImagesJson" value="[]">
+        <input type="hidden" name="uploadedAttachFilesJson" id="uploadedAttachFilesJson" value="[]">
+        <input type="hidden" name="existingDeletedFileIds" id="existingDeletedFileIds" value="">
+        <input type="hidden" name="thumbnailTarget" id="thumbnailTarget" value="">
 
-        <div class="form-row--grid">
+        <div class="form-row form-row--grid">
           <div class="form-field">
             <label class="label">게시판</label>
             <select class="select" id="typeSelect" disabled>
@@ -127,20 +130,18 @@
             </select>
           </div>
         </div>
-        
+
         <div class="form-row">
           <div class="form-field">
             <label class="label" for="attachFiles">첨부파일</label>
-            <div class="input-file-area">
-	            <input type="file"
-	                   name="attachFiles"
-	                   id="attachFiles"
-	                   class="input-file"
-	                   multiple>
-            </div>
 
+            <input type="file"
+                   name="attachFiles"
+                   id="attachFiles"
+                   class="input-file"
+                   multiple>
 
-            <div class="hint">여러 파일을 한 번에 첨부할 수 있습니다.</div>
+            <div class="hint">여러 파일을 첨부할 수 있습니다. 이미지 미리보기는 제공하지 않으며, 이미지 파일은 썸네일 선택이 가능합니다.</div>
 
             <div id="filePreview" class="file-preview"></div>
           </div>
@@ -185,6 +186,21 @@
   window.__IS_OWNER__ = ${modeVal eq 'edit' ? isOwner : true};
   window.__INIT_CATEGORY__ = "${modeVal eq 'edit' ? post.category_id : ''}";
   window.__INIT_TRADE_STATUS__ = "${modeVal eq 'edit' ? post.trade_status : ''}";
+  window.__EXISTING_FILES__ = [
+    <c:forEach var="f" items="${existingFiles}" varStatus="st">
+      {
+        fileId: ${f.file_id},
+        originalName: "<c:out value='${f.original_name}'/>",
+        savedName: "<c:out value='${f.saved_name}'/>",
+        subDir: "<c:out value='${f.sub_dir}'/>",
+        size: ${f.file_size},
+        contentType: "<c:out value='${f.content_type}'/>",
+        fileKind: "<c:out value='${f.file_kind}'/>",
+        isThumbnail: "<c:out value='${f.is_thumbnail}'/>",
+        url: "${pageContext.request.contextPath}/community/file?subDir=<c:out value='${f.sub_dir}'/>&savedName=<c:out value='${f.saved_name}'/>"
+      }<c:if test="${!st.last}">,</c:if>
+    </c:forEach>
+  ];
 </script>
 
 <script src="${pageContext.request.contextPath}/resources/js/community/CommunityForm.js"></script>

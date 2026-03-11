@@ -8,7 +8,6 @@ import org.joonzis.community.vo.BoardVO;
 
 public interface CommunityFormMapper {
 
-  // ====== Board 기본 ======
   int selectBoardSeqNextVal();
 
   int insertBoard(BoardVO board);
@@ -25,13 +24,22 @@ public interface CommunityFormMapper {
 
   int deactivateRepliesByBoardId(@Param("boardId") int boardId);
 
-  // ====== File ======
   int insertBoardFile(BoardFileVO file);
 
-  // ====== Hashtag Suggest ======
+  List<BoardFileVO> selectBoardFilesByBoardId(@Param("boardId") int boardId);
+
+  int deactivateBoardFileById(@Param("boardId") int boardId, @Param("fileId") int fileId);
+
+  int clearThumbnailByBoardId(@Param("boardId") int boardId);
+
+  int setThumbnailByFileId(@Param("boardId") int boardId, @Param("fileId") int fileId);
+
+  Integer selectThumbnailFileId(@Param("boardId") int boardId);
+
+  Integer selectFirstActiveImageFileId(@Param("boardId") int boardId);
+
   List<String> selectHashtagSuggest(@Param("q") String q, @Param("limit") int limit);
 
-  // ====== Board Hashtag 저장 ======
   String selectBoardTagsCsv(@Param("boardId") int boardId);
 
   Integer selectBoardHashtagIdByName(@Param("tagName") String tagName);

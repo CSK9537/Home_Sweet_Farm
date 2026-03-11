@@ -29,6 +29,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -36,9 +39,21 @@ import lombok.RequiredArgsConstructor;
 public class CommunityFormServiceImpl implements CommunityFormService {
 
     private final CommunityFormMapper mapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${hsf.upload.root:\\\\192.168.0.153\\\\projecthsf}")
     private String uploadRoot;
+
+    private static class TempAttachItem {
+        private String savedName;
+        public String getSavedName() { return savedName; }
+        public void setSavedName(String savedName) { this.savedName = savedName; }
+    }
+
+    private static class FinalizeResult {
+        private String html;
+        private Integer selectedTempThumbnailFileId;
+    }
 
     private String today() {
         return new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -103,17 +118,17 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         return dir.resolve(savedName + ".meta");
     }
 
-    private void writeMeta(Path dir, String savedName, MultipartFile file, String originalName) {
+    private void writeMeta(Path dir, String savedName, MultipartFile file, String originalName, String purpose) {
         Properties p = new Properties();
         p.setProperty("original", originalName == null ? "" : originalName);
         p.setProperty("size", String.valueOf(file.getSize()));
         p.setProperty("contentType", file.getContentType() == null ? "" : file.getContentType());
-        p.setProperty("fileKind", "EDITOR");
+        p.setProperty("fileKind", (purpose == null || purpose.trim().isEmpty()) ? "EDITOR" : purpose.trim().toUpperCase());
 
         try (OutputStream os = Files.newOutputStream(metaPath(dir, savedName))) {
             p.store(os, "temp upload metadata");
         } catch (IOException e) {
-            // meta 저장 실패는 본 업로드 자체를 막지 않음
+            // ignore
         }
     }
 
@@ -125,7 +140,7 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         try (InputStream is = Files.newInputStream(mp)) {
             p.load(is);
         } catch (IOException e) {
-            // meta 못 읽어도 빈 값으로 진행
+            // ignore
         }
         return p;
     }
@@ -150,16 +165,11 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         }
     }
 
-    /**
-     * 본문 HTML 안에서 현재 tempKey에 해당하는 임시 업로드 파일명(savedName)들을 추출한다.
-     * 에디터/JSP 처리 과정에서 & 가 &amp; 로 바뀌는 경우까지 대응한다.
-     */
     private Set<String> extractTempSavedNamesFromHtml(String html, String tempSubDir) {
         Set<String> out = new HashSet<>();
         if (html == null || html.trim().isEmpty()) return out;
 
         String normalized = html.replace("&amp;", "&");
-
         Pattern p = Pattern.compile("subDir=([^&\\\"']+)&savedName=([a-zA-Z0-9._-]+)");
         Matcher m = p.matcher(normalized);
 
@@ -175,10 +185,6 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         return out;
     }
 
-    /**
-     * 본문 HTML 안의 temp 경로를 최종 저장 경로로 치환한다.
-     * &savedName= 뿐 아니라 &amp;savedName= 형태도 같이 처리한다.
-     */
     private String rewriteHtmlTempToFinal(String html, String tempSubDir, String finalSubDir, Set<String> savedNames) {
         if (html == null || html.trim().isEmpty()) return html;
         if (savedNames == null || savedNames.isEmpty()) return html;
@@ -204,9 +210,6 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         return out;
     }
 
-    /**
-     * DB 제약조건에 맞게 IMAGE / FILE 로 정규화
-     */
     private String normalizeContentType(String contentType) {
         if (contentType == null || contentType.trim().isEmpty()) {
             return "FILE";
@@ -220,91 +223,19 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         return "FILE";
     }
 
-    /**
-     * 에디터 본문에 들어간 이미지면 EDITOR, 일반 첨부면 ATTACH
-     */
-    private String resolveFileKind(String contentType) {
-        if (contentType == null || contentType.trim().isEmpty()) {
-            return "ATTACH";
+    private String resolveFileKind(String metaFileKind, String contentType) {
+        if (metaFileKind != null && !metaFileKind.trim().isEmpty()) {
+            String v = metaFileKind.trim().toUpperCase();
+            if ("ATTACH".equals(v) || "EDITOR".equals(v)) {
+                return v;
+            }
         }
 
-        String ct = contentType.toLowerCase();
-        if (ct.startsWith("image/")) {
+        if (contentType != null && contentType.toLowerCase().startsWith("image/")) {
             return "EDITOR";
         }
 
         return "ATTACH";
-    }
-
-    /**
-     * temp 폴더의 파일 중 본문에서 실제 사용한 파일만 최종 폴더로 이동 + DB 저장 + 본문 URL 치환
-     */
-    private String finalizeTempFilesIfNeeded(int boardId, String boardType, String tempKey, String contentHtml) {
-        if (tempKey == null || tempKey.trim().isEmpty()) return contentHtml;
-        if (boardType == null || boardType.trim().isEmpty()) boardType = "G";
-
-        Path tempDir = buildTempDir(tempKey);
-        if (!Files.exists(tempDir)) return contentHtml;
-
-        String tempSubDir = buildTempSubDir(tempKey);
-        Set<String> usedSaved = extractTempSavedNamesFromHtml(contentHtml, tempSubDir);
-
-        if (usedSaved.isEmpty()) {
-            deleteDirectoryRecursive(tempDir);
-            return contentHtml;
-        }
-
-        Path finalDir = buildSaveDir(boardType);
-        String finalSubDir = buildSubDir(boardType);
-
-        try {
-            Files.createDirectories(finalDir);
-        } catch (IOException e) {
-            throw new RuntimeException("final dir create failed", e);
-        }
-
-        for (String savedName : usedSaved) {
-            Path src = tempDir.resolve(savedName);
-            if (!Files.exists(src)) continue;
-
-            Properties meta = readMeta(tempDir, savedName);
-            String original = meta.getProperty("original", savedName);
-            String ct = meta.getProperty("contentType", "");
-
-            long sizeLong;
-            try {
-                sizeLong = Files.size(src);
-            } catch (IOException e) {
-                sizeLong = 0L;
-            }
-
-            Path dst = finalDir.resolve(savedName);
-            try {
-                Files.move(src, dst, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                throw new RuntimeException("move temp file failed", e);
-            }
-
-            deleteQuietly(metaPath(tempDir, savedName));
-
-            BoardFileVO vo = new BoardFileVO();
-            vo.setBoard_id(boardId);
-            vo.setOriginal_name(original);
-            vo.setSaved_name(savedName);
-            vo.setFile_size((int) Math.min(Integer.MAX_VALUE, sizeLong));
-            vo.setContent_type(normalizeContentType(ct));
-            vo.setTemp_key(null);
-            vo.setSub_dir(finalSubDir);
-            vo.setFile_kind(resolveFileKind(ct));
-            vo.setIs_active("Y");
-            vo.setIs_thumbnail("N");
-
-            mapper.insertBoardFile(vo);
-        }
-
-        deleteDirectoryRecursive(tempDir);
-
-        return rewriteHtmlTempToFinal(contentHtml, tempSubDir, finalSubDir, usedSaved);
     }
 
     private List<String> normalizeTags(String tagsCsv) {
@@ -359,7 +290,149 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         }
     }
 
-    private void saveAttachFiles(int boardId, String boardType, MultipartFile[] attachFiles) {
+    private List<String> parseDeleteFileIds(String csv) {
+        if (csv == null || csv.trim().isEmpty()) return Collections.emptyList();
+
+        List<String> out = new ArrayList<>();
+        String[] arr = csv.split(",");
+        for (String s : arr) {
+            if (s == null) continue;
+            String v = s.trim();
+            if (!v.isEmpty() && v.matches("\\d+")) {
+                out.add(v);
+            }
+        }
+        return out;
+    }
+
+    private Set<String> parseUploadedAttachSavedNames(String uploadedAttachFilesJson) {
+        if (uploadedAttachFilesJson == null || uploadedAttachFilesJson.trim().isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        try {
+            List<TempAttachItem> list = objectMapper.readValue(
+                    uploadedAttachFilesJson,
+                    new TypeReference<List<TempAttachItem>>() {}
+            );
+
+            Set<String> out = new LinkedHashSet<>();
+            if (list != null) {
+                for (TempAttachItem item : list) {
+                    if (item == null || item.getSavedName() == null) continue;
+                    String savedName = item.getSavedName().trim();
+                    if (!savedName.isEmpty()) {
+                        out.add(savedName);
+                    }
+                }
+            }
+            return out;
+        } catch (Exception e) {
+            return Collections.emptySet();
+        }
+    }
+
+    private FinalizeResult finalizeTempFiles(
+            int boardId,
+            String boardType,
+            String tempKey,
+            String contentHtml,
+            String uploadedAttachFilesJson,
+            String thumbnailTarget
+    ) {
+        FinalizeResult result = new FinalizeResult();
+        result.html = contentHtml;
+        result.selectedTempThumbnailFileId = null;
+
+        if (tempKey == null || tempKey.trim().isEmpty()) return result;
+        if (boardType == null || boardType.trim().isEmpty()) boardType = "G";
+
+        Path tempDir = buildTempDir(tempKey);
+        if (!Files.exists(tempDir)) return result;
+
+        String tempSubDir = buildTempSubDir(tempKey);
+        Set<String> usedInHtml = extractTempSavedNamesFromHtml(contentHtml, tempSubDir);
+        Set<String> selectedAttachSavedNames = parseUploadedAttachSavedNames(uploadedAttachFilesJson);
+
+        Set<String> targetSavedNames = new LinkedHashSet<>();
+        targetSavedNames.addAll(usedInHtml);
+        targetSavedNames.addAll(selectedAttachSavedNames);
+
+        if (targetSavedNames.isEmpty()) {
+            deleteDirectoryRecursive(tempDir);
+            return result;
+        }
+
+        Path finalDir = buildSaveDir(boardType);
+        String finalSubDir = buildSubDir(boardType);
+
+        try {
+            Files.createDirectories(finalDir);
+        } catch (IOException e) {
+            throw new RuntimeException("final dir create failed", e);
+        }
+
+        for (String savedName : targetSavedNames) {
+            Path src = tempDir.resolve(savedName);
+            if (!Files.exists(src)) continue;
+
+            Properties meta = readMeta(tempDir, savedName);
+            String original = meta.getProperty("original", savedName);
+            String ct = meta.getProperty("contentType", "");
+            String metaKind = meta.getProperty("fileKind", "");
+            String fileKind = selectedAttachSavedNames.contains(savedName)
+                    ? "ATTACH"
+                    : resolveFileKind(metaKind, ct);
+
+            long sizeLong;
+            try {
+                sizeLong = Files.size(src);
+            } catch (IOException e) {
+                sizeLong = 0L;
+            }
+
+            Path dst = finalDir.resolve(savedName);
+            try {
+                Files.move(src, dst, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException("move temp file failed", e);
+            }
+
+            deleteQuietly(metaPath(tempDir, savedName));
+
+            BoardFileVO vo = new BoardFileVO();
+            vo.setBoard_id(boardId);
+            vo.setOriginal_name(original);
+            vo.setSaved_name(savedName);
+            vo.setFile_size((int) Math.min(Integer.MAX_VALUE, sizeLong));
+            vo.setContent_type(normalizeContentType(ct));
+            vo.setTemp_key(null);
+            vo.setSub_dir(finalSubDir);
+            vo.setFile_kind(fileKind);
+            vo.setIs_active("Y");
+            vo.setIs_thumbnail("N");
+
+            mapper.insertBoardFile(vo);
+
+            if (thumbnailTarget != null
+                    && thumbnailTarget.equals("temp:" + savedName)
+                    && "IMAGE".equals(vo.getContent_type())) {
+                Integer insertedId = mapper.selectFirstActiveImageFileId(boardId);
+                List<BoardFileVO> files = mapper.selectBoardFilesByBoardId(boardId);
+                for (BoardFileVO f : files) {
+                    if (savedName.equals(f.getSaved_name())) {
+                        result.selectedTempThumbnailFileId = f.getFile_id();
+                    }
+                }
+            }
+        }
+
+        deleteDirectoryRecursive(tempDir);
+        result.html = rewriteHtmlTempToFinal(contentHtml, tempSubDir, finalSubDir, targetSavedNames);
+        return result;
+    }
+
+    private void saveAttachFilesFallback(int boardId, String boardType, MultipartFile[] attachFiles) {
         if (attachFiles == null || attachFiles.length == 0) return;
         if (boardType == null || boardType.trim().isEmpty()) boardType = "G";
 
@@ -372,7 +445,7 @@ public class CommunityFormServiceImpl implements CommunityFormService {
             throw new RuntimeException("attach dir create failed", e);
         }
 
-        boolean thumbnailAssigned = false;
+        boolean thumbnailAssigned = (mapper.selectThumbnailFileId(boardId) != null);
 
         for (MultipartFile f : attachFiles) {
             if (f == null || f.isEmpty()) continue;
@@ -409,9 +482,43 @@ public class CommunityFormServiceImpl implements CommunityFormService {
         }
     }
 
+    private void deactivateRequestedFiles(int boardId, String existingDeletedFileIds) {
+        List<String> ids = parseDeleteFileIds(existingDeletedFileIds);
+        for (String id : ids) {
+            mapper.deactivateBoardFileById(boardId, Integer.parseInt(id));
+        }
+    }
+
+    private void applyThumbnail(int boardId, String thumbnailTarget, Integer selectedTempThumbnailFileId) {
+        Integer finalThumbnailFileId = null;
+
+        if (thumbnailTarget != null && thumbnailTarget.startsWith("existing:")) {
+            String raw = thumbnailTarget.substring("existing:".length());
+            if (raw.matches("\\d+")) {
+                finalThumbnailFileId = Integer.parseInt(raw);
+            }
+        } else if (thumbnailTarget != null && thumbnailTarget.startsWith("temp:")) {
+            finalThumbnailFileId = selectedTempThumbnailFileId;
+        } else {
+            finalThumbnailFileId = mapper.selectThumbnailFileId(boardId);
+        }
+
+        if (finalThumbnailFileId != null) {
+            mapper.clearThumbnailByBoardId(boardId);
+            mapper.setThumbnailByFileId(boardId, finalThumbnailFileId);
+            return;
+        }
+
+        Integer firstImageFileId = mapper.selectFirstActiveImageFileId(boardId);
+        mapper.clearThumbnailByBoardId(boardId);
+        if (firstImageFileId != null) {
+            mapper.setThumbnailByFileId(boardId, firstImageFileId);
+        }
+    }
+
     @Override
     @Transactional
-    public UploadResponseDTO uploadTempFile(MultipartFile file, String tempKey, String boardType) {
+    public UploadResponseDTO uploadTempFile(MultipartFile file, String tempKey, String boardType, String purpose) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("file is empty");
         }
@@ -433,7 +540,7 @@ public class CommunityFormServiceImpl implements CommunityFormService {
             throw new RuntimeException("upload failed", e);
         }
 
-        writeMeta(dir, saved, file, original);
+        writeMeta(dir, saved, file, original, purpose);
 
         String subDir = buildTempSubDir(tempKey);
         String url = buildServeUrl(subDir, saved);
@@ -446,7 +553,9 @@ public class CommunityFormServiceImpl implements CommunityFormService {
                      int loginUserId,
                      String tempKey,
                      MultipartFile[] attachFiles,
-                     String tagsCsv) {
+                     String tagsCsv,
+                     String uploadedAttachFilesJson,
+                     String thumbnailTarget) {
 
         if (board == null) throw new IllegalArgumentException("board is null");
         if (loginUserId <= 0) throw new SecurityException("login required");
@@ -458,20 +567,23 @@ public class CommunityFormServiceImpl implements CommunityFormService {
 
         mapper.insertBoard(board);
 
-        String contentFinal = finalizeTempFilesIfNeeded(
-            nextId,
-            board.getBoard_type(),
-            tempKey,
-            board.getContent()
+        FinalizeResult finalizeResult = finalizeTempFiles(
+                nextId,
+                board.getBoard_type(),
+                tempKey,
+                board.getContent(),
+                uploadedAttachFilesJson,
+                thumbnailTarget
         );
 
-        if (contentFinal != null && !contentFinal.equals(board.getContent())) {
-            board.setContent(contentFinal);
+        if (finalizeResult.html != null && !finalizeResult.html.equals(board.getContent())) {
+            board.setContent(finalizeResult.html);
             mapper.updateBoard(board);
         }
 
-        saveAttachFiles(nextId, board.getBoard_type(), attachFiles);
+        saveAttachFilesFallback(nextId, board.getBoard_type(), attachFiles);
         saveBoardTags(nextId, tagsCsv);
+        applyThumbnail(nextId, thumbnailTarget, finalizeResult.selectedTempThumbnailFileId);
 
         return nextId;
     }
@@ -482,7 +594,10 @@ public class CommunityFormServiceImpl implements CommunityFormService {
                     int loginUserId,
                     String tempKey,
                     MultipartFile[] attachFiles,
-                    String tagsCsv) {
+                    String tagsCsv,
+                    String uploadedAttachFilesJson,
+                    String existingDeletedFileIds,
+                    String thumbnailTarget) {
 
         if (board == null) throw new IllegalArgumentException("board is null");
         if (loginUserId <= 0) throw new SecurityException("login required");
@@ -492,17 +607,23 @@ public class CommunityFormServiceImpl implements CommunityFormService {
             throw new SecurityException("not owner");
         }
 
-        String contentFinal = finalizeTempFilesIfNeeded(
-            board.getBoard_id(),
-            board.getBoard_type(),
-            tempKey,
-            board.getContent()
-        );
-        board.setContent(contentFinal);
+        deactivateRequestedFiles(board.getBoard_id(), existingDeletedFileIds);
 
+        FinalizeResult finalizeResult = finalizeTempFiles(
+                board.getBoard_id(),
+                board.getBoard_type(),
+                tempKey,
+                board.getContent(),
+                uploadedAttachFilesJson,
+                thumbnailTarget
+        );
+
+        board.setContent(finalizeResult.html);
         mapper.updateBoard(board);
-        saveAttachFiles(board.getBoard_id(), board.getBoard_type(), attachFiles);
+
+        saveAttachFilesFallback(board.getBoard_id(), board.getBoard_type(), attachFiles);
         saveBoardTags(board.getBoard_id(), tagsCsv);
+        applyThumbnail(board.getBoard_id(), thumbnailTarget, finalizeResult.selectedTempThumbnailFileId);
 
         return board.getBoard_id();
     }
@@ -522,6 +643,11 @@ public class CommunityFormServiceImpl implements CommunityFormService {
     @Override
     public BoardVO getBoardById(int boardId) {
         return mapper.selectBoardById(boardId);
+    }
+
+    @Override
+    public List<BoardFileVO> getBoardFiles(int boardId) {
+        return mapper.selectBoardFilesByBoardId(boardId);
     }
 
     @Override
