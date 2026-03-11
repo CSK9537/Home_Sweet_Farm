@@ -31,19 +31,30 @@
           </form>
 		   
 		    <div class="auth auth--desktop">
-				<c:choose>
-				  <c:when test="${empty sessionScope.loginUser}">
-				    <a class="auth__link" href="/user/login">로그인</a>
-				    <span class="auth__sep" aria-hidden="true">||</span>
-				    <a class="auth__link" href="/user/join">회원가입</a>
-				  </c:when>
+			  <c:choose>
+			    <c:when test="${empty sessionScope.loginUser}">
+				  <a class="auth__link" href="/user/login">로그인</a>
+				  <span class="auth__sep" aria-hidden="true">||</span>
+				  <a class="auth__link" href="/user/join">회원가입</a>
+				</c:when>
 				
-				  <c:otherwise>
-				 	<a class="auth__link" href="/user/mypage">마이페이지</a>
-				    <span class="auth__sep" aria-hidden="true">||</span>
-				    <a class="auth__link" href="/user/logout">로그아웃</a>
-				  </c:otherwise>
-				</c:choose>
+				<c:otherwise>
+				  <c:set var="profileUrl" value="/resources/image/default_profile.png" />
+				  
+				  <c:if test="${not empty sessionScope.loginUser.profile_filename}">
+				    <c:set var="profileUrl" value="/user/getProfile?fileName=${sessionScope.loginUser.profile_filename}" />
+				  </c:if>
+				
+				  <a class="auth__link profile-link" href="/user/mypage">
+				    <img src="${profileUrl}" alt="프로필" class="profile-img">
+				    <span class="profile-name">
+				      ${not empty sessionScope.loginUser.nickname ? sessionScope.loginUser.nickname : sessionScope.loginUser.username}
+				    </span>
+				  </a>
+				  <span class="auth__sep" aria-hidden="true">||</span>
+				  <a class="auth__link" href="/user/logout">로그아웃</a>
+				</c:otherwise>
+		      </c:choose>
 			</div>
 	    </div>
 	
@@ -69,9 +80,20 @@
 				</c:when>
 					
 				<c:otherwise>
-					<a class="auth__link" href="/user/Mypage">마이페이지</a>
-					<span class="auth__sep" aria-hidden="true">||</span>
-					<a class="auth__link" href="/user/logout">로그아웃</a>
+				  <c:set var="profileUrl" value="/resources/image/default_profile.png" />
+				  
+				  <c:if test="${not empty sessionScope.loginUser.profile_filename}">
+				    <c:set var="profileUrl" value="/user/getProfile?fileName=${sessionScope.loginUser.profile_filename}" />
+				  </c:if>
+				
+				  <a class="auth__link profile-link" href="/user/mypage">
+				    <img src="${profileUrl}" alt="프로필" class="profile-img">
+				    <span class="profile-name">
+				      ${not empty sessionScope.loginUser.nickname ? sessionScope.loginUser.nickname : sessionScope.loginUser.username}
+				    </span>
+				  </a>
+				  <span class="auth__sep" aria-hidden="true">||</span>
+				  <a class="auth__link" href="/user/logout">로그아웃</a>
 				</c:otherwise>
 			</c:choose>
 	      </div>
@@ -84,7 +106,7 @@
 	
 	    <!-- 모바일 3줄: 필터 없는 검색창 -->
 	    <div class="mrow mrow--search">
-	      <form class="msearch" action="/search" method="get" role="search" aria-label="모바일 검색">
+	      <form class="msearch" action="/searchResult" method="get" role="search" aria-label="모바일 검색">
 	        <span class="fsearch__icon" aria-hidden="true"></span>
 	        <input class="msearch__input" type="search" name="q" placeholder="검색어를 입력하세요" />
 	      </form>

@@ -5,19 +5,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // ------------------------------------------------------------
   //  - 엔터: 검색 실행
   // ------------------------------------------------------------
-  if (qInput) {
-    qInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const safeTrim = (v) => (v == null ? "" : String(v)).trim();
-        const q = safeTrim(qInput ? qInput.value : "");
-        const params = new URLSearchParams();
-        if (q) params.set("q", q);
-        if (!(q == "" || q == null || q.length < 2)) window.location.href = "/searchResult";
-        qInput.blur();
-      }
-    });
-  }
+//  if (qInput) {
+//    qInput.addEventListener("keydown", (e) => {
+//      if (e.key === "Enter") {
+//        e.preventDefault();
+//        const safeTrim = (v) => (v == null ? "" : String(v)).trim();
+//        const q = safeTrim(qInput ? qInput.value : "");
+//        const params = new URLSearchParams();
+//        if (q) params.set("q", q);
+//        if (!(q == "" || q == null || q.length < 2)) window.location.href = "/searchResult";
+//        qInput.blur();
+//      }
+//    });
+//  }
 
   // ============================================================
   // [Mobile Hamburger Drawer] 모바일 햄버거 메뉴(드로어) 초기화
