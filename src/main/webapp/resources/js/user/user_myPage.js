@@ -79,6 +79,21 @@
       }
     }
   });
+  
+  //-------------------------
+  // ESC 키로 모달 닫기
+  // -------------------------
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" ) {
+      if (modals.avatar && modals.avatar.hidden === false) {
+        closeModal(modals.avatar);
+      }
+      
+      if (modals.grade && modals.grade.hidden === false) {
+        closeModal(modals.grade);
+      }
+    }
+  });
 
   // 프로필 이미지 크게보기 (주인만)
   var btnAvatar = document.getElementById("btnAvatar");

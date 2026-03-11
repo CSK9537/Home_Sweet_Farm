@@ -32,9 +32,16 @@ const GlobalProfileModal = (function () {
 
     if (closeBtn) closeBtn.addEventListener('click', close);
     if (backdrop) backdrop.addEventListener('click', close);
+    
+    window.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal && !modal.hidden) {
+        close();
+      }
+    });
   }
 
   function close() {
+	if (!backdrop || !modal) return; // 안전장치
     backdrop.hidden = true;
     modal.hidden = true;
     document.body.style.overflow = '';
