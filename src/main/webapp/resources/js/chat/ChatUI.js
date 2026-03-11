@@ -1,5 +1,5 @@
 import { chatState } from "./ChatState.js";
-import { appendMessage, loadMessages, markAsRead } from "./ChatMessage.js";
+import { appendMessage, loadMessages, markAsRead, initSendMessageEvents } from "./ChatMessage.js";
 import { subscribeRoom } from "./ChatWebSocket.js";
 import { updateSearchCounter, resetSearchUI } from "./ChatSearch.js";
 
@@ -36,10 +36,11 @@ export function initMyUserInfo(textData) {
 
 // 프로필 공통 헬퍼
 function getProfileUrl(fileName) {
-    const safeName = (fileName && fileName.trim() !== "" && fileName !== "null")
-        ? fileName
-        : "none";
-    return `/user/getProfile?fileName=${encodeURIComponent(safeName)}`;
+    if (!fileName || fileName === "" || fileName === "null" || fileName === "none") {
+        return "/resources/image/default_profile.png";
+    }
+
+    return `/user/getProfile?fileName=${encodeURIComponent(fileName)}`;
 }
 
 // 유저 등급 뱃지
@@ -62,17 +63,6 @@ function getRoleBadge(gradeId) {
 export function updateMyHeaderProfile() {
     const myInfo = chatState.session.loginUser;
     if (!myInfo) return;
-
-    const accountDiv = document.querySelector('.account');
-    if (accountDiv) {
-        accountDiv.style.cursor = 'pointer';
-        accountDiv.onclick = () => {
-            if (window.GlobalProfileModal) {
-                window.GlobalProfileModal.open(myInfo.user_id);
-                applyModalCustomStyle();
-            }
-        };
-    }
 
     const myDisplayName = myInfo.nickname || myInfo.username || "내 계정";
     document.getElementById("my-profile-name").innerText = myDisplayName;
@@ -212,7 +202,7 @@ export function loadChatRooms() {
                     if (roleEl) roleEl.innerHTML = getRoleBadge(room.other_user_grade_id);
 
                     const headerImg = document.querySelector('.chat-header img');
-                    if (headerImg) headerImg.src = profileSrc;
+                    if (headerImg) headerImg.src = profileSrc + (profileSrc.includes("?") ? "&" : "?") + "t=" + new Date().getTime();
 
                     const chatHeaderLeft = document.getElementById('chat-user-header');
 
@@ -352,6 +342,11 @@ export function updateRoomListRealtime(msg) {
     const timeEl = item.querySelector(".time");
     if (timeEl) timeEl.innerText = formatChatTime(displayTime);
 
+    const profileImg = item.querySelector("img");
+    if (profileImg && msg.sender_profile) { // msg에 프로필 정보가 포함되어 온다고 가정할 때
+        profileImg.src = getProfileUrl(msg.sender_profile);
+    }
+
     // 알림 배지 처리
     if (!isCurrentRoom && String(msg.sender_id) !== myId) {
         let badge = item.querySelector(".badge");
@@ -475,33 +470,33 @@ export function initCharCount() {
     });
 }
 
-export async function initTargetInfo() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const targetId = urlParams.get('target_id') || urlParams.get('targetId');
-    const roomId = urlParams.get('room_id'); // 기존 방 번호가 있을 수도 있음
+// export async function initTargetInfo() {
+//     const urlParams = new URLSearchParams(window.location.search);
+//     const targetId = urlParams.get('target_id') || urlParams.get('targetId');
+//     const roomId = urlParams.get('room_id'); // 기존 방 번호가 있을 수도 있음
 
-    // 신규 채팅(가상방 0)이거나, 방 번호만 있고 이름이 없는 경우 처리
-    if (targetId) {
-        try {
-            const res = await fetch(`/chat/user/info/${targetId}`);
-            if (res.ok) {
-                const user = await res.json();
+//     // 신규 채팅(가상방 0)이거나, 방 번호만 있고 이름이 없는 경우 처리
+//     if (targetId) {
+//         try {
+//             const res = await fetch(`/chat/user/info/${targetId}`);
+//             if (res.ok) {
+//                 const user = await res.json();
 
-                const userName = (user.nickname && user.nickname !== "null")
-                    ? user.nickname
-                    : user.username;
+//                 const userName = (user.nickname && user.nickname !== "null")
+//                     ? user.nickname
+//                     : user.username;
 
-                const headerName = document.querySelector(".chat-header .name");
-                if (headerName) headerName.innerText = userName;
+//                 const headerName = document.querySelector(".chat-header .name");
+//                 if (headerName) headerName.innerText = userName;
 
-                chatState.session.receiverId = targetId;
-                chatState.session.targetName = userName;
-            }
-        } catch (err) {
-            console.error("상대방 정보를 불러오지 못했습니다.", err);
-        }
-    }
-}
+//                 chatState.session.receiverId = targetId;
+//                 chatState.session.targetName = userName;
+//             }
+//         } catch (err) {
+//             console.error("상대방 정보를 불러오지 못했습니다.", err);
+//         }
+//     }
+// }
 
 export async function initVirtualRoom(targetUserId) {
     if (!targetUserId) return;
@@ -517,12 +512,20 @@ export async function initVirtualRoom(targetUserId) {
         if (!response.ok) throw new Error("유저 정보를 가져올 수 없습니다.");
 
         const userData = await response.json();
+        const profileFile = (userData.profile_filename && userData.profile_filename !== "")
+            ? userData.profile_filename
+            : "none";
         const userName = (userData.nickname && userData.nickname !== "null")
             ? userData.nickname
             : (userData.username || `사용자 ${targetUserId}`);
 
         console.log(`[DEBUG] 표시될 이름 결정: ${userName} (원본: nick=${userData.nickname}, id=${userData.username})`);
-
+        console.log("✅ [이미지 이름 확인]:", {
+            "profile_filename": userData.profile_filename,
+            "profile": userData.profile,
+            "img": userData.img,
+            "userData 전체": userData
+        });
         chatState.session.tempTargetName = userName;
 
         const headerName = document.querySelector('.chat-header .name');
@@ -535,10 +538,30 @@ export async function initVirtualRoom(targetUserId) {
             roleEl.innerHTML = getRoleBadge(userData.grade_id);
         }
 
-        const headerImg = document.querySelector('.chat-header img');
+        const headerImg = document.getElementById('header-profile-img') || document.querySelector('.chat-header img');
+
         if (headerImg) {
-            const fName = userData.profile_filename || "empty";
-            headerImg.src = getProfileUrl(userData.profile_filename);
+            const finalUrl = getProfileUrl(profileFile);
+
+            // [중요 로그] 이 주소가 실제 이미지 경로인지 콘솔에서 클릭해 보세요.
+            console.log("📸 [VirtualRoom 이미지 적용 테스트]:", {
+                "원본데이터": userData.profile_filename,
+                "정제된이름": profileFile,
+                "최종URL": finalUrl
+            });
+
+            if (!profileFile || profileFile === "") {
+                headerImg.src = "/resources/image/default_profile.png";
+            } else {
+                // 주소에 이미 ?가 있는지 체크해서 t=를 붙여야 함
+                const separator = finalUrl.includes("?") ? "&" : "?";
+                headerImg.src = finalUrl + separator + "t=" + new Date().getTime();
+            }
+
+            headerImg.onerror = () => {
+                console.error("❌ 이미지 로드 실패:", headerImg.src);
+                headerImg.src = "/resources/image/default_profile.png";
+            };
         }
 
         const chatHeaderLeft = document.getElementById('chat-user-header');
@@ -585,7 +608,7 @@ export async function initVirtualRoom(targetUserId) {
 // ChatUI.js 하단에 교체
 function applyModalCustomStyle() {
     const backdrop = document.querySelector('.upm-backdrop');
-    
+
     // 1. 스타일 강제 주입 함수
     const forceStyle = () => {
         if (backdrop) {
@@ -608,7 +631,7 @@ function applyModalCustomStyle() {
         // 모달 내 모든 버튼/링크 검사
         const targets = document.querySelectorAll('.upm-modal button, .upm-modal a, .upm-modal span');
         let found = false;
-        
+
         targets.forEach(el => {
             if (el.innerText.includes('채팅하기')) {
                 el.style.setProperty('display', 'none', 'important');
@@ -625,11 +648,11 @@ function applyModalCustomStyle() {
     });
 
     // body뿐만 아니라 하위 전체를 아주 촘촘하게 감시합니다.
-    observer.observe(document.body, { 
-        childList: true, 
-        subtree: true, 
-        attributes: true, 
-        attributeFilter: ['style', 'class'] 
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['style', 'class']
     });
 
     // 3. 배경 클릭 시 즉시 닫기

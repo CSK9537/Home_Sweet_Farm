@@ -3,6 +3,8 @@
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/UserProfileModal.css" />
 
+<input type="hidden" id="isLoggedInStatus" value="${not empty sessionScope.loginUser}">
+<input type="hidden" id="currentLoginUserId" value="${sessionScope.loginUser.user_id}">
 <div class="upm-backdrop" id="upmBackdrop" hidden></div>
 <div class="upm-modal" id="upmModal" role="dialog" aria-modal="true" aria-labelledby="upmModalTitle" hidden>
   <div class="upm-modal-card">

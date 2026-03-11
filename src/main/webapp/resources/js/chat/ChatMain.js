@@ -1,6 +1,6 @@
 import { chatState } from "./ChatState.js";
 import { connectWS } from "./ChatWebSocket.js";
-import { initMyUserInfo, loadChatRooms, initTabs, initUnreadFilter, initDropdownMenu, initCharCount, initTargetInfo } from "./ChatUI.js";
+import { initMyUserInfo, loadChatRooms, initTabs, initUnreadFilter, initDropdownMenu, initCharCount } from "./ChatUI.js";
 import { initPendingFilesModal, initImagePreviewModal } from "./ChatModal.js";
 import { initSearchInput, initSearchKeydown, initNextSearchButton } from "./ChatSearch.js";
 import { handleNewMessageButton } from "./ChatScroll.js";
@@ -36,7 +36,7 @@ async function initApp() {
             initSearchInput();
             initSearchKeydown();
             initNextSearchButton();
-            initTargetInfo();
+            // initTargetInfo();
             initSendMessageEvents();
             handleNewMessageButton();
         } else {
