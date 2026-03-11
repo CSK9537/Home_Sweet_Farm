@@ -1,4 +1,3 @@
-@ -0,0 +1,157 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
@@ -105,10 +104,19 @@
 
         <div class="form-row">
           <div class="form-field">
-            <label class="label">첨부 파일(선택)</label>
-            <input class="input" type="file" name="attachFiles" id="attachFiles" multiple>
-            <div class="hint">이미지는 본문에 자동 삽입되며, 문서는 첨부 파일로 저장됩니다.</div>
-            <div id="fileList" class="file-list" style="display:none;"></div>
+            <label class="label" for="attachFiles">첨부파일</label>
+            <div class="input-file-area">
+	            <input type="file"
+	                   name="attachFiles"
+	                   id="attachFiles"
+	                   class="input-file"
+	                   multiple>
+            </div>
+
+
+            <div class="hint">여러 파일을 한 번에 첨부할 수 있습니다.</div>
+
+            <div id="filePreview" class="file-preview"></div>
           </div>
         </div>
 

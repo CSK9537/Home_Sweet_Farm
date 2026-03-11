@@ -8,13 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (qInput) {
     qInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
-        e.preventDefault();
-        const safeTrim = (v) => (v == null ? "" : String(v)).trim();
-        const q = safeTrim(qInput ? qInput.value : "");
-        const params = new URLSearchParams();
-        if (q) params.set("q", q);
-        if (!(q == "" || q == null || q.length < 2)) window.location.href = "/searchResult";
-        qInput.blur();
+        if ((q == "" || q == null || q.length < 2)) e.preventDefault();
       }
     });
   }

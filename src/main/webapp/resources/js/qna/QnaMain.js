@@ -104,4 +104,11 @@
       }
     }
   }
+  
+  
 })();
+
+function handleUserClick(element) {
+	const id = element.getAttribute('data-user-id');
+	GlobalProfileModal.open(id);
+}

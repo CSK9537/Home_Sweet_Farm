@@ -46,8 +46,8 @@
             </div>
           </article>
 	      <a class="hero-cta" href="/myplant" role="button">
-	                   곧 어떤 식물의 일정이 다가올지<br/>
-	                   내 식물들의 대략적인 상태 출력<br/><br/>
+	        Home Sweet Farm에서는<br/>실제 식물 데이터 기반<br/>관리 서비스를 제공하고 있습니다.<br/>
+	                   서비스를 받아보시겠어요?<br/><br/>
 	        <span class="hero-cta__link">나의 식물 관리하기</span>
 	      </a>
 	      </div>

@@ -43,10 +43,10 @@
 
         <div class="top-users">
           <c:forEach var="u" items="${topUsers}">
-            <a class="top-user" href="">
+            <a class="top-user" href="javascript:void(0);" data-user-id="${u.userId}" onclick="handleUserClick(this)">
               <div class="top-user__rank">${u.rank}</div>
               <div class="top-user__avatar">
-                <img src="user/getProfile?fileName=${u.img}" alt="profile">
+                <img src="${u.img}" alt="profile">
               </div>
               <div class="top-user__name">${u.name}</div>
               <div class="top-user__meta">

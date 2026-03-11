@@ -122,26 +122,33 @@
       const btn = document.getElementById('btnLoadMore');
       
       if (data.list && data.list.length > 0) {
-        data.list.forEach(u => {
-          const item = document.createElement('a');
-          item.className = 'top-user';
-          item.href = `${pageContext.request.contextPath}/user/profile/` + u.userId;
-          
-          item.innerHTML = `
-            <div class="top-user__avatar">
-              <img src="\${u.img}" alt="profile">
-            </div>
-            <div class="top-user__name">\${u.name}</div>
-            <div class="top-user__meta">
-              <span class="pill">\${u.badge}</span>
-            </div>
-            <div class="top-user__point">
-              채택 <b>\${Number(u.point).toLocaleString()}</b>
-            </div>
-          `;
-          container.appendChild(item);
-        });
-      }
+          data.list.forEach(u => {
+            const item = document.createElement('a');
+            item.className = 'top-user';
+            item.href = "javascript:void(0);";
+            
+            // 수정 1: JSP EL 제거 및 올바른 속성 부여 방식 사용
+            item.setAttribute('data-user-id', u.userId);
+            
+            // 수정 2: onclick 속성에 문자열 대신 올바르게 할당
+            item.setAttribute('onclick', 'handleUserClick(this)');
+            
+            // innerHTML 부분은 \${...} 이스케이프 처리가 잘 되어 있습니다.
+            item.innerHTML = `
+              <div class="top-user__avatar">
+                <img src="\${u.img}" alt="profile">
+              </div>
+              <div class="top-user__name">\${u.name}</div>
+              <div class="top-user__meta">
+                <span class="pill">\${u.badge}</span>
+              </div>
+              <div class="top-user__point">
+                채택 <b>\${Number(u.point).toLocaleString()}</b>
+              </div>
+            `;
+            container.appendChild(item);
+          });
+        }
       
       if (!data.hasNext) {
         btn.style.display = 'none';
@@ -157,6 +164,11 @@
 
   // 초기 로드
   document.addEventListener('DOMContentLoaded', loadActiveUsers);
+  
+  function handleUserClick(element) {
+	const id = element.getAttribute('data-user-id');
+	GlobalProfileModal.open(id);
+  }
 </script>
 
 <jsp:include page="/WEB-INF/views/layout/footer.jsp" />
