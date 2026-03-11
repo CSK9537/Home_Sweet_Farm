@@ -101,7 +101,7 @@
 	
 	    <!-- 모바일 2줄: 로고 -->
 	    <div class="mrow mrow--logo">
-	      <a class="mlogo" href="#" aria-label="Home Sweet Farm">Home Sweet Farm</a>
+	      <a class="mlogo" href="/" aria-label="Home Sweet Farm">Home Sweet Farm</a>
 	    </div>
 	
 	    <!-- 모바일 3줄: 필터 없는 검색창 -->

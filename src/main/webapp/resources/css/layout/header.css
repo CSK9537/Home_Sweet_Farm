@@ -24,7 +24,19 @@
 }
 
 /* Auth */
-.auth { width: 320px; height: 50px; display: flex; align-items: center; justify-content: flex-end; gap: 16px; color: var(--color-bg-main); font-size: 15px; }
+.auth { 
+  width: auto; /* 기존 320px에서 변경하여 유연하게 만듦 */
+  min-width: 100px;
+  height: 50px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: flex-end; 
+  gap: 16px; 
+  color: var(--color-bg-main); 
+  font-size: 15px; 
+  white-space: nowrap; /* 줄바꿈 절대 방지 */
+  flex-shrink: 0; /* 공간이 부족해도 요소 크기가 줄어들면서 깨지는 것 방지 */
+}
 .auth__sep { font-size: 13px; font-weight: 700; color: var(--color-main-line); }
 .auth__link { transition: all 0.2s ease; }
 .auth__link:hover { 
@@ -74,7 +86,7 @@
 
 @media (max-width: 768px){
   .header__inner { border-radius: 0; padding: 14px 16px 16px; min-height: auto; box-shadow: var(--shadow-sm); }
-  .gnb--desktop, .auth--desktop, .logo, .fsearch { display: none; }
+  .header__top, .gnb--desktop, .auth--desktop, .logo, .fsearch { display: none; }
   .mrow { display: flex; }
   .mrow--top { align-items: center; justify-content: space-between; min-height: 44px; }
   .auth--mobile { display: flex; width: auto; height: auto; font-size: 16px; }
@@ -96,6 +108,14 @@
   .msearch { display: flex; align-items: center; gap: 10px; width: 100%; height: 36px; padding: 0 12px; border: 2px solid var(--color-main-line); border-radius: 70px; background: transparent; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
   .msearch:focus-within { border-color: var(--color-bg-main); box-shadow: 0 0 0 3px var(--color-main-soft); }
   .msearch__input { flex: 1; height: 100%; border: 0; outline: none; background: transparent; font-size: 14px; color: var(--color-bg-main); }
+  .msearch .fsearch__icon {
+    position: relative; /* static에서 relative로 변경! (손잡이가 도망가지 않도록 꽉 잡기) */
+    top: auto;          /* 데스크탑의 top: 50% 무효화 */
+    left: auto;         /* 데스크탑의 left: 20px 무효화 */
+    transform: none;    /* 데스크탑의 translateY(-50%) 무효화 */
+    flex-shrink: 0;
+    margin-left: 4px;   /* 검색창 선과 너무 붙지 않게 살짝 띄워주기 */
+  }
 
   /* 모바일 드로어 */
   .mnav { display: block; position: fixed; inset: 0; pointer-events: none; z-index: 2000; }
@@ -130,8 +150,8 @@
 
 /* 프로필 이미지 동그랗게 스타일링 */
 .profile-img {
-  width: 28px; /* 헤더 크기에 맞춰 조절 */
-  height: 28px;
+  width: 36px; /* 헤더 크기에 맞춰 조절 */
+  height: 36px;
   border-radius: 50%;
   object-fit: cover; /* 이미지가 찌그러지지 않도록 방지 */
   border: 1px solid #ddd; /* 선택사항: 옅은 테두리 */
@@ -140,9 +160,8 @@
 /* 프로필 이름 스타일 (선택사항) */
 .profile-name {
   font-weight: 500;
-  /* 모바일 등 공간이 좁을 때 말줄임표 처리를 원한다면 아래 주석 해제 */
-  /* max-width: 80px; 
-     white-space: nowrap; 
-     overflow: hidden; 
-     text-overflow: ellipsis; */
+  max-width: 100px; /* 원하는 너비로 조절하세요 (예: 80px ~ 120px) */
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
 }
