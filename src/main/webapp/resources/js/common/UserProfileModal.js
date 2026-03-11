@@ -65,16 +65,44 @@ const GlobalProfileModal = (function () {
 
     // 3. 채팅 링크
     if (data.user_id) {
+      const currentLoginUserIdInput = document.getElementById('currentLoginUserId');
+      const currentMyId = currentLoginUserIdInput ? currentLoginUserIdInput.value : null;
       chatLink.onclick = (e) => {
         e.preventDefault();
+
+        // hidden input에서 로그인 상태 가져오기 ("true" 또는 "false" 문자열로 반환됨)
+        const loggedInInput = document.getElementById('isLoggedInStatus');
+        const isUserLoggedIn = loggedInInput && loggedInInput.value === "true";
+
+        console.log("실제 로그인 여부 확인:", isUserLoggedIn);
+
         if (typeof initVirtualRoom === "function") {
           initVirtualRoom(data.user_id);
           close();
-        } else {
-          location.href = `/chat?target_id=${data.user_id}`;
+        } 
+        else {
+          const chatUrl = `/chat?target_id=${data.user_id}`;
+
+          if (isUserLoggedIn) {
+            // 새 창으로 열기
+            const chatWin = window.open(chatUrl);
+            if (chatWin) {
+                chatWin.focus();
+            } else {
+                // 팝업 차단 시 현재 창 이동
+                location.href = chatUrl;
+            }
+          } else {
+            // 비로그인 시 현재 창 이동 (로그인 페이지 유도)
+            location.href = chatUrl;
+          }
         }
       };
-      chatLink.style.display = 'inline-flex';
+      if (String(data.user_id) === String(currentMyId)) {
+          chatLink.style.display = 'none'; 
+      } else {
+          chatLink.style.display = 'inline-flex';
+      }
     }
 
     // 4. 자기소개 및 통계 세팅

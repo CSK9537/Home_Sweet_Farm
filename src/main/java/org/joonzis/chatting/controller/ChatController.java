@@ -20,6 +20,7 @@ import org.joonzis.chatting.service.ChatService;
 import org.joonzis.chatting.service.MsgService;
 import org.joonzis.chatting.vo.MsgVO;
 import org.joonzis.chatting.vo.RoomVO;
+import org.joonzis.user.dto.UserDTO;
 import org.joonzis.user.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -92,19 +93,21 @@ public class ChatController {
 	 */
 	@GetMapping(value = "/user/info/{targetId}", produces = "application/json; charset=UTF-8")
 	public ResponseEntity<?> getTargetUserInfo(@PathVariable int targetId) {
-	    UserVO user = userService.selectUser(targetId); 
 	    
-	    if (user == null) {
+	    UserDTO userDto = userService.selectPublicProfile(targetId); 
+	    
+	    if (userDto == null) {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	    }
 	    
-	    return ResponseEntity.ok(Map.of(
-	        "user_id", user.getUser_id(),
-	        "username", user.getUsername(),
-	        "nickname", user.getNickname() != null ? user.getNickname() : "",
-	        "profile_filename", user.getProfile_filename() != null ? user.getProfile_filename() : "",
-	        "grade_id", user.getGrade_id()
-	    ));
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("user_id", userDto.getUser_id());
+	    result.put("username", ""); // UserDTO에 없으면 빈값
+	    result.put("nickname", userDto.getNickname());
+	    result.put("profile_filename", userDto.getProfile_filename() != null ? userDto.getProfile_filename() : "");
+	    result.put("grade_id", userDto.getGrade_id());
+	    
+	    return ResponseEntity.ok(result);
 	}
 
 	/**

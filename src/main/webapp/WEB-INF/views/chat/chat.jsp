@@ -79,7 +79,7 @@
 					<div id="chat-view" style="display: none; flex-direction: column; height: 100%;">
 						<div class="chat-header">
 							<div id="chat-user-header" class="user-left" style="display: flex; align-items: center; cursor: pointer;">
-								<img src="/resources/image/default_profile.png" alt="유저">
+								<img id="header-profile-img" src="/resources/image/default_profile.png" alt="유저">
 								<div class="user-info">
 									<span class="name"></span> <span class="role"></span>
 								</div>
