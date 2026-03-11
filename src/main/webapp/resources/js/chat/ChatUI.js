@@ -69,6 +69,7 @@ export function updateMyHeaderProfile() {
         accountDiv.onclick = () => {
             if (window.GlobalProfileModal) {
                 window.GlobalProfileModal.open(myInfo.user_id);
+                applyModalCustomStyle();
             }
         };
     }
@@ -216,9 +217,9 @@ export function loadChatRooms() {
                     const chatHeaderLeft = document.getElementById('chat-user-header');
 
                     chatHeaderLeft.onclick = function () {
-                        // [추가] 만약 전역 객체에 등록이 안 되어 있다면 수동으로 찾아서 연결
                         if (!window.GlobalProfileModal && typeof GlobalProfileModal !== 'undefined') {
                             window.GlobalProfileModal = GlobalProfileModal;
+                            applyModalCustomStyle();
                         }
 
                         const targetId = chatState.session.receiverId;
@@ -543,9 +544,9 @@ export async function initVirtualRoom(targetUserId) {
         const chatHeaderLeft = document.getElementById('chat-user-header');
 
         chatHeaderLeft.onclick = function () {
-            // [추가] 만약 전역 객체에 등록이 안 되어 있다면 수동으로 찾아서 연결
             if (!window.GlobalProfileModal && typeof GlobalProfileModal !== 'undefined') {
                 window.GlobalProfileModal = GlobalProfileModal;
+                applyModalCustomStyle();
             }
 
             const targetId = chatState.session.receiverId;
@@ -577,5 +578,66 @@ export async function initVirtualRoom(targetUserId) {
 
     } catch (error) {
         console.error("[ERROR] 상대방 정보를 불러오는데 실패했습니다:", error);
+    }
+}
+
+// 모달 오픈 후 스타일(배경, 버튼 숨기기)을 강제 적용하는 헬퍼 함수
+// ChatUI.js 하단에 교체
+function applyModalCustomStyle() {
+    const backdrop = document.querySelector('.upm-backdrop');
+    
+    // 1. 스타일 강제 주입 함수
+    const forceStyle = () => {
+        if (backdrop) {
+            backdrop.style.setProperty('display', 'block', 'important');
+            backdrop.style.setProperty('background-color', 'rgba(0, 0, 0, 0.6)', 'important');
+            backdrop.style.setProperty('z-index', '9998', 'important');
+            backdrop.style.setProperty('position', 'fixed', 'important');
+            backdrop.style.setProperty('inset', '0', 'important');
+        }
+    };
+
+    const hideAll = () => {
+        if (backdrop) backdrop.style.setProperty('display', 'none', 'important');
+    };
+
+    forceStyle();
+
+    // 2. 더 강력한 감시자 (Observer)
+    const observer = new MutationObserver(() => {
+        // 모달 내 모든 버튼/링크 검사
+        const targets = document.querySelectorAll('.upm-modal button, .upm-modal a, .upm-modal span');
+        let found = false;
+        
+        targets.forEach(el => {
+            if (el.innerText.includes('채팅하기')) {
+                el.style.setProperty('display', 'none', 'important');
+                found = true;
+            }
+        });
+
+        // 모달이 닫혔는지 체크
+        const modal = document.querySelector('.upm-modal');
+        if (!modal || window.getComputedStyle(modal).display === 'none') {
+            hideAll();
+            observer.disconnect();
+        }
+    });
+
+    // body뿐만 아니라 하위 전체를 아주 촘촘하게 감시합니다.
+    observer.observe(document.body, { 
+        childList: true, 
+        subtree: true, 
+        attributes: true, 
+        attributeFilter: ['style', 'class'] 
+    });
+
+    // 3. 배경 클릭 시 즉시 닫기
+    if (backdrop) {
+        backdrop.onclick = () => {
+            if (window.GlobalProfileModal?.close) window.GlobalProfileModal.close();
+            hideAll();
+            observer.disconnect();
+        };
     }
 }
