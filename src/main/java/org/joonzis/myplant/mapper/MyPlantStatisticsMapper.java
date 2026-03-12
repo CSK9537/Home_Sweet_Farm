@@ -6,5 +6,5 @@ import org.apache.ibatis.annotations.Param;
 import org.joonzis.myplant.dto.MyPlantStatisticsDTO;
 
 public interface MyPlantStatisticsMapper{
-	List<MyPlantStatisticsDTO> findSensorDataByMyplantId(@Param("myplant_id") int myplant_id);
+	List<MyPlantStatisticsDTO> getStatistics(@Param("myplant_id") int myplant_id, @Param("range") String range);
 }

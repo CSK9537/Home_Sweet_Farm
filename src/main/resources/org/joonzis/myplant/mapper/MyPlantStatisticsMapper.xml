@@ -3,17 +3,35 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.joonzis.myplant.mapper.MyPlantStatisticsMapper">
-	<select id="findSensorDataByMyplantId" resultType="org.joonzis.myplant.dto.MyPlantStatisticsDTO">
-		SELECT 
-			myplant_id,
-			temperature,
-			humidity,
-			illumination,
-			soil_moisture,
-			sensing_time
-		FROM tbl_myplant_statistics
-		WHERE myplant_id = #{myplant_id}
-		ORDER BY sensing_time ASC
+	<select id="getStatistics" resultType="org.joonzis.myplant.dto.MyPlantStatisticsDTO">
+	    SELECT 
+	        <choose>
+	            <when test='range == "HOURLY"'> TRUNC(sensing_time, 'HH24') </when>
+	            <when test='range == "DAILY"'> TRUNC(sensing_time, 'DD') </when>
+	            <when test='range == "MONTHLY"'> TRUNC(sensing_time, 'MM') </when>
+	        </choose> AS sensing_time,
+	        
+	        ROUND(AVG(temperature), 1) AS temperature,
+	        ROUND(AVG(humidity), 1) AS humidity,
+	        ROUND(AVG((1023 - illumination) / 1023 * 100), 1) AS illumination,
+	        ROUND(AVG((1023 - soil_moisture) / 1023 * 100), 1) AS soil_moisture
+	        
+	    FROM tbl_myplant_statistics
+	    WHERE myplant_id = #{myplant_id}
+	    
+	    <choose>
+	        <when test='range == "HOURLY"'> AND sensing_time >= SYSDATE - 1 </when>
+	        <when test='range == "DAILY"'> AND sensing_time >= ADD_MONTHS(SYSDATE, -1) </when>
+	        <when test='range == "MONTHLY"'> AND sensing_time >= ADD_MONTHS(SYSDATE, -12) </when>
+	    </choose>
+	    
+	    GROUP BY 
+	        <choose>
+	            <when test='range == "HOURLY"'> TRUNC(sensing_time, 'HH24') </when>
+	            <when test='range == "DAILY"'> TRUNC(sensing_time, 'DD') </when>
+	            <when test='range == "MONTHLY"'> TRUNC(sensing_time, 'MM') </when>
+	        </choose>
+	    ORDER BY sensing_time ASC
 	</select>
 	
 </mapper>

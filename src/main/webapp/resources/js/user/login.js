@@ -72,6 +72,7 @@ const pwMsg = document.querySelector("#pwMsg");
 const rememberMe = document.querySelector("#rememberMe");
 const rememberHidden = document.querySelector("#rememberHidden");
 const findPwById = document.querySelector("#findPwById");
+const redirect = document.querySelector("#hiddenRedirect");
 const idMsg2 = document.querySelector("#idMsg2");
 const sendCodeBtn2 = document.querySelector("#sendCode-btn2");
 
@@ -79,11 +80,18 @@ const sendCodeBtn2 = document.querySelector("#sendCode-btn2");
 loginId.addEventListener("input", () => {idMsg.innerText = "";});
 loginPw.addEventListener("input", () => {pwMsg.innerText = "";});
 
+
 // 로그인
 loginBtn.addEventListener("click", () => {
 	
 	const idVal = loginId.value.trim();
 	const pwVal = loginPw.value.trim();
+	let rdVal; 
+	if(redirect){
+		rdVal = redirect.getAttribute('data-redirect');
+	}else{
+		rdVal = null;
+	}
 	
 	// 빈 값 검증
 	if(idVal === ""){
@@ -112,6 +120,7 @@ loginBtn.addEventListener("click", () => {
 		body: JSON.stringify({
 			username: idVal,
 			password: pwVal,
+			redirect: rdVal,
 			rememberMe: rememberVal
 		})
 	})

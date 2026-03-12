@@ -65,6 +65,8 @@
                   <span>로그인 상태 유지</span>
                 </label>
               </div>
+              
+              <div id="hiddenRedirect" data-redirect="${redirect}" style="display:none;"></div>
 
               <div class="btn-row">
                 <button type="button" class="btn btn-primary" id="loginBtn" style="width: 100%;">로그인</button>

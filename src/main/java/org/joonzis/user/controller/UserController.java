@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import lombok.extern.log4j.Log4j;
 
@@ -66,39 +67,51 @@ public class UserController {
 	// 로그인 화면
 	@GetMapping("/login")
 	public String loginForm(HttpServletRequest request,
-					HttpSession session) {
+							HttpSession session,
+							@RequestParam(value="redirect", required=false) String redirect,
+							Model model) {
 		
-		//이미 로그인 상태면 홈으로 이동
+		// 이미 로그인 상태면 홈으로 이동 (또는 원래 가려던 곳으로 이동)
 		if(session.getAttribute("loginUser") != null) {
-			return "redirect:/";
+            return (redirect != null && !redirect.isEmpty()) ? "redirect:" + redirect : "redirect:/";
 		}
-		//*자동 로그인 시, 쿠키 필요함
-		Cookie[] cookies = request.getCookies();//쿠키들 배열 처리
+		
+		// 자동 로그인 시, 쿠키 필요함
+		Cookie[] cookies = request.getCookies();
 		if(cookies != null) {
-			for (Cookie c : cookies) { //쿠키 목록 확인
-				if("rememberId".equals(c.getName())) {//rememberId: 자동 로그인용 쿠키 이름
-					String username = c.getValue();//쿠키 값 가져옴
-					UserVO vo = uservice.findByUsername(username);//DB에서 사용자 조회
-					if(vo != null) {//vo에 유저 있음 자동 로그인
+			for (Cookie c : cookies) { 
+				if("rememberId".equals(c.getName())) {
+					String username = c.getValue();
+					UserVO vo = uservice.findByUsername(username);
+					if(vo != null) {
 						session.setAttribute("loginUser", vo);
-						return "redirect:/";//로그인 완료 시 홈으로 이동
+                        // 자동 로그인 성공 시에도 redirect 값이 있다면 그곳으로 보냄
+						return (redirect != null && !redirect.isEmpty()) ? "redirect:" + redirect : "redirect:/";
 					}
 				}
 			}
 		}
+		
+		// 리다이렉트 값이 있다면 Model에 담아서 뷰(화면)로 전달
+		if(redirect != null && !redirect.isEmpty()) {
+			model.addAttribute("redirect", redirect); 
+		}
+		
 		return "user/login";
 	}
 	
 	// 로그인 처리
 	@PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> loginProcess(@RequestBody Map<String, String> loginData,
-															HttpSession session, 
-															HttpServletResponse response) {
+	public ResponseEntity<Map<String, Object>> loginProcess(
+            @RequestBody Map<String, String> loginData,
+            HttpSession session, 
+            HttpServletResponse response) { // 👈 @RequestParam 부분 삭제
 		
 		String username = loginData.get("username");
 		String password = loginData.get("password");
-		String rememberMe = loginData.getOrDefault("rememberMe", "N"); // 값이 없으면 "N"
+		String rememberMe = loginData.getOrDefault("rememberMe", "N");
+		String redirect = loginData.get("redirect"); 
 		
 		Map<String, Object> result = new HashMap<>();
 		
@@ -109,7 +122,6 @@ public class UserController {
 			return ResponseEntity.ok(result);
 		} else if (vo.getEnable() == 0) {
 			log.error("비활성 상태의 계정의 로그인 시도!");
-			// 비활성 계정의 로그인 시도이므로, 휴면 계정을 해제하는 비즈니스 로직 적용 가능
 			result.put("enable", 0);
 		}
 		
@@ -128,9 +140,17 @@ public class UserController {
 			response.addCookie(c);
 		}
 		
-		result.put("success", true);
-		result.put("redirectUrl", "/");
-		return ResponseEntity.ok(result);
+		// 리다이렉트 검증
+		if(redirect != null && !redirect.isEmpty()) {
+			result.put("success", true);
+			result.put("redirectUrl", redirect);
+		} else {
+			// 그렇지 않으면 홈으로
+			result.put("success", true);
+			result.put("redirectUrl", "/");
+		}
+        
+        return ResponseEntity.ok(result);
 	}
 	
 	// 로그아웃

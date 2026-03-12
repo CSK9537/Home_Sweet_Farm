@@ -213,13 +213,46 @@
    * 이벤트 바인딩
    * ======================= */
   
-  // [최적화] 이벤트 핸들러를 외부 함수로 분리하여 다중 생성 방지
+  //전역 변수로 캐시 객체 추가
+  var statsCache = {}; 
+
   function handleOpenBtnClick() {
     myplant_id = this.getAttribute("data-plant-id");
+    statsCache = {}; // 모달을 새로 열 때 식물이 바뀌면 캐시 초기화
     currentRange = "HOURLY";
     setActiveTab(currentRange);
     openModal();
     loadStats(currentRange);
+  }
+
+  function loadStats(range) {
+    if (!myplant_id) return;
+
+    // 1. 이미 불러온 데이터가 있다면 서버 통신 없이 즉시 렌더링
+    if (statsCache[range]) {
+      applyData(statsCache[range]);
+      return;
+    }
+
+    var base = (window.__ctx || "");
+    var url = base
+      + "/myplant/statistics?myplant_id=" + encodeURIComponent(myplant_id)
+      + "&range=" + encodeURIComponent(range);
+
+    fetch(url, { headers: { "Accept": "application/json" } })
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        // 2. 서버에서 받아온 데이터를 캐시에 저장
+        statsCache[range] = data;
+        applyData(data);
+      })
+      .catch(function (e) {
+        console.error("[stats] fetch failed:", e);
+        applyData({ series: { illumination: [], temperature: [], humidity: [], soil_moisture: [] } });
+      });
   }
 
   function handleTabClick() {
