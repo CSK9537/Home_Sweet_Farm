@@ -56,6 +56,7 @@ public class StoreController {
 	public String main(Model model) {
 		model.addAttribute("hotProducts",sService.getListOnHot());		// hot 리스트
 		model.addAttribute("saleProducts", sService.getListOnSale());	// 세일 중인 리스트
+		model.addAttribute("categoryList", sService.selectListCategory());
 		return "/store/StoreMain";
 	}
 	
@@ -65,6 +66,7 @@ public class StoreController {
 		log.info("productListByCategory - category_id: " + category_id);
 		
 		model.addAttribute("products", sService.getListByCategoryId(category_id));
+		model.addAttribute("categoryList", sService.selectListCategory());
 		
 		// JSP에서 사용하는 categoryName 처리를 위해 추가
 		ProductCategoryVO category = sService.getCategoryInfo(category_id);
@@ -80,6 +82,7 @@ public class StoreController {
 	public String productInfo(@RequestParam("product_id") int product_id ,Model model) {
 		model.addAttribute("product", sService.getProductDetail(product_id));
 		model.addAttribute("topReview", sService.getTopReviewByProductId(product_id));
+		model.addAttribute("categoryList", sService.selectListCategory());
 		return "/store/StoreView";
 	}
 
@@ -104,6 +107,8 @@ public class StoreController {
 	@GetMapping("/sale")
 	public String saleList(Model model) {
 		model.addAttribute("products", sService.getListOnSale());
+		model.addAttribute("categoryList", sService.selectListCategory());
+		model.addAttribute("categoryName", "세일 중인 상품");
 		return "/store/StoreList";
 	}
 	
@@ -120,6 +125,7 @@ public class StoreController {
 //		}
 		
 		model.addAttribute("products", sService.searchProduct(search));
+		model.addAttribute("categoryList", sService.selectListCategory());
 		
 		// 검색 결과 시 카테고리명 표시
 		if (search.getCategoryId() != null && search.getCategoryId() != 0) {

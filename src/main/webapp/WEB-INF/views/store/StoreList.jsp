@@ -4,10 +4,12 @@
 
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/StoreList.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/StoreCategory.css" />
 
 <div class="page-shell">
   <div class="content-wrap">
     <div class="content-card store-list">
+      <jsp:include page="/WEB-INF/views/store/CategoryMenu.jsp" />
 
       <!-- 상단 검색바 -->
       <div class="store-search">

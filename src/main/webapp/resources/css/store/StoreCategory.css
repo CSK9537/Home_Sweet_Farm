@@ -1,0 +1,71 @@
+/* Store Category Menu Styles */
+.store-category-container {
+    width: 100%;
+    background-color: #fff;
+    border-bottom: 1px solid var(--color-main-soft, #f0f0f0);
+    margin-bottom: 20px;
+    position: sticky;
+    top: 0; /* Header height might need adjustment if header is also sticky */
+    z-index: 50;
+}
+
+.category-menu-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.category-menu {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-x: auto;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.category-menu::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
+.category-item {
+    flex: 0 0 auto;
+}
+
+.category-item a {
+    display: block;
+    padding: 15px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text-muted, #666);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.category-item:hover a {
+    color: var(--color-bg-main, #6b7b61);
+}
+
+.category-item.active a {
+    color: var(--color-bg-main, #6b7b61);
+    border-bottom-color: var(--color-bg-main, #6b7b61);
+    font-weight: 800;
+}
+
+/* For pages where the menu is inside the page-shell or content-wrap */
+.content-card .store-category-container {
+    margin-top: -20px;
+    margin-left: -20px;
+    margin-right: -20px;
+    width: calc(100% + 40px);
+    border-radius: 16px 16px 0 0;
+}
+
+@media (max-width: 768px) {
+    .category-item a {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+}

@@ -3,91 +3,9 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<%-- ===============================
-     ✅ (뷰 확인용) 더미 데이터
-     실제 컨트롤러에서 product/topReview/reviewList 내려주면 이 블록 제거
-     =============================== --%>
-<%
-  if (request.getAttribute("product") == null) {
-    java.util.Map<String, Object> product = new java.util.HashMap<String, Object>();
-    product.put("product_id", 1);
-    product.put("product_name", "몬스테라 화분 세트");
-    product.put("product_price", 32900);
-    product.put("product_rate", 4.4);
-    product.put("review_count", 18);
-    product.put("product_description_brief", "초보자도 키우기 쉬운 몬스테라 화분 세트입니다.");
-    product.put("product_description_detail",
-        "✔ 실내 공기 정화 효과\n✔ 관리가 쉬운 인기 식물\n✔ 인테리어 효과 탁월\n\n자연 식물이므로 모양과 크기는 조금씩 다를 수 있습니다.");
-    product.put("product_caution",
-        "※ 직사광선을 피해주세요.\n※ 과도한 물주기는 금물입니다.\n※ 배송 중 잎 손상이 발생할 수 있습니다.");
-
-    java.util.List<String> imageList = new java.util.ArrayList<String>();
-    for(int i=1; i<=6; i++){
-      imageList.add("https://picsum.photos/seed/detail_"+i+"/900/500");
-    }
-    product.put("image_list", imageList);
-    request.setAttribute("product", product);
-
-    java.util.Map<String, Object> topReview = new java.util.HashMap<String, Object>();
-    topReview.put("nickname", "그린러버");
-    topReview.put("review_rate", 4.5);
-    topReview.put("review_title", "가성비 좋은듯요");
-    topReview.put("review_content", "생각보다 훨씬 싱싱하고 예뻐요! 인테리어 효과 최고입니다.");
-    topReview.put("review_date", new java.util.Date());
-    topReview.put("verified", true);
-    request.setAttribute("topReview", topReview);
-
-    java.util.List<java.util.Map<String,Object>> reviewList = new java.util.ArrayList<java.util.Map<String,Object>>();
-    for(int i=1;i<=30;i++){
-      java.util.Map<String,Object> r = new java.util.HashMap<String,Object>();
-      r.put("nickname", "유저"+i);
-      r.put("review_rate", (i%5)+1);
-      r.put("review_title", (i%3==0 ? "손잡이 조립 넘 힘듦" : "가성비 좋아요"));
-      r.put("review_content", "이 제품 정말 만족합니다. 배송도 빠르고 상태도 좋았어요. ("+i+")");
-      r.put("review_date", new java.util.Date(System.currentTimeMillis() - (long)(i*86400000L))); // 날짜 분산
-      r.put("verified", (i%2==0));
-      r.put("helpful", (i%7));
-
-      // 일부 리뷰만 이미지 포함
-      if(i%4==0){
-        java.util.List<String> imgs = new java.util.ArrayList<String>();
-        imgs.add("https://picsum.photos/seed/rev_"+i+"_1/200/200");
-        imgs.add("https://picsum.photos/seed/rev_"+i+"_2/200/200");
-        r.put("images", imgs);
-      }
-      reviewList.add(r);
-    }
-    request.setAttribute("reviewList", reviewList);
-
-    // 관련/추천 더미
-    java.util.List<java.util.Map<String,Object>> relatedProducts = new java.util.ArrayList<java.util.Map<String,Object>>();
-    for(int i=1;i<=8;i++){
-      java.util.Map<String,Object> p = new java.util.HashMap<String,Object>();
-      p.put("product_id", 100+i);
-      p.put("product_name", "관련 상품 "+i);
-      p.put("product_rate", 3.8 + (i%3)*0.4);
-      p.put("review_count", 5+i);
-      p.put("saved_name", "https://picsum.photos/seed/rel_"+i+"/300/220");
-      relatedProducts.add(p);
-    }
-    request.setAttribute("relatedProducts", relatedProducts);
-
-    java.util.List<java.util.Map<String,Object>> recommendProducts = new java.util.ArrayList<java.util.Map<String,Object>>();
-    for(int i=1;i<=8;i++){
-      java.util.Map<String,Object> p = new java.util.HashMap<String,Object>();
-      p.put("product_id", 200+i);
-      p.put("product_name", "추천 상품 "+i);
-      p.put("product_rate", 4.0 + (i%4)*0.3);
-      p.put("review_count", 10+i);
-      p.put("saved_name", "https://picsum.photos/seed/rec_"+i+"/300/220");
-      recommendProducts.add(p);
-    }
-    request.setAttribute("recommendProducts", recommendProducts);
-  }
-%>
-
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/StoreView.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/StoreCategory.css" />
 
 <script>
   // ✅ JS에서 contextPath 안전하게 쓰기 위함
@@ -97,6 +15,7 @@
 <div class="page-shell">
   <div class="content-wrap">
     <div class="content-card store-detail">
+      <jsp:include page="/WEB-INF/views/store/CategoryMenu.jsp" />
 
       <!-- 우측 플로팅(찜/장바구니) -->
       <div class="store-floating">
