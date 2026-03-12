@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.joonzis.qna.dto.QnaFaqDTO;
 import org.joonzis.qna.dto.QnaPagingDTO;
+import org.joonzis.qna.dto.QnaPeopleInterestStatDTO;
 import org.joonzis.qna.dto.QnaTopUserDTO;
 import org.joonzis.qna.dto.QnaWaitingDTO;
 import org.joonzis.qna.mapper.QnaMainMapper;
@@ -107,14 +108,34 @@ public class QnaMainServiceImpl implements QnaMainService {
         result.put("hasNext", endRow(page, pageSize) < total);
         return result;
     }
-    
+
+    @Override
+    public Map<String, Object> getAgeInterestStats(String ageGroup) {
+        AgeRange range = AgeRange.of(ageGroup);
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("minAge", range.minAge);
+        param.put("maxAge", range.maxAge);
+
+        List<QnaPeopleInterestStatDTO> list = qnaMainMapper.selectAgeInterestTopTags(param);
+        applyPercent(list);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("ageGroup", range.code);
+        result.put("ageLabel", range.label);
+        result.put("headline", buildHeadline(range.label, list));
+        result.put("list", list);
+        result.put("empty", list == null || list.isEmpty());
+        return result;
+    }
+
     // 메인 페이지용
     @Override
     public List<QnaFaqDTO> topQuestions() {
-    	Map<String, Object> Param = new HashMap<>();
-    	Param.put("startRow", 1);
-        Param.put("endRow", 3);
-    	return qnaMainMapper.selectFaqTopList(Param);
+        Map<String, Object> param = new HashMap<>();
+        param.put("startRow", 1);
+        param.put("endRow", 3);
+        return qnaMainMapper.selectFaqTopList(param);
     }
 
     /**
@@ -125,13 +146,56 @@ public class QnaMainServiceImpl implements QnaMainService {
         if (img == null || img.trim().isEmpty()) {
             img = "default_profile.png";
         }
-        
+
         if (img.startsWith("http")) {
             u.setImg(img);
         } else {
-            // ProfileImageController (/user/getProfile) 사용
             u.setImg(ctx + "/user/getProfile?fileName=" + img);
         }
+    }
+
+    private void applyPercent(List<QnaPeopleInterestStatDTO> list) {
+        if (list == null || list.isEmpty()) return;
+
+        int total = 0;
+        int maxIdx = 0;
+        int maxCnt = -1;
+
+        for (int i = 0; i < list.size(); i++) {
+            total += list.get(i).getCnt();
+            if (list.get(i).getCnt() > maxCnt) {
+                maxCnt = list.get(i).getCnt();
+                maxIdx = i;
+            }
+        }
+
+        if (total <= 0) {
+            for (QnaPeopleInterestStatDTO dto : list) {
+                dto.setPercent(0);
+            }
+            return;
+        }
+
+        int percentSum = 0;
+        for (QnaPeopleInterestStatDTO dto : list) {
+            int percent = (int) Math.round(dto.getCnt() * 100.0 / total);
+            dto.setPercent(percent);
+            percentSum += percent;
+        }
+
+        // 반올림 오차 보정: 가장 큰 항목에 차이값 더함
+        int diff = 100 - percentSum;
+        if (diff != 0 && maxIdx >= 0 && maxIdx < list.size()) {
+            QnaPeopleInterestStatDTO maxItem = list.get(maxIdx);
+            maxItem.setPercent(maxItem.getPercent() + diff);
+        }
+    }
+
+    private String buildHeadline(String ageLabel, List<QnaPeopleInterestStatDTO> list) {
+        if (list == null || list.isEmpty()) {
+            return ageLabel + " 관심사 통계를 표시할 데이터가 아직 부족합니다.";
+        }
+        return ageLabel + " Q&A 관심 해시태그 1위는 " + list.get(0).getTagName() + " 입니다.";
     }
 
     private static int startRow(int page, int pageSize) {
@@ -166,5 +230,34 @@ public class QnaMainServiceImpl implements QnaMainService {
         if (hours < 24) return hours + "시간 전";
         long days = d.toDays();
         return days + "일 전";
+    }
+
+    private static class AgeRange {
+        private final String code;
+        private final String label;
+        private final int minAge;
+        private final int maxAge;
+
+        private AgeRange(String code, String label, int minAge, int maxAge) {
+            this.code = code;
+            this.label = label;
+            this.minAge = minAge;
+            this.maxAge = maxAge;
+        }
+
+        private static AgeRange of(String code) {
+            if (code == null) return new AgeRange("30", "30대", 30, 39);
+
+            switch (code) {
+                case "U10": return new AgeRange("U10", "10대 미만", 0, 9);
+                case "10":  return new AgeRange("10", "10대", 10, 19);
+                case "20":  return new AgeRange("20", "20대", 20, 29);
+                case "30":  return new AgeRange("30", "30대", 30, 39);
+                case "40":  return new AgeRange("40", "40대", 40, 49);
+                case "50":  return new AgeRange("50", "50대", 50, 59);
+                case "60":  return new AgeRange("60", "60대 이상", 60, 200);
+                default:    return new AgeRange("30", "30대", 30, 39);
+            }
+        }
     }
 }

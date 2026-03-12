@@ -176,5 +176,43 @@
     )
     WHERE RN &gt;= #{startRow}
   </select>
+  
+    <!-- 5) 나이대별 관심 해시태그 TOP4
+       기준:
+       - Q&A 질문글(TBL_BOARD.BOARD_TYPE='Q', PARENT_ID IS NULL)
+       - 질문글에 연결된 해시태그(TBL_BOARD_ASPECT, TBL_BOARD_HASHTAG_LIST)
+       - 작성자 생년월일(TBL_USER.BRITH_DATE)
+  -->
+  <select id="selectAgeInterestTopTags"
+          parameterType="map"
+          resultType="org.joonzis.qna.dto.QnaPeopleInterestStatDTO">
+    SELECT tagName, cnt
+    FROM (
+      SELECT
+        H.BOARD_HASHTAG_NAME AS tagName,
+        COUNT(*) AS cnt,
+        ROW_NUMBER() OVER (
+          ORDER BY COUNT(*) DESC, H.BOARD_HASHTAG_NAME ASC
+        ) AS rn
+      FROM TBL_BOARD B
+      JOIN TBL_USER U
+        ON U.USER_ID = B.USER_ID
+      JOIN TBL_BOARD_ASPECT BA
+        ON BA.BOARD_ID = B.BOARD_ID
+      JOIN TBL_BOARD_HASHTAG_LIST H
+        ON H.BOARD_HASHTAG_ID = BA.BOARD_HASHTAG_ID
+      WHERE B.IS_ACTIVE = 'Y'
+        AND B.BOARD_TYPE = 'Q'
+        AND B.PARENT_ID IS NULL
+        AND H.IS_ACTIVE = 'Y'
+        AND U.BRITH_DATE IS NOT NULL
+        AND NVL(U.ENABLE, 1) != 0
+        AND TRUNC(MONTHS_BETWEEN(SYSDATE, U.BRITH_DATE) / 12)
+            BETWEEN #{minAge} AND #{maxAge}
+      GROUP BY H.BOARD_HASHTAG_NAME
+    )
+    WHERE rn &lt;= 4
+    ORDER BY cnt DESC, tagName ASC
+  </select>
 
 </mapper>

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.joonzis.qna.dto.QnaFaqDTO;
+import org.joonzis.qna.dto.QnaPeopleInterestStatDTO;
 import org.joonzis.qna.dto.QnaTopUserDTO;
 import org.joonzis.qna.dto.QnaWaitingDTO;
 
@@ -23,4 +24,7 @@ public interface QnaMainMapper {
     // People: 전체 활동 유저
     int countActiveUsers();
     List<QnaTopUserDTO> selectActiveUserList(Map<String, Object> param);
+    
+    // People: 나이대별 관심 해시태그 TOP4
+    List<QnaPeopleInterestStatDTO> selectAgeInterestTopTags(Map<String, Object> param);
 }
