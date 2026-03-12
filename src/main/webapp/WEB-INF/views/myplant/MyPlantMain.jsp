@@ -24,7 +24,7 @@
             <p class="myplants-empty__title">나의 식물 관리 서비스를 이용하고 싶으신가요?</p>
             <p class="myplants-empty__desc">로그인 후 이용하실 수 있습니다.</p>
 
-            <a class="mp-btn mp-btn--ghost" href="/user/login">
+            <a class="mp-btn mp-btn--ghost" href="/user/login?redirect=/myplant">
               	로그인
             </a>
           </div>
