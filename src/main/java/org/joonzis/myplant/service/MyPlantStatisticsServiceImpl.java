@@ -21,9 +21,33 @@ public class MyPlantStatisticsServiceImpl implements MyPlantStatisticsService{
 	public StatsResponseDTO getPlantStatistics(int myplant_id, String range) {
 		List<MyPlantStatisticsDTO> rawData = statisticsMapper.findSensorDataByMyplantId(myplant_id);
 
-        // Date 타입인 sensing_time을 LocalDateTime으로 변환 후 시간 단위로 자름
+        // 1. range에 따른 조회 기준 시간(Cutoff) 설정
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime cutoff;
+        
+        switch (range.toUpperCase()) {
+            case "HOURLY":  
+                cutoff = now.minusHours(24); // 지난 24시간
+                break;
+            case "DAILY":   
+                cutoff = now.minusMonths(1); // 지난 1달
+                break;
+            case "MONTHLY": 
+                cutoff = now.minusYears(1);  // 지난 1년
+                break;
+            default:        
+                cutoff = LocalDateTime.MIN;
+                break;
+        }
+
+        // 2. Date 타입인 sensing_time을 변환 후, 기준 시간(cutoff) 이후의 데이터만 필터링하여 자름
         Map<LocalDateTime, List<MyPlantStatisticsDTO>> groupedData = rawData.stream()
                 .filter(data -> data.getSensing_time() != null) // null 데이터 안전망
+                .filter(data -> {
+                    // 데이터의 측정 시간이 cutoff(기준 시간) 이후인지 필터링
+                    LocalDateTime sensingTime = convertToLocalDateTime(data.getSensing_time());
+                    return !sensingTime.isBefore(cutoff); 
+                })
                 .collect(Collectors.groupingBy(
                         data -> truncateTime(convertToLocalDateTime(data.getSensing_time()), range),
                         TreeMap::new,
@@ -66,8 +90,6 @@ public class MyPlantStatisticsServiceImpl implements MyPlantStatisticsService{
             sum += val;
             count++;
         }
-        
-        // count가 0일 경우(그룹에 데이터가 없을 경우) null 반환, 아니면 소수점 첫째 자리까지 반올림
         return count == 0 ? null : Math.round((sum / count) * 10.0) / 10.0;
     }
     
@@ -82,7 +104,6 @@ public class MyPlantStatisticsServiceImpl implements MyPlantStatisticsService{
             sum += percentage;
             count++;
         }
-        
         return count == 0 ? null : Math.round((sum / count) * 10.0) / 10.0;
     }
 
