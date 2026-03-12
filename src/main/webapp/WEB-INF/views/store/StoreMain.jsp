@@ -5,24 +5,19 @@
 <jsp:include page="/WEB-INF/views/layout/header.jsp" />
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/StoreMain.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/store/StoreCategory.css" />
 
 <div class="page-shell">
   <div class="content-wrap">
     <div class="content-card store-main">
+      <jsp:include page="/WEB-INF/views/store/CategoryMenu.jsp" />
 
       <!-- 배너(광고/홍보/이벤트) -->
-      <c:if test="${not empty bannerImageUrl}">
-        <div class="store-banner">
-          <a href="${empty bannerLink ? '#' : bannerLink}" class="store-banner__link">
-            <img src="${bannerImageUrl}" alt="스토어 배너" class="store-banner__img" />
-          </a>
-        </div>
-      </c:if>
-      <c:if test="${empty bannerImageUrl}">
-        <div class="store-banner store-banner--dummy">
-          <div class="store-banner__dummy-text">광고 / 홍보 / 이벤트 이미지</div>
-        </div>
-      </c:if>
+      <div class="store-banner">
+        <a href="${empty bannerLink ? '#' : bannerLink}" class="store-banner__link">
+          <img src="${pageContext.request.contextPath}/resources/image/광고배너.jpg" alt="스토어 배너" class="store-banner__img" />
+        </a>
+      </div>
 
       <!-- 검색바 -->
       <div class="store-search">
