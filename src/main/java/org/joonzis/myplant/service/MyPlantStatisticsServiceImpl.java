@@ -5,124 +5,44 @@ import org.joonzis.myplant.dto.StatsResponseDTO;
 import org.joonzis.myplant.mapper.MyPlantStatisticsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
+
+// 1. 날짜 포맷팅을 위한 import 추가
+import java.text.SimpleDateFormat; 
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
-public class MyPlantStatisticsServiceImpl implements MyPlantStatisticsService{
-	@Autowired
-	private MyPlantStatisticsMapper statisticsMapper;
-	
-	@Override
-	public StatsResponseDTO getPlantStatistics(int myplant_id, String range) {
-		List<MyPlantStatisticsDTO> rawData = statisticsMapper.findSensorDataByMyplantId(myplant_id);
+public class MyPlantStatisticsServiceImpl implements MyPlantStatisticsService {
 
-        // 1. range에 따른 조회 기준 시간(Cutoff) 설정
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime cutoff;
-        
-        switch (range.toUpperCase()) {
-            case "HOURLY":  
-                cutoff = now.minusHours(24); // 지난 24시간
-                break;
-            case "DAILY":   
-                cutoff = now.minusMonths(1); // 지난 1달
-                break;
-            case "MONTHLY": 
-                cutoff = now.minusYears(1);  // 지난 1년
-                break;
-            default:        
-                cutoff = LocalDateTime.MIN;
-                break;
-        }
+    @Autowired
+    private MyPlantStatisticsMapper statisticsMapper;
 
-        // 2. Date 타입인 sensing_time을 변환 후, 기준 시간(cutoff) 이후의 데이터만 필터링하여 자름
-        Map<LocalDateTime, List<MyPlantStatisticsDTO>> groupedData = rawData.stream()
-                .filter(data -> data.getSensing_time() != null) // null 데이터 안전망
-                .filter(data -> {
-                    // 데이터의 측정 시간이 cutoff(기준 시간) 이후인지 필터링
-                    LocalDateTime sensingTime = convertToLocalDateTime(data.getSensing_time());
-                    return !sensingTime.isBefore(cutoff); 
-                })
-                .collect(Collectors.groupingBy(
-                        data -> truncateTime(convertToLocalDateTime(data.getSensing_time()), range),
-                        TreeMap::new,
-                        Collectors.toList()
-                ));
+    @Override
+    public StatsResponseDTO getPlantStatistics(int myplant_id, String range) {
+        List<MyPlantStatisticsDTO> dbData = statisticsMapper.getStatistics(myplant_id, range);
 
         List<StatsResponseDTO.DataPoint> illuminationList = new ArrayList<>();
         List<StatsResponseDTO.DataPoint> temperatureList = new ArrayList<>();
         List<StatsResponseDTO.DataPoint> humidityList = new ArrayList<>();
         List<StatsResponseDTO.DataPoint> soilMoistureList = new ArrayList<>();
 
-        for (Map.Entry<LocalDateTime, List<MyPlantStatisticsDTO>> entry : groupedData.entrySet()) {
-            String timeString = entry.getKey().toString();
-            List<MyPlantStatisticsDTO> group = entry.getValue();
+        // 2. 자바스크립트가 인식할 수 있는 ISO 8601 포맷터 생성 (가운데 'T'가 핵심입니다)
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
-            Double avgIllum = calculatePercentageAverage(group, MyPlantStatisticsDTO::getIllumination);
-            Double avgTemp  = calculateAverage(group, MyPlantStatisticsDTO::getTemperature);
-            Double avgHum   = calculateAverage(group, MyPlantStatisticsDTO::getHumidity);
-            Double avgSoil  = calculatePercentageAverage(group, MyPlantStatisticsDTO::getSoil_moisture);
+        for (MyPlantStatisticsDTO data : dbData) {
+            
+            // 3. 기존의 .toString() 대신 포맷터를 사용해서 변환
+            String timeString = sdf.format(data.getSensing_time()); 
 
-            illuminationList.add(new StatsResponseDTO.DataPoint(timeString, avgIllum));
-            temperatureList.add(new StatsResponseDTO.DataPoint(timeString, avgTemp));
-            humidityList.add(new StatsResponseDTO.DataPoint(timeString, avgHum));
-            soilMoistureList.add(new StatsResponseDTO.DataPoint(timeString, avgSoil));
+            illuminationList.add(new StatsResponseDTO.DataPoint(timeString, (double) data.getIllumination()));
+            temperatureList.add(new StatsResponseDTO.DataPoint(timeString, (double) data.getTemperature()));
+            humidityList.add(new StatsResponseDTO.DataPoint(timeString, (double) data.getHumidity()));
+            soilMoistureList.add(new StatsResponseDTO.DataPoint(timeString, (double) data.getSoil_moisture()));
         }
 
         StatsResponseDTO.Series series = new StatsResponseDTO.Series(
                 illuminationList, temperatureList, humidityList, soilMoistureList
         );
         return new StatsResponseDTO(series);
-    }
-
-	// 평균 계산 헬퍼
-    private Double calculateAverage(List<MyPlantStatisticsDTO> group, ToIntFunction<MyPlantStatisticsDTO> extractor) {
-    	double sum = 0;
-        int count = 0;
-        
-        for (MyPlantStatisticsDTO dto : group) {
-            int val = extractor.applyAsInt(dto);
-            sum += val;
-            count++;
-        }
-        return count == 0 ? null : Math.round((sum / count) * 10.0) / 10.0;
-    }
-    
-    // 퍼센트 계산 헬퍼
-    private Double calculatePercentageAverage(List<MyPlantStatisticsDTO> group, ToIntFunction<MyPlantStatisticsDTO> extractor) {
-        double sum = 0;
-        int count = 0;
-        
-        for (MyPlantStatisticsDTO dto : group) {
-            int val = extractor.applyAsInt(dto);
-            double percentage = ((1023.0 - val) / 1023.0) * 100.0;
-            sum += percentage;
-            count++;
-        }
-        return count == 0 ? null : Math.round((sum / count) * 10.0) / 10.0;
-    }
-
-    // LocalDateTime 변환 헬퍼
-    private LocalDateTime convertToLocalDateTime(Date date) {
-        if (date instanceof java.sql.Timestamp) {
-            return ((java.sql.Timestamp) date).toLocalDateTime();
-        }
-        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-    }
-
-    // 시간 단위
-    private LocalDateTime truncateTime(LocalDateTime time, String range) {
-        if (time == null) return null;
-        switch (range.toUpperCase()) {
-            case "HOURLY":  return time.truncatedTo(ChronoUnit.HOURS);
-            case "DAILY":   return time.truncatedTo(ChronoUnit.DAYS);
-            case "MONTHLY": return time.withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS);
-            default:        return time;
-        }
     }
 }
