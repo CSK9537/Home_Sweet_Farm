@@ -1,6 +1,5 @@
 package org.joonzis.qna.controller;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -116,8 +115,10 @@ public class QnaController {
     public ResponseEntity<UploadResponseDTO> upload(
             @RequestParam("file") MultipartFile file,
             @RequestParam("tempKey") String tempKey,
-            @RequestParam("boardType") String boardType) {
-        UploadResponseDTO res = formService.uploadTempFile(file, tempKey, boardType);
+            @RequestParam("boardType") String boardType,
+            @RequestParam(value = "purpose", required = false, defaultValue = "qna") String purpose) {
+
+        UploadResponseDTO res = formService.uploadTempFile(file, tempKey, boardType, purpose);
         return ResponseEntity.ok(res);
     }
 
@@ -169,7 +170,7 @@ public class QnaController {
         board.setUser_id(userId);
         board.setContent(contentHtml);
 
-        formService.write(board, userId, tempKey, null, tagNames);
+        formService.write(board, userId, tempKey, null, tagNames, "Q", "qna");
         return "redirect:/qna/QnaList";
     }
 
@@ -187,7 +188,7 @@ public class QnaController {
         board.setUser_id(userId);
         board.setContent(contentHtml);
 
-        formService.edit(board, userId, tempKey, null, tagNames);
+        formService.edit(board, userId, tempKey, null, tagNames, null, null, null);
         return "redirect:/qna/detail?qna_id=" + board.getBoard_id();
     }
 
@@ -205,8 +206,8 @@ public class QnaController {
     
     @GetMapping("/people")
     public String qnaPeople(HttpServletRequest request, Model model) {
-        Map<String, Object> result = qnaMainService.getActiveUsersJson(1, request.getContextPath());
-        model.addAllAttributes(result);
+        String ctx = request.getContextPath();
+        qnaMainService.fillQnaPeopleModel(model, ctx);   // 기존 topUsers 정상 주입
         return "qna/QnaPeople";
     }
 
@@ -218,6 +219,13 @@ public class QnaController {
         String ctx = request.getContextPath();
         Map<String, Object> result = qnaMainService.getActiveUsersJson(page, ctx);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(value = "/people/stats", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getPeopleStats(
+            @RequestParam(defaultValue = "30") String ageGroup) {
+        return ResponseEntity.ok(qnaMainService.getAgeInterestStats(ageGroup));
     }
     
     // ===== 질문글 상세 보기 ======
@@ -278,7 +286,7 @@ public class QnaController {
     	int uid = loginUserId(session);
     	if (uid == -1) return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
     	
-    	int boardId = formService.edit(board, uid, tempKey, attachFiles, tagsCsv);
+    	int boardId = formService.edit(board, uid, tempKey, attachFiles, tagsCsv, null, null, null);
     	return new ResponseEntity<String>("success : " + boardId,HttpStatus.OK);
     }
     

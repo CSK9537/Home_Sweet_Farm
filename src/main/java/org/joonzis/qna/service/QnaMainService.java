@@ -11,6 +11,9 @@ public interface QnaMainService {
     void fillQnaPeopleModel(Model model, String ctx);
     Map<String, Object> getActiveUsersJson(int page, String ctx);
     
+    // 사람들 페이지: 나이대별 관심사 그래프
+    Map<String, Object> getAgeInterestStats(String ageGroup);
+    
     // 메인 페이지 용
     List<QnaFaqDTO> topQuestions();
 }
