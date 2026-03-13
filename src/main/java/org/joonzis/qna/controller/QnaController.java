@@ -94,7 +94,7 @@ public class QnaController {
     	
     	int user_id = loginUserId(session);
     	if(user_id == -1) {
-    		return "redirect:/user/loginView";
+    		return "redirect:/user/login";
     	}
     	
     	if(mode.equals("edit") && board_id != null) {
