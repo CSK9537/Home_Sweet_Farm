@@ -18,7 +18,7 @@
 
 * Back-end
   * Java 11
-  * Spring Framework (Spring MVC, Spring Security)
+  * Spring Framework (Spring MVC)
   * MyBatis
   * WebSocket
   * Jackson
