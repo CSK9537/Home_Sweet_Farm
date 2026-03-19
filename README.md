@@ -16,22 +16,22 @@
 
 ## 💻 기술 스택
 
-### Back-end
-* Java 11
-* Spring Framework (Spring MVC, Spring Security)
-* MyBatis
-* WebSocket
-* Jackson
-
-### Front-end
-* JSP, JSTL, EL
-* HTML / CSS / JavaScript
-
-### Database
-* Oracle DB
-
-### Hardware / IoT
-* Arduino
+* Back-end
+  * Java 11
+  * Spring Framework (Spring MVC, Spring Security)
+  * MyBatis
+  * WebSocket
+  * Jackson
+* Front-end
+  * JSP, JSTL, EL
+  * HTML / CSS / JavaScript
+* Database
+  * Oracle DB
+* Hardware / IoT
+  * Arduino
+ 
+## 📌 프로젝트 아키텍처
+<img width="2023" height="1681" alt="시스템 아키텍쳐" src="https://github.com/user-attachments/assets/4a93a85f-6e32-476e-b3f3-a6fea47f2891" />
 
 ## ⚙️ 주요 기능
 
